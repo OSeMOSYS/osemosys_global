@@ -1,0 +1,163 @@
+,technology,parameter,year,Africa,Brazil,China,Europe,India,Japan,Middle East,Russia,United States
+0,Biogas - DG Industry,Annual O&M Costs,2017,95,90,70,95,85,100,100,100,105
+1,Biogas - DG Industry,Annual O&M Costs,2030,90,85,70,95,80,100,95,100,105
+2,Biogas - DG Industry,Annual O&M Costs,2040,90,85,70,90,80,95,95,100,100
+3,Biogas - DG Industry,Capital costs,2017,2500,2350,1850,2500,2200,2700,2650,2700,2800
+4,Biogas - DG Industry,Capital costs,2030,2400,2300,1850,2450,2150,2600,2500,2600,2700
+5,Biogas - DG Industry,Capital costs,2040,2350,2250,1800,2400,2150,2550,2450,2550,2650
+6,Biomass - waste incineration - CHP,Annual O&M Costs,2017,280,260,220,280,250,320,260,310,300
+7,Biomass - waste incineration - CHP,Annual O&M Costs,2030,270,250,210,280,250,300,250,300,290
+8,Biomass - waste incineration - CHP,Annual O&M Costs,2040,270,250,210,270,240,300,250,300,290
+9,Biomass - waste incineration - CHP,Capital costs,2017,7500,6750,5650,7400,6600,8300,6950,8150,7900
+10,Biomass - waste incineration - CHP,Capital costs,2030,7250,6550,5600,7250,6500,8000,6600,7950,7650
+11,Biomass - waste incineration - CHP,Capital costs,2040,7100,6500,5600,7150,6450,7850,6450,7800,7550
+12,Biomass CHP Medium,Annual O&M Costs,2017,105,110,95,140,105,145,110,130,150
+13,Biomass CHP Medium,Annual O&M Costs,2030,105,105,95,135,105,140,105,125,145
+14,Biomass CHP Medium,Annual O&M Costs,2040,100,105,95,135,105,140,105,125,145
+15,Biomass CHP Medium,Capital costs,2017,2850,2900,2500,3750,2800,3900,2950,3500,4050
+16,Biomass CHP Medium,Capital costs,2030,2750,2800,2500,3650,2750,3750,2800,3400,3900
+17,Biomass CHP Medium,Capital costs,2040,2700,2750,2500,3600,2750,3700,2750,3350,3850
+18,Biomass CHP Small,Annual O&M Costs,2017,180,190,140,200,170,200,190,190,210
+19,Biomass CHP Small,Annual O&M Costs,2030,170,180,140,190,170,200,180,180,210
+20,Biomass CHP Small,Annual O&M Costs,2040,170,180,140,190,170,190,170,180,200
+21,Biomass CHP Small,Capital costs,2017,4750,5000,3700,5350,4600,5450,4950,5000,5650
+22,Biomass CHP Small,Capital costs,2030,4600,4900,3650,5200,4550,5250,4700,4850,5450
+23,Biomass CHP Small,Capital costs,2040,4500,4800,3650,5100,4500,5150,4600,4800,5400
+24,Biomass Cofiring,Annual O&M Costs,2017,20,20,15,20,20,25,20,20,25
+25,Biomass Cofiring,Annual O&M Costs,2030,20,20,15,20,20,20,20,20,25
+26,Biomass Cofiring,Annual O&M Costs,2040,20,20,15,20,20,20,20,20,25
+27,Biomass Cofiring,Capital costs,2017,550,550,400,600,550,600,575,575,625
+28,Biomass Cofiring,Capital costs,2030,525,550,400,575,525,575,550,550,600
+29,Biomass Cofiring,Capital costs,2040,525,525,400,575,525,550,525,550,600
+30,Biomass Power plant,Annual O&M Costs,2017,75,80,55,85,75,85,80,80,85
+31,Biomass Power plant,Annual O&M Costs,2030,75,75,55,80,75,80,75,75,85
+32,Biomass Power plant,Annual O&M Costs,2040,70,75,55,80,75,80,75,75,85
+33,Biomass Power plant,Capital costs,2017,2150,2200,1600,2400,2150,2350,2300,2250,2500
+34,Biomass Power plant,Capital costs,2030,2100,2150,1600,2300,2100,2300,2150,2200,2400
+35,Biomass Power plant,Capital costs,2040,2050,2150,1600,2250,2100,2250,2100,2200,2350
+36,CCGT,Annual O&M Costs,2017,25,25,20,25,25,30,30,30,25
+37,CCGT,Annual O&M Costs,2030,25,25,20,25,25,30,30,30,25
+38,CCGT,Annual O&M Costs,2040,25,25,20,25,25,30,30,30,25
+39,CCGT,Capital costs,2017,700,700,560,1000,700,1100,800,800,1000
+40,CCGT,Capital costs,2030,700,700,560,1000,700,1100,800,800,1000
+41,CCGT,Capital costs,2040,700,700,560,1000,700,1100,800,800,1000
+42,CCGT + CCS,Annual O&M Costs,2017,85,n.a.,70,80,80,80,100,95,80
+43,CCGT + CCS,Annual O&M Costs,2030,80,n.a.,65,75,75,75,90,85,75
+44,CCGT + CCS,Annual O&M Costs,2040,75,n.a.,60,65,70,70,85,80,65
+45,CCGT + CCS,Capital costs,2017,2450,n.a.,2200,3100,2300,3200,2800,2650,3100
+46,CCGT + CCS,Capital costs,2030,2300,n.a.,2000,2900,2150,3000,2600,2500,2900
+47,CCGT + CCS,Capital costs,2040,2050,n.a.,1800,2600,1950,2750,2350,2250,2650
+48,CCGT - CHP,Annual O&M Costs,2017,35,35,30,40,35,45,40,40,40
+49,CCGT - CHP,Annual O&M Costs,2030,35,35,30,40,35,45,40,40,40
+50,CCGT - CHP,Annual O&M Costs,2040,35,35,30,40,35,45,40,40,40
+51,CCGT - CHP,Capital costs,2017,920,920,720,1300,920,1440,1040,1040,1300
+52,CCGT - CHP,Capital costs,2030,920,920,720,1300,920,1440,1040,1040,1300
+53,CCGT - CHP,Capital costs,2040,920,920,720,1300,920,1440,1040,1040,1300
+54,Coal* + CCS,Annual O&M Costs,2017,175,n.a.,140,165,155,175,n.a.,180,170
+55,Coal* + CCS,Annual O&M Costs,2030,165,n.a.,130,155,145,170,n.a.,170,160
+56,Coal* + CCS,Annual O&M Costs,2040,150,n.a.,110,140,135,155,n.a.,155,145
+57,Coal* + CCS,Capital costs,2017,4500,n.a.,3500,5500,3900,5900,n.a.,5100,5600
+58,Coal* + CCS,Capital costs,2030,4250,n.a.,3200,5200,3650,5600,n.a.,4850,5300
+59,Coal* + CCS,Capital costs,2040,3900,n.a.,2800,4650,3300,5150,n.a.,4450,4850
+60,Concentrating solar power,Annual O&M Costs,2017,200,210,200,230,230,n.a.,210,n.a.,260
+61,Concentrating solar power,Annual O&M Costs,2030,160,170,150,180,180,n.a.,160,n.a.,210
+62,Concentrating solar power,Annual O&M Costs,2040,140,140,130,150,160,n.a.,140,n.a.,180
+63,Concentrating solar power,Capital costs,2017,5050,5350,4900,5650,5700,n.a.,5250,n.a.,6500
+64,Concentrating solar power,Capital costs,2030,4000,4200,3750,4450,4550,n.a.,4050,n.a.,5300
+65,Concentrating solar power,Capital costs,2040,3400,3600,3250,3850,3950,n.a.,3500,n.a.,4600
+66,Fuel cell (distributed electricity generation),Annual O&M Costs,2017,150,150,150,100,150,100,150,150,100
+67,Fuel cell (distributed electricity generation),Annual O&M Costs,2030,75,75,75,50,75,50,75,75,50
+68,Fuel cell (distributed electricity generation),Annual O&M Costs,2040,75,75,75,50,75,50,75,75,50
+69,Fuel cell (distributed electricity generation),Capital costs,2017,5000,5000,5000,5000,5000,5000,5000,5000,5000
+70,Fuel cell (distributed electricity generation),Capital costs,2030,2500,2500,2500,2500,2500,2500,2500,2500,2500
+71,Fuel cell (distributed electricity generation),Capital costs,2040,2500,2500,2500,2500,2500,2500,2500,2500,2500
+72,Gas turbine,Annual O&M Costs,2017,20,20,20,20,20,20,25,25,20
+73,Gas turbine,Annual O&M Costs,2030,20,20,20,20,20,20,25,25,20
+74,Gas turbine,Annual O&M Costs,2040,20,20,20,20,20,20,25,25,20
+75,Gas turbine,Capital costs,2017,400,400,350,500,400,500,450,450,500
+76,Gas turbine,Capital costs,2030,400,400,350,500,400,500,450,450,500
+77,Gas turbine,Capital costs,2040,400,400,350,500,400,500,450,450,500
+78,Geothermal,Annual O&M Costs,2017,60,n.a.,45,55,70,55,45,45,45
+79,Geothermal,Annual O&M Costs,2030,60,n.a.,45,55,70,55,40,40,40
+80,Geothermal,Annual O&M Costs,2040,55,n.a.,45,50,65,50,40,40,40
+81,Geothermal,Capital costs,2017,3050,n.a.,2300,2850,3600,2800,2200,2200,2150
+82,Geothermal,Capital costs,2030,2900,n.a.,2250,2750,3450,2650,2100,2100,2050
+83,Geothermal,Capital costs,2040,2800,n.a.,2150,2600,3350,2550,2000,2000,2000
+84,Hydropower - large-scale,Annual O&M Costs,2017,50,50,40,60,50,60,55,50,65
+85,Hydropower - large-scale,Annual O&M Costs,2030,50,50,40,60,50,55,55,50,65
+86,Hydropower - large-scale,Annual O&M Costs,2040,50,50,40,60,50,55,55,55,65
+87,Hydropower - large-scale,Capital costs,2017,2100,2100,1600,2650,2000,2400,2150,2050,2700
+88,Hydropower - large-scale,Capital costs,2030,2100,2100,1700,2650,2100,2400,2150,2100,2700
+89,Hydropower - large-scale,Capital costs,2040,2100,2150,1750,2650,2150,2350,2200,2100,2700
+90,Hydropower - small-scale,Annual O&M Costs,2017,60,65,40,75,60,70,65,70,80
+91,Hydropower - small-scale,Annual O&M Costs,2030,60,65,40,75,65,70,65,70,80
+92,Hydropower - small-scale,Annual O&M Costs,2040,60,65,40,75,65,70,70,70,80
+93,Hydropower - small-scale,Capital costs,2017,3300,3350,2000,3900,3050,3550,3400,3500,4050
+94,Hydropower - small-scale,Capital costs,2030,3300,3350,2100,3900,3150,3550,3400,3550,4050
+95,Hydropower - small-scale,Capital costs,2040,3300,3400,2150,3900,3250,3500,3450,3600,4050
+96,IGCC,Annual O&M Costs,2017,90,90,50,90,70,100,90,90,90
+97,IGCC,Annual O&M Costs,2030,85,85,45,85,70,95,85,85,85
+98,IGCC,Annual O&M Costs,2040,85,85,40,80,70,95,85,80,85
+99,IGCC,Capital costs,2017,2200,2000,1100,2500,1600,2900,2000,2500,2600
+100,IGCC,Capital costs,2030,2100,1900,1000,2350,1500,2750,1900,2350,2450
+101,IGCC,Capital costs,2040,2100,1900,900,2300,1500,2700,1900,2300,2400
+102,IGCC + CCS,Annual O&M Costs,2017,210,n.a.,165,205,185,220,n.a.,190,210
+103,IGCC + CCS,Annual O&M Costs,2030,195,n.a.,150,190,175,205,n.a.,180,195
+104,IGCC + CCS,Annual O&M Costs,2040,190,n.a.,140,180,165,195,n.a.,170,185
+105,IGCC + CCS,Capital costs,2017,4850,n.a.,3650,5850,4150,6250,n.a.,5450,5950
+106,IGCC + CCS,Capital costs,2030,4550,n.a.,3350,5500,3850,5900,n.a.,5100,5600
+107,IGCC + CCS,Capital costs,2040,4400,n.a.,3050,5150,3700,5600,n.a.,4850,5300
+108,Marine,Annual O&M Costs,2017,200,n.a.,200,210,200,210,200,200,200
+109,Marine,Annual O&M Costs,2030,130,n.a.,130,140,130,140,130,140,130
+110,Marine,Annual O&M Costs,2040,100,n.a.,100,100,100,100,100,100,100
+111,Marine,Capital costs,2017,6550,n.a.,6600,6950,6500,7000,6650,6650,6850
+112,Marine,Capital costs,2030,4400,n.a.,4400,4650,4350,4650,4500,4500,4400
+113,Marine,Capital costs,2040,3300,n.a.,3300,3450,3250,3450,3400,3400,3300
+114,Nuclear,Annual O&M Costs,2017,170,170,120,160,140,225,160,160,175
+115,Nuclear,Annual O&M Costs,2030,170,170,120,160,140,225,160,160,175
+116,Nuclear,Annual O&M Costs,2040,170,170,120,160,140,225,160,160,175
+117,Nuclear,Capital costs,2017,4000,4000,2320,6600,2800,4200,3500,3800,5000
+118,Nuclear,Capital costs,2030,4000,4000,2750,5100,2800,4000,3500,3800,4800
+119,Nuclear,Capital costs,2040,4000,4000,2500,4500,2800,4000,3500,3800,4500
+120,Oxyfuel + CCS,Annual O&M Costs,2017,185,n.a.,140,170,165,185,n.a.,160,175
+121,Oxyfuel + CCS,Annual O&M Costs,2030,175,n.a.,130,165,155,175,n.a.,150,165
+122,Oxyfuel + CCS,Annual O&M Costs,2040,160,n.a.,115,150,145,160,n.a.,140,155
+123,Oxyfuel + CCS,Capital costs,2017,4800,n.a.,3500,5700,4100,6100,n.a.,5300,5800
+124,Oxyfuel + CCS,Capital costs,2030,4600,n.a.,3250,5450,3900,5850,n.a.,5100,5550
+125,Oxyfuel + CCS,Capital costs,2040,4200,n.a.,2900,4950,3550,5400,n.a.,4700,5100
+126,Solar photovoltaics - Buildings,Annual O&M Costs,2017,38,42,20,24,18,38,50,44,54
+127,Solar photovoltaics - Buildings,Annual O&M Costs,2030,36,36,18,22,18,34,44,38,48
+128,Solar photovoltaics - Buildings,Annual O&M Costs,2040,34,36,18,22,18,34,44,38,48
+129,Solar photovoltaics - Buildings,Capital costs,2017,2580,2740,1360,1660,1220,2520,3360,2880,3600
+130,Solar photovoltaics - Buildings,Capital costs,2030,1580,1540,880,1120,760,1740,1860,1660,2240
+131,Solar photovoltaics - Buildings,Capital costs,2040,1360,1340,780,1000,680,1560,1580,1440,1980
+132,Solar photovoltaics - Large scale,Annual O&M Costs,2017,32,32,16,20,16,28,40,34,18
+133,Solar photovoltaics - Large scale,Annual O&M Costs,2030,30,28,16,18,16,26,36,30,12
+134,Solar photovoltaics - Large scale,Annual O&M Costs,2040,28,28,16,18,16,26,34,28,10
+135,Solar photovoltaics - Large scale,Capital costs,2017,2180,2100,1120,1300,1120,1900,2640,2200,1560
+136,Solar photovoltaics - Large scale,Capital costs,2030,1320,1220,720,860,700,1280,1520,1300,960
+137,Solar photovoltaics - Large scale,Capital costs,2040,1140,1060,640,760,620,1140,1280,1120,860
+138,Steam Coal - SUBCRITICAL,Annual O&M Costs,2017,45,45,20,45,35,55,45,50,45
+139,Steam Coal - SUBCRITICAL,Annual O&M Costs,2030,45,45,20,45,35,55,45,50,45
+140,Steam Coal - SUBCRITICAL,Annual O&M Costs,2040,45,45,20,45,35,55,45,50,45
+141,Steam Coal - SUBCRITICAL,Capital costs,2017,1300,1300,600,1700,1000,2100,1300,1700,1800
+142,Steam Coal - SUBCRITICAL,Capital costs,2030,1300,1300,600,1700,1000,2100,1300,1700,1800
+143,Steam Coal - SUBCRITICAL,Capital costs,2040,1300,1300,600,1700,1000,2100,1300,1700,1800
+144,Steam Coal - SUPERCRITICAL,Annual O&M Costs,2017,60,65,30,60,50,70,65,70,65
+145,Steam Coal - SUPERCRITICAL,Annual O&M Costs,2030,60,65,30,60,50,70,65,70,65
+146,Steam Coal - SUPERCRITICAL,Annual O&M Costs,2040,60,65,30,60,50,70,65,70,65
+147,Steam Coal - SUPERCRITICAL,Capital costs,2017,1600,1600,700,2000,1200,2400,1600,2000,2100
+148,Steam Coal - SUPERCRITICAL,Capital costs,2030,1600,1600,700,2000,1200,2400,1600,2000,2100
+149,Steam Coal - SUPERCRITICAL,Capital costs,2040,1600,1600,700,2000,1200,2400,1600,2000,2100
+150,Steam Coal - ULTRASUPERCRITICAL,Annual O&M Costs,2017,70,70,30,65,55,80,65,65,70
+151,Steam Coal - ULTRASUPERCRITICAL,Annual O&M Costs,2030,70,70,30,65,55,80,65,65,70
+152,Steam Coal - ULTRASUPERCRITICAL,Annual O&M Costs,2040,70,70,30,65,55,80,65,65,70
+153,Steam Coal - ULTRASUPERCRITICAL,Capital costs,2017,1900,1800,800,2200,1400,2600,1600,2200,2300
+154,Steam Coal - ULTRASUPERCRITICAL,Capital costs,2030,1900,1800,800,2200,1400,2600,1600,2200,2300
+155,Steam Coal - ULTRASUPERCRITICAL,Capital costs,2040,1900,1800,800,2200,1400,2600,1600,2200,2300
+156,Wind onshore,Annual O&M Costs,2017,46,46,30,46,26,82,46,54,40
+157,Wind onshore,Annual O&M Costs,2030,44,44,30,44,26,78,44,50,38
+158,Wind onshore,Annual O&M Costs,2040,44,44,30,44,26,76,44,50,38
+159,Wind onshore,Capital costs,2017,1860,1820,1200,1820,1080,3260,1860,2140,1620
+160,Wind onshore,Capital costs,2030,1740,1720,1180,1740,1040,3040,1740,1980,1520
+161,Wind onshore,Capital costs,2040,1720,1700,1180,1700,1040,2960,1680,1940,1480
