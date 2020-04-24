@@ -1,0 +1,973 @@
+technology,region/country,parameter,2017,2030,2040
+Biogas - DG Industry,Africa,"Annual O&M Costs
+($2017 per kW)",95,90,90
+Biogas - DG Industry,Brazil,"Annual O&M Costs
+($2017 per kW)",90,85,85
+Biogas - DG Industry,China,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Biogas - DG Industry,Europe,"Annual O&M Costs
+($2017 per kW)",95,95,90
+Biogas - DG Industry,India,"Annual O&M Costs
+($2017 per kW)",85,80,80
+Biogas - DG Industry,Japan,"Annual O&M Costs
+($2017 per kW)",100,100,95
+Biogas - DG Industry,Middle East,"Annual O&M Costs
+($2017 per kW)",100,95,95
+Biogas - DG Industry,Russia,"Annual O&M Costs
+($2017 per kW)",100,100,100
+Biogas - DG Industry,United States,"Annual O&M Costs
+($2017 per kW)",105,105,100
+Biomass - waste incineration - CHP,Africa,"Annual O&M Costs
+($2017 per kW)",280,270,270
+Biomass - waste incineration - CHP,Brazil,"Annual O&M Costs
+($2017 per kW)",260,250,250
+Biomass - waste incineration - CHP,China,"Annual O&M Costs
+($2017 per kW)",220,210,210
+Biomass - waste incineration - CHP,Europe,"Annual O&M Costs
+($2017 per kW)",280,280,270
+Biomass - waste incineration - CHP,India,"Annual O&M Costs
+($2017 per kW)",250,250,240
+Biomass - waste incineration - CHP,Japan,"Annual O&M Costs
+($2017 per kW)",320,300,300
+Biomass - waste incineration - CHP,Middle East,"Annual O&M Costs
+($2017 per kW)",260,250,250
+Biomass - waste incineration - CHP,Russia,"Annual O&M Costs
+($2017 per kW)",310,300,300
+Biomass - waste incineration - CHP,United States,"Annual O&M Costs
+($2017 per kW)",300,290,290
+Biomass CHP Medium,Africa,"Annual O&M Costs
+($2017 per kW)",105,105,100
+Biomass CHP Medium,Brazil,"Annual O&M Costs
+($2017 per kW)",110,105,105
+Biomass CHP Medium,China,"Annual O&M Costs
+($2017 per kW)",95,95,95
+Biomass CHP Medium,Europe,"Annual O&M Costs
+($2017 per kW)",140,135,135
+Biomass CHP Medium,India,"Annual O&M Costs
+($2017 per kW)",105,105,105
+Biomass CHP Medium,Japan,"Annual O&M Costs
+($2017 per kW)",145,140,140
+Biomass CHP Medium,Middle East,"Annual O&M Costs
+($2017 per kW)",110,105,105
+Biomass CHP Medium,Russia,"Annual O&M Costs
+($2017 per kW)",130,125,125
+Biomass CHP Medium,United States,"Annual O&M Costs
+($2017 per kW)",150,145,145
+Biomass CHP Small,Africa,"Annual O&M Costs
+($2017 per kW)",180,170,170
+Biomass CHP Small,Brazil,"Annual O&M Costs
+($2017 per kW)",190,180,180
+Biomass CHP Small,China,"Annual O&M Costs
+($2017 per kW)",140,140,140
+Biomass CHP Small,Europe,"Annual O&M Costs
+($2017 per kW)",200,190,190
+Biomass CHP Small,India,"Annual O&M Costs
+($2017 per kW)",170,170,170
+Biomass CHP Small,Japan,"Annual O&M Costs
+($2017 per kW)",200,200,190
+Biomass CHP Small,Middle East,"Annual O&M Costs
+($2017 per kW)",190,180,170
+Biomass CHP Small,Russia,"Annual O&M Costs
+($2017 per kW)",190,180,180
+Biomass CHP Small,United States,"Annual O&M Costs
+($2017 per kW)",210,210,200
+Biomass Cofiring,Africa,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Biomass Cofiring,Brazil,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Biomass Cofiring,China,"Annual O&M Costs
+($2017 per kW)",15,15,15
+Biomass Cofiring,Europe,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Biomass Cofiring,India,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Biomass Cofiring,Japan,"Annual O&M Costs
+($2017 per kW)",25,20,20
+Biomass Cofiring,Middle East,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Biomass Cofiring,Russia,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Biomass Cofiring,United States,"Annual O&M Costs
+($2017 per kW)",25,25,25
+Biomass Power plant,Africa,"Annual O&M Costs
+($2017 per kW)",75,75,70
+Biomass Power plant,Brazil,"Annual O&M Costs
+($2017 per kW)",80,75,75
+Biomass Power plant,China,"Annual O&M Costs
+($2017 per kW)",55,55,55
+Biomass Power plant,Europe,"Annual O&M Costs
+($2017 per kW)",85,80,80
+Biomass Power plant,India,"Annual O&M Costs
+($2017 per kW)",75,75,75
+Biomass Power plant,Japan,"Annual O&M Costs
+($2017 per kW)",85,80,80
+Biomass Power plant,Middle East,"Annual O&M Costs
+($2017 per kW)",80,75,75
+Biomass Power plant,Russia,"Annual O&M Costs
+($2017 per kW)",80,75,75
+Biomass Power plant,United States,"Annual O&M Costs
+($2017 per kW)",85,85,85
+CCGT,Africa,"Annual O&M Costs
+($2017 per kW)",25,25,25
+CCGT,Brazil,"Annual O&M Costs
+($2017 per kW)",25,25,25
+CCGT,China,"Annual O&M Costs
+($2017 per kW)",20,20,20
+CCGT,Europe,"Annual O&M Costs
+($2017 per kW)",25,25,25
+CCGT,India,"Annual O&M Costs
+($2017 per kW)",25,25,25
+CCGT,Japan,"Annual O&M Costs
+($2017 per kW)",30,30,30
+CCGT,Middle East,"Annual O&M Costs
+($2017 per kW)",30,30,30
+CCGT,Russia,"Annual O&M Costs
+($2017 per kW)",30,30,30
+CCGT,United States,"Annual O&M Costs
+($2017 per kW)",25,25,25
+CCGT - CHP,Africa,"Annual O&M Costs
+($2017 per kW)",35,35,35
+CCGT - CHP,Brazil,"Annual O&M Costs
+($2017 per kW)",35,35,35
+CCGT - CHP,China,"Annual O&M Costs
+($2017 per kW)",30,30,30
+CCGT - CHP,Europe,"Annual O&M Costs
+($2017 per kW)",40,40,40
+CCGT - CHP,India,"Annual O&M Costs
+($2017 per kW)",35,35,35
+CCGT - CHP,Japan,"Annual O&M Costs
+($2017 per kW)",45,45,45
+CCGT - CHP,Middle East,"Annual O&M Costs
+($2017 per kW)",40,40,40
+CCGT - CHP,Russia,"Annual O&M Costs
+($2017 per kW)",40,40,40
+CCGT - CHP,United States,"Annual O&M Costs
+($2017 per kW)",40,40,40
+CCGT + CCS,Africa,"Annual O&M Costs
+($2017 per kW)",85,80,75
+CCGT + CCS,Brazil,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+CCGT + CCS,China,"Annual O&M Costs
+($2017 per kW)",70,65,60
+CCGT + CCS,Europe,"Annual O&M Costs
+($2017 per kW)",80,75,65
+CCGT + CCS,India,"Annual O&M Costs
+($2017 per kW)",80,75,70
+CCGT + CCS,Japan,"Annual O&M Costs
+($2017 per kW)",80,75,70
+CCGT + CCS,Middle East,"Annual O&M Costs
+($2017 per kW)",100,90,85
+CCGT + CCS,Russia,"Annual O&M Costs
+($2017 per kW)",95,85,80
+CCGT + CCS,United States,"Annual O&M Costs
+($2017 per kW)",80,75,65
+Coal* + CCS,Africa,"Annual O&M Costs
+($2017 per kW)",175,165,150
+Coal* + CCS,Brazil,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Coal* + CCS,China,"Annual O&M Costs
+($2017 per kW)",140,130,110
+Coal* + CCS,Europe,"Annual O&M Costs
+($2017 per kW)",165,155,140
+Coal* + CCS,India,"Annual O&M Costs
+($2017 per kW)",155,145,135
+Coal* + CCS,Japan,"Annual O&M Costs
+($2017 per kW)",175,170,155
+Coal* + CCS,Middle East,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Coal* + CCS,Russia,"Annual O&M Costs
+($2017 per kW)",180,170,155
+Coal* + CCS,United States,"Annual O&M Costs
+($2017 per kW)",170,160,145
+Concentrating solar power,Africa,"Annual O&M Costs
+($2017 per kW)",200,160,140
+Concentrating solar power,Brazil,"Annual O&M Costs
+($2017 per kW)",210,170,140
+Concentrating solar power,China,"Annual O&M Costs
+($2017 per kW)",200,150,130
+Concentrating solar power,Europe,"Annual O&M Costs
+($2017 per kW)",230,180,150
+Concentrating solar power,India,"Annual O&M Costs
+($2017 per kW)",230,180,160
+Concentrating solar power,Japan,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Concentrating solar power,Middle East,"Annual O&M Costs
+($2017 per kW)",210,160,140
+Concentrating solar power,Russia,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Concentrating solar power,United States,"Annual O&M Costs
+($2017 per kW)",260,210,180
+Fuel cell (distributed electricity generation),Africa,"Annual O&M Costs
+($2017 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Brazil,"Annual O&M Costs
+($2017 per kW)",150,75,75
+Fuel cell (distributed electricity generation),China,"Annual O&M Costs
+($2017 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Europe,"Annual O&M Costs
+($2017 per kW)",100,50,50
+Fuel cell (distributed electricity generation),India,"Annual O&M Costs
+($2017 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Japan,"Annual O&M Costs
+($2017 per kW)",100,50,50
+Fuel cell (distributed electricity generation),Middle East,"Annual O&M Costs
+($2017 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Russia,"Annual O&M Costs
+($2017 per kW)",150,75,75
+Fuel cell (distributed electricity generation),United States,"Annual O&M Costs
+($2017 per kW)",100,50,50
+Gas turbine,Africa,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Gas turbine,Brazil,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Gas turbine,China,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Gas turbine,Europe,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Gas turbine,India,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Gas turbine,Japan,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Gas turbine,Middle East,"Annual O&M Costs
+($2017 per kW)",25,25,25
+Gas turbine,Russia,"Annual O&M Costs
+($2017 per kW)",25,25,25
+Gas turbine,United States,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Geothermal,Africa,"Annual O&M Costs
+($2017 per kW)",60,60,55
+Geothermal,Brazil,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Geothermal,China,"Annual O&M Costs
+($2017 per kW)",45,45,45
+Geothermal,Europe,"Annual O&M Costs
+($2017 per kW)",55,55,50
+Geothermal,India,"Annual O&M Costs
+($2017 per kW)",70,70,65
+Geothermal,Japan,"Annual O&M Costs
+($2017 per kW)",55,55,50
+Geothermal,Middle East,"Annual O&M Costs
+($2017 per kW)",45,40,40
+Geothermal,Russia,"Annual O&M Costs
+($2017 per kW)",45,40,40
+Geothermal,United States,"Annual O&M Costs
+($2017 per kW)",45,40,40
+Hydropower - large-scale,Africa,"Annual O&M Costs
+($2017 per kW)",50,50,50
+Hydropower - large-scale,Brazil,"Annual O&M Costs
+($2017 per kW)",50,50,50
+Hydropower - large-scale,China,"Annual O&M Costs
+($2017 per kW)",40,40,40
+Hydropower - large-scale,Europe,"Annual O&M Costs
+($2017 per kW)",60,60,60
+Hydropower - large-scale,India,"Annual O&M Costs
+($2017 per kW)",50,50,50
+Hydropower - large-scale,Japan,"Annual O&M Costs
+($2017 per kW)",60,55,55
+Hydropower - large-scale,Middle East,"Annual O&M Costs
+($2017 per kW)",55,55,55
+Hydropower - large-scale,Russia,"Annual O&M Costs
+($2017 per kW)",50,50,55
+Hydropower - large-scale,United States,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Hydropower - small-scale,Africa,"Annual O&M Costs
+($2017 per kW)",60,60,60
+Hydropower - small-scale,Brazil,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Hydropower - small-scale,China,"Annual O&M Costs
+($2017 per kW)",40,40,40
+Hydropower - small-scale,Europe,"Annual O&M Costs
+($2017 per kW)",75,75,75
+Hydropower - small-scale,India,"Annual O&M Costs
+($2017 per kW)",60,65,65
+Hydropower - small-scale,Japan,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Hydropower - small-scale,Middle East,"Annual O&M Costs
+($2017 per kW)",65,65,70
+Hydropower - small-scale,Russia,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Hydropower - small-scale,United States,"Annual O&M Costs
+($2017 per kW)",80,80,80
+IGCC,Africa,"Annual O&M Costs
+($2017 per kW)",90,85,85
+IGCC,Brazil,"Annual O&M Costs
+($2017 per kW)",90,85,85
+IGCC,China,"Annual O&M Costs
+($2017 per kW)",50,45,40
+IGCC,Europe,"Annual O&M Costs
+($2017 per kW)",90,85,80
+IGCC,India,"Annual O&M Costs
+($2017 per kW)",70,70,70
+IGCC,Japan,"Annual O&M Costs
+($2017 per kW)",100,95,95
+IGCC,Middle East,"Annual O&M Costs
+($2017 per kW)",90,85,85
+IGCC,Russia,"Annual O&M Costs
+($2017 per kW)",90,85,80
+IGCC,United States,"Annual O&M Costs
+($2017 per kW)",90,85,85
+IGCC + CCS,Africa,"Annual O&M Costs
+($2017 per kW)",210,195,190
+IGCC + CCS,Brazil,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+IGCC + CCS,China,"Annual O&M Costs
+($2017 per kW)",165,150,140
+IGCC + CCS,Europe,"Annual O&M Costs
+($2017 per kW)",205,190,180
+IGCC + CCS,India,"Annual O&M Costs
+($2017 per kW)",185,175,165
+IGCC + CCS,Japan,"Annual O&M Costs
+($2017 per kW)",220,205,195
+IGCC + CCS,Middle East,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+IGCC + CCS,Russia,"Annual O&M Costs
+($2017 per kW)",190,180,170
+IGCC + CCS,United States,"Annual O&M Costs
+($2017 per kW)",210,195,185
+Marine,Africa,"Annual O&M Costs
+($2017 per kW)",200,130,100
+Marine,Brazil,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Marine,China,"Annual O&M Costs
+($2017 per kW)",200,130,100
+Marine,Europe,"Annual O&M Costs
+($2017 per kW)",210,140,100
+Marine,India,"Annual O&M Costs
+($2017 per kW)",200,130,100
+Marine,Japan,"Annual O&M Costs
+($2017 per kW)",210,140,100
+Marine,Middle East,"Annual O&M Costs
+($2017 per kW)",200,130,100
+Marine,Russia,"Annual O&M Costs
+($2017 per kW)",200,140,100
+Marine,United States,"Annual O&M Costs
+($2017 per kW)",200,130,100
+Nuclear,Africa,"Annual O&M Costs
+($2017 per kW)",170,170,170
+Nuclear,Brazil,"Annual O&M Costs
+($2017 per kW)",170,170,170
+Nuclear,China,"Annual O&M Costs
+($2017 per kW)",120,120,120
+Nuclear,Europe,"Annual O&M Costs
+($2017 per kW)",160,160,160
+Nuclear,India,"Annual O&M Costs
+($2017 per kW)",140,140,140
+Nuclear,Japan,"Annual O&M Costs
+($2017 per kW)",225,225,225
+Nuclear,Middle East,"Annual O&M Costs
+($2017 per kW)",160,160,160
+Nuclear,Russia,"Annual O&M Costs
+($2017 per kW)",160,160,160
+Nuclear,United States,"Annual O&M Costs
+($2017 per kW)",175,175,175
+Oxyfuel + CCS,Africa,"Annual O&M Costs
+($2017 per kW)",185,175,160
+Oxyfuel + CCS,Brazil,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Oxyfuel + CCS,China,"Annual O&M Costs
+($2017 per kW)",140,130,115
+Oxyfuel + CCS,Europe,"Annual O&M Costs
+($2017 per kW)",170,165,150
+Oxyfuel + CCS,India,"Annual O&M Costs
+($2017 per kW)",165,155,145
+Oxyfuel + CCS,Japan,"Annual O&M Costs
+($2017 per kW)",185,175,160
+Oxyfuel + CCS,Middle East,"Annual O&M Costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Oxyfuel + CCS,Russia,"Annual O&M Costs
+($2017 per kW)",160,150,140
+Oxyfuel + CCS,United States,"Annual O&M Costs
+($2017 per kW)",175,165,155
+Solar photovoltaics - Buildings,Africa,"Annual O&M Costs
+($2017 per kW)",38,36,34
+Solar photovoltaics - Buildings,Brazil,"Annual O&M Costs
+($2017 per kW)",42,36,36
+Solar photovoltaics - Buildings,China,"Annual O&M Costs
+($2017 per kW)",20,18,18
+Solar photovoltaics - Buildings,Europe,"Annual O&M Costs
+($2017 per kW)",24,22,22
+Solar photovoltaics - Buildings,India,"Annual O&M Costs
+($2017 per kW)",18,18,18
+Solar photovoltaics - Buildings,Japan,"Annual O&M Costs
+($2017 per kW)",38,34,34
+Solar photovoltaics - Buildings,Middle East,"Annual O&M Costs
+($2017 per kW)",50,44,44
+Solar photovoltaics - Buildings,Russia,"Annual O&M Costs
+($2017 per kW)",44,38,38
+Solar photovoltaics - Buildings,United States,"Annual O&M Costs
+($2017 per kW)",54,48,48
+Solar photovoltaics - Large scale,Africa,"Annual O&M Costs
+($2017 per kW)",32,30,28
+Solar photovoltaics - Large scale,Brazil,"Annual O&M Costs
+($2017 per kW)",32,28,28
+Solar photovoltaics - Large scale,China,"Annual O&M Costs
+($2017 per kW)",16,16,16
+Solar photovoltaics - Large scale,Europe,"Annual O&M Costs
+($2017 per kW)",20,18,18
+Solar photovoltaics - Large scale,India,"Annual O&M Costs
+($2017 per kW)",16,16,16
+Solar photovoltaics - Large scale,Japan,"Annual O&M Costs
+($2017 per kW)",28,26,26
+Solar photovoltaics - Large scale,Middle East,"Annual O&M Costs
+($2017 per kW)",40,36,34
+Solar photovoltaics - Large scale,Russia,"Annual O&M Costs
+($2017 per kW)",34,30,28
+Solar photovoltaics - Large scale,United States,"Annual O&M Costs
+($2017 per kW)",18,12,10
+Steam Coal - SUBCRITICAL,Africa,"Annual O&M Costs
+($2017 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,Brazil,"Annual O&M Costs
+($2017 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,China,"Annual O&M Costs
+($2017 per kW)",20,20,20
+Steam Coal - SUBCRITICAL,Europe,"Annual O&M Costs
+($2017 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,India,"Annual O&M Costs
+($2017 per kW)",35,35,35
+Steam Coal - SUBCRITICAL,Japan,"Annual O&M Costs
+($2017 per kW)",55,55,55
+Steam Coal - SUBCRITICAL,Middle East,"Annual O&M Costs
+($2017 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,Russia,"Annual O&M Costs
+($2017 per kW)",50,50,50
+Steam Coal - SUBCRITICAL,United States,"Annual O&M Costs
+($2017 per kW)",45,45,45
+Steam Coal - SUPERCRITICAL,Africa,"Annual O&M Costs
+($2017 per kW)",60,60,60
+Steam Coal - SUPERCRITICAL,Brazil,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Steam Coal - SUPERCRITICAL,China,"Annual O&M Costs
+($2017 per kW)",30,30,30
+Steam Coal - SUPERCRITICAL,Europe,"Annual O&M Costs
+($2017 per kW)",60,60,60
+Steam Coal - SUPERCRITICAL,India,"Annual O&M Costs
+($2017 per kW)",50,50,50
+Steam Coal - SUPERCRITICAL,Japan,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Steam Coal - SUPERCRITICAL,Middle East,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Steam Coal - SUPERCRITICAL,Russia,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Steam Coal - SUPERCRITICAL,United States,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,Africa,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Steam Coal - ULTRASUPERCRITICAL,Brazil,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Steam Coal - ULTRASUPERCRITICAL,China,"Annual O&M Costs
+($2017 per kW)",30,30,30
+Steam Coal - ULTRASUPERCRITICAL,Europe,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,India,"Annual O&M Costs
+($2017 per kW)",55,55,55
+Steam Coal - ULTRASUPERCRITICAL,Japan,"Annual O&M Costs
+($2017 per kW)",80,80,80
+Steam Coal - ULTRASUPERCRITICAL,Middle East,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,Russia,"Annual O&M Costs
+($2017 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,United States,"Annual O&M Costs
+($2017 per kW)",70,70,70
+Wind onshore,Africa,"Annual O&M Costs
+($2017 per kW)",46,44,44
+Wind onshore,Brazil,"Annual O&M Costs
+($2017 per kW)",46,44,44
+Wind onshore,China,"Annual O&M Costs
+($2017 per kW)",30,30,30
+Wind onshore,Europe,"Annual O&M Costs
+($2017 per kW)",46,44,44
+Wind onshore,India,"Annual O&M Costs
+($2017 per kW)",26,26,26
+Wind onshore,Japan,"Annual O&M Costs
+($2017 per kW)",82,78,76
+Wind onshore,Middle East,"Annual O&M Costs
+($2017 per kW)",46,44,44
+Wind onshore,Russia,"Annual O&M Costs
+($2017 per kW)",54,50,50
+Wind onshore,United States,"Annual O&M Costs
+($2017 per kW)",40,38,38
+Biogas - DG Industry,Africa,"Capital costs
+($2017 per kW)",2500,2400,2350
+Biogas - DG Industry,Brazil,"Capital costs
+($2017 per kW)",2350,2300,2250
+Biogas - DG Industry,China,"Capital costs
+($2017 per kW)",1850,1850,1800
+Biogas - DG Industry,Europe,"Capital costs
+($2017 per kW)",2500,2450,2400
+Biogas - DG Industry,India,"Capital costs
+($2017 per kW)",2200,2150,2150
+Biogas - DG Industry,Japan,"Capital costs
+($2017 per kW)",2700,2600,2550
+Biogas - DG Industry,Middle East,"Capital costs
+($2017 per kW)",2650,2500,2450
+Biogas - DG Industry,Russia,"Capital costs
+($2017 per kW)",2700,2600,2550
+Biogas - DG Industry,United States,"Capital costs
+($2017 per kW)",2800,2700,2650
+Biomass - waste incineration - CHP,Africa,"Capital costs
+($2017 per kW)",7500,7250,7100
+Biomass - waste incineration - CHP,Brazil,"Capital costs
+($2017 per kW)",6750,6550,6500
+Biomass - waste incineration - CHP,China,"Capital costs
+($2017 per kW)",5650,5600,5600
+Biomass - waste incineration - CHP,Europe,"Capital costs
+($2017 per kW)",7400,7250,7150
+Biomass - waste incineration - CHP,India,"Capital costs
+($2017 per kW)",6600,6500,6450
+Biomass - waste incineration - CHP,Japan,"Capital costs
+($2017 per kW)",8300,8000,7850
+Biomass - waste incineration - CHP,Middle East,"Capital costs
+($2017 per kW)",6950,6600,6450
+Biomass - waste incineration - CHP,Russia,"Capital costs
+($2017 per kW)",8150,7950,7800
+Biomass - waste incineration - CHP,United States,"Capital costs
+($2017 per kW)",7900,7650,7550
+Biomass CHP Medium,Africa,"Capital costs
+($2017 per kW)",2850,2750,2700
+Biomass CHP Medium,Brazil,"Capital costs
+($2017 per kW)",2900,2800,2750
+Biomass CHP Medium,China,"Capital costs
+($2017 per kW)",2500,2500,2500
+Biomass CHP Medium,Europe,"Capital costs
+($2017 per kW)",3750,3650,3600
+Biomass CHP Medium,India,"Capital costs
+($2017 per kW)",2800,2750,2750
+Biomass CHP Medium,Japan,"Capital costs
+($2017 per kW)",3900,3750,3700
+Biomass CHP Medium,Middle East,"Capital costs
+($2017 per kW)",2950,2800,2750
+Biomass CHP Medium,Russia,"Capital costs
+($2017 per kW)",3500,3400,3350
+Biomass CHP Medium,United States,"Capital costs
+($2017 per kW)",4050,3900,3850
+Biomass CHP Small,Africa,"Capital costs
+($2017 per kW)",4750,4600,4500
+Biomass CHP Small,Brazil,"Capital costs
+($2017 per kW)",5000,4900,4800
+Biomass CHP Small,China,"Capital costs
+($2017 per kW)",3700,3650,3650
+Biomass CHP Small,Europe,"Capital costs
+($2017 per kW)",5350,5200,5100
+Biomass CHP Small,India,"Capital costs
+($2017 per kW)",4600,4550,4500
+Biomass CHP Small,Japan,"Capital costs
+($2017 per kW)",5450,5250,5150
+Biomass CHP Small,Middle East,"Capital costs
+($2017 per kW)",4950,4700,4600
+Biomass CHP Small,Russia,"Capital costs
+($2017 per kW)",5000,4850,4800
+Biomass CHP Small,United States,"Capital costs
+($2017 per kW)",5650,5450,5400
+Biomass Cofiring,Africa,"Capital costs
+($2017 per kW)",550,525,525
+Biomass Cofiring,Brazil,"Capital costs
+($2017 per kW)",550,550,525
+Biomass Cofiring,China,"Capital costs
+($2017 per kW)",400,400,400
+Biomass Cofiring,Europe,"Capital costs
+($2017 per kW)",600,575,575
+Biomass Cofiring,India,"Capital costs
+($2017 per kW)",550,525,525
+Biomass Cofiring,Japan,"Capital costs
+($2017 per kW)",600,575,550
+Biomass Cofiring,Middle East,"Capital costs
+($2017 per kW)",575,550,525
+Biomass Cofiring,Russia,"Capital costs
+($2017 per kW)",575,550,550
+Biomass Cofiring,United States,"Capital costs
+($2017 per kW)",625,600,600
+Biomass Power plant,Africa,"Capital costs
+($2017 per kW)",2150,2100,2050
+Biomass Power plant,Brazil,"Capital costs
+($2017 per kW)",2200,2150,2150
+Biomass Power plant,China,"Capital costs
+($2017 per kW)",1600,1600,1600
+Biomass Power plant,Europe,"Capital costs
+($2017 per kW)",2400,2300,2250
+Biomass Power plant,India,"Capital costs
+($2017 per kW)",2150,2100,2100
+Biomass Power plant,Japan,"Capital costs
+($2017 per kW)",2350,2300,2250
+Biomass Power plant,Middle East,"Capital costs
+($2017 per kW)",2300,2150,2100
+Biomass Power plant,Russia,"Capital costs
+($2017 per kW)",2250,2200,2200
+Biomass Power plant,United States,"Capital costs
+($2017 per kW)",2500,2400,2350
+CCGT,Africa,"Capital costs
+($2017 per kW)",700,700,700
+CCGT,Brazil,"Capital costs
+($2017 per kW)",700,700,700
+CCGT,China,"Capital costs
+($2017 per kW)",560,560,560
+CCGT,Europe,"Capital costs
+($2017 per kW)",1000,1000,1000
+CCGT,India,"Capital costs
+($2017 per kW)",700,700,700
+CCGT,Japan,"Capital costs
+($2017 per kW)",1100,1100,1100
+CCGT,Middle East,"Capital costs
+($2017 per kW)",800,800,800
+CCGT,Russia,"Capital costs
+($2017 per kW)",800,800,800
+CCGT,United States,"Capital costs
+($2017 per kW)",1000,1000,1000
+CCGT - CHP,Africa,"Capital costs
+($2017 per kW)",920,920,920
+CCGT - CHP,Brazil,"Capital costs
+($2017 per kW)",920,920,920
+CCGT - CHP,China,"Capital costs
+($2017 per kW)",720,720,720
+CCGT - CHP,Europe,"Capital costs
+($2017 per kW)",1300,1300,1300
+CCGT - CHP,India,"Capital costs
+($2017 per kW)",920,920,920
+CCGT - CHP,Japan,"Capital costs
+($2017 per kW)",1440,1440,1440
+CCGT - CHP,Middle East,"Capital costs
+($2017 per kW)",1040,1040,1040
+CCGT - CHP,Russia,"Capital costs
+($2017 per kW)",1040,1040,1040
+CCGT - CHP,United States,"Capital costs
+($2017 per kW)",1300,1300,1300
+CCGT + CCS,Africa,"Capital costs
+($2017 per kW)",2450,2300,2050
+CCGT + CCS,Brazil,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+CCGT + CCS,China,"Capital costs
+($2017 per kW)",2200,2000,1800
+CCGT + CCS,Europe,"Capital costs
+($2017 per kW)",3100,2900,2600
+CCGT + CCS,India,"Capital costs
+($2017 per kW)",2300,2150,1950
+CCGT + CCS,Japan,"Capital costs
+($2017 per kW)",3200,3000,2750
+CCGT + CCS,Middle East,"Capital costs
+($2017 per kW)",2800,2600,2350
+CCGT + CCS,Russia,"Capital costs
+($2017 per kW)",2650,2500,2250
+CCGT + CCS,United States,"Capital costs
+($2017 per kW)",3100,2900,2650
+Coal* + CCS,Africa,"Capital costs
+($2017 per kW)",4500,4250,3900
+Coal* + CCS,Brazil,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Coal* + CCS,China,"Capital costs
+($2017 per kW)",3500,3200,2800
+Coal* + CCS,Europe,"Capital costs
+($2017 per kW)",5500,5200,4650
+Coal* + CCS,India,"Capital costs
+($2017 per kW)",3900,3650,3300
+Coal* + CCS,Japan,"Capital costs
+($2017 per kW)",5900,5600,5150
+Coal* + CCS,Middle East,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Coal* + CCS,Russia,"Capital costs
+($2017 per kW)",5100,4850,4450
+Coal* + CCS,United States,"Capital costs
+($2017 per kW)",5600,5300,4850
+Concentrating solar power,Africa,"Capital costs
+($2017 per kW)",5050,4000,3400
+Concentrating solar power,Brazil,"Capital costs
+($2017 per kW)",5350,4200,3600
+Concentrating solar power,China,"Capital costs
+($2017 per kW)",4900,3750,3250
+Concentrating solar power,Europe,"Capital costs
+($2017 per kW)",5650,4450,3850
+Concentrating solar power,India,"Capital costs
+($2017 per kW)",5700,4550,3950
+Concentrating solar power,Japan,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Concentrating solar power,Middle East,"Capital costs
+($2017 per kW)",5250,4050,3500
+Concentrating solar power,Russia,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Concentrating solar power,United States,"Capital costs
+($2017 per kW)",6500,5300,4600
+Fuel cell (distributed electricity generation),Africa,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Brazil,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),China,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Europe,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),India,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Japan,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Middle East,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Russia,"Capital costs
+($2017 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),United States,"Capital costs
+($2017 per kW)",5000,2500,2500
+Gas turbine,Africa,"Capital costs
+($2017 per kW)",400,400,400
+Gas turbine,Brazil,"Capital costs
+($2017 per kW)",400,400,400
+Gas turbine,China,"Capital costs
+($2017 per kW)",350,350,350
+Gas turbine,Europe,"Capital costs
+($2017 per kW)",500,500,500
+Gas turbine,India,"Capital costs
+($2017 per kW)",400,400,400
+Gas turbine,Japan,"Capital costs
+($2017 per kW)",500,500,500
+Gas turbine,Middle East,"Capital costs
+($2017 per kW)",450,450,450
+Gas turbine,Russia,"Capital costs
+($2017 per kW)",450,450,450
+Gas turbine,United States,"Capital costs
+($2017 per kW)",500,500,500
+Geothermal,Africa,"Capital costs
+($2017 per kW)",3050,2900,2800
+Geothermal,Brazil,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Geothermal,China,"Capital costs
+($2017 per kW)",2300,2250,2150
+Geothermal,Europe,"Capital costs
+($2017 per kW)",2850,2750,2600
+Geothermal,India,"Capital costs
+($2017 per kW)",3600,3450,3350
+Geothermal,Japan,"Capital costs
+($2017 per kW)",2800,2650,2550
+Geothermal,Middle East,"Capital costs
+($2017 per kW)",2200,2100,2000
+Geothermal,Russia,"Capital costs
+($2017 per kW)",2200,2100,2000
+Geothermal,United States,"Capital costs
+($2017 per kW)",2150,2050,2000
+Hydropower - large-scale,Africa,"Capital costs
+($2017 per kW)",2100,2100,2100
+Hydropower - large-scale,Brazil,"Capital costs
+($2017 per kW)",2100,2100,2150
+Hydropower - large-scale,China,"Capital costs
+($2017 per kW)",1600,1700,1750
+Hydropower - large-scale,Europe,"Capital costs
+($2017 per kW)",2650,2650,2650
+Hydropower - large-scale,India,"Capital costs
+($2017 per kW)",2000,2100,2150
+Hydropower - large-scale,Japan,"Capital costs
+($2017 per kW)",2400,2400,2350
+Hydropower - large-scale,Middle East,"Capital costs
+($2017 per kW)",2150,2150,2200
+Hydropower - large-scale,Russia,"Capital costs
+($2017 per kW)",2050,2100,2100
+Hydropower - large-scale,United States,"Capital costs
+($2017 per kW)",2700,2700,2700
+Hydropower - small-scale,Africa,"Capital costs
+($2017 per kW)",3300,3300,3300
+Hydropower - small-scale,Brazil,"Capital costs
+($2017 per kW)",3350,3350,3400
+Hydropower - small-scale,China,"Capital costs
+($2017 per kW)",2000,2100,2150
+Hydropower - small-scale,Europe,"Capital costs
+($2017 per kW)",3900,3900,3900
+Hydropower - small-scale,India,"Capital costs
+($2017 per kW)",3050,3150,3250
+Hydropower - small-scale,Japan,"Capital costs
+($2017 per kW)",3550,3550,3500
+Hydropower - small-scale,Middle East,"Capital costs
+($2017 per kW)",3400,3400,3450
+Hydropower - small-scale,Russia,"Capital costs
+($2017 per kW)",3500,3550,3600
+Hydropower - small-scale,United States,"Capital costs
+($2017 per kW)",4050,4050,4050
+IGCC,Africa,"Capital costs
+($2017 per kW)",2200,2100,2100
+IGCC,Brazil,"Capital costs
+($2017 per kW)",2000,1900,1900
+IGCC,China,"Capital costs
+($2017 per kW)",1100,1000,900
+IGCC,Europe,"Capital costs
+($2017 per kW)",2500,2350,2300
+IGCC,India,"Capital costs
+($2017 per kW)",1600,1500,1500
+IGCC,Japan,"Capital costs
+($2017 per kW)",2900,2750,2700
+IGCC,Middle East,"Capital costs
+($2017 per kW)",2000,1900,1900
+IGCC,Russia,"Capital costs
+($2017 per kW)",2500,2350,2300
+IGCC,United States,"Capital costs
+($2017 per kW)",2600,2450,2400
+IGCC + CCS,Africa,"Capital costs
+($2017 per kW)",4850,4550,4400
+IGCC + CCS,Brazil,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+IGCC + CCS,China,"Capital costs
+($2017 per kW)",3650,3350,3050
+IGCC + CCS,Europe,"Capital costs
+($2017 per kW)",5850,5500,5150
+IGCC + CCS,India,"Capital costs
+($2017 per kW)",4150,3850,3700
+IGCC + CCS,Japan,"Capital costs
+($2017 per kW)",6250,5900,5600
+IGCC + CCS,Middle East,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+IGCC + CCS,Russia,"Capital costs
+($2017 per kW)",5450,5100,4850
+IGCC + CCS,United States,"Capital costs
+($2017 per kW)",5950,5600,5300
+Marine,Africa,"Capital costs
+($2017 per kW)",6550,4400,3300
+Marine,Brazil,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Marine,China,"Capital costs
+($2017 per kW)",6600,4400,3300
+Marine,Europe,"Capital costs
+($2017 per kW)",6950,4650,3450
+Marine,India,"Capital costs
+($2017 per kW)",6500,4350,3250
+Marine,Japan,"Capital costs
+($2017 per kW)",7000,4650,3450
+Marine,Middle East,"Capital costs
+($2017 per kW)",6650,4500,3400
+Marine,Russia,"Capital costs
+($2017 per kW)",6650,4500,3400
+Marine,United States,"Capital costs
+($2017 per kW)",6850,4400,3300
+Nuclear,Africa,"Capital costs
+($2017 per kW)",4000,4000,4000
+Nuclear,Brazil,"Capital costs
+($2017 per kW)",4000,4000,4000
+Nuclear,China,"Capital costs
+($2017 per kW)",2320,2750,2500
+Nuclear,Europe,"Capital costs
+($2017 per kW)",6600,5100,4500
+Nuclear,India,"Capital costs
+($2017 per kW)",2800,2800,2800
+Nuclear,Japan,"Capital costs
+($2017 per kW)",4200,4000,4000
+Nuclear,Middle East,"Capital costs
+($2017 per kW)",3500,3500,3500
+Nuclear,Russia,"Capital costs
+($2017 per kW)",3800,3800,3800
+Nuclear,United States,"Capital costs
+($2017 per kW)",5000,4800,4500
+Oxyfuel + CCS,Africa,"Capital costs
+($2017 per kW)",4800,4600,4200
+Oxyfuel + CCS,Brazil,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Oxyfuel + CCS,China,"Capital costs
+($2017 per kW)",3500,3250,2900
+Oxyfuel + CCS,Europe,"Capital costs
+($2017 per kW)",5700,5450,4950
+Oxyfuel + CCS,India,"Capital costs
+($2017 per kW)",4100,3900,3550
+Oxyfuel + CCS,Japan,"Capital costs
+($2017 per kW)",6100,5850,5400
+Oxyfuel + CCS,Middle East,"Capital costs
+($2017 per kW)",n.a.,n.a.,n.a.
+Oxyfuel + CCS,Russia,"Capital costs
+($2017 per kW)",5300,5100,4700
+Oxyfuel + CCS,United States,"Capital costs
+($2017 per kW)",5800,5550,5100
+Solar photovoltaics - Buildings,Africa,"Capital costs
+($2017 per kW)",2580,1580,1360
+Solar photovoltaics - Buildings,Brazil,"Capital costs
+($2017 per kW)",2740,1540,1340
+Solar photovoltaics - Buildings,China,"Capital costs
+($2017 per kW)",1360,880,780
+Solar photovoltaics - Buildings,Europe,"Capital costs
+($2017 per kW)",1660,1120,1000
+Solar photovoltaics - Buildings,India,"Capital costs
+($2017 per kW)",1220,760,680
+Solar photovoltaics - Buildings,Japan,"Capital costs
+($2017 per kW)",2520,1740,1560
+Solar photovoltaics - Buildings,Middle East,"Capital costs
+($2017 per kW)",3360,1860,1580
+Solar photovoltaics - Buildings,Russia,"Capital costs
+($2017 per kW)",2880,1660,1440
+Solar photovoltaics - Buildings,United States,"Capital costs
+($2017 per kW)",3600,2240,1980
+Solar photovoltaics - Large scale,Africa,"Capital costs
+($2017 per kW)",2180,1320,1140
+Solar photovoltaics - Large scale,Brazil,"Capital costs
+($2017 per kW)",2100,1220,1060
+Solar photovoltaics - Large scale,China,"Capital costs
+($2017 per kW)",1120,720,640
+Solar photovoltaics - Large scale,Europe,"Capital costs
+($2017 per kW)",1300,860,760
+Solar photovoltaics - Large scale,India,"Capital costs
+($2017 per kW)",1120,700,620
+Solar photovoltaics - Large scale,Japan,"Capital costs
+($2017 per kW)",1900,1280,1140
+Solar photovoltaics - Large scale,Middle East,"Capital costs
+($2017 per kW)",2640,1520,1280
+Solar photovoltaics - Large scale,Russia,"Capital costs
+($2017 per kW)",2200,1300,1120
+Solar photovoltaics - Large scale,United States,"Capital costs
+($2017 per kW)",1560,960,860
+Steam Coal - SUBCRITICAL,Africa,"Capital costs
+($2017 per kW)",1300,1300,1300
+Steam Coal - SUBCRITICAL,Brazil,"Capital costs
+($2017 per kW)",1300,1300,1300
+Steam Coal - SUBCRITICAL,China,"Capital costs
+($2017 per kW)",600,600,600
+Steam Coal - SUBCRITICAL,Europe,"Capital costs
+($2017 per kW)",1700,1700,1700
+Steam Coal - SUBCRITICAL,India,"Capital costs
+($2017 per kW)",1000,1000,1000
+Steam Coal - SUBCRITICAL,Japan,"Capital costs
+($2017 per kW)",2100,2100,2100
+Steam Coal - SUBCRITICAL,Middle East,"Capital costs
+($2017 per kW)",1300,1300,1300
+Steam Coal - SUBCRITICAL,Russia,"Capital costs
+($2017 per kW)",1700,1700,1700
+Steam Coal - SUBCRITICAL,United States,"Capital costs
+($2017 per kW)",1800,1800,1800
+Steam Coal - SUPERCRITICAL,Africa,"Capital costs
+($2017 per kW)",1600,1600,1600
+Steam Coal - SUPERCRITICAL,Brazil,"Capital costs
+($2017 per kW)",1600,1600,1600
+Steam Coal - SUPERCRITICAL,China,"Capital costs
+($2017 per kW)",700,700,700
+Steam Coal - SUPERCRITICAL,Europe,"Capital costs
+($2017 per kW)",2000,2000,2000
+Steam Coal - SUPERCRITICAL,India,"Capital costs
+($2017 per kW)",1200,1200,1200
+Steam Coal - SUPERCRITICAL,Japan,"Capital costs
+($2017 per kW)",2400,2400,2400
+Steam Coal - SUPERCRITICAL,Middle East,"Capital costs
+($2017 per kW)",1600,1600,1600
+Steam Coal - SUPERCRITICAL,Russia,"Capital costs
+($2017 per kW)",2000,2000,2000
+Steam Coal - SUPERCRITICAL,United States,"Capital costs
+($2017 per kW)",2100,2100,2100
+Steam Coal - ULTRASUPERCRITICAL,Africa,"Capital costs
+($2017 per kW)",1900,1900,1900
+Steam Coal - ULTRASUPERCRITICAL,Brazil,"Capital costs
+($2017 per kW)",1800,1800,1800
+Steam Coal - ULTRASUPERCRITICAL,China,"Capital costs
+($2017 per kW)",800,800,800
+Steam Coal - ULTRASUPERCRITICAL,Europe,"Capital costs
+($2017 per kW)",2200,2200,2200
+Steam Coal - ULTRASUPERCRITICAL,India,"Capital costs
+($2017 per kW)",1400,1400,1400
+Steam Coal - ULTRASUPERCRITICAL,Japan,"Capital costs
+($2017 per kW)",2600,2600,2600
+Steam Coal - ULTRASUPERCRITICAL,Middle East,"Capital costs
+($2017 per kW)",1600,1600,1600
+Steam Coal - ULTRASUPERCRITICAL,Russia,"Capital costs
+($2017 per kW)",2200,2200,2200
+Steam Coal - ULTRASUPERCRITICAL,United States,"Capital costs
+($2017 per kW)",2300,2300,2300
+Wind onshore,Africa,"Capital costs
+($2017 per kW)",1860,1740,1720
+Wind onshore,Brazil,"Capital costs
+($2017 per kW)",1820,1720,1700
+Wind onshore,China,"Capital costs
+($2017 per kW)",1200,1180,1180
+Wind onshore,Europe,"Capital costs
+($2017 per kW)",1820,1740,1700
+Wind onshore,India,"Capital costs
+($2017 per kW)",1080,1040,1040
+Wind onshore,Japan,"Capital costs
+($2017 per kW)",3260,3040,2960
+Wind onshore,Middle East,"Capital costs
+($2017 per kW)",1860,1740,1680
+Wind onshore,Russia,"Capital costs
+($2017 per kW)",2140,1980,1940
+Wind onshore,United States,"Capital costs
+($2017 per kW)",1620,1520,1480
