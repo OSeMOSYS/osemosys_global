@@ -18,7 +18,7 @@ Examples:
 ^^^ _ _ _ : First 3 (01-03) characters represent **fuel**
 
 _ _ _ ^^^ : Last 3 (04-06) characters represent source; 
-**country code** for **domestic** or '**INT**' for '**international**'). 
+**country code** for **domestic** or '**INT**' for '**international**'. 
 
 ### Other fuels, including renewables: 8 characters 
 ^^^ _ _ _ _ _ : First 3 (01-03) characters represent **fuel**
