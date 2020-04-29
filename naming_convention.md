@@ -52,7 +52,7 @@ The following renewable fuels are included:
 **GEO** represents geothermal
 **HYD** represents hydro
 **SOL** represents solar
-**WAS** represents **TBC**
+**WAS** represents waste recovery
 **WAV** represents wave
 **WIN** represents wind
 
