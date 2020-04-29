@@ -11,6 +11,9 @@ Some countries are further divided into regional **nodes**. Total of **265 nodes
 These nodes are represented by adding 2 characters to the country codes
 
 Examples: 
+**USACA** for California, USA, **CANBC** for British Columbia, Canada
+
+Note:
 '**XX**' is added as a placeholder for countries which are not sub-divided into nodes. 
 
 ## Commodity codes: 6/8 characters
@@ -27,12 +30,34 @@ _ _ _ ^^^ _ _ _ : Next 3 characters (04-06) represent **Country code**
 
 _ _ _ ^^^ _ _ _ : Last 2 characters (07-08) represent **node**
 
-
 ### Electricity:
 
 ## Technology codes
 ### Powerplants: 13 characters
-### Fuel production 
+
+### Fuel codes
+
+The following fuels are included:
+
+**COA** represents coal
+**COG** represents coal gas
+**GAS** represents natural gas
+**PET** represents petroleum
+**URN** represents uranium
+**OIL** represents oil and oil products
+**OTH** represents other fuels
+
+The following renewable fuels are included:
+**BIO** represents biomass
+**GEO** represents geothermal
+**HYD** represents hydro
+**SOL** represents solar
+**WAS** represents **TBC**
+**WAV** represents wave
+**WIN** represents wind
+
+
 ### Import and export
+
 ### Transmission and distribution
 ### Demand
