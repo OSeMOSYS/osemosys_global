@@ -33,12 +33,33 @@ _ _ _ ^^^ _ _ _ : Last 2 characters (07-08) represent **node**
 ### Electricity:
 
 ## Technology codes
+
+The following technologies exist in the model:
+**COA** represents coal
+**COG** represents coal gas
+**CCG** represents natural gas combined cycle
+**OCG** represents natural gas open cycle
+**PET** represents petroleum
+**URN** represents uranium
+**OIL** represents oil and oil products
+**OTH** represents other fuels
+
+The following renewable fuels are included:
+**BIO** represents biomass
+**GEO** represents geothermal
+**HYD** represents hydro
+**SPV** represents solar
+**CSP** represents solar
+**WAS** represents waste recovery
+**WAV** represents wave
+**WON** represents onshore wind
+**WOF** represents offshore wind
+
 ### Powerplants: 13 characters
 
 ### Fuel codes
 
 The following fuels are included:
-
 **COA** represents coal
 **COG** represents coal gas
 **GAS** represents natural gas
@@ -55,7 +76,6 @@ The following renewable fuels are included:
 **WAS** represents waste recovery
 **WAV** represents wave
 **WIN** represents wind
-
 
 ### Import and export
 
