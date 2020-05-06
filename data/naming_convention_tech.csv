@@ -2,8 +2,8 @@ tech,code
 Bio,BIO
 Coa,COA
 Cog,COG
-Gas-CCGT,GAS
-Gas-OCGT,GAS
+Gas-CCGT,CCG
+Gas-OCGT,OCG
 Geo,GEO
 Hyd,HYD
 Nuc,URN
@@ -13,4 +13,5 @@ Pet,PET
 Sol,SOL
 Was,WAS
 Wav,WAV
-Win,WIN
+Win,WON
+,WOF
