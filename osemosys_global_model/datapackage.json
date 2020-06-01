@@ -3272,14 +3272,14 @@
             "title": "Creative Commons Attribution 4.0"
         }
     ],
-    "title": "The OSeMOSYS Simplicity Example Model",
-    "name": "osemosys_model_simplicity",
-    "id": "https://doi.org/10.5281/zenodo.3479822",
+    "title": "The OSeMOSYS-Global Model",
+    "name": "osemosys_global_model",
+    "id": "",
     "contributors": [
         {
-            "title": "Will Usher",
-            "email": "wusher@kth.se",
-            "path": "https://www.kth.se/profile/wusher/",
+            "title": "Abhishek Shivakumar",
+            "email": "abhishek.shivakumar@desa.kth.se",
+            "path": "",
             "role": "author"
         }
     ]
