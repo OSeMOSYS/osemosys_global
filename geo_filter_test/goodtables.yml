@@ -1,0 +1,9 @@
+settings:
+  skip_checks:
+    - pattern-constraint
+    - missing-header
+  error_limit: 10
+  row_limit: 5000
+
+datapackages:
+  - 'datapackage.json'
