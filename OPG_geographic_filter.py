@@ -26,10 +26,10 @@ if not os.path.exists(os.path.join(os.getcwd(),
                            'data'))
 
 for each_csv in (os.listdir(os.path.join(os.getcwd(),
-                                         r'osemosys_global_model\data'))):
+                                         r'osemosys_global_model/data'))):
     
     df = pd.read_csv(os.path.join(os.getcwd(),
-                                  r'osemosys_global_model\data',
+                                  r'osemosys_global_model/data',
                                   each_csv)
                     )
     if not df.empty:
