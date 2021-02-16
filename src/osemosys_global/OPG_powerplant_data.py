@@ -5,52 +5,54 @@
 
 # Import modules
 import pandas as pd
+import os
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 import itertools
 import urllib
 
+PLEXOS_URL = "https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true"
+INPUT_PATH = "data"
+PLEXOS_DATA = os.path.join(INPUT_PATH, "PLEXOS_World_2015_Gold_V1.1.xlsx")
+OUTPUT_PATH = os.path.join("osemosys_global_model", "data")
 
 # Import data files and user input
 
-#Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
+# Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
-    Open = open(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
-    
+    Open = open(PLEXOS_DATA)
+
 except IOError:
-    urllib.request.urlretrieve("https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true" , 
-                               r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
-    
-    Open = open(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
+    urllib.request.urlretrieve(PLEXOS_URL, PLEXOS_DATA)
+    Open = open(PLEXOS_DATA)
 
 finally:
     Open.close()
-    
-df = pd.read_excel(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx" , sheet_name = "Properties")
 
-df_dict = pd.read_excel(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx" , sheet_name = "Memberships")
+df = pd.read_excel(PLEXOS_DATA, sheet_name = "Properties")
+
+df_dict = pd.read_excel(PLEXOS_DATA, sheet_name = "Memberships")
 
 df_dict = df_dict[df_dict["parent_class"] == "Generator"].rename(
     {"parent_object": "powerplant"}, axis=1
 )
-df_weo_data = pd.read_csv(r"data/weo_2018_powerplant_costs.csv")
-df_op_life = pd.read_csv(r"data/operational_life.csv")
-df_tech_code = pd.read_csv(r"data/naming_convention_tech.csv")
-df_trn_efficiencies = pd.read_excel(r"data/Costs Line expansion.xlsx")
-df_weo_regions = pd.read_csv(r"data/weo_region_mapping.csv")
+df_weo_data = pd.read_csv(os.path.join(INPUT_PATH, "weo_2018_powerplant_costs.csv"))
+df_op_life = pd.read_csv(os.path.join(INPUT_PATH, "operational_life.csv"))
+df_tech_code = pd.read_csv(os.path.join(INPUT_PATH, "naming_convention_tech.csv"))
+df_trn_efficiencies = pd.read_excel(os.path.join(INPUT_PATH, "Costs Line expansion.xlsx"))
+df_weo_regions = pd.read_csv(os.path.join(INPUT_PATH, "weo_region_mapping.csv"))
 
 model_start_year = 2015
 model_end_year = 2050
-years = list(range(model_start_year, 
+years = list(range(model_start_year,
                    model_end_year + 1))
 
 region_name = 'GLOBAL'
 emissions = []
 
-# Create 'output' directory if it doesn't exist 
-import os
-if not os.path.exists('osemosys_global_model/data'):
-    os.makedirs('osemosys_global_model/data')
+# Create 'output' directory if it doesn't exist
+if not os.path.exists(OUTPUT_PATH):
+    os.makedirs(OUTPUT_PATH)
 
 # Create main generator table
 gen_cols_1 = ["child_class", "child_object", "property", "value"]
@@ -121,12 +123,12 @@ df_gen_2.loc[
 ] = "Gas-OCGT"
 
 
-# Create table with aggregated capacity  
+# Create table with aggregated capacity
 df_gen_agg_node = df_gen_2[df_gen_2['start_year']<=model_start_year]
-df_gen_agg_node = df_gen_agg_node.groupby(['node', 'technology'], 
+df_gen_agg_node = df_gen_agg_node.groupby(['node', 'technology'],
                                           as_index=False)['total_capacity'].sum()
-df_gen_agg_node = df_gen_agg_node.pivot(index='node', 
-                                        columns='technology', 
+df_gen_agg_node = df_gen_agg_node.pivot(index='node',
+                                        columns='technology',
                                         values='total_capacity').fillna(0).reset_index()
 
 df_gen_agg_node.drop('Sto', axis=1, inplace=True) # Drop 'Sto' technology. Only for USA.
@@ -162,22 +164,22 @@ op_life_dict = dict(zip(list(df_op_life['tech']),
                         list(df_op_life['years'])))
 
 df_gen_2['operational_life'] = df_gen_2['technology'].map(op_life_dict)
-df_gen_2['retirement_year_data'] = (df_gen_2['operational_life'] 
+df_gen_2['retirement_year_data'] = (df_gen_2['operational_life']
                                     + df_gen_2['start_year'])
-df_gen_2['retirement_diff'] = ((df_gen_2['years_of_operation'] 
+df_gen_2['retirement_diff'] = ((df_gen_2['years_of_operation']
                                - df_gen_2['operational_life'])/
                                df_gen_2['operational_life'])
 
-''' Set retirement year based on years of operation. 
-If (years of operation - operational life) is more than 50% of 
+''' Set retirement year based on years of operation.
+If (years of operation - operational life) is more than 50% of
 operational life, set retirement year
 '''
-df_gen_2.loc[df_gen_2['retirement_diff'] >= 0.5, 
+df_gen_2.loc[df_gen_2['retirement_diff'] >= 0.5,
              'retirement_year_model'] = 2025
 df_gen_2.loc[(df_gen_2['retirement_diff'] < 0.5) &
-             (df_gen_2['retirement_diff'] > 0), 
+             (df_gen_2['retirement_diff'] > 0),
              'retirement_year_model'] = 2030
-df_gen_2.loc[df_gen_2['retirement_diff'] <= 0, 
+df_gen_2.loc[df_gen_2['retirement_diff'] <= 0,
              'retirement_year_model'] = df_gen_2['retirement_year_data']
 
 #df_gen_2.to_csv(r'output/test_output_3.csv')
@@ -188,13 +190,13 @@ tech_code_dict = dict(zip(list(df_tech_code['tech']),
                           list(df_tech_code['code'])))
 df_gen_2['tech_code'] = df_gen_2['technology'].map(tech_code_dict)
 
-df_gen_2.loc[df_gen_2['node'].str.len() <= 6, 
+df_gen_2.loc[df_gen_2['node'].str.len() <= 6,
              'node_code'] = (df_gen_2['node'].
                              str.split('-').
                              str[1:].
                              str.join("") +
                              'XX')
-df_gen_2.loc[df_gen_2['node'].str.len() > 6, 
+df_gen_2.loc[df_gen_2['node'].str.len() > 6,
              'node_code'] = (df_gen_2['node'].
                              str.split('-').
                              str[1:].
@@ -217,8 +219,8 @@ df_eff_node = df_eff.groupby(['tech_code',
 df_eff_node['node_average_iar'] = ((1 / df_eff_node['efficiency']).
                                    round(2))
 
-df_eff_node.drop('efficiency', 
-                 axis = 1, 
+df_eff_node.drop('efficiency',
+                 axis = 1,
                  inplace = True)
 
 # Average efficiency by technology
@@ -228,8 +230,8 @@ df_eff_tech = df_eff.groupby('tech_code',
 df_eff_tech['tech_average_iar'] = ((1 / df_eff_tech['efficiency']).
                                    round(2))
 
-df_eff_tech.drop('efficiency', 
-                 axis = 1, 
+df_eff_tech.drop('efficiency',
+                 axis = 1,
                  inplace = True)
 
 
@@ -267,35 +269,36 @@ df_res_cap = df_res_cap.groupby(
 
 # Add column with naming convention
 df_res_cap['node_code'] = df_res_cap['node_code']
-df_res_cap['tech'] = ('PWR' + 
-                      df_res_cap['tech_code'] + 
+df_res_cap['tech'] = ('PWR' +
+                      df_res_cap['tech_code'] +
                       df_res_cap['node_code'] + '01'
                      )
 # Convert total capacity from MW to GW
 df_res_cap['value'] = df_res_cap['value'].div(1000)
 
 
-df_res_cap_plot = df_res_cap[['node_code', 
-                             'tech_code', 
-                             'model_year', 
+df_res_cap_plot = df_res_cap[['node_code',
+                             'tech_code',
+                             'model_year',
                              'value']]
 
-# Rename 'model_year' to 'year' and 'total_capacity' to 'value' 
+# Rename 'model_year' to 'year' and 'total_capacity' to 'value'
 df_res_cap.rename({'tech':'TECHNOLOGY',
                    'model_year':'YEAR',
-                   'value':'VALUE'}, 
+                   'value':'VALUE'},
                   inplace = True,
                   axis=1)
 # Drop 'tech_code' and 'node_code'
-df_res_cap.drop(['tech_code', 'node_code'], inplace = True, axis=1)        
+df_res_cap.drop(['tech_code', 'node_code'], inplace = True, axis=1)
 
 # Add 'REGION' column and fill 'GLOBAL' throughout
 df_res_cap['REGION'] = region_name
 
 #Reorder columns
 df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
-                     
-df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index = None)
+
+filepath = os.path.join(OUTPUT_PATH, 'ResidualCapacity.csv')
+df_res_cap.to_csv(filepath, index = None)
 
 '''
 # ### Interactive visualisation of residual capacity by node
@@ -319,19 +322,19 @@ color_dict = dict([(n,c) for n,c in zip(color_codes.tech, color_codes.colour)])
 
 def f(node):
     df_plot = df_res_cap_plot.loc[df_res_cap_plot['node_code']==node]
-    df_plot.drop('node_code', 
-                     axis = 1, 
+    df_plot.drop('node_code',
+                     axis = 1,
                      inplace = True)
     df_plot = df_plot.pivot_table(index='model_year',
                                   columns='tech_code',
                                   values='value',
                                   aggfunc='sum').reset_index()
-    
-    
+
+
     #plt.figure(figsize=(10, 10), dpi= 80, facecolor='w', edgecolor='k')
     #ax = sns.barplot(df_plot)
     return df_plot.iplot(x = 'model_year',
-                         kind = 'bar', 
+                         kind = 'bar',
                          barmode = 'stack',
                          xTitle = 'Year',
                          yTitle = 'Gigawatts',
@@ -349,7 +352,7 @@ interact(f,
 
 # ### Add input and output activity ratios
 
-# Create master table for activity ratios 
+# Create master table for activity ratios
 node_list = list(df_gen_2['node_code'].unique())
 
 # Add extra nodes which are not present in 2015 but will be by 2050
@@ -371,8 +374,8 @@ df_ratios = pd.DataFrame(list(itertools.product(node_list,
                          columns = ['node_code', 'tech_code', 'MODE_OF_OPERATION', 'YEAR']
                         )
 
-df_ratios['TECHNOLOGY'] = ('PWR' + 
-                           df_ratios['tech_code'] + 
+df_ratios['TECHNOLOGY'] = ('PWR' +
+                           df_ratios['tech_code'] +
                            df_ratios['node_code'] + '01'
                           )
 
@@ -397,11 +400,11 @@ thermal_fuel_list_iar = ['COA',
 renewables_list = ['BIO',
                    'GEO',
                    'HYD',
-                   'SPV', 
+                   'SPV',
                    'CSP',
                    'WAS',
                    'WAV',
-                   'WON', 
+                   'WON',
                    'WOF']
 
 
@@ -412,8 +415,8 @@ df_oar['FUEL'] = 0
 df_oar['FUEL'][mask] = 1
 df_oar = df_oar.loc[~((df_oar['MODE_OF_OPERATION'] > 1) &
                       (df_oar['FUEL'] == 0))]
-df_oar['FUEL'] = ('ELC' + 
-                  df_oar['TECHNOLOGY'].str[6:11] + 
+df_oar['FUEL'] = ('ELC' +
+                  df_oar['TECHNOLOGY'].str[6:11] +
                   '01'
                  )
 df_oar['VALUE'] = 1
@@ -422,11 +425,11 @@ df_oar['VALUE'] = 1
 df_oar['REGION'] = region_name
 
 # Select columns for final output table
-df_oar_final = df_oar[['REGION', 
+df_oar_final = df_oar[['REGION',
                  'TECHNOLOGY',
-                 'FUEL',                  
+                 'FUEL',
                  'MODE_OF_OPERATION',
-                 'YEAR', 
+                 'YEAR',
                  'VALUE',]]
 
 # Don't write yet - we'll write the IAR and OAR at the end...
@@ -459,7 +462,7 @@ df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 2) &
            (df_iar['TECHNOLOGY'].str[3:6].isin(['CCG'])),
            'FUEL'] = 'GASINT'
 
-# For non-GAS thermal fuels, domestic fuel input by country in mode 1 and 
+# For non-GAS thermal fuels, domestic fuel input by country in mode 1 and
 # 'international' fuel input in mode 2
 df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 1) &
            (df_iar['TECHNOLOGY'].str[3:6].isin(thermal_fuel_list_iar)),
@@ -479,13 +482,13 @@ df_iar = df_iar.loc[df_iar['FUEL'] != 0]
 
 # Join efficiency columns: one with node and technology average, and the
 # other with technology average
-df_iar = df_iar.join(df_eff_node.set_index(['tech_code', 'node_code']), 
+df_iar = df_iar.join(df_eff_node.set_index(['tech_code', 'node_code']),
                      on=['tech_code', 'node_code'])
 
-df_iar = df_iar.join(df_eff_tech.set_index('tech_code'), 
+df_iar = df_iar.join(df_eff_tech.set_index('tech_code'),
                      on='tech_code')
 
-# When available, choose node and technology average. Else, 
+# When available, choose node and technology average. Else,
 # choose technology average
 df_iar['VALUE'] = df_iar['node_average_iar']
 df_iar.loc[df_iar['VALUE'].isna(),
@@ -495,11 +498,11 @@ df_iar.loc[df_iar['VALUE'].isna(),
 df_iar['REGION'] = region_name
 
 # Select columns for final output table
-df_iar_final = df_iar[['REGION', 
+df_iar_final = df_iar[['REGION',
                        'TECHNOLOGY',
-                       'FUEL',  
+                       'FUEL',
                        'MODE_OF_OPERATION',
-                       'YEAR', 
+                       'YEAR',
                        'VALUE',]]
 
 # Don't write this yet - we'll write both IAR and OAR at the end...
@@ -738,11 +741,11 @@ df_oar_final = df_oar_final.append(df_int_trn_oar) # Add in international transm
 
 # Select columns for final output table
 df_oar_final = df_oar_final.dropna()
-df_oar_final = df_oar_final[['REGION', 
+df_oar_final = df_oar_final[['REGION',
                              'TECHNOLOGY',
-                             'FUEL',  
+                             'FUEL',
                              'MODE_OF_OPERATION',
-                             'YEAR', 
+                             'YEAR',
                              'VALUE',]]
 
 df_iar_final = df_iar_final.append(df_iar_int) # Add in path through international markets
@@ -751,75 +754,76 @@ df_iar_final = df_iar_final.append(df_int_trn_iar) # Add in international transm
 
 # Select columns for final output table
 df_iar_final = df_iar_final.dropna()
-df_iar_final = df_iar_final[['REGION', 
+df_iar_final = df_iar_final[['REGION',
                              'TECHNOLOGY',
-                             'FUEL',  
+                             'FUEL',
                              'MODE_OF_OPERATION',
-                             'YEAR', 
+                             'YEAR',
                              'VALUE',]]
-
-df_oar_final.to_csv(r"osemosys_global_model/data/OutputActivityRatio.csv", index = None)
-df_iar_final.to_csv(r"osemosys_global_model/data/InputActivityRatio.csv", index = None)
+filepath = os.path.join(OUTPUT_PATH, "OutputActivityRatio.csv")
+df_oar_final.to_csv(filepath, index = None)
+filepath = os.path.join(OUTPUT_PATH, "InputActivityRatio.csv")
+df_iar_final.to_csv(filepath, index = None)
 
 
 # ### Costs: Capital, fixed, and variable
 
-df_costs = pd.melt(df_weo_data, 
-                   id_vars = ['technology', 'weo_region', 'parameter'], 
-                   value_vars = ['2017', '2030', '2040'], 
+df_costs = pd.melt(df_weo_data,
+                   id_vars = ['technology', 'weo_region', 'parameter'],
+                   value_vars = ['2017', '2030', '2040'],
                    var_name = ['YEAR'])
 df_costs['parameter'] = df_costs['parameter'].str.split('\r\n').str[0]
 df_costs['value'] = df_costs['value'].replace({'n.a.':0})
-df_costs['value'] = df_costs['value'].astype(float) 
-df_costs = df_costs.pivot_table(index = ['technology', 'parameter', 'YEAR'], 
-                                columns = 'weo_region', 
+df_costs['value'] = df_costs['value'].astype(float)
+df_costs = df_costs.pivot_table(index = ['technology', 'parameter', 'YEAR'],
+                                columns = 'weo_region',
                                 values = 'value').reset_index()
-df_costs['AS_average'] = (df_costs['China'] + 
-                            df_costs['India'] + 
-                            df_costs['Japan'] + 
+df_costs['AS_average'] = (df_costs['China'] +
+                            df_costs['India'] +
+                            df_costs['Japan'] +
                             df_costs['Middle East']).div(4)
 df_costs['NA_average'] = (df_costs['United States'])
 df_costs['SA_average'] = (df_costs['Brazil'])
 df_costs['Global_average'] = (df_costs['Africa'] +
-                              df_costs['Brazil'] + 
+                              df_costs['Brazil'] +
                               df_costs['Europe'] +
-                              df_costs['China'] + 
-                              df_costs['India'] + 
-                              df_costs['Japan'] + 
+                              df_costs['China'] +
+                              df_costs['India'] +
+                              df_costs['Japan'] +
                               df_costs['Middle East'] +
                               df_costs['Russia'] +
                               df_costs['United States']).div(9)
-df_costs = pd.melt(df_costs, 
-                   id_vars = ['technology', 'parameter', 'YEAR'], 
-                   value_vars = [x 
-                                 for x 
-                                 in df_costs.columns 
+df_costs = pd.melt(df_costs,
+                   id_vars = ['technology', 'parameter', 'YEAR'],
+                   value_vars = [x
+                                 for x
+                                 in df_costs.columns
                                  if x not in ['technology', 'parameter', 'YEAR']
                                 ]
                   )
 df_costs['YEAR'] = df_costs['YEAR'].astype(int)
 costs_dict = {'Biomass - waste incineration - CHP':'WAS',
-              'Biomass Power plant':'BIO', 
-              'CCGT':'CCG', 
-              'CCGT - CHP':'COG', 
+              'Biomass Power plant':'BIO',
+              'CCGT':'CCG',
+              'CCGT - CHP':'COG',
               'Concentrating solar power':'CSP',
               'Gas turbine':'OCG',
-              'Geothermal':'GEO', 
+              'Geothermal':'GEO',
               'Hydropower - large-scale':'HYD',
               'Marine':'WAV',
-              'Nuclear':'URN', 
-              'Solar photovoltaics - Large scale':'SPV', 
+              'Nuclear':'URN',
+              'Solar photovoltaics - Large scale':'SPV',
               'Steam Coal - SUBCRITICAL':'COA',
-              'Steam Coal - SUPERCRITICAL':'COA', 
+              'Steam Coal - SUPERCRITICAL':'COA',
               'Steam Coal - ULTRASUPERCRITICAL':'COA',
               'Wind onshore':'WON'} # Missing OIL, OTH, PET, WOF
 
 df_costs = df_costs.loc[df_costs['technology'].isin(costs_dict.keys())]
 df_costs['technology_code'] = df_costs['technology'].replace(costs_dict)
 
-weo_regions_dict = dict([(k, v) 
-                         for k, v 
-                         in zip(df_weo_regions['technology_code'], 
+weo_regions_dict = dict([(k, v)
+                         for k, v
+                         in zip(df_weo_regions['technology_code'],
                                 df_weo_regions['weo_region']
                                )
                         ]
@@ -829,8 +833,8 @@ weo_regions_dict = dict([(k, v)
 
 for each_cost in ['Capital', 'O&M']:
     df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
-    df_costs_temp.drop(['technology', 'parameter'], 
-                       axis = 1, 
+    df_costs_temp.drop(['technology', 'parameter'],
+                       axis = 1,
                        inplace = True)
     df_costs_final = df_oar_final[['REGION',
                                    'TECHNOLOGY',
@@ -841,7 +845,7 @@ for each_cost in ['Capital', 'O&M']:
     df_costs_final = (df_costs_final
                       .loc[(df_costs_final['TECHNOLOGY']
                             .str.startswith('PWR')
-                           ) & 
+                           ) &
                            (~df_costs_final['TECHNOLOGY']
                             .str.contains('TRN')
                            )
@@ -851,31 +855,31 @@ for each_cost in ['Capital', 'O&M']:
     df_costs_final['weo_region'] = df_costs_final['TECHNOLOGY'].str[6:9]
     df_costs_final['weo_region'] = (df_costs_final['weo_region']
                                          .replace(weo_regions_dict))
-    
-    df_costs_final = pd.merge(df_costs_final, 
-                              df_costs_temp, 
-                              on = ['technology_code', 'weo_region', 'YEAR'], 
+
+    df_costs_final = pd.merge(df_costs_final,
+                              df_costs_temp,
+                              on = ['technology_code', 'weo_region', 'YEAR'],
                               how = 'left'
                              )
-    df_costs_final.drop(['technology_code', 'weo_region'], 
-                        axis = 1, 
+    df_costs_final.drop(['technology_code', 'weo_region'],
+                        axis = 1,
                         inplace = True)
     df_costs_final = df_costs_final.fillna(-9)
-    df_costs_final = pd.pivot_table(df_costs_final, 
-                                    index = ['REGION', 'YEAR'], 
-                                    columns = 'TECHNOLOGY', 
+    df_costs_final = pd.pivot_table(df_costs_final,
+                                    index = ['REGION', 'YEAR'],
+                                    columns = 'TECHNOLOGY',
                                     values = 'value').reset_index()
     df_costs_final = df_costs_final.replace([-9],[np.nan])
-    #df_costs_final.set_index(['REGION', 'YEAR'], 
+    #df_costs_final.set_index(['REGION', 'YEAR'],
     #                         inplace = True)
-    
-    
-    df_costs_final = df_costs_final.interpolate(method = 'linear', 
+
+
+    df_costs_final = df_costs_final.interpolate(method = 'linear',
                                                 limit_direction='forward').round(2)
-    df_costs_final = df_costs_final.interpolate(method = 'linear', 
+    df_costs_final = df_costs_final.interpolate(method = 'linear',
                                                 limit_direction='backward').round(2)
-    df_costs_final = pd.melt(df_costs_final, 
-                             id_vars = ['REGION', 'YEAR'], 
+    df_costs_final = pd.melt(df_costs_final,
+                             id_vars = ['REGION', 'YEAR'],
                              value_vars = [x for x in df_costs_final.columns
                                            if x not in ['REGION', 'YEAR']
                                           ],
@@ -884,12 +888,12 @@ for each_cost in ['Capital', 'O&M']:
                             )
     df_costs_final = df_costs_final[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
     df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
-    
+
     if each_cost in ['Capital']:
-        df_costs_final.to_csv(r'osemosys_global_model/data/CapitalCost.csv',
+        df_costs_final.to_csv(os.path.join(OUTPUT_PATH, 'CapitalCost.csv'),
                               index = None)
     if each_cost in ['O&M']:
-        df_costs_final.to_csv(r'osemosys_global_model/data/FixedCost.csv',
+        df_costs_final.to_csv(os.path.join(OUTPUT_PATH, 'FixedCost.csv'),
                               index = None)
 
 
@@ -900,35 +904,33 @@ def create_sets(x):
     set_elements = list(set(set_elements))
     set_elements.sort()
     set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
-    return set_elements_df.to_csv(os.path.join(r'osemosys_global_model/data/',
-                                               str(x) + '.csv'
-                                              ),
+    return set_elements_df.to_csv(os.path.join(OUTPUT_PATH, str(x) + '.csv'),
                                   index = None
                                  )
 
 create_sets('TECHNOLOGY')
-create_sets('FUEL')                             
+create_sets('FUEL')
 
 
 # ## Create set for YEAR, REGION, MODE_OF_OPERATION
 
 years_df = pd.DataFrame(years, columns = ['VALUE'])
-years_df.to_csv(r'osemosys_global_model/data/YEAR.csv',
+years_df.to_csv(os.path.join(OUTPUT_PATH, 'YEAR.csv'),
                 index = None)
 
 mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE'])
-mode_list_df.to_csv(r'osemosys_global_model/data/MODE_OF_OPERATION.csv',
+mode_list_df.to_csv(os.path.join(OUTPUT_PATH, 'MODE_OF_OPERATION.csv'),
                     index = None)
 
 regions_df = pd.DataFrame(columns = ['VALUE'])
 regions_df.loc[0] = region_name
-regions_df.to_csv(r'osemosys_global_model/data/REGION.csv',
+regions_df.to_csv(os.path.join(OUTPUT_PATH, 'REGION.csv'),
                 index = None)
 
 
-# ## Create set for EMISSION 
+# ## Create set for EMISSION
 
 emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
-emissions_df.to_csv(r'osemosys_global_model/data/EMISSION.csv',
-                index = None)
+emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
+                    index=None)
 
