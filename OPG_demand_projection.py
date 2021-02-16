@@ -22,8 +22,21 @@ from sklearn.linear_model import LinearRegression
 # In[2]:
 
 
-#Imports model memberships
-Import_memberships = pd.read_csv(r'data/OPG_memberships_19-03-2020.csv')
+#Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
+
+try:
+    Open = open(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
+    
+except IOError:
+    urllib.request.urlretrieve("https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true" , 
+                               r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
+    
+    Open = open(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
+
+finally:
+    Open.close()
+
+Import_memberships = pd.read_excel(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx" , sheet_name = "Memberships")
 
 #Imports SSP GDPppp and Population projections (https://tntcat.iiasa.ac.at/SspDb/dsd?Action=htmlpage&page=30)
 Import_iamc_db_GDPppp_Countries = pd.read_excel(r'data/iamc_db_GDPppp_Countries.xlsx')
@@ -89,26 +102,27 @@ Spatial_Mapping_Node.head(1)
 # ### Retrieves PLEXOS-World 2015 hourly demand data incl. T&D losses for all nodes as baseline value for the demand forecasting
 # Used to be able to disaggregate regional electricity demand to the nodal level as well as calculate relative peak demand per node.
 
-# In[5]:
+# In[6]:
 
 
-#Checks whether the All Demand UTC 2015.csv datafile needs to be retrieved from the PLEXOS-World Harvard Dataverse or whether
-#the file already exists in the local folder.
+#Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
-    Open = open(r'data/All Demand UTC 2015.csv')
-    Import_Hourly_Demand_2015 = pd.read_csv(r'data/All Demand UTC 2015.csv')
+    Open = open(r'data/All_Demand_UTC_2015.csv')
+    
+    Import_Hourly_Demand_2015 = pd.read_csv(r'data/All_Demand_UTC_2015.csv' , encoding='latin-1')
     
 except IOError:
     urllib.request.urlretrieve ('https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true', 
-                            r'data/All Demand UTC 2015.csv')
-    Import_Hourly_Demand_2015 = pd.read_csv(r'data/All Demand UTC 2015.csv')
+                                r'data/All_Demand_UTC_2015.csv')
+    
+    Import_Hourly_Demand_2015 = pd.read_csv(r'data/All_Demand_UTC_2015.csv' , encoding='latin-1')
     
 Import_Hourly_Demand_2015.head(2)
 
 
 # ### Determines relative 2015 share of demand per sub-country node
 
-# In[6]:
+# In[10]:
 
 
 #Sums the hourly demand as retrieved from the PLEXOS-World dataset to year total (in MWh) and drops all hourly values.
@@ -156,7 +170,7 @@ Node_Demand_2015.iloc[49:50]
 
 # ### Creates historic relationships based on World Bank Data
 
-# In[7]:
+# In[11]:
 
 
 #Extracts historical GDPppp per capita (constant 2017 international $) from the World Bank API
@@ -194,7 +208,7 @@ Country_Urb_WB.tail(1)
 
 # ### Applies linear regression
 
-# In[8]:
+# In[12]:
 
 
 #Merges the relevant dataframes
@@ -276,7 +290,7 @@ for x in Country_Regression_WB.index.unique():
 Country_Regression_WB_Grouped.head(2)
 
 
-# In[9]:
+# In[13]:
 
 
 for a in Country_Regression_WB_Grouped.index.unique():
@@ -316,7 +330,7 @@ for a in Country_Regression_WB_Grouped.index.unique():
 
 # ### Creates dataframe with SSP specific population projections
 
-# In[10]:
+# In[14]:
 
 
 #Filters relevant data based on earlier given entries (SSP Pathway and source for POP)
@@ -357,7 +371,7 @@ Country_POP_SSP.tail(1)
 
 # ### Creates dataframe with SSP specific GDP|PPP projections
 
-# In[11]:
+# In[15]:
 
 
 #Filters relevant data based on earlier given entries (SSP Pathway and source for GDPppp)
@@ -397,7 +411,7 @@ Country_GDPppp_SSP.head(1)
 
 # ### Creates dataframe with SSP specific urban population projections
 
-# In[12]:
+# In[16]:
 
 
 #Filters relevant data based on earlier given entries (SSP Pathway and source for URB)
@@ -437,7 +451,7 @@ Country_URB_SSP.head(1)
 
 # ### Projects electricity demand by making use of historic relationships and SSP specific Population, GDP|PPP and optionally urbanization projections
 
-# In[13]:
+# In[17]:
 
 
 #Creates base dataframe for demand projections with the required coefficients
@@ -497,7 +511,7 @@ else:
 Country_Demand_projected_SSP.head(1)
 
 
-# In[14]:
+# In[18]:
 
 
 for a in Spatial_Mapping_Country['child_object'].unique():
@@ -540,7 +554,7 @@ for a in Spatial_Mapping_Country['child_object'].unique():
 
 # ### Aggregates projected demand per person to full country-level
 
-# In[15]:
+# In[19]:
 
 
 #Multiplies the country-level projected demand pp (in kWh) with the total population (in millions) to get country-level 
@@ -556,7 +570,7 @@ Country_Demand_projected_SSP_Aggregated.head(1)
 # ### Adds transmission and distribution losses to country-level demand
 # Explicit modelling of domestic transmission and distribution is not incorporated in PLEXOS-World. Country-level T&D losses per 5-year interval are added to the projected electricity demand based on Sadovskaia et al., 2019; https://doi.org/10.1016/j.ijepes.2018.11.012. Study includes data for up till 2050. 5-year intervals after that are manually added (Maarten Brinkerink) and values kept equal compared to 2050.
 
-# In[16]:
+# In[20]:
 
 
 #Checks whether T&D is available for all included countries. An assertion error pops up in case data is missing. 
@@ -586,7 +600,7 @@ Country_Demand_projected_SSP_Incl_Losses_Raw.tail(1)
 # ### Constraints the forecasted final demand to 2015 baseline values as minimum
 # In case of linear regression, smaller countries with signficantly lower projected independent variables (GDP, Urbanization) compared to the regional average can lead to very low and often negative projected demand values (e.g. EU-KOS). Hence, a comparison is being made to the 2015 baseline demand values with the assumption that a decline in electricity demand is not realistic (note: as of now no decoupling of GDP growth and energy demand reduction has been assumed).
 
-# In[17]:
+# In[21]:
 
 
 Country_Demand_projected_SSP_Incl_Losses = pd.DataFrame()
@@ -609,7 +623,7 @@ Country_Demand_projected_SSP_Incl_Losses.tail(1)
 
 # ### Uses relative 2015 share in demand per sub-country node to downscale country-level scenario specific demand
 
-# In[18]:
+# In[22]:
 
 
 #Drops the non-required columns and merges the 2015 and projected demand dataframes
@@ -645,7 +659,7 @@ Node_Demand_SSP_projected_Incl_Losses[48:49]
 
 # ### Interpolates 5-yearly values to yearly values and determines final electricity demand per node per year
 
-# In[19]:
+# In[28]:
 
 
 #Adds missing years to demand dataframe
@@ -670,14 +684,14 @@ Node_Demand_SSP_projected_Incl_Losses = pd.merge(Node_Demand_SSP_projected_Incl_
                                                  right_index = True)
 
 #Saves the dataframe as csv.
-Node_Demand_SSP_projected_Incl_Losses.to_csv(r'osemosys_global_model\data\Final_Electricity_Demand_Nodal_Yearly.csv')
+Node_Demand_SSP_projected_Incl_Losses.to_csv(r'data\Final_Electricity_Demand_Nodal_Yearly.csv')
 
 Node_Demand_SSP_projected_Incl_Losses[48:49]
 
 
 # ### Determines hourly peak demand per node per year
 
-# In[20]:
+# In[29]:
 
 
 #Calculates 2015 hourly peak demand per node in MWh
@@ -716,7 +730,7 @@ for x in Years_List:
 Node_Peak_Demand_SSP_projected['Unit'] = 'MW'
 
 #Saves the dataframe as csv.
-Node_Peak_Demand_SSP_projected.to_csv(r'osemosys_global_model\data\Final_Electricity_Peak_Demand_Nodal_Yearly.csv')
+Node_Peak_Demand_SSP_projected.to_csv(r'data\Final_Electricity_Peak_Demand_Nodal_Yearly.csv')
         
 Node_Peak_Demand_SSP_projected.iloc[48:49]
 
