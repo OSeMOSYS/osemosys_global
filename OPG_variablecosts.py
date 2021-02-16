@@ -7,13 +7,10 @@
 
 # In[260]:
 
-
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 import itertools
-
-get_ipython().run_line_magic('reload_ext', 'blackcellmagic')
 
 
 # ### Import data files and user input
@@ -110,7 +107,7 @@ df_prices['MINGAS'] = df_prices['MINGAS'] / 1.055056
 df_prices['KFNGAS_US'] = df_prices['KFNGAS_US'] / 1.055056
 df_prices['KFNGAS_JP'] = df_prices['KFNGAS_JP'] / 1.055056
 
-print(df_prices)
+# print(df_prices)
 
 # Add in other fuels that are the same as those above:
 df_prices['MINCOG'] = df_prices['MINGAS']  # Cogen is powered by gas
@@ -178,4 +175,3 @@ df_varcosts_final = df_varcost[['REGION',
                        'VALUE']]
 
 df_varcosts_final.to_csv(r"osemosys_global_model/data/VariableCost.csv", mode='a', header=False, index = None)
-
