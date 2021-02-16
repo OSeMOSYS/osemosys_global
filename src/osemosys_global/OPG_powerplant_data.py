@@ -737,9 +737,6 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
     # #### Output IAR and OAR
 
-    # In[ ]:
-
-
     # Combine the pieces from above and output to csv:
 
     df_oar_final = df_oar_final.append(df_oar_upstream) # add upstream production technologies
@@ -778,68 +775,10 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     df_costs = capital_fixed_var_costs(df_weo_data)
 
     weo_regions_dict = create_weo_region_mapping(df_weo_regions)
-    for each_cost, filename in zip(['Capital', 'O&M'], ['CapitalCost.csv', 'FixedCost.csv']):
-        df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
-        df_costs_temp.drop(['technology', 'parameter'],
-                        axis = 1,
-                        inplace = True)
-        df_costs_final = df_oar_final[['REGION',
-                                    'TECHNOLOGY',
-                                    'YEAR'
-                                    ]]
-        df_costs_final['YEAR'] = df_costs_final['YEAR'].astype(int)
-        df_costs_final = df_costs_final.drop_duplicates()
-        df_costs_final = (df_costs_final
-                        .loc[(df_costs_final['TECHNOLOGY']
-                                .str.startswith('PWR')
-                            ) &
-                            (~df_costs_final['TECHNOLOGY']
-                                .str.contains('TRN')
-                            )
-                            ]
-                        )
-        df_costs_final['technology_code'] = df_costs_final['TECHNOLOGY'].str[3:6]
-        df_costs_final['weo_region'] = df_costs_final['TECHNOLOGY'].str[6:9]
-        df_costs_final['weo_region'] = (df_costs_final['weo_region']
-                                            .replace(weo_regions_dict))
-
-        df_costs_final = pd.merge(df_costs_final,
-                                df_costs_temp,
-                                on = ['technology_code', 'weo_region', 'YEAR'],
-                                how = 'left'
-                                )
-        df_costs_final.drop(['technology_code', 'weo_region'],
-                            axis = 1,
-                            inplace = True)
-        df_costs_final = df_costs_final.fillna(-9)
-        df_costs_final = pd.pivot_table(df_costs_final,
-                                        index = ['REGION', 'YEAR'],
-                                        columns = 'TECHNOLOGY',
-                                        values = 'value').reset_index()
-        df_costs_final = df_costs_final.replace([-9],[np.nan])
-        #df_costs_final.set_index(['REGION', 'YEAR'],
-        #                         inplace = True)
-
-
-        df_costs_final = df_costs_final.interpolate(method = 'linear',
-                                                    limit_direction='forward').round(2)
-        df_costs_final = df_costs_final.interpolate(method = 'linear',
-                                                    limit_direction='backward').round(2)
-        df_costs_final = pd.melt(df_costs_final,
-                                id_vars = ['REGION', 'YEAR'],
-                                value_vars = [x for x in df_costs_final.columns
-                                            if x not in ['REGION', 'YEAR']
-                                            ],
-                                var_name = 'TECHNOLOGY',
-                                value_name = 'VALUE'
-                                )
-        df_costs_final = df_costs_final[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
-        df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
-
-        df_costs_final.to_csv(os.path.join(OUTPUT_PATH, filename),
-                              index = None)
-
-
+    capex = final_costs("Capital", df_costs, df_oar_final, weo_regions_dict)
+    capex.to_csv(os.path.join(OUTPUT_PATH, 'CapitalCost.csv'), index=None)
+    fixed = final_costs("O&M", df_costs, df_oar_final, weo_regions_dict)
+    fixed.to_csv(os.path.join(OUTPUT_PATH, 'FixedCost.csv'), index=None)
 
     # ## Create sets for TECHNOLOGIES, FUELS
 
@@ -877,6 +816,65 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
     emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
                         index=None)
+
+def final_costs(each_cost, df_costs, df_oar_final, weo_regions_dict):
+    df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
+    df_costs_temp.drop(['technology', 'parameter'],
+                    axis = 1,
+                    inplace = True)
+    df_costs_final = df_oar_final[['REGION',
+                                'TECHNOLOGY',
+                                'YEAR'
+                                ]]
+    df_costs_final['YEAR'] = df_costs_final['YEAR'].astype(int)
+    df_costs_final = df_costs_final.drop_duplicates()
+    df_costs_final = (df_costs_final
+                    .loc[(df_costs_final['TECHNOLOGY']
+                            .str.startswith('PWR')
+                        ) &
+                        (~df_costs_final['TECHNOLOGY']
+                            .str.contains('TRN')
+                        )
+                        ]
+                    )
+    df_costs_final['technology_code'] = df_costs_final['TECHNOLOGY'].str[3:6]
+    df_costs_final['weo_region'] = df_costs_final['TECHNOLOGY'].str[6:9]
+    df_costs_final['weo_region'] = (df_costs_final['weo_region']
+                                        .replace(weo_regions_dict))
+
+    df_costs_final = pd.merge(df_costs_final,
+                            df_costs_temp,
+                            on = ['technology_code', 'weo_region', 'YEAR'],
+                            how = 'left'
+                            )
+    df_costs_final.drop(['technology_code', 'weo_region'],
+                        axis = 1,
+                        inplace = True)
+    df_costs_final = df_costs_final.fillna(-9)
+    df_costs_final = pd.pivot_table(df_costs_final,
+                                    index = ['REGION', 'YEAR'],
+                                    columns = 'TECHNOLOGY',
+                                    values = 'value').reset_index()
+    df_costs_final = df_costs_final.replace([-9],[np.nan])
+    #df_costs_final.set_index(['REGION', 'YEAR'],
+    #                         inplace = True)
+
+
+    df_costs_final = df_costs_final.interpolate(method = 'linear',
+                                                limit_direction='forward').round(2)
+    df_costs_final = df_costs_final.interpolate(method = 'linear',
+                                                limit_direction='backward').round(2)
+    df_costs_final = pd.melt(df_costs_final,
+                            id_vars = ['REGION', 'YEAR'],
+                            value_vars = [x for x in df_costs_final.columns
+                                        if x not in ['REGION', 'YEAR']
+                                        ],
+                            var_name = 'TECHNOLOGY',
+                            value_name = 'VALUE'
+                            )
+    df_costs_final = df_costs_final[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
+    df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
+    return df_costs_final
 
 def create_weo_region_mapping(df_weo_regions):
     weo_regions_dict = dict([(k, v)
