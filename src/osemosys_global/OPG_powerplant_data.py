@@ -775,20 +775,10 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
 
     # ### Costs: Capital, fixed, and variable
-
     df_costs = capital_fixed_var_costs(df_weo_data)
 
-    weo_regions_dict = dict([(k, v)
-                            for k, v
-                            in zip(df_weo_regions['technology_code'],
-                                    df_weo_regions['weo_region']
-                                )
-                            ]
-                        )
-
-
-
-    for each_cost in ['Capital', 'O&M']:
+    weo_regions_dict = create_weo_region_mapping(df_weo_regions)
+    for each_cost, filename in zip(['Capital', 'O&M'], ['CapitalCost.csv', 'FixedCost.csv']):
         df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
         df_costs_temp.drop(['technology', 'parameter'],
                         axis = 1,
@@ -846,12 +836,9 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
         df_costs_final = df_costs_final[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
         df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
 
-        if each_cost in ['Capital']:
-            df_costs_final.to_csv(os.path.join(OUTPUT_PATH, 'CapitalCost.csv'),
-                                index = None)
-        if each_cost in ['O&M']:
-            df_costs_final.to_csv(os.path.join(OUTPUT_PATH, 'FixedCost.csv'),
-                                index = None)
+        df_costs_final.to_csv(os.path.join(OUTPUT_PATH, filename),
+                              index = None)
+
 
 
     # ## Create sets for TECHNOLOGIES, FUELS
@@ -890,6 +877,16 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
     emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
                         index=None)
+
+def create_weo_region_mapping(df_weo_regions):
+    weo_regions_dict = dict([(k, v)
+                            for k, v
+                            in zip(df_weo_regions['technology_code'],
+                                    df_weo_regions['weo_region']
+                                )
+                            ]
+                        )
+    return weo_regions_dict
 
 def capital_fixed_var_costs(df_weo_data):
     # ### Costs: Capital, fixed, and variable
