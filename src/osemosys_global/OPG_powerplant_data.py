@@ -215,32 +215,7 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
 
     # ### Calculate average InputActivityRatio by node+technology and only by technology
-    df_eff = df_gen_2[['node_code',
-                    'efficiency',
-                    'tech_code']]
-
-    # Average efficiency by node and technology
-    df_eff_node = df_eff.groupby(['tech_code',
-                                'node_code'],
-                                as_index = False).agg('mean')
-
-    df_eff_node['node_average_iar'] = ((1 / df_eff_node['efficiency']).
-                                    round(2))
-
-    df_eff_node.drop('efficiency',
-                    axis = 1,
-                    inplace = True)
-
-    # Average efficiency by technology
-    df_eff_tech = df_eff.groupby('tech_code',
-                                as_index = False).agg('mean')
-
-    df_eff_tech['tech_average_iar'] = ((1 / df_eff_tech['efficiency']).
-                                    round(2))
-
-    df_eff_tech.drop('efficiency',
-                    axis = 1,
-                    inplace = True)
+    df_eff_node, df_eff_tech = average_inputactivityratio_by_node_tech(df_gen_2)
 
 
     # ### Calculate residual capacity
@@ -816,6 +791,36 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
     emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
                         index=None)
+
+def average_inputactivityratio_by_node_tech(df_gen_2):
+    # ### Calculate average InputActivityRatio by node+technology and only by technology
+    df_eff = df_gen_2[['node_code',
+                    'efficiency',
+                    'tech_code']]
+
+    # Average efficiency by node and technology
+    df_eff_node = df_eff.groupby(['tech_code',
+                                'node_code'],
+                                as_index = False).agg('mean')
+
+    df_eff_node['node_average_iar'] = ((1 / df_eff_node['efficiency']).
+                                    round(2))
+
+    df_eff_node.drop('efficiency',
+                    axis = 1,
+                    inplace = True)
+
+    # Average efficiency by technology
+    df_eff_tech = df_eff.groupby('tech_code',
+                                as_index = False).agg('mean')
+
+    df_eff_tech['tech_average_iar'] = ((1 / df_eff_tech['efficiency']).
+                                    round(2))
+
+    df_eff_tech.drop('efficiency',
+                    axis = 1,
+                    inplace = True)
+    return df_eff_node, df_eff_tech
 
 def final_costs(each_cost, df_costs, df_oar_final, weo_regions_dict):
     df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
