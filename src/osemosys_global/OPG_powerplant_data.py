@@ -219,119 +219,10 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
 
     # ### Calculate residual capacity
-    res_cap_cols = [
-        "node_code",
-        "tech_code",
-        "total_capacity",
-        "start_year",
-        "retirement_year_model",
-    ]
-
-    df_res_cap = df_gen_2[res_cap_cols]
-
-    for each_year in range(model_start_year, model_end_year+1):
-        df_res_cap[str(each_year)] = 0
-
-    df_res_cap = pd.melt(
-        df_res_cap,
-        id_vars=res_cap_cols,
-        value_vars=[x for x in df_res_cap.columns if x not in res_cap_cols],
-        var_name="model_year",
-        value_name="value",
-    )
-    df_res_cap["model_year"] = df_res_cap["model_year"].astype(int)
-    df_res_cap.loc[
-        (df_res_cap["model_year"] >= df_res_cap["start_year"])
-        & (df_res_cap["model_year"] <= df_res_cap["retirement_year_model"]),
-        "value",
-    ] = df_res_cap["total_capacity"]
-
-    df_res_cap = df_res_cap.groupby(
-        ["node_code", "tech_code", "model_year"], as_index=False
-    )["value"].sum()
-
-    # Add column with naming convention
-    df_res_cap['node_code'] = df_res_cap['node_code']
-    df_res_cap['tech'] = ('PWR' +
-                        df_res_cap['tech_code'] +
-                        df_res_cap['node_code'] + '01'
-                        )
-    # Convert total capacity from MW to GW
-    df_res_cap['value'] = df_res_cap['value'].div(1000)
-
-
-    df_res_cap_plot = df_res_cap[['node_code',
-                                'tech_code',
-                                'model_year',
-                                'value']]
-
-    # Rename 'model_year' to 'year' and 'total_capacity' to 'value'
-    df_res_cap.rename({'tech':'TECHNOLOGY',
-                    'model_year':'YEAR',
-                    'value':'VALUE'},
-                    inplace = True,
-                    axis=1)
-    # Drop 'tech_code' and 'node_code'
-    df_res_cap.drop(['tech_code', 'node_code'], inplace = True, axis=1)
-
-    # Add 'REGION' column and fill 'GLOBAL' throughout
-    df_res_cap['REGION'] = region_name
-
-    #Reorder columns
-    df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
-
+    df_res_cap = residual_capacity(df_gen_2, model_start_year, model_end_year, region_name)
     filepath = os.path.join(OUTPUT_PATH, 'ResidualCapacity.csv')
     df_res_cap.to_csv(filepath, index = None)
 
-    '''
-    # ### Interactive visualisation of residual capacity by node
-
-    import matplotlib.pyplot as plt
-    import seaborn as sns; sns.set(color_codes = True)
-    from ipywidgets import interact, interactive, fixed, interact_manual, Layout
-    import ipywidgets as widgets
-    #importing plotly and cufflinks in offline mode
-    import plotly as py
-    #import plotly.graph_objs as go
-    import cufflinks
-    import plotly.offline as pyo
-    from plotly.offline import plot, iplot, init_notebook_mode
-    pyo.init_notebook_mode()
-    cufflinks.go_offline()
-    cufflinks.set_config_file(world_readable=True, theme='white')
-
-    color_codes = pd.read_csv(r'data\color_codes.csv', encoding='latin-1')
-    color_dict = dict([(n,c) for n,c in zip(color_codes.tech, color_codes.colour)])
-
-    def f(node):
-        df_plot = df_res_cap_plot.loc[df_res_cap_plot['node_code']==node]
-        df_plot.drop('node_code',
-                        axis = 1,
-                        inplace = True)
-        df_plot = df_plot.pivot_table(index='model_year',
-                                    columns='tech_code',
-                                    values='value',
-                                    aggfunc='sum').reset_index()
-
-
-        #plt.figure(figsize=(10, 10), dpi= 80, facecolor='w', edgecolor='k')
-        #ax = sns.barplot(df_plot)
-        return df_plot.iplot(x = 'model_year',
-                            kind = 'bar',
-                            barmode = 'stack',
-                            xTitle = 'Year',
-                            yTitle = 'Gigawatts',
-                            color=[color_dict[x] for x in df_plot.columns if x != 'model_year'],
-                            title = 'Residual Capacity',
-                            showlegend = True)
-
-    interact(f,
-            node=widgets.Dropdown(options = (df_res_cap_plot['node_code']
-                                            .unique()
-                                            )
-                                )
-            )
-    '''
 
     # ### Add input and output activity ratios
 
@@ -791,6 +682,70 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
     emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
                         index=None)
+
+def residual_capacity(df_gen_2, model_start_year, model_end_year, region_name):
+    # ### Calculate residual capacity
+    res_cap_cols = [
+        "node_code",
+        "tech_code",
+        "total_capacity",
+        "start_year",
+        "retirement_year_model",
+    ]
+
+    df_res_cap = df_gen_2[res_cap_cols]
+
+    for each_year in range(model_start_year, model_end_year+1):
+        df_res_cap[str(each_year)] = 0
+
+    df_res_cap = pd.melt(
+        df_res_cap,
+        id_vars=res_cap_cols,
+        value_vars=[x for x in df_res_cap.columns if x not in res_cap_cols],
+        var_name="model_year",
+        value_name="value",
+    )
+    df_res_cap["model_year"] = df_res_cap["model_year"].astype(int)
+    df_res_cap.loc[
+        (df_res_cap["model_year"] >= df_res_cap["start_year"])
+        & (df_res_cap["model_year"] <= df_res_cap["retirement_year_model"]),
+        "value",
+    ] = df_res_cap["total_capacity"]
+
+    df_res_cap = df_res_cap.groupby(
+        ["node_code", "tech_code", "model_year"], as_index=False
+    )["value"].sum()
+
+    # Add column with naming convention
+    df_res_cap['node_code'] = df_res_cap['node_code']
+    df_res_cap['tech'] = ('PWR' +
+                        df_res_cap['tech_code'] +
+                        df_res_cap['node_code'] + '01'
+                        )
+    # Convert total capacity from MW to GW
+    df_res_cap['value'] = df_res_cap['value'].div(1000)
+
+
+    df_res_cap_plot = df_res_cap[['node_code',
+                                'tech_code',
+                                'model_year',
+                                'value']]
+
+    # Rename 'model_year' to 'year' and 'total_capacity' to 'value'
+    df_res_cap.rename({'tech':'TECHNOLOGY',
+                    'model_year':'YEAR',
+                    'value':'VALUE'},
+                    inplace = True,
+                    axis=1)
+    # Drop 'tech_code' and 'node_code'
+    df_res_cap.drop(['tech_code', 'node_code'], inplace = True, axis=1)
+
+    # Add 'REGION' column and fill 'GLOBAL' throughout
+    df_res_cap['REGION'] = region_name
+
+    #Reorder columns
+    df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
+    return df_res_cap
 
 def average_inputactivityratio_by_node_tech(df_gen_2):
     # ### Calculate average InputActivityRatio by node+technology and only by technology
