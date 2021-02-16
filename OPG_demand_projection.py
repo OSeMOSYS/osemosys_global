@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import urllib
 import xlsxwriter
+import os
 from sklearn.linear_model import LinearRegression
 
 
@@ -323,7 +324,10 @@ for a in Country_Regression_WB_Grouped.index.unique():
     ax1.set_xlabel('GDPppp per capita (constant 2017 international $)')
     ax1.set_ylabel('Electricity demand per capita (kWh)')
     plt.rcParams["figure.figsize"] = [8,4]
-    plt.show()
+    
+    # Rather than plt.show() we need to make this save...
+    # plt.show()
+    plt.savefig(os.path.join('osemosys_global_model','figs',f'{a} R2 = {w2}'+'.jpg'))
 
 
 # ## Country-level Projections
@@ -549,7 +553,10 @@ for a in Spatial_Mapping_Country['child_object'].unique():
     ax1.set_xlabel('GDPppp per capita (constant 2017 international $)')
     ax1.set_ylabel('Electricity demand per capita (kWh)')
     plt.rcParams["figure.figsize"] = [8,4]
-    plt.show()
+    
+    # Rather than plt.show() we need to make this save...
+    # plt.show()
+    plt.savefig(os.path.join('osemosys_global_model','figs',f'Demand projection {a}'+'.jpg'))
 
 
 # ### Aggregates projected demand per person to full country-level
