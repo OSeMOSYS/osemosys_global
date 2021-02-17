@@ -79,68 +79,15 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     df_weo_regions = pd.read_csv(os.path.join(INPUT_PATH, "weo_region_mapping.csv"))
 
     years = list(range(model_start_year,
-                    model_end_year + 1))
+                       model_end_year + 1))
     emissions = []
 
     # Create 'output' directory if it doesn't exist
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
-    df_gen_2 = create_main_generator_table(df)
-    df_dict_2 = compile_powerplants_nodes_fuels(df_dict)
+    df_gen_2 = create_generators(df, df_dict, model_start_year, df_op_life, df_tech_code)
 
-    ## Merge original generator dataframe with nodes and fuels
-    df_gen_2 = pd.merge(df_gen_2, df_dict_2, how="outer", on="powerplant")
-    df_gen_2.rename(
-        {"child_object_x": "fuel", "child_object_y": "node"}, axis=1, inplace=True
-    )
-
-    ## Extract start year from Commission Date
-    df_gen_2["Commission Date"] = pd.to_datetime(df_gen_2["Commission Date"])
-    df_gen_2["start_year"] = df_gen_2["Commission Date"].dt.year
-    df_gen_2.drop("Commission Date", axis=1, inplace=True)
-
-    ## Calculate efficiency from heat rate. Units of heat rate in MJ/kWh
-    df_gen_2["efficiency"] = 3.6 / df_gen_2["Heat Rate"].astype(float)
-    df_gen_2.drop("Heat Rate", axis=1, inplace=True)
-
-    ## Calcluate years of operation from start year until 2015
-    df_gen_2["years_of_operation"] = model_start_year - df_gen_2["start_year"]
-
-    ## Fix blank spaces in 'fuels' columns. Appearing for 'Oil' powerplants in certain countries
-    df_gen_2.loc[df_gen_2["fuel"].isna(), "fuel"] = (
-        df_gen_2["node"].str.split("-").str[:2].str.join("-")
-        + " "
-        + df_gen_2["powerplant"].str.split("_", expand=True)[1]
-    )
-
-    ## Create column for technology
-    df_gen_2["technology"] = df_gen_2["powerplant"].str.split("_").str[1]
-    df_gen_2["technology"] = df_gen_2["technology"].str.title()
-
-    ## Divide Gas into CCGT and OCGT based on max capacity
-    df_gen_2.loc[
-        (df_gen_2["technology"] == "Gas") & (df_gen_2["Max Capacity"].astype(float) > 130),
-        "technology",
-    ] = "Gas-CCGT"
-    df_gen_2.loc[
-        (df_gen_2["technology"] == "Gas") & (df_gen_2["Max Capacity"].astype(float) <= 130),
-        "technology",
-    ] = "Gas-OCGT"
-
-    # Create table with aggregated capacity
-    df_gen_agg_node = df_gen_2[df_gen_2['start_year']<=model_start_year]
-    df_gen_agg_node = df_gen_agg_node.groupby(['node', 'technology'],
-                                            as_index=False)['total_capacity'].sum()
-    df_gen_agg_node = df_gen_agg_node.pivot(index='node',
-                                            columns='technology',
-                                            values='total_capacity').fillna(0).reset_index()
-
-    df_gen_agg_node.drop('Sto', axis=1, inplace=True) # Drop 'Sto' technology. Only for USA.
-
-    # Add extra nodes which exist in 2050 but are not in the 2015 data
-    node_list = list(df_gen_agg_node['node'].unique())
-    nodes_extra_df = pd.DataFrame(columns=['node'])
     nodes_extra_list = ['AF-SOM',
                         'AF-TCD',
                         'AS-TLS',
@@ -151,77 +98,34 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
                         'SA-BRA-J2',
                         'SA-BRA-J3',
                         'SA-SUR',]
-    nodes_extra_df['node'] = nodes_extra_list
 
-    df_gen_agg_node = df_gen_agg_node.append(nodes_extra_df,
-                                            ignore_index=True,
-                                            sort='False').fillna(0).sort_values(by='node').set_index('node').round(2)
-    #df_gen_agg_node.to_csv(r'output/test_output_2.csv')
+    # TODO The following aggregated capacity code doesn't seem to be used
 
+    # # Create table with aggregated capacity
+    # df_gen_agg_node = df_gen_2[df_gen_2['start_year'] <= model_start_year]
+    # df_gen_agg_node = df_gen_agg_node.groupby(['node', 'technology'],
+    #                                           as_index=False)['total_capacity'].sum()
+    # df_gen_agg_node = df_gen_agg_node.pivot(index='node',
+    #                                         columns='technology',
+    #                                         values='total_capacity').fillna(0).reset_index()
 
-    # Add region and country code columns
-    df_gen_2['region_code'] = df_gen_2['node'].str[:2]
-    df_gen_2['country_code'] = df_gen_2['node'].str[3:]
+    # df_gen_agg_node.drop('Sto', axis=1, inplace=True)  # Drop 'Sto' technology. Only for USA.
 
+    # Add extra nodes which exist in 2050 but are not in the 2015 data
+    # node_list = list(df_gen_agg_node['node'].unique())
+    # nodes_extra_df = pd.DataFrame(columns=['node'])
+    # nodes_extra_df['node'] = nodes_extra_list
 
-    # ### Add operational life column
-    op_life_dict = dict(zip(list(df_op_life['tech']),
-                            list(df_op_life['years'])))
-
-    df_gen_2['operational_life'] = df_gen_2['technology'].map(op_life_dict)
-    df_gen_2['retirement_year_data'] = (df_gen_2['operational_life']
-                                        + df_gen_2['start_year'])
-    df_gen_2['retirement_diff'] = ((df_gen_2['years_of_operation']
-                                - df_gen_2['operational_life'])/
-                                df_gen_2['operational_life'])
-
-    ''' Set retirement year based on years of operation.
-    If (years of operation - operational life) is more than 50% of
-    operational life, set retirement year
-    '''
-    df_gen_2.loc[df_gen_2['retirement_diff'] >= 0.5,
-                'retirement_year_model'] = 2025
-    df_gen_2.loc[(df_gen_2['retirement_diff'] < 0.5) &
-                (df_gen_2['retirement_diff'] > 0),
-                'retirement_year_model'] = 2030
-    df_gen_2.loc[df_gen_2['retirement_diff'] <= 0,
-                'retirement_year_model'] = df_gen_2['retirement_year_data']
-
-    #df_gen_2.to_csv(r'output/test_output_3.csv')
-
-
-    # ### Add naming convention
-    tech_code_dict = dict(zip(list(df_tech_code['tech']),
-                            list(df_tech_code['code'])))
-    df_gen_2['tech_code'] = df_gen_2['technology'].map(tech_code_dict)
-
-    df_gen_2.loc[df_gen_2['node'].str.len() <= 6,
-                'node_code'] = (df_gen_2['node'].
-                                str.split('-').
-                                str[1:].
-                                str.join("") +
-                                'XX')
-    df_gen_2.loc[df_gen_2['node'].str.len() > 6,
-                'node_code'] = (df_gen_2['node'].
-                                str.split('-').
-                                str[1:].
-                                str.join("")
-                                )
-
-    df_gen_2 = df_gen_2.loc[~df_gen_2['tech_code'].isna()]
-
-
-
-
-
-    # ### Calculate average InputActivityRatio by node+technology and only by technology
-    df_eff_node, df_eff_tech = average_inputactivityratio_by_node_tech(df_gen_2)
-
+    # df_gen_agg_node = df_gen_agg_node.append(nodes_extra_df,
+    #                                         ignore_index=True,
+    #                                         sort='False').fillna(0).sort_values(by='node').set_index('node').round(2)
+    # # df_gen_agg_node.to_csv(r'output/test_output_2.csv')
 
     # ### Calculate residual capacity
     df_res_cap = residual_capacity(df_gen_2, model_start_year, model_end_year, region_name)
+
     filepath = os.path.join(OUTPUT_PATH, 'ResidualCapacity.csv')
-    df_res_cap.to_csv(filepath, index = None)
+    df_res_cap.to_csv(filepath, index=None)
 
 
     # ### Add input and output activity ratios
@@ -353,6 +257,9 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
     # Remove mode 2 when not used
     df_iar = df_iar.loc[df_iar['FUEL'] != 0]
+
+    # ### Calculate average InputActivityRatio by node+technology and only by technology
+    df_eff_node, df_eff_tech = average_inputactivityratio_by_node_tech(df_gen_2)
 
     # Join efficiency columns: one with node and technology average, and the
     # other with technology average
@@ -682,6 +589,98 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
     emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
                         index=None)
+
+def create_generators(df, df_dict, model_start_year, df_op_life, df_tech_code):
+    df_gen_2 = create_main_generator_table(df)
+    df_dict_2 = compile_powerplants_nodes_fuels(df_dict)
+
+    ## Merge original generator dataframe with nodes and fuels
+    df_gen_2 = pd.merge(df_gen_2, df_dict_2, how="outer", on="powerplant")
+    df_gen_2.rename(
+        {"child_object_x": "fuel", "child_object_y": "node"}, axis=1, inplace=True
+    )
+
+    ## Extract start year from Commission Date
+    df_gen_2["Commission Date"] = pd.to_datetime(df_gen_2["Commission Date"])
+    df_gen_2["start_year"] = df_gen_2["Commission Date"].dt.year
+    df_gen_2.drop("Commission Date", axis=1, inplace=True)
+
+    ## Calculate efficiency from heat rate. Units of heat rate in MJ/kWh
+    df_gen_2["efficiency"] = 3.6 / df_gen_2["Heat Rate"].astype(float)
+    df_gen_2.drop("Heat Rate", axis=1, inplace=True)
+
+    ## Calcluate years of operation from start year until 2015
+    df_gen_2["years_of_operation"] = model_start_year - df_gen_2["start_year"]
+
+    ## Fix blank spaces in 'fuels' columns. Appearing for 'Oil' powerplants in certain countries
+    df_gen_2.loc[df_gen_2["fuel"].isna(), "fuel"] = (
+        df_gen_2["node"].str.split("-").str[:2].str.join("-")
+        + " "
+        + df_gen_2["powerplant"].str.split("_", expand=True)[1]
+    )
+
+    ## Create column for technology
+    df_gen_2["technology"] = df_gen_2["powerplant"].str.split("_").str[1]
+    df_gen_2["technology"] = df_gen_2["technology"].str.title()
+
+    ## Divide Gas into CCGT and OCGT based on max capacity
+    df_gen_2.loc[
+        (df_gen_2["technology"] == "Gas") & (df_gen_2["Max Capacity"].astype(float) > 130),
+        "technology",
+    ] = "Gas-CCGT"
+    df_gen_2.loc[
+        (df_gen_2["technology"] == "Gas") & (df_gen_2["Max Capacity"].astype(float) <= 130),
+        "technology",
+    ] = "Gas-OCGT"
+
+    # Add region and country code columns
+    df_gen_2['region_code'] = df_gen_2['node'].str[:2]
+    df_gen_2['country_code'] = df_gen_2['node'].str[3:]
+
+    # ### Add operational life column
+    op_life_dict = dict(zip(list(df_op_life['tech']),
+                            list(df_op_life['years'])))
+
+    df_gen_2['operational_life'] = df_gen_2['technology'].map(op_life_dict)
+    df_gen_2['retirement_year_data'] = (df_gen_2['operational_life']
+                                        + df_gen_2['start_year'])
+    df_gen_2['retirement_diff'] = ((df_gen_2['years_of_operation']
+                                - df_gen_2['operational_life'])/
+                                df_gen_2['operational_life'])
+
+    ''' Set retirement year based on years of operation.
+    If (years of operation - operational life) is more than 50% of
+    operational life, set retirement year
+    '''
+    df_gen_2.loc[df_gen_2['retirement_diff'] >= 0.5,
+                'retirement_year_model'] = 2025
+    df_gen_2.loc[(df_gen_2['retirement_diff'] < 0.5) &
+                (df_gen_2['retirement_diff'] > 0),
+                'retirement_year_model'] = 2030
+    df_gen_2.loc[df_gen_2['retirement_diff'] <= 0,
+                'retirement_year_model'] = df_gen_2['retirement_year_data']
+
+    # ### Add naming convention
+    tech_code_dict = dict(zip(list(df_tech_code['tech']),
+                            list(df_tech_code['code'])))
+    df_gen_2['tech_code'] = df_gen_2['technology'].map(tech_code_dict)
+
+    df_gen_2.loc[df_gen_2['node'].str.len() <= 6,
+                'node_code'] = (df_gen_2['node'].
+                                str.split('-').
+                                str[1:].
+                                str.join("") +
+                                'XX')
+    df_gen_2.loc[df_gen_2['node'].str.len() > 6,
+                'node_code'] = (df_gen_2['node'].
+                                str.split('-').
+                                str[1:].
+                                str.join("")
+                                )
+
+    df_gen_2 = df_gen_2.loc[~df_gen_2['tech_code'].isna()]
+
+    return df_gen_2
 
 def residual_capacity(df_gen_2, model_start_year, model_end_year, region_name):
     # ### Calculate residual capacity

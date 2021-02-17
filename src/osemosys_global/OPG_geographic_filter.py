@@ -8,6 +8,7 @@ import pandas as pd
 import os
 import sys
 
+
 def extract_country(geographic_scope, model_name):
     if not os.path.exists(os.path.join(os.getcwd(),
                             model_name,
@@ -48,6 +49,7 @@ def extract_country(geographic_scope, model_name):
                                'data',
                                each_csv),
                   index=None)
+
 
 if __name__ == '__main__':
 
