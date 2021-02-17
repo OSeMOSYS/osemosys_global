@@ -130,67 +130,390 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
                             )
 
     df_ratios['TECHNOLOGY'] = ('PWR' +
-                            df_ratios['tech_code'] +
-                            df_ratios['node_code'] + '01'
-                            )
+                               df_ratios['tech_code'] +
+                               df_ratios['node_code'] + '01'
+                               )
 
     thermal_fuel_list = ['COA',
-                        'COG',
-                        'OCG',
-                        'CCG',
-                        'PET',
-                        'URN',
-                        'OIL',
-                        'OTH'
-                        ]
+                         'COG',
+                         'OCG',
+                         'CCG',
+                         'PET',
+                         'URN',
+                         'OIL',
+                         'OTH'
+                         ]
 
     thermal_fuel_list_iar = ['COA',
-                            'COG',
-                            'PET',
-                            'URN',
-                            'OIL',
-                            'OTH'
-                            ]
+                             'COG',
+                             'PET',
+                             'URN',
+                             'OIL',
+                             'OTH'
+                             ]
 
     renewables_list = ['BIO',
-                    'GEO',
-                    'HYD',
-                    'SPV',
-                    'CSP',
-                    'WAS',
-                    'WAV',
-                    'WON',
-                    'WOF']
+                       'GEO',
+                       'HYD',
+                       'SPV',
+                       'CSP',
+                       'WAS',
+                       'WAV',
+                       'WON',
+                       'WOF']
 
 
     # #### OutputActivityRatio - Power Generation Technologies
-    df_oar = df_ratios.copy()
-    mask = df_oar['TECHNOLOGY'].apply(lambda x: x[3:6] in thermal_fuel_list)
-    df_oar['FUEL'] = 0
-    df_oar['FUEL'][mask] = 1
-    df_oar = df_oar.loc[~((df_oar['MODE_OF_OPERATION'] > 1) &
-                        (df_oar['FUEL'] == 0))]
-    df_oar['FUEL'] = ('ELC' +
-                    df_oar['TECHNOLOGY'].str[6:11] +
-                    '01'
-                    )
-    df_oar['VALUE'] = 1
+    df_oar, df_oar_final = output_activity_ratios(df_ratios, thermal_fuel_list, region_name)
 
-    # Add 'REGION' column and fill 'GLOBAL' throughout
-    df_oar['REGION'] = region_name
+    # #### InputActivityRatio - Power Generation Technologies
+    # Copy OAR table with all columns to IAR
+    df_iar_final = input_activity_ratio(df_oar, thermal_fuel_list_iar, renewables_list, df_gen_2, region_name)
+
+
+    # #### OutputActivityRatios - Upstream
+
+    df_oar_upstream = upstream_output_activity_ratios(df_iar_final, renewables_list)
+
+    # Now we have to create the MINXXXINT technologies.  They are all based on the MODE_OF_OPERATION == 2:
+    df_oar_int = international_output_activity_ratios(df_oar_upstream)
+
+
+    # #### Input Activity Ratios - Upstream
+
+    # All we need to do is take in the thermal fuels for the MINXXXINT technologies.  This already exists as df_oar_int with the XXINT fuel so we can simply copy that:
+    df_iar_int = international_input_activity_ratio(df_oar_int)
+
+
+    # #### Downstream Activity Ratios
+
+    # Build transmission system outputs
+
+    df_iar_trn = domestic_transmission_iar(df_oar_final)
+
+    # OAR for transmission technologies is IAR, but the fuel is 02 instead of 01:
+    df_oar_trn = domestic_transmission_oar(df_iar_trn)
+
+    # Build international transmission system from original input data, but for Line rather than Generator:
+    df_int_trn = create_international_transmission(df, region_name, model_start_year, model_end_year)
+
+    # Now create the input and output activity ratios
+    df_int_trn_iar = international_transmission_iar(df_int_trn)
+
+    df_trn_efficiencies = transmission_efficiency(df_trn_efficiencies)
+
+    df_int_trn_oar = international_transmission_oar(df_int_trn, df_trn_efficiencies)
+
+
+    # Combine the pieces from above and output to csv:
+    df_oar_final = pd.concat([df_oar_final, df_oar_upstream, df_oar_int, df_oar_trn, df_int_trn_oar])
+
+    # df_oar_final = df_oar_final.append(df_oar_upstream) # add upstream production technologies
+    # df_oar_final = df_oar_final.append(df_oar_int) # Add in path through international markets
+    # df_oar_final = df_oar_final.append(df_oar_trn) # Add in domestic transmission
+    # df_oar_final = df_oar_final.append(df_int_trn_oar) # Add in international transmission
 
     # Select columns for final output table
-    df_oar_final = df_oar[['REGION',
-                    'TECHNOLOGY',
-                    'FUEL',
-                    'MODE_OF_OPERATION',
-                    'YEAR',
-                    'VALUE',]]
+    df_oar_final = df_oar_final.dropna()
+    df_oar_final = df_oar_final[['REGION',
+                                'TECHNOLOGY',
+                                'FUEL',
+                                'MODE_OF_OPERATION',
+                                'YEAR',
+                                'VALUE',]]
 
-    # Don't write yet - we'll write the IAR and OAR at the end...
-    # df_oar_final.to_csv(r"output/OutputActivityRatio.csv", index = None)
+    df_iar_final = df_iar_final.append(df_iar_int) # Add in path through international markets
+    df_iar_final = df_iar_final.append(df_iar_trn) # Add in domestic transmission
+    df_iar_final = df_iar_final.append(df_int_trn_iar) # Add in international transmission
+
+    # Select columns for final output table
+    df_iar_final = df_iar_final.dropna()
+    df_iar_final = df_iar_final[['REGION',
+                                'TECHNOLOGY',
+                                'FUEL',
+                                'MODE_OF_OPERATION',
+                                'YEAR',
+                                'VALUE',]]
+    filepath = os.path.join(OUTPUT_PATH, "OutputActivityRatio.csv")
+    df_oar_final.to_csv(filepath, index = None)
+    filepath = os.path.join(OUTPUT_PATH, "InputActivityRatio.csv")
+    df_iar_final.to_csv(filepath, index = None)
 
 
+    # ### Costs: Capital, fixed, and variable
+    df_costs = capital_fixed_var_costs(df_weo_data)
+
+    weo_regions_dict = create_weo_region_mapping(df_weo_regions)
+    capex = final_costs("Capital", df_costs, df_oar_final, weo_regions_dict)
+    capex.to_csv(os.path.join(OUTPUT_PATH, 'CapitalCost.csv'), index=None)
+    fixed = final_costs("O&M", df_costs, df_oar_final, weo_regions_dict)
+    fixed.to_csv(os.path.join(OUTPUT_PATH, 'FixedCost.csv'), index=None)
+
+    # ## Create sets for TECHNOLOGIES, FUELS
+
+    def create_sets(x):
+        set_elements = list(df_iar_final[x].unique()) + list(df_oar_final[x].unique())
+        set_elements = list(set(set_elements))
+        set_elements.sort()
+        set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
+        return set_elements_df.to_csv(os.path.join(OUTPUT_PATH, str(x) + '.csv'),
+                                    index = None
+                                    )
+
+    create_sets('TECHNOLOGY')
+    create_sets('FUEL')
+
+
+    # ## Create set for YEAR, REGION, MODE_OF_OPERATION
+
+    years_df = pd.DataFrame(years, columns = ['VALUE'])
+    years_df.to_csv(os.path.join(OUTPUT_PATH, 'YEAR.csv'),
+                    index = None)
+
+    mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE'])
+    mode_list_df.to_csv(os.path.join(OUTPUT_PATH, 'MODE_OF_OPERATION.csv'),
+                        index = None)
+
+    regions_df = pd.DataFrame(columns = ['VALUE'])
+    regions_df.loc[0] = region_name
+    regions_df.to_csv(os.path.join(OUTPUT_PATH, 'REGION.csv'),
+                    index = None)
+
+
+    # ## Create set for EMISSION
+
+    emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
+    emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
+                        index=None)
+
+def international_transmission_oar(df_int_trn, df_trn_efficiencies):
+    df_int_trn_oar = df_int_trn.copy()
+    # OAR Mode 2 is output to first country:
+    df_int_trn_oar.loc[df_int_trn_oar["MODE_OF_OPERATION"] == 2, "FUEL"] = (
+        "ELC" + df_int_trn_oar["TECHNOLOGY"].str[3:8] + "01"
+    )
+    # OAR Mode 1 is out to the second country:
+    df_int_trn_oar.loc[df_int_trn_oar["MODE_OF_OPERATION"] == 1, "FUEL"] = (
+        "ELC" + df_int_trn_oar["TECHNOLOGY"].str[8:13] + "01"
+    )
+
+    # and add values into OAR matrix
+    df_int_trn_oar = df_int_trn_oar.drop(["VALUE"], axis=1)
+    df_int_trn_oar = pd.merge(
+        df_int_trn_oar, df_trn_efficiencies, how="outer", on="TECHNOLOGY"
+    )
+    return df_int_trn_oar
+
+def transmission_efficiency(df_trn_efficiencies):
+    # Drop unneeded columns
+    df_trn_efficiencies = df_trn_efficiencies.drop(
+        [
+            "Line",
+            "KM distance",
+            "HVAC/HVDC/Subsea",
+            "Build Cost ($2010 in $000)",
+            "Annual FO&M (3.5% of CAPEX) ($2010 in $000)",
+            "Unnamed: 8",
+            "Line Max Size (MW)",
+            "Unnamed: 10",
+            "Unnamed: 11",
+            "Unnamed: 12",
+            "Subsea lines",
+        ],
+        axis=1,
+    )
+
+    # Drop NaN values
+    df_trn_efficiencies = df_trn_efficiencies.dropna(subset=["From"])
+
+    # Create To and From Codes:
+    # If from column has length 6 then it's the last three chars plus XX
+    df_trn_efficiencies.loc[df_trn_efficiencies["From"].str.len() == 6, "From"] = (
+        df_trn_efficiencies["From"].str[3:6] + "XX"
+    )
+    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
+    df_trn_efficiencies.loc[df_trn_efficiencies["From"].str.len() == 9, "From"] = (
+        df_trn_efficiencies["From"].str[3:6] + df_trn_efficiencies["From"].str[7:9]
+    )
+    # If from column has length 6 then it's the last three chars plus XX
+    df_trn_efficiencies.loc[df_trn_efficiencies["To"].str.len() == 6, "To"] = (
+        df_trn_efficiencies["To"].str[3:6] + "XX"
+    )
+    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
+    df_trn_efficiencies.loc[df_trn_efficiencies["To"].str.len() == 9, "To"] = (
+        df_trn_efficiencies["To"].str[3:6] + df_trn_efficiencies["To"].str[7:9]
+    )
+
+    # Combine From and To columns.
+    # If the From is earlier in the alphabet the technology is in order, add tech with mode 1.
+    df_trn_efficiencies["TECHNOLOGY"] = ("TRN" + df_trn_efficiencies["From"] + df_trn_efficiencies["To"])
+
+    # Drop to and from columns
+    df_trn_efficiencies = df_trn_efficiencies.drop(["From", "To"], axis=1)
+
+    # Rename column 'VALUES'
+    df_trn_efficiencies = df_trn_efficiencies.rename(columns={"Losses": "VALUE"})
+
+    # And adjust OAR values to be output amounts vs. losses:
+    df_trn_efficiencies['VALUE'] = 1.0 - df_trn_efficiencies['VALUE']
+    return df_trn_efficiencies
+
+def international_transmission_iar(df_int_trn):
+    # Now create the input and output activity ratios
+    df_int_trn_iar = df_int_trn.copy()
+    # IAR Mode 1 is input from first country:
+    df_int_trn_iar.loc[df_int_trn_iar["MODE_OF_OPERATION"] == 1, "FUEL"] = (
+        "ELC" + df_int_trn_iar["TECHNOLOGY"].str[3:8] + "02"
+    )
+    # IAR Mode 2 is input from second country:
+    df_int_trn_iar.loc[df_int_trn_iar["MODE_OF_OPERATION"] == 2, "FUEL"] = (
+        "ELC" + df_int_trn_iar["TECHNOLOGY"].str[8:13] + "02"
+    )
+    return df_int_trn_iar
+
+def create_international_transmission(df, region_name, model_start_year, model_end_year):
+    # Build international transmission system from original input data, but for Line rather than Generator:
+    int_trn_cols = ["child_class", "child_object", "property", "value"]
+    df_int_trn = df[int_trn_cols]
+    df_int_trn = df_int_trn[df_int_trn["child_class"] == "Line"]
+
+    # For IAR and OAR we can drop the value:
+    df_int_trn = df_int_trn.drop(["child_class", "value"], axis=1)
+
+    # Create MofO column based on property:
+    df_int_trn["MODE_OF_OPERATION"] = 1
+    df_int_trn.loc[df_int_trn["property"] == "Min Flow", "MODE_OF_OPERATION"] = 2
+
+    # Use the child_object column to build the technology names:
+    df_int_trn["codes"] = df_int_trn["child_object"].str.split(pat="-")
+
+    # If there are only two locations, then the node is XX
+    df_int_trn.loc[df_int_trn["codes"].str.len() == 2, "TECHNOLOGY"] = (
+        "TRN" + df_int_trn["codes"].str[0] + "XX" + df_int_trn["codes"].str[1] + "XX"
+    )
+    # If there are four locations, the node is already included
+    df_int_trn.loc[df_int_trn["codes"].str.len() == 4, "TECHNOLOGY"] = (
+        "TRN"
+        + df_int_trn["codes"].str[0]
+        + df_int_trn["codes"].str[1]
+        + df_int_trn["codes"].str[2]
+        + df_int_trn["codes"].str[3]
+    )
+    # If there are three items, and the last item is two characters, then the second item is an XX:
+    df_int_trn.loc[
+        (df_int_trn["codes"].str.len() == 3) & (df_int_trn["codes"].str[2].str.len() == 2),
+        "TECHNOLOGY",
+    ] = (
+        "TRN"
+        + df_int_trn["codes"].str[0]
+        + "XX"
+        + df_int_trn["codes"].str[1]
+        + df_int_trn["codes"].str[2]
+    )
+    # If there are three items, and the last item is three characters, then the last item is an XX:
+    df_int_trn.loc[
+        (df_int_trn["codes"].str.len() == 3) & (df_int_trn["codes"].str[2].str.len() == 3),
+        "TECHNOLOGY",
+    ] = (
+        "TRN"
+        + df_int_trn["codes"].str[0]
+        + df_int_trn["codes"].str[1]
+        + df_int_trn["codes"].str[2]
+        + "XX"
+    )
+
+    # Set the value (of either IAR or OAR) to 1
+    df_int_trn["VALUE"] = 1
+    df_int_trn["REGION"] = region_name
+
+    df_int_trn = df_int_trn.drop(["property", "child_object", "codes"], axis=1)
+    df_int_trn["YEAR"] = model_start_year
+    # Add in the years:
+    df_temp = df_int_trn.copy()
+    for year in range(model_start_year + 1, model_end_year + 1):
+        df_temp["YEAR"] = year
+        df_int_trn = df_int_trn.append(df_temp)
+
+    df_int_trn = df_int_trn.reset_index(drop=True)
+    return df_int_trn
+
+def domestic_transmission_oar(df_iar_trn):
+    # OAR for transmission technologies is IAR, but the fuel is 02 instead of 01:
+    df_oar_trn = df_iar_trn.copy()
+    df_oar_trn["FUEL"] = df_oar_trn["FUEL"].str[0:8] + "02"
+    return df_oar_trn
+
+def domestic_transmission_iar(df_oar_final):
+    # Build transmission system outputs
+
+    df_iar_trn = df_oar_final.copy()
+
+    # Change the technology name to PWRTRNXXXXX
+    df_iar_trn["TECHNOLOGY"] = "PWRTRN" + df_iar_trn["FUEL"].str[3:8]
+    # Make all modes of operation 1
+    df_iar_trn["MODE_OF_OPERATION"] = 1
+    # And remove all the duplicate entries
+    df_iar_trn.drop_duplicates(keep="first", inplace=True)
+    return df_iar_trn
+
+def international_input_activity_ratio(df_oar_int):
+    # All we need to do is take in the thermal fuels for the MINXXXINT technologies.  This already exists as df_oar_int with the XXINT fuel so we can simply copy that:
+    df_iar_int = df_oar_int.copy()
+    df_iar_int['FUEL'] = df_iar_int['FUEL'].str[0:3]
+    return df_iar_int
+
+def international_output_activity_ratios(df_oar_upstream):
+    # Now we have to create the MINXXXINT technologies.  They are all based on the MODE_OF_OPERATION == 2:
+    df_oar_int = pd.DataFrame(df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION'] == 2, :])
+
+    # At this point we should have only the internationally traded fuels since they're all mode 2.  So we can make the tech MINXXXINT and that's that.
+    df_oar_int['TECHNOLOGY'] = 'MIN'+df_oar_int['FUEL']+'INT'
+    # And rename the fuel to XXXINT
+    df_oar_int['FUEL'] = df_oar_int['FUEL']+'INT'
+    df_oar_int['MODE_OF_OPERATION'] = 1  # This is probably not strictly necessary as long as they're always the same in and out...
+
+    # and de-duplicate this list:
+    df_oar_int.drop_duplicates(keep='first',inplace=True)
+    return df_oar_int
+
+def upstream_output_activity_ratios(df_iar_final, renewables_list):
+    # #### OutputActivityRatios - Upstream
+
+    thermal_fuels = ['COA',
+                     'COG',
+                     'GAS',
+                     'PET',
+                     'URN',
+                     'OIL',
+                     'OTH'
+                        ]
+
+    # We have to create a technology to produce every fuel that is input into any of the power technologies:
+
+    df_oar_upstream = df_iar_final.copy()
+
+    # All mining and resource technologies have an OAR of 1...
+    df_oar_upstream['VALUE'] = 1
+
+    # Renewables - set the technology as RNW + FUEL
+    df_oar_upstream.loc[df_oar_upstream['FUEL'].str[0:3].isin(renewables_list),
+            'TECHNOLOGY'] = 'RNW'+df_oar_upstream['FUEL']
+
+    # If the fuel is a thermal fuel, we need to create the OAR for the mining technology... BUT NOT FOR THE INT FUELS...
+    df_oar_upstream.loc[df_oar_upstream['FUEL'].str[0:3].isin(thermal_fuels) & ~(df_oar_upstream['FUEL'].str[3:6] == "INT"),
+            'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL']
+
+    # Above should get all the outputs for the MIN technologies, but we need to adjust the mode 2 ones to just the fuel code (rather than MINCOAINT)
+    df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
+            'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL'].str[0:3]+df_oar_upstream['TECHNOLOGY'].str[6:9]
+    df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
+            'FUEL'] = df_oar_upstream['FUEL'].str[0:3]
+
+    # Now remove the duplicate fuels that the above created (because there's now a COA for each country, not each region, and GAS is repeated twice for each region as well):
+    df_oar_upstream.drop_duplicates(keep='first',inplace=True)
+    return df_oar_upstream
+
+def input_activity_ratio(df_oar, thermal_fuel_list_iar, renewables_list, df_gen_2, region_name):
     # #### InputActivityRatio - Power Generation Technologies
     # Copy OAR table with all columns to IAR
     df_iar = df_oar.copy()
@@ -265,307 +588,33 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
     # Don't write this yet - we'll write both IAR and OAR at the end...
     # df_iar_final.to_csv(r"output/InputActivityRatio.csv", index = None)
+    return df_iar_final
 
+def output_activity_ratios(df_ratios, thermal_fuel_list, region_name):
+    # #### OutputActivityRatio - Power Generation Technologies
+    df_oar = df_ratios.copy()
+    mask = df_oar['TECHNOLOGY'].apply(lambda x: x[3:6] in thermal_fuel_list)
+    df_oar['FUEL'] = 0
+    df_oar['FUEL'][mask] = 1
+    df_oar = df_oar.loc[~((df_oar['MODE_OF_OPERATION'] > 1) &
+                        (df_oar['FUEL'] == 0))]
+    df_oar['FUEL'] = ('ELC' +
+                    df_oar['TECHNOLOGY'].str[6:11] +
+                    '01'
+                    )
+    df_oar['VALUE'] = 1
 
-    # #### OutputActivityRatios - Upstream
-
-    thermal_fuels = ['COA',
-                    'COG',
-                    'GAS',
-                    'PET',
-                    'URN',
-                    'OIL',
-                    'OTH'
-                        ]
-
-    # We have to create a technology to produce every fuel that is input into any of the power technologies:
-
-    df_oar_upstream = df_iar_final.copy()
-
-    # All mining and resource technologies have an OAR of 1...
-    df_oar_upstream['VALUE'] = 1
-
-    # Renewables - set the technology as RNW + FUEL
-    df_oar_upstream.loc[df_oar_upstream['FUEL'].str[0:3].isin(renewables_list),
-            'TECHNOLOGY'] = 'RNW'+df_oar_upstream['FUEL']
-
-    # If the fuel is a thermal fuel, we need to create the OAR for the mining technology... BUT NOT FOR THE INT FUELS...
-    df_oar_upstream.loc[df_oar_upstream['FUEL'].str[0:3].isin(thermal_fuels) & ~(df_oar_upstream['FUEL'].str[3:6] == "INT"),
-            'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL']
-
-    # Above should get all the outputs for the MIN technologies, but we need to adjust the mode 2 ones to just the fuel code (rather than MINCOAINT)
-    df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
-            'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL'].str[0:3]+df_oar_upstream['TECHNOLOGY'].str[6:9]
-    df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
-            'FUEL'] = df_oar_upstream['FUEL'].str[0:3]
-
-    # Now remove the duplicate fuels that the above created (because there's now a COA for each country, not each region, and GAS is repeated twice for each region as well):
-    df_oar_upstream.drop_duplicates(keep='first',inplace=True)
-
-    # Now we have to create the MINXXXINT technologies.  They are all based on the MODE_OF_OPERATION == 2:
-    df_oar_int = pd.DataFrame(df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION'] == 2, :])
-
-    # At this point we should have only the internationally traded fuels since they're all mode 2.  So we can make the tech MINXXXINT and that's that.
-    df_oar_int['TECHNOLOGY'] = 'MIN'+df_oar_int['FUEL']+'INT'
-    # And rename the fuel to XXXINT
-    df_oar_int['FUEL'] = df_oar_int['FUEL']+'INT'
-    df_oar_int['MODE_OF_OPERATION'] = 1  # This is probably not strictly necessary as long as they're always the same in and out...
-
-    # and de-duplicate this list:
-    df_oar_int.drop_duplicates(keep='first',inplace=True)
-
-
-    # #### Input Activity Ratios - Upstream
-
-    # All we need to do is take in the thermal fuels for the MINXXXINT technologies.  This already exists as df_oar_int with the XXINT fuel so we can simply copy that:
-    df_iar_int = df_oar_int.copy()
-    df_iar_int['FUEL'] = df_iar_int['FUEL'].str[0:3]
-
-
-    # #### Downstream Activity Ratios
-
-    # Build transmission system outputs
-
-    df_iar_trn = df_oar_final.copy()
-
-    # Change the technology name to PWRTRNXXXXX
-    df_iar_trn["TECHNOLOGY"] = "PWRTRN" + df_iar_trn["FUEL"].str[3:8]
-    # Make all modes of operation 1
-    df_iar_trn["MODE_OF_OPERATION"] = 1
-    # And remove all the duplicate entries
-    df_iar_trn.drop_duplicates(keep="first", inplace=True)
-
-    # OAR for transmission technologies is IAR, but the fuel is 02 instead of 01:
-    df_oar_trn = df_iar_trn.copy()
-    df_oar_trn["FUEL"] = df_oar_trn["FUEL"].str[0:8] + "02"
-
-    # Build international transmission system from original input data, but for Line rather than Generator:
-    int_trn_cols = ["child_class", "child_object", "property", "value"]
-    df_int_trn = df[int_trn_cols]
-    df_int_trn = df_int_trn[df_int_trn["child_class"] == "Line"]
-
-    # For IAR and OAR we can drop the value:
-    df_int_trn = df_int_trn.drop(["child_class", "value"], axis=1)
-
-    # Create MofO column based on property:
-    df_int_trn["MODE_OF_OPERATION"] = 1
-    df_int_trn.loc[df_int_trn["property"] == "Min Flow", "MODE_OF_OPERATION"] = 2
-
-    # Use the child_object column to build the technology names:
-    df_int_trn["codes"] = df_int_trn["child_object"].str.split(pat="-")
-
-    # If there are only two locations, then the node is XX
-    df_int_trn.loc[df_int_trn["codes"].str.len() == 2, "TECHNOLOGY"] = (
-        "TRN" + df_int_trn["codes"].str[0] + "XX" + df_int_trn["codes"].str[1] + "XX"
-    )
-    # If there are four locations, the node is already included
-    df_int_trn.loc[df_int_trn["codes"].str.len() == 4, "TECHNOLOGY"] = (
-        "TRN"
-        + df_int_trn["codes"].str[0]
-        + df_int_trn["codes"].str[1]
-        + df_int_trn["codes"].str[2]
-        + df_int_trn["codes"].str[3]
-    )
-    # If there are three items, and the last item is two characters, then the second item is an XX:
-    df_int_trn.loc[
-        (df_int_trn["codes"].str.len() == 3) & (df_int_trn["codes"].str[2].str.len() == 2),
-        "TECHNOLOGY",
-    ] = (
-        "TRN"
-        + df_int_trn["codes"].str[0]
-        + "XX"
-        + df_int_trn["codes"].str[1]
-        + df_int_trn["codes"].str[2]
-    )
-    # If there are three items, and the last item is three characters, then the last item is an XX:
-    df_int_trn.loc[
-        (df_int_trn["codes"].str.len() == 3) & (df_int_trn["codes"].str[2].str.len() == 3),
-        "TECHNOLOGY",
-    ] = (
-        "TRN"
-        + df_int_trn["codes"].str[0]
-        + df_int_trn["codes"].str[1]
-        + df_int_trn["codes"].str[2]
-        + "XX"
-    )
-
-    # Set the value (of either IAR or OAR) to 1
-    df_int_trn["VALUE"] = 1
-    df_int_trn["REGION"] = region_name
-
-    df_int_trn = df_int_trn.drop(["property", "child_object", "codes"], axis=1)
-    df_int_trn["YEAR"] = model_start_year
-    # Add in the years:
-    df_temp = df_int_trn.copy()
-    for year in range(model_start_year + 1, model_end_year + 1):
-        df_temp["YEAR"] = year
-        df_int_trn = df_int_trn.append(df_temp)
-
-    df_int_trn = df_int_trn.reset_index(drop=True)
-
-
-    # Now create the input and output activity ratios
-    df_int_trn_oar = df_int_trn.copy()
-    df_int_trn_iar = df_int_trn.copy()
-
-    # IAR Mode 1 is input from first country:
-    df_int_trn_iar.loc[df_int_trn_iar["MODE_OF_OPERATION"] == 1, "FUEL"] = (
-        "ELC" + df_int_trn_iar["TECHNOLOGY"].str[3:8] + "02"
-    )
-    # IAR Mode 2 is input from second country:
-    df_int_trn_iar.loc[df_int_trn_iar["MODE_OF_OPERATION"] == 2, "FUEL"] = (
-        "ELC" + df_int_trn_iar["TECHNOLOGY"].str[8:13] + "02"
-    )
-
-    # OAR Mode 2 is output to first country:
-    df_int_trn_oar.loc[df_int_trn_oar["MODE_OF_OPERATION"] == 2, "FUEL"] = (
-        "ELC" + df_int_trn_oar["TECHNOLOGY"].str[3:8] + "01"
-    )
-    # OAR Mode 1 is out to the second country:
-    df_int_trn_oar.loc[df_int_trn_oar["MODE_OF_OPERATION"] == 1, "FUEL"] = (
-        "ELC" + df_int_trn_oar["TECHNOLOGY"].str[8:13] + "01"
-    )
-
-    # Drop unneeded columns
-    df_trn_efficiencies = df_trn_efficiencies.drop(
-        [
-            "Line",
-            "KM distance",
-            "HVAC/HVDC/Subsea",
-            "Build Cost ($2010 in $000)",
-            "Annual FO&M (3.5% of CAPEX) ($2010 in $000)",
-            "Unnamed: 8",
-            "Line Max Size (MW)",
-            "Unnamed: 10",
-            "Unnamed: 11",
-            "Unnamed: 12",
-            "Subsea lines",
-        ],
-        axis=1,
-    )
-
-    # Drop NaN values
-    df_trn_efficiencies = df_trn_efficiencies.dropna(subset=["From"])
-
-    # Create To and From Codes:
-    # If from column has length 6 then it's the last three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["From"].str.len() == 6, "From"] = (
-        df_trn_efficiencies["From"].str[3:6] + "XX"
-    )
-    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["From"].str.len() == 9, "From"] = (
-        df_trn_efficiencies["From"].str[3:6] + df_trn_efficiencies["From"].str[7:9]
-    )
-    # If from column has length 6 then it's the last three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["To"].str.len() == 6, "To"] = (
-        df_trn_efficiencies["To"].str[3:6] + "XX"
-    )
-    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["To"].str.len() == 9, "To"] = (
-        df_trn_efficiencies["To"].str[3:6] + df_trn_efficiencies["To"].str[7:9]
-    )
-
-    # Combine From and To columns.
-    # If the From is earlier in the alphabet the technology is in order, add tech with mode 1.
-    df_trn_efficiencies["TECHNOLOGY"] = ("TRN" + df_trn_efficiencies["From"] + df_trn_efficiencies["To"])
-
-    # Drop to and from columns
-    df_trn_efficiencies = df_trn_efficiencies.drop(["From", "To"], axis=1)
-
-    # Rename column 'VALUES'
-    df_trn_efficiencies = df_trn_efficiencies.rename(columns={"Losses": "VALUE"})
-
-    # And adjust OAR values to be output amounts vs. losses:
-    df_trn_efficiencies['VALUE'] = 1.0 - df_trn_efficiencies['VALUE']
-
-    # and add values into OAR matrix
-    df_int_trn_oar = df_int_trn_oar.drop(["VALUE"], axis=1)
-    df_int_trn_oar = pd.merge(
-        df_int_trn_oar, df_trn_efficiencies, how="outer", on="TECHNOLOGY"
-    )
-
-
-    # #### Output IAR and OAR
-
-    # Combine the pieces from above and output to csv:
-
-    df_oar_final = df_oar_final.append(df_oar_upstream) # add upstream production technologies
-    df_oar_final = df_oar_final.append(df_oar_int) # Add in path through international markets
-    df_oar_final = df_oar_final.append(df_oar_trn) # Add in domestic transmission
-    df_oar_final = df_oar_final.append(df_int_trn_oar) # Add in international transmission
+    # Add 'REGION' column and fill 'GLOBAL' throughout
+    df_oar['REGION'] = region_name
 
     # Select columns for final output table
-    df_oar_final = df_oar_final.dropna()
-    df_oar_final = df_oar_final[['REGION',
-                                'TECHNOLOGY',
-                                'FUEL',
-                                'MODE_OF_OPERATION',
-                                'YEAR',
-                                'VALUE',]]
-
-    df_iar_final = df_iar_final.append(df_iar_int) # Add in path through international markets
-    df_iar_final = df_iar_final.append(df_iar_trn) # Add in domestic transmission
-    df_iar_final = df_iar_final.append(df_int_trn_iar) # Add in international transmission
-
-    # Select columns for final output table
-    df_iar_final = df_iar_final.dropna()
-    df_iar_final = df_iar_final[['REGION',
-                                'TECHNOLOGY',
-                                'FUEL',
-                                'MODE_OF_OPERATION',
-                                'YEAR',
-                                'VALUE',]]
-    filepath = os.path.join(OUTPUT_PATH, "OutputActivityRatio.csv")
-    df_oar_final.to_csv(filepath, index = None)
-    filepath = os.path.join(OUTPUT_PATH, "InputActivityRatio.csv")
-    df_iar_final.to_csv(filepath, index = None)
-
-
-    # ### Costs: Capital, fixed, and variable
-    df_costs = capital_fixed_var_costs(df_weo_data)
-
-    weo_regions_dict = create_weo_region_mapping(df_weo_regions)
-    capex = final_costs("Capital", df_costs, df_oar_final, weo_regions_dict)
-    capex.to_csv(os.path.join(OUTPUT_PATH, 'CapitalCost.csv'), index=None)
-    fixed = final_costs("O&M", df_costs, df_oar_final, weo_regions_dict)
-    fixed.to_csv(os.path.join(OUTPUT_PATH, 'FixedCost.csv'), index=None)
-
-    # ## Create sets for TECHNOLOGIES, FUELS
-
-    def create_sets(x):
-        set_elements = list(df_iar_final[x].unique()) + list(df_oar_final[x].unique())
-        set_elements = list(set(set_elements))
-        set_elements.sort()
-        set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
-        return set_elements_df.to_csv(os.path.join(OUTPUT_PATH, str(x) + '.csv'),
-                                    index = None
-                                    )
-
-    create_sets('TECHNOLOGY')
-    create_sets('FUEL')
-
-
-    # ## Create set for YEAR, REGION, MODE_OF_OPERATION
-
-    years_df = pd.DataFrame(years, columns = ['VALUE'])
-    years_df.to_csv(os.path.join(OUTPUT_PATH, 'YEAR.csv'),
-                    index = None)
-
-    mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE'])
-    mode_list_df.to_csv(os.path.join(OUTPUT_PATH, 'MODE_OF_OPERATION.csv'),
-                        index = None)
-
-    regions_df = pd.DataFrame(columns = ['VALUE'])
-    regions_df.loc[0] = region_name
-    regions_df.to_csv(os.path.join(OUTPUT_PATH, 'REGION.csv'),
-                    index = None)
-
-
-    # ## Create set for EMISSION
-
-    emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
-    emissions_df.to_csv(os.path.join(OUTPUT_PATH, 'EMISSION.csv'),
-                        index=None)
+    df_oar_final = df_oar[['REGION',
+                    'TECHNOLOGY',
+                    'FUEL',
+                    'MODE_OF_OPERATION',
+                    'YEAR',
+                    'VALUE',]]
+    return df_oar, df_oar_final
 
 def create_generators(df, df_dict, model_start_year, df_op_life, df_tech_code):
     df_gen_2 = create_main_generator_table(df)
