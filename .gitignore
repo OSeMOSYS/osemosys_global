@@ -2,3 +2,7 @@
 output/*.csv
 osemosys_global_model/data/*
 osemosys_global_model/figs/*
+
+# Don't add data files to the repo
+*.csv
+*.txt
