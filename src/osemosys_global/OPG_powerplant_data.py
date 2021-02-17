@@ -99,34 +99,11 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
                         'SA-BRA-J3',
                         'SA-SUR',]
 
-    # TODO The following aggregated capacity code doesn't seem to be used
-
-    # # Create table with aggregated capacity
-    # df_gen_agg_node = df_gen_2[df_gen_2['start_year'] <= model_start_year]
-    # df_gen_agg_node = df_gen_agg_node.groupby(['node', 'technology'],
-    #                                           as_index=False)['total_capacity'].sum()
-    # df_gen_agg_node = df_gen_agg_node.pivot(index='node',
-    #                                         columns='technology',
-    #                                         values='total_capacity').fillna(0).reset_index()
-
-    # df_gen_agg_node.drop('Sto', axis=1, inplace=True)  # Drop 'Sto' technology. Only for USA.
-
-    # Add extra nodes which exist in 2050 but are not in the 2015 data
-    # node_list = list(df_gen_agg_node['node'].unique())
-    # nodes_extra_df = pd.DataFrame(columns=['node'])
-    # nodes_extra_df['node'] = nodes_extra_list
-
-    # df_gen_agg_node = df_gen_agg_node.append(nodes_extra_df,
-    #                                         ignore_index=True,
-    #                                         sort='False').fillna(0).sort_values(by='node').set_index('node').round(2)
-    # # df_gen_agg_node.to_csv(r'output/test_output_2.csv')
-
     # ### Calculate residual capacity
     df_res_cap = residual_capacity(df_gen_2, model_start_year, model_end_year, region_name)
 
     filepath = os.path.join(OUTPUT_PATH, 'ResidualCapacity.csv')
     df_res_cap.to_csv(filepath, index=None)
-
 
     # ### Add input and output activity ratios
 
