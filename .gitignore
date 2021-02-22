@@ -1,3 +1,7 @@
+# Output directories
+osemosys_global_model/*
+geo_filter_test_v4/*
+
 # Temporary and binary files
 *~
 *.py[cod]
