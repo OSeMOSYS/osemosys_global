@@ -1,0 +1,18 @@
+# =============================================================================
+# DEPRECATION WARNING:
+#
+# The file `requirements.txt` does not influence the package dependencies and
+# will not be automatically created in the next version of PyScaffold (v4.x).
+#
+# Please have look at the docs for better alternatives
+# (`Dependency Management` section).
+# =============================================================================
+#
+pandas
+jupyter
+notebook
+numpy
+seaborn
+matplotlib
+scikit-learn
+xlrd
