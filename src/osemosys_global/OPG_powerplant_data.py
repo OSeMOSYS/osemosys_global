@@ -12,21 +12,20 @@ import itertools
 from urllib import request
 
 PLEXOS_URL = "https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true"
-INPUT_PATH = "data"
-PLEXOS_DATA = os.path.join(INPUT_PATH, "PLEXOS_World_2015_Gold_V1.1.xlsx")
-OUTPUT_PATH = os.path.join("osemosys_global_model", "data")
+PLEXOS_DATA = "PLEXOS_World_2015_Gold_V1.1.xlsx"
 
 MODE_LIST = [1, 2]
 
 
-def get_data():
+def get_data(INPUT_PATH):
     # Import data files and user input
     # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
+    path = os.path.join(INPUT_PATH, PLEXOS_DATA)
     try:
-        workbook = open(PLEXOS_DATA, 'rb')
+        workbook = open(path, 'rb')
     except IOError:
-        request.urlretrieve(PLEXOS_URL, PLEXOS_DATA)
-        workbook = open(PLEXOS_DATA, 'rb')
+        request.urlretrieve(PLEXOS_URL, path)
+        workbook = open(path, 'rb')
     finally:
         df = pd.read_excel(workbook, sheet_name="Properties")
         df_dict = pd.read_excel(workbook, sheet_name="Memberships")
@@ -796,8 +795,8 @@ def get_years(model_start_year, model_end_year):
                        model_end_year + 1))
 
 
-def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
-    df, df_dict = get_data()
+def main(INPUT_PATH, OUTPUT_PATH, model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
+    df, df_dict = get_data(INPUT_PATH)
 
     df_weo_data = pd.read_csv(os.path.join(INPUT_PATH, "weo_2018_powerplant_costs.csv"))
     df_op_life = pd.read_csv(os.path.join(INPUT_PATH, "operational_life.csv"))
@@ -882,4 +881,13 @@ def main(model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
 
 if __name__ == "__main__":
-    main()
+
+    args = sys.argv[1:]
+    if len(args) != 2:
+        print("Usage: python OPG_powerplant_data <input_data_path> <output_path>")
+        exit(1)
+
+    input_path = args[0]
+    output_path = args[1]
+
+    main(input_path, output_path)
