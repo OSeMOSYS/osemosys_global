@@ -11,12 +11,15 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 import itertools
+import os
 
 
 # ### Import data files and user input
 
 # In[261]:
 
+input_dir = r'../../data/'
+output_dir = r'../../osemosys_global_model/data/'                    
 
 ## Data for variable costs of fuels taken from World Bank Commodity Market Outlooks:
 ##    https://www.worldbank.org/en/research/commodity-markets
@@ -28,11 +31,12 @@ import itertools
 
 #### REPLACE FROM BELOW ONCE FIGURED OUT...df_prices = pd.read_excel(
 df_prices = pd.read_excel(
-    "data/CMO-April-2020-forecasts.xlsx", header=1, skiprows=83, nrows=6
+    os.path.join(input_dir,
+    "CMO-April-2020-forecasts.xlsx"), header=1, skiprows=83, nrows=6
 )
 
 # Read in Technologies
-df_techs = pd.read_csv(r"osemosys_global_model/data/TECHNOLOGY.csv")
+df_techs = pd.read_csv(os.path.join(output_dir,'TECHNOLOGY.csv'))
 
 model_start_year = 2015
 model_end_year = 2050
@@ -174,4 +178,4 @@ df_varcosts_final = df_varcost[['REGION',
                        'YEAR', 
                        'VALUE']]
 
-df_varcosts_final.to_csv(r"osemosys_global_model/data/VariableCost.csv", mode='a', header=False, index = None)
+df_varcosts_final.to_csv(os.path.join(output_dir,'VariableCost.csv'), mode='a', header=False, index = None)

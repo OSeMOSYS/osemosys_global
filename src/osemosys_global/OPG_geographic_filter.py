@@ -14,6 +14,8 @@ import os
 
 # In[ ]:
 
+input_dir = r'../../data/'
+output_dir = r'../../osemosys_global_model/data/'                     
 
 geographic_scope = ['IND', 'CHN']
 model_name = 'geo_filter_test_v4'
@@ -26,10 +28,10 @@ if not os.path.exists(os.path.join(os.getcwd(),
                            'data'))
 
 for each_csv in (os.listdir(os.path.join(os.getcwd(),
-                                         r'osemosys_global_model/data'))):
+                                         output_dir))):
     
     df = pd.read_csv(os.path.join(os.getcwd(),
-                                  r'osemosys_global_model/data',
+                                  output_dir,
                                   each_csv)
                     )
     if not df.empty:
