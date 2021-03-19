@@ -1,0 +1,27 @@
+{
+    "license": "MIT",
+    "upload_type": "software",
+    "creators": [
+        {
+            "affiliation": "KTH Royal Institute of Technology",
+            "name": "Will Usher",
+            "orcid": "0000-0001-9367-1791"
+        },
+        {
+            "affiliation": "Simon Fraser University",
+            "name": "Taco Niet",
+            "orcid": "0000-0003-0266-2705"
+        },
+        {
+            "affiliation": "University College Cork",
+            "name": "Maarten Brinkering",
+            "orcid": "0000-0002-8980-9062"
+        },
+        {
+            "name": "Abhishek Shivakumar"
+        },
+        {   "name": "Trevor Barnes",
+            "affiliation": "Simon Fraser University"}
+    ],
+    "access_right": "open"
+}
