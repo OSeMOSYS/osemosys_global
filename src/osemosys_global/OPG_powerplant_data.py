@@ -17,10 +17,10 @@ PLEXOS_DATA = "PLEXOS_World_2015_Gold_V1.1.xlsx"
 MODE_LIST = [1, 2]
 
 
-def get_data(INPUT_PATH):
+def get_data(input_path):
     # Import data files and user input
     # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
-    path = os.path.join(INPUT_PATH, PLEXOS_DATA)
+    path = os.path.join(input_path, PLEXOS_DATA)
     try:
         workbook = open(path, 'rb')
     except IOError:
@@ -453,7 +453,7 @@ def create_generators(df, df_dict, model_start_year, df_op_life, df_tech_code):
     )
 
     ## Extract start year from Commission Date
-    df_gen_2["Commission Date"] = pd.to_datetime(df_gen_2["Commission Date"])
+    df_gen_2["Commission Date"] = pd.to_datetime(df_gen_2["Commission Date"], unit='D', origin='1899-12-30')
     df_gen_2["start_year"] = df_gen_2["Commission Date"].dt.year
     df_gen_2.drop("Commission Date", axis=1, inplace=True)
 
@@ -535,7 +535,7 @@ def create_generators(df, df_dict, model_start_year, df_op_life, df_tech_code):
     return df_gen_2
 
 
-def residual_capacity(df_gen_2, model_start_year, model_end_year, region_name):
+def residual_capacity(df_gen_2, model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
     """Calculate residual capacity"""
     res_cap_cols = [
         "node_code",
@@ -795,14 +795,18 @@ def get_years(model_start_year, model_end_year):
                        model_end_year + 1))
 
 
-def main(INPUT_PATH, OUTPUT_PATH, model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
-    df, df_dict = get_data(INPUT_PATH)
+def main(input_path, output_path, model_start_year=2015, model_end_year=2050, region_name='GLOBAL'):
 
-    df_weo_data = pd.read_csv(os.path.join(INPUT_PATH, "weo_2018_powerplant_costs.csv"))
-    df_op_life = pd.read_csv(os.path.join(INPUT_PATH, "operational_life.csv"))
-    df_tech_code = pd.read_csv(os.path.join(INPUT_PATH, "naming_convention_tech.csv"))
-    df_trn_efficiencies = pd.read_excel(os.path.join(INPUT_PATH, "Costs Line expansion.xlsx"))
-    df_weo_regions = pd.read_csv(os.path.join(INPUT_PATH, "weo_region_mapping.csv"))
+    OUTPUT_PATH = os.path.join(output_path, 'data')
+
+    df, df_dict = get_data(input_path)
+    df_op_life = pd.read_csv(os.path.join(input_path, "operational_life.csv"))
+    df_tech_code = pd.read_csv(os.path.join(input_path, "naming_convention_tech.csv"))
+    df_gen_2 = create_generators(df, df_dict, model_start_year, df_op_life, df_tech_code)
+
+    df_weo_data = pd.read_csv(os.path.join(input_path, "weo_2018_powerplant_costs.csv"))
+    df_trn_efficiencies = pd.read_excel(os.path.join(input_path, "Costs Line expansion.xlsx"))
+    df_weo_regions = pd.read_csv(os.path.join(input_path, "weo_region_mapping.csv"))
 
     emissions = []
 
@@ -810,7 +814,6 @@ def main(INPUT_PATH, OUTPUT_PATH, model_start_year=2015, model_end_year=2050, re
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
-    df_gen_2 = create_generators(df, df_dict, model_start_year, df_op_life, df_tech_code)
 
     df_res_cap = residual_capacity(df_gen_2, model_start_year, model_end_year, region_name)
 
