@@ -9,35 +9,59 @@ pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 import itertools
 import urllib
+import os
 
 
 # Import data files and user input
 
+input_dir = r'../../data/'
+output_dir = r'../../osemosys_global_model/data/'
+
 #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
-    Open = open(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
-    
+    #Open = open(r"../../data/PLEXOS_World_2015_Gold_V1.1.xlsx")
+    Open = open(os.path.join(input_dir,
+                             "PLEXOS_World_2015_Gold_V1.1.xlsx"))
+
 except IOError:
     urllib.request.urlretrieve("https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true" , 
-                               r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
-    
-    Open = open(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx")
+                               os.path.join(input_dir,
+                                            "PLEXOS_World_2015_Gold_V1.1.xlsx")
+                               )
+
+    Open = open(os.path.join(input_dir,
+                             "PLEXOS_World_2015_Gold_V1.1.xlsx")
+                )
 
 finally:
     Open.close()
-    
-df = pd.read_excel(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx" , sheet_name = "Properties")
 
-df_dict = pd.read_excel(r"data/PLEXOS_World_2015_Gold_V1.1.xlsx" , sheet_name = "Memberships")
+df = pd.read_excel(os.path.join(input_dir,
+                                "PLEXOS_World_2015_Gold_V1.1.xlsx"), 
+                   sheet_name = "Properties")
+
+df_dict = pd.read_excel(os.path.join(input_dir, 
+                                     "PLEXOS_World_2015_Gold_V1.1.xlsx"), 
+                        sheet_name = "Memberships")
 
 df_dict = df_dict[df_dict["parent_class"] == "Generator"].rename(
     {"parent_object": "powerplant"}, axis=1
-)
-df_weo_data = pd.read_csv(r"data/weo_2018_powerplant_costs.csv")
-df_op_life = pd.read_csv(r"data/operational_life.csv")
-df_tech_code = pd.read_csv(r"data/naming_convention_tech.csv")
-df_trn_efficiencies = pd.read_excel(r"data/Costs Line expansion.xlsx")
-df_weo_regions = pd.read_csv(r"data/weo_region_mapping.csv")
+    )
+df_weo_data = pd.read_csv(os.path.join(input_dir,
+                                       "weo_2018_powerplant_costs.csv")
+                          )
+df_op_life = pd.read_csv(os.path.join(input_dir,
+                                      "operational_life.csv")
+                         )
+df_tech_code = pd.read_csv(os.path.join(input_dir,
+                                        "naming_convention_tech.csv")
+                           )
+df_trn_efficiencies = pd.read_excel(os.path.join(input_dir,
+                                                 "Costs Line expansion.xlsx")
+                                    )
+df_weo_regions = pd.read_csv(os.path.join(input_dir,
+                                          "weo_region_mapping.csv")
+                             )
 
 model_start_year = 2015
 model_end_year = 2050
@@ -280,22 +304,27 @@ df_res_cap_plot = df_res_cap[['node_code',
                              'model_year', 
                              'value']]
 
-# Rename 'model_year' to 'year' and 'total_capacity' to 'value' 
-df_res_cap.rename({'tech':'TECHNOLOGY',
-                   'model_year':'YEAR',
-                   'value':'VALUE'}, 
-                  inplace = True,
+# Rename 'model_year' to 'year' and 'total_capacity' to 'value'
+df_res_cap.rename({'tech': 'TECHNOLOGY',
+                   'model_year': 'YEAR',
+                   'value': 'VALUE'},
+                  inplace=True,
                   axis=1)
 # Drop 'tech_code' and 'node_code'
-df_res_cap.drop(['tech_code', 'node_code'], inplace = True, axis=1)        
+df_res_cap.drop(['tech_code', 'node_code'], 
+                inplace=True, 
+                axis=1)
 
 # Add 'REGION' column and fill 'GLOBAL' throughout
 df_res_cap['REGION'] = region_name
 
-#Reorder columns
+# Reorder columns
 df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
-                     
-df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index = None)
+
+# df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
+df_res_cap.to_csv(os.path.join(output_dir, 
+                               "ResidualCapacity.csv"),
+                  index=None)
 
 '''
 # ### Interactive visualisation of residual capacity by node
@@ -367,9 +396,9 @@ df_ratios = pd.DataFrame(list(itertools.product(node_list,
                                                 master_fuel_list,
                                                 mode_list,
                                                 years)
-                             ),
+                              ),
                          columns = ['node_code', 'tech_code', 'MODE_OF_OPERATION', 'YEAR']
-                        )
+                         )
 
 df_ratios['TECHNOLOGY'] = ('PWR' + 
                            df_ratios['tech_code'] + 
@@ -758,8 +787,14 @@ df_iar_final = df_iar_final[['REGION',
                              'YEAR', 
                              'VALUE',]]
 
-df_oar_final.to_csv(r"osemosys_global_model/data/OutputActivityRatio.csv", index = None)
-df_iar_final.to_csv(r"osemosys_global_model/data/InputActivityRatio.csv", index = None)
+#df_oar_final.to_csv(r"osemosys_global_model/data/OutputActivityRatio.csv", index = None)
+df_oar_final.to_csv(os.path.join(output_dir,
+                                 "OutputActivityRatio.csv"),
+                    index=None)
+# df_iar_final.to_csv(r"osemosys_global_model/data/InputActivityRatio.csv", index = None)
+df_iar_final.to_csv(os.path.join(output_dir,
+                                 "InputActivityRatio.csv"),
+                    index=None)
 
 
 # ### Costs: Capital, fixed, and variable
@@ -886,10 +921,12 @@ for each_cost in ['Capital', 'O&M']:
     df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
     
     if each_cost in ['Capital']:
-        df_costs_final.to_csv(r'osemosys_global_model/data/CapitalCost.csv',
+        df_costs_final.to_csv(os.path.join(output_dir, 
+                                           "CapitalCost.csv"),
                               index = None)
     if each_cost in ['O&M']:
-        df_costs_final.to_csv(r'osemosys_global_model/data/FixedCost.csv',
+        df_costs_final.to_csv(os.path.join(output_dir, 
+                                           "FixedCost.csv"),
                               index = None)
 
 
@@ -900,7 +937,7 @@ def create_sets(x):
     set_elements = list(set(set_elements))
     set_elements.sort()
     set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
-    return set_elements_df.to_csv(os.path.join(r'osemosys_global_model/data/',
+    return set_elements_df.to_csv(os.path.join(output_dir,
                                                str(x) + '.csv'
                                               ),
                                   index = None
@@ -913,22 +950,26 @@ create_sets('FUEL')
 # ## Create set for YEAR, REGION, MODE_OF_OPERATION
 
 years_df = pd.DataFrame(years, columns = ['VALUE'])
-years_df.to_csv(r'osemosys_global_model/data/YEAR.csv',
+years_df.to_csv(os.path.join(output_dir, 
+                             "YEAR.csv"),
                 index = None)
 
 mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE'])
-mode_list_df.to_csv(r'osemosys_global_model/data/MODE_OF_OPERATION.csv',
+mode_list_df.to_csv(os.path.join(output_dir, 
+                                 "MODE_OF_OPERATION.csv"),
                     index = None)
 
 regions_df = pd.DataFrame(columns = ['VALUE'])
 regions_df.loc[0] = region_name
-regions_df.to_csv(r'osemosys_global_model/data/REGION.csv',
-                index = None)
+regions_df.to_csv(os.path.join(output_dir, 
+                               "REGION.csv"),
+                  index = None)
 
 
 # ## Create set for EMISSION 
 
 emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
-emissions_df.to_csv(r'osemosys_global_model/data/EMISSION.csv',
+emissions_df.to_csv(os.path.join(output_dir, 
+                                 "EMISSION.csv"),
                 index = None)
 

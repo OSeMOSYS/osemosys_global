@@ -16,26 +16,41 @@ import seaborn as sns; sns.set()
 import matplotlib
 import matplotlib.pyplot as plt
 import urllib
+import os
 
 # ### Input data files and user input
 
 # In[3]:
+input_dir = r'../../data/'
+output_dir = r'../../osemosys_global_model/data/'
 
-
-#Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
+# Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
-    Open = open(r'data/All_Demand_UTC_2015.csv')
-    
-    demand_df = pd.read_csv(r'data/All_Demand_UTC_2015.csv' , encoding='latin-1')
-    
+    # Open = open(r'data/All_Demand_UTC_2015.csv')
+    Open = open(os.path.join(input_dir,
+                             'All_Demand_UTC_2015.csv')
+                )    
+    # demand_df = pd.read_csv(r'data/All_Demand_UTC_2015.csv' , encoding='latin-1')
+    demand_df = pd.read_csv(os.path.join(input_dir,
+                                         'All_Demand_UTC_2015.csv'),
+                            encoding='latin-1')
+
 except IOError:
     urllib.request.urlretrieve ('https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true', 
-                                r'data/All_Demand_UTC_2015.csv')
-    
-    demand_df = pd.read_csv(r'data/All_Demand_UTC_2015.csv' , encoding='latin-1')
+                                os.path.join(input_dir,
+                                             'All_Demand_UTC_2015.csv')
+                                )
 
-seasons_df = pd.read_csv(r'data\ts_seasons.csv')
-dayparts_df = pd.read_csv(r'data\ts_dayparts.csv')
+    demand_df = pd.read_csv(os.path.join(input_dir,
+                                         'All_Demand_UTC_2015.csv'),
+                            encoding='latin-1')
+
+seasons_df = pd.read_csv(os.path.join(input_dir,
+                                      'ts_seasons.csv')
+                         )
+dayparts_df = pd.read_csv(os.path.join(input_dir,
+                                       'ts_dayparts.csv')
+                          )
 
 daytype_included = False
 model_start_year = 2015
@@ -46,19 +61,29 @@ years = list(range(model_start_year, model_end_year+1))
 # In[4]:
 
 
-csp_df = pd.read_csv(r'data\CSP 2010-2017.csv', encoding='latin-1')
+csp_df = pd.read_csv(os.path.join(input_dir,
+                                  'CSP 2010-2017.csv'),
+                     encoding='latin-1')
 csp_df.name = 'CSP'
 
-spv_df = pd.read_csv(r'data\SolarPV 2010-2017.csv', encoding='latin-1')
+spv_df = pd.read_csv(os.path.join(input_dir,
+                                  'SolarPV 2010-2017.csv'),
+                     encoding='latin-1')
 spv_df.name = 'SPV'
 
-hyd_df = pd.read_csv(r'data\Hydro_Monthly_Profiles (15 year average).csv', encoding='latin-1')
+hyd_df = pd.read_csv(os.path.join(input_dir,
+                                  'Hydro_Monthly_Profiles (15 year average).csv'),
+                     encoding='latin-1')
 hyd_df.name = 'HYD'
 
-won_df = pd.read_csv(r'data\Won 2010-2017.csv', encoding='latin-1')
+won_df = pd.read_csv(os.path.join(input_dir,
+                                  'Won 2010-2017.csv'),
+                     encoding='latin-1')
 won_df.name = 'WON'
 
-wof_df = pd.read_csv(r'data\Woff 2010-2017.csv', encoding='latin-1')
+wof_df = pd.read_csv(os.path.join(input_dir,
+                                  'Woff 2010-2017.csv'),
+                     encoding='latin-1')
 wof_df.name = 'WOF'
 
 
@@ -68,8 +93,8 @@ wof_df.name = 'WOF'
 
 
 import os
-if not os.path.exists('osemosys_global_model\data'):
-    os.makedirs('osemosys_global_model\data')
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
 
 # ### Create columns for year, month, day, hour, and day type
@@ -158,7 +183,9 @@ yearsplit_final = pd.DataFrame(list(itertools.product(yearsplit['TIMESLICE'].uni
                               )
 yearsplit_final = yearsplit_final.join(yearsplit.set_index('TIMESLICE'), 
                                        on = 'TIMESLICE')
-yearsplit_final.to_csv(r'osemosys_global_model\data\YearSplit.csv', index = None)
+yearsplit_final.to_csv(os.path.join(output_dir, 
+                                    'YearSplit.csv'),
+                       index=None)
 
 
 # ### Calculate SpecifiedAnnualDemand and SpecifiedDemandProfile
@@ -251,7 +278,9 @@ total_demand_df_final = (sp_demand_df_final.
 total_demand_df_final['VALUE'] = total_demand_df_final['VALUE'].mul(3.6*1e-6)
 
 # Generate SpecifiedAnnualDemand.csv file 
-total_demand_df_final.to_csv(r'osemosys_global_model\data\SpecifiedAnnualDemand.csv', index = None)
+total_demand_df_final.to_csv(os.path.join(output_dir, 
+                                          'SpecifiedAnnualDemand.csv'),
+                             index=None)
 
 # Generate SpecifiedDemandProfile.csv file 
 sp_demand_df_final = sp_demand_df_final[['REGION',
@@ -260,7 +289,9 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
                                          'YEAR', 
                                          'VALUE']]
 
-sp_demand_df_final.to_csv(r'osemosys_global_model\data\SpecifiedDemandProfile.csv', index = None)
+sp_demand_df_final.to_csv(os.path.join(output_dir,
+                                       'SpecifiedDemandProfile.csv'),
+                          index=None)
 
 
 # ### CapacityFactor
@@ -358,7 +389,9 @@ for each in [csp_df, spv_df, won_df, wof_df]:
     capfac_all_df = capfac_all_df.append(capacity_factor(each),
                                          ignore_index = True)
     
-capfac_all_df.to_csv(r'osemosys_global_model\data\CapacityFactor.csv', index = None)
+capfac_all_df.to_csv(os.path.join(output_dir, 
+                                  'CapacityFactor.csv'),
+                     index=None)
 
 
 # ## Create csv for TIMESLICE 
@@ -368,5 +401,7 @@ capfac_all_df.to_csv(r'osemosys_global_model\data\CapacityFactor.csv', index = N
 
 time_slice_list = list(demand_df['TIMESLICE'].unique())
 time_slice_df = pd.DataFrame(time_slice_list, columns = ['VALUE'])
-time_slice_df.to_csv(r'osemosys_global_model\data\TIMESLICE.csv', index = None)
+time_slice_df.to_csv(os.path.join(output_dir, 
+                                  'TIMESLICE.csv'),
+                     index=None)
 
