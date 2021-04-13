@@ -62,12 +62,12 @@ years = list(range(model_start_year, model_end_year+1))
 
 
 csp_df = pd.read_csv(os.path.join(input_dir,
-                                  'CSP 2010-2017.csv'),
+                                  'CSP 2015.csv'),
                      encoding='latin-1')
 csp_df.name = 'CSP'
 
 spv_df = pd.read_csv(os.path.join(input_dir,
-                                  'SolarPV 2010-2017.csv'),
+                                  'SolarPV 2015.csv'),
                      encoding='latin-1')
 spv_df.name = 'SPV'
 
@@ -77,12 +77,12 @@ hyd_df = pd.read_csv(os.path.join(input_dir,
 hyd_df.name = 'HYD'
 
 won_df = pd.read_csv(os.path.join(input_dir,
-                                  'Won 2010-2017.csv'),
+                                  'Won 2015.csv'),
                      encoding='latin-1')
 won_df.name = 'WON'
 
 wof_df = pd.read_csv(os.path.join(input_dir,
-                                  'Woff 2010-2017.csv'),
+                                  'Woff 2015.csv'),
                      encoding='latin-1')
 wof_df.name = 'WOF'
 
