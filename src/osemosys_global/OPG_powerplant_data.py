@@ -57,7 +57,8 @@ df_tech_code = pd.read_csv(os.path.join(input_dir,
                                         "naming_convention_tech.csv")
                            )
 df_trn_efficiencies = pd.read_excel(os.path.join(input_dir,
-                                                 "Costs Line expansion.xlsx")
+                                                 "Costs Line expansion.xlsx"),
+                                    sheet_name = 'Interface'
                                     )
 df_weo_regions = pd.read_csv(os.path.join(input_dir,
                                           "weo_region_mapping.csv")
@@ -697,17 +698,18 @@ df_int_trn_oar.loc[df_int_trn_oar["MODE_OF_OPERATION"] == 1, "FUEL"] = (
 # Drop unneeded columns
 df_trn_efficiencies = df_trn_efficiencies.drop(
     [
-        "Line",
+        "Interface",
         "KM distance",
         "HVAC/HVDC/Subsea",
         "Build Cost ($2010 in $000)",
-        "Annual FO&M (3.5% of CAPEX) ($2010 in $000)",
+        "Build cost + FOM (3.5% of Capex per year)",
         "Unnamed: 8",
-        "Line Max Size (MW)",
+        "Interface is per MW",
         "Unnamed: 10",
         "Unnamed: 11",
         "Unnamed: 12",
         "Subsea lines",
+        "Unnamed: 14"
     ],
     axis=1,
 )
@@ -859,8 +861,6 @@ weo_regions_dict = dict([(k, v)
                                )
                         ]
                        )
-
-
 
 for each_cost in ['Capital', 'O&M']:
     df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
