@@ -178,4 +178,4 @@ df_varcosts_final = df_varcost[['REGION',
                        'YEAR', 
                        'VALUE']]
 
-df_varcosts_final.to_csv(os.path.join(output_dir,'VariableCost.csv'), mode='a', header=True, index = None)
+df_varcosts_final.to_csv(os.path.join(output_dir,'VariableCost.csv'), header=True, index = None)
