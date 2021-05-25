@@ -278,9 +278,7 @@ total_demand_df_final = (sp_demand_df_final.
 total_demand_df_final['VALUE'] = total_demand_df_final['VALUE'].mul(3.6*1e-6)
 
 # Generate SpecifiedAnnualDemand.csv file 
-total_demand_df_final.to_csv(os.path.join(output_dir, 
-                                          'SpecifiedAnnualDemand.csv'),
-                             index=None)
+#total_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedAnnualDemand.csv'), index=None)
 
 # Generate SpecifiedDemandProfile.csv file 
 sp_demand_df_final = sp_demand_df_final[['REGION',
@@ -289,9 +287,7 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
                                          'YEAR', 
                                          'VALUE']]
 
-sp_demand_df_final.to_csv(os.path.join(output_dir,
-                                       'SpecifiedDemandProfile.csv'),
-                          index=None)
+#sp_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedDemandProfile.csv'), index=None)
 
 
 # ### CapacityFactor
