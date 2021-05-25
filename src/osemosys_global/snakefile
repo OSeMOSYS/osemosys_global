@@ -1,0 +1,294 @@
+#####################################
+## REQUIRED FILES 
+#####################################
+
+osemosysFiles = [
+	'AccumulatedAnnualDemand.csv',
+	'AnnualEmissionLimit.csv',
+	'AnnualExogenousEmission.csv',
+	'AvailabilityFactor.csv',
+	'CapacityFactor.csv',
+	'CapacityOfOneTechnologyUnit.csv',
+	'CapacityToActivityUnit.csv',
+	'CapitalCost.csv',
+	'CapitalCostStorage.csv',
+	'Conversionld.csv',
+	'Conversionlh.csv',
+	'Conversionls.csv',
+	'DAILYTIMEBRACKET.csv',
+	'DaysInDayType.csv',
+	'DaySplit.csv',
+	'DAYTYPE.csv',
+	'default_values.csv',
+	'DepreciationMethod.csv',
+	'DiscountRate.csv',
+	'DiscountRateStorage.csv',
+	'EMISSION.csv',
+	'EmissionActivityRatio.csv',
+	'FixedCost.csv',
+	'FUEL.csv',
+	'InputActivityRatio.csv',
+	'MinStorageCharge.csv',
+	'MODE_OF_OPERATION.csv',
+	'ModelPeriodEmissionLimit.csv',
+	'ModelPeriodExogenousEmission.csv',
+	'OutputActivityRatio.csv',
+	'OperationalLife.csv',
+	'REMinProductionTarget.csv',
+	'REGION.csv',
+	'ReserveMargin.csv',
+	'ReserveMarginTagFuel.csv',
+	'ReserveMarginTagTechnology.csv',
+	'ResidualCapacity.csv',
+	'ResidualStorageCapacity.csv',
+	'RETagFuel.csv',
+	'RETagTechnology.csv',
+	'SEASON.csv',
+	'SpecifiedAnnualDemand.csv',
+	'SpecifiedDemandProfile.csv',
+	'STORAGE.csv',
+	'StorageLevelStart.csv',
+	'StorageMaxChargeRate.csv',
+	'StorageMaxDischargeRate.csv',
+	'TECHNOLOGY.csv',
+	'TechnologyFromStorage.csv',
+	'TechnologyToStorage.csv',
+	'TIMESLICE.csv',
+	'TotalAnnualMaxCapacity.csv',
+	'TotalAnnualMaxCapacityInvestment.csv',
+	'TotalAnnualMinCapacity.csv',
+	'TotalAnnualMinCapacityInvestment.csv',
+	'TotalTechnologyAnnualActivityLowerLimit.csv',
+	'TotalTechnologyAnnualActivityUpperLimit.csv',
+	'TotalTechnologyModelPeriodActivityLowerLimit.csv',
+	'TotalTechnologyModelPeriodActivityUpperLimit.csv',
+	'TradeRoute.csv',
+	'VariableCost.csv',
+	'YEAR.csv',
+	'YearSplit.csv'
+]
+
+missingFiles = [
+	'AccumulatedAnnualDemand.csv',
+	'AnnualEmissionLimit.csv',
+	'AnnualExogenousEmission.csv',
+	'AvailabilityFactor.csv',
+	'CapacityOfOneTechnologyUnit.csv',
+	'CapacityToActivityUnit.csv',
+	'CapitalCostStorage.csv',
+	'Conversionld.csv',
+	'Conversionlh.csv',
+	'Conversionls.csv',
+	'DAILYTIMEBRACKET.csv',
+	'DaysInDayType.csv',
+	'DaySplit.csv',
+	'DAYTYPE.csv',
+	'default_values.csv',
+	'DepreciationMethod.csv',
+	'DiscountRate.csv',
+	'DiscountRateStorage.csv',
+	'EmissionActivityRatio.csv',
+	'MinStorageCharge.csv',
+	'ModelPeriodEmissionLimit.csv',
+	'ModelPeriodExogenousEmission.csv',
+	'OperationalLife.csv',
+	'REMinProductionTarget.csv',
+	'ReserveMargin.csv',
+	'ReserveMarginTagFuel.csv',
+	'ReserveMarginTagTechnology.csv',
+	'ResidualStorageCapacity.csv',
+	'RETagFuel.csv',
+	'RETagTechnology.csv',
+	'SEASON.csv',
+	'STORAGE.csv',
+	'StorageLevelStart.csv',
+	'StorageMaxChargeRate.csv',
+	'StorageMaxDischargeRate.csv',
+	'TechnologyFromStorage.csv',
+	'TechnologyToStorage.csv',
+	'TotalAnnualMaxCapacity.csv',
+	'TotalAnnualMaxCapacityInvestment.csv',
+	'TotalAnnualMinCapacity.csv',
+	'TotalAnnualMinCapacityInvestment.csv',
+	'TotalTechnologyAnnualActivityLowerLimit.csv',
+	'TotalTechnologyAnnualActivityUpperLimit.csv',
+	'TotalTechnologyModelPeriodActivityLowerLimit.csv',
+	'TotalTechnologyModelPeriodActivityUpperLimit.csv',
+	'TradeRoute.csv'
+]
+
+demandFigures = [
+	'South America', 
+	'Oceania', 
+	'North America', 
+	'Europe', 
+	'Asia', 
+	'Africa'
+]
+
+#####################################
+## TARGETS
+#####################################
+
+configfile: 'config.yaml'
+fileName = config['scenario']
+inputDir = config['inputDir']
+outputDir = config['outputDir']
+
+rule all:
+	input: 
+		outputDir + 'PostProcessed' + fileName + '.txt',
+		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+
+rule dataFile:
+	input:
+		outputDir + fileName + '.txt',
+		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+
+rule lpFile:
+	input: 
+		outputDir + fileName + '.lp',
+		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+
+rule solve:
+	input: 
+		outputDir + 'PostProcessed' + fileName + '.txt',
+		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+
+
+#####################################
+## INTERMEDIATE RULES
+#####################################
+
+rule PowerPlant:
+	input:
+		inputDir + 'PLEXOS_World_2015_Gold_V1.1.xlsx',
+		inputDir + 'weo_2018_powerplant_costs.csv',
+		inputDir + 'operational_life.csv',
+		inputDir + 'naming_convention_tech.csv',
+		inputDir + 'Costs Line expansion.xlsx',
+		inputDir + 'weo_region_mapping.csv'
+	output:
+		outputDir + 'data/CapitalCost.csv',
+		outputDir + 'data/EMISSION.csv',
+		outputDir + 'data/FixedCost.csv',
+		outputDir + 'data/FUEL.csv',
+		outputDir + 'data/InputActivityRatio.csv',
+		outputDir + 'data/MODE_OF_OPERATION.csv',
+		outputDir + 'data/OutputActivityRatio.csv',
+		outputDir + 'data/REGION.csv',
+		outputDir + 'data/ResidualCapacity.csv',
+		outputDir + 'data/TECHNOLOGY.csv',
+		outputDir + 'data/YEAR.csv',
+	shell:
+		'python OPG_powerplant_data.py'
+		
+rule TimeSlice:
+	input:
+		inputDir + 'All_Demand_UTC_2015.csv',
+		inputDir + 'ts_seasons.csv',
+		inputDir + 'ts_dayparts.csv',
+		inputDir + 'CSP 2015.csv',
+		inputDir + 'SolarPV 2015.csv',
+		inputDir + 'Hydro_Monthly_Profiles (15 year average).csv',
+		inputDir + 'Won 2015.csv',
+		inputDir + 'Woff 2015.csv'
+	output:
+		outputDir + 'data/CapacityFactor.csv',
+		outputDir + 'data/TIMESLICE.csv',
+		outputDir + 'data/SpecifiedDemandProfile.csv',
+		outputDir + 'data/SpecifiedAnnualDemand.csv',
+		outputDir + 'data/YearSplit.csv'
+	shell:
+		'python OPG_TS_data.py'
+
+rule VaribaleCosts:
+	input:
+		inputDir + 'CMO-April-2020-forecasts.xlsx',
+		outputDir + 'data/TECHNOLOGY.csv'
+	output:
+		outputDir + 'data/VariableCost.csv'
+	shell:
+		'python OPG_variablecosts.py'
+		
+rule DemandProjections:
+	input:
+		inputDir + 'PLEXOS_World_2015_Gold_V1.1.xlsx',
+		inputDir + 'iamc_db_GDPppp_Countries.xlsx',
+		inputDir + 'iamc_db_POP_Countries.xlsx',
+		inputDir + 'iamc_db_URB_Countries.xlsx',
+		inputDir + 'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
+		inputDir + 'T&D Losses.xlsx'
+	output:
+		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+	shell:
+		'python OPG_demand_projection.py'
+		
+rule GeographicFilter:
+	input: 
+	output:
+	shell:
+		'python OPG_geographic_filter.py'
+	
+rule FileCheck:
+	input: 
+		expand('../../simplicity/data/{osemosysFile}', osemosysFile = osemosysFiles)
+	output:
+		expand(outputDir + 'data/{missingFile}', missingFile = missingFiles)
+	shell:
+		'python OPG_file_check.py'
+
+rule otooleConvert:
+	input:
+		datapackage = outputDir + 'datapackage.json',
+		csvFiles = expand(outputDir + 'data/{osemosysFile}', osemosysFile = osemosysFiles)
+	output:
+		outputDir + fileName + '.txt'
+	shell:
+		'otoole convert datapackage datafile {input.datapackage} {output}'
+
+rule preProcess:
+	input:
+		outputDir + fileName + '.txt'
+	output:
+		outputDir + 'PreProcessed_' + fileName + '.txt'
+	shell:
+		'python preprocess_data.py otoole {input} {output}'
+
+rule createLP:
+	input:
+		modelFile = outputDir + 'osemosys_fast_preprocessed.txt',
+		dataFile = outputDir + 'PreProcessed_' + fileName + '.txt'
+	output:
+		outputDir + fileName + '.lp'
+	shell:
+		'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check'
+
+rule cbcSolve:
+	input:
+		outputDir + fileName + '.lp'
+	output:
+		outputDir + fileName + '.sol'
+	shell: 
+		'cbc {input} solve -solu {output}'
+
+rule postProcess:
+	input:
+		solutionFile = outputDir + fileName + '.sol',
+		preProcessFile = outputDir + 'PreProcessed_' + fileName + '.txt'
+	output:
+		outputDir + 'PostProcessed' + fileName + '.txt'
+	shell: 
+		'otoole results cbc csv {input.solutionFile} results --input_datafile {input.preProcessFile}'
+
+#####################################
+## CLEANING RULES
+#####################################
+rule cleanData:
+	shell:
+		'rm -rf {outputDir}data/*'
+
+rule cleanFigs:
+	shell:
+		'rm -rf {outputDir}figs/*'
+

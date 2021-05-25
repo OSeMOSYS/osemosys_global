@@ -1,0 +1,4 @@
+---
+ inputDir : '../../data/'
+ outputDir: '../../osemosys_global_model/'
+ scenario: 'OsemosysGlobal'
