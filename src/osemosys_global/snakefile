@@ -1,3 +1,5 @@
+import os
+
 #####################################
 ## REQUIRED FILES 
 #####################################
@@ -67,56 +69,7 @@ osemosysFiles = [
 	'YEAR.csv',
 	'YearSplit.csv'
 ]
-
-missingFiles = [
-	'AccumulatedAnnualDemand.csv',
-	'AnnualEmissionLimit.csv',
-	'AnnualExogenousEmission.csv',
-	'AvailabilityFactor.csv',
-	'CapacityOfOneTechnologyUnit.csv',
-	'CapacityToActivityUnit.csv',
-	'CapitalCostStorage.csv',
-	'Conversionld.csv',
-	'Conversionlh.csv',
-	'Conversionls.csv',
-	'DAILYTIMEBRACKET.csv',
-	'DaysInDayType.csv',
-	'DaySplit.csv',
-	'DAYTYPE.csv',
-	'default_values.csv',
-	'DepreciationMethod.csv',
-	'DiscountRate.csv',
-	'DiscountRateStorage.csv',
-	'EmissionActivityRatio.csv',
-	'MinStorageCharge.csv',
-	'ModelPeriodEmissionLimit.csv',
-	'ModelPeriodExogenousEmission.csv',
-	'OperationalLife.csv',
-	'REMinProductionTarget.csv',
-	'ReserveMargin.csv',
-	'ReserveMarginTagFuel.csv',
-	'ReserveMarginTagTechnology.csv',
-	'ResidualStorageCapacity.csv',
-	'RETagFuel.csv',
-	'RETagTechnology.csv',
-	'SEASON.csv',
-	'STORAGE.csv',
-	'StorageLevelStart.csv',
-	'StorageMaxChargeRate.csv',
-	'StorageMaxDischargeRate.csv',
-	'TechnologyFromStorage.csv',
-	'TechnologyToStorage.csv',
-	'TotalAnnualMaxCapacity.csv',
-	'TotalAnnualMaxCapacityInvestment.csv',
-	'TotalAnnualMinCapacity.csv',
-	'TotalAnnualMinCapacityInvestment.csv',
-	'TotalTechnologyAnnualActivityLowerLimit.csv',
-	'TotalTechnologyAnnualActivityUpperLimit.csv',
-	'TotalTechnologyModelPeriodActivityLowerLimit.csv',
-	'TotalTechnologyModelPeriodActivityUpperLimit.csv',
-	'TradeRoute.csv'
-]
-
+	
 demandFigures = [
 	'South America', 
 	'Oceania', 
@@ -127,13 +80,40 @@ demandFigures = [
 ]
 
 #####################################
-## TARGETS
+## GLOABL VARIABLES
 #####################################
 
 configfile: 'config.yaml'
 fileName = config['scenario']
 inputDir = config['inputDir']
 outputDir = config['outputDir']
+
+ruleorder: 
+	PowerPlant > 
+	TimeSlice > 
+	VaribaleCosts > 
+	DemandProjections > 
+	GeographicFilter > 
+	FileCheck
+
+#####################################
+## HELPER FUNCTIONS
+#####################################
+
+def fileCheckFunc(csvFiles):
+	# DEFENITION: Checks what files will need to be created via OPG_filecheck.py
+	# INPUT:      csvFiles = List of all otoole osemosys csv's
+	# OUTPUT:     csvFiles = List of all files that need to be created via OPG_filecheck 
+
+	for each_csv in os.listdir(outputDir + 'data/'):
+		if each_csv in csvFiles:
+			csvFiles.remove(each_csv)
+	
+	return csvFiles
+
+#####################################
+## TARGETS
+#####################################
 
 rule all:
 	input: 
@@ -154,7 +134,6 @@ rule solve:
 	input: 
 		outputDir + 'PostProcessed' + fileName + '.txt',
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
-
 
 #####################################
 ## INTERMEDIATE RULES
@@ -229,12 +208,13 @@ rule GeographicFilter:
 	output:
 	shell:
 		'python OPG_geographic_filter.py'
-	
+
 rule FileCheck:
 	input: 
-		expand('../../simplicity/data/{osemosysFile}', osemosysFile = osemosysFiles)
+		expand('../../simplicity/data/{osemosysFile}', osemosysFile = osemosysFiles),
+		
 	output:
-		expand(outputDir + 'data/{missingFile}', missingFile = missingFiles)
+		expand(outputDir + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles))
 	shell:
 		'python OPG_file_check.py'
 
@@ -292,3 +272,6 @@ rule cleanFigs:
 	shell:
 		'rm -rf {outputDir}figs/*'
 
+rule cleanDataFile:
+	shell:
+		'rm -rf {outputDir}{fileName}.txt'
