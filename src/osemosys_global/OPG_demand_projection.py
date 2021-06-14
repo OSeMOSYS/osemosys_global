@@ -696,8 +696,7 @@ Node_Demand_SSP_projected_Incl_Losses = pd.merge(Node_Demand_SSP_projected_Incl_
 Node_Demand_SSP_projected_Incl_Losses.to_csv(os.path.join(input_dir,'Final_Electricity_Demand_Nodal_Yearly.csv'))
 
 Node_Demand_SSP_projected_Incl_Losses[48:49]
-
-
+    
 # ### Determines hourly peak demand per node per year
 
 # In[29]:
@@ -743,3 +742,13 @@ Node_Peak_Demand_SSP_projected.to_csv(os.path.join(input_dir,'Final_Electricity_
         
 Node_Peak_Demand_SSP_projected.iloc[48:49]
 
+#Format demand projections
+with open(os.path.join(output_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
+    f.write('REGION,FUEL,YEAR,VALUE\n')
+    for x in Node_Demand_SSP_projected_Incl_Losses.index:
+        if len(x) == 6:
+            FUEL = 'ELC' + x[3:6] + 'XX02'
+        if len(x) == 9:
+            FUEL = 'ELC' + x[3:6] + x[7:9] + '02'
+        for year in range(2010,2101):
+            f.write('GLOBAL,' + str(FUEL) + ',' + str(year) + ',' + str(Node_Demand_SSP_projected_Incl_Losses.at[x, year]*(0.0036)) + '\n')
