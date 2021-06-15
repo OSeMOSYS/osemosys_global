@@ -750,5 +750,5 @@ with open(os.path.join(output_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
             FUEL = 'ELC' + x[3:6] + 'XX02'
         if len(x) == 9:
             FUEL = 'ELC' + x[3:6] + x[7:9] + '02'
-        for year in range(2010,2101):
+        for year in range(2015,2051):
             f.write('GLOBAL,' + str(FUEL) + ',' + str(year) + ',' + str(Node_Demand_SSP_projected_Incl_Losses.at[x, year]*(0.0036)) + '\n')

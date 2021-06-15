@@ -176,7 +176,7 @@ rule TimeSlice:
 		outputDir + 'data/CapacityFactor.csv',
 		outputDir + 'data/TIMESLICE.csv',
 		outputDir + 'data/SpecifiedDemandProfile.csv',
-		outputDir + 'data/SpecifiedAnnualDemand.csv',
+		#outputDir + 'data/SpecifiedAnnualDemand.csv',
 		outputDir + 'data/YearSplit.csv'
 	shell:
 		'python OPG_TS_data.py'
@@ -199,7 +199,8 @@ rule DemandProjections:
 		inputDir + 'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
 		inputDir + 'T&D Losses.xlsx'
 	output:
-		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures),
+		outputDir + 'data/SpecifiedAnnualDemand.csv'
 	shell:
 		'python OPG_demand_projection.py'
 		
