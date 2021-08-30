@@ -84,17 +84,19 @@ demandFigures = [
 #####################################
 
 configfile: 'config.yaml'
-fileName = config['scenario']
+modelName = config['modelName']
 inputDir = config['inputDir']
 outputDir = config['outputDir']
+scenarioName = config['scenario']
 
 ruleorder: 
 	PowerPlant > 
 	TimeSlice > 
 	VaribaleCosts > 
 	DemandProjections > 
-	GeographicFilter > 
-	FileCheck
+	FileCheck >
+	GeographicFilter 
+	
 
 #####################################
 ## HELPER FUNCTIONS
@@ -117,23 +119,24 @@ def fileCheckFunc(csvFiles):
 
 rule all:
 	input: 
-		outputDir + 'PostProcessed' + fileName + '.txt',
+		outputDir + 'PostProcessed' + modelName + '.txt',
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 rule dataFile:
 	input:
-		outputDir + fileName + '.txt',
-		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+		#outputDir + modelName + '.txt',
+		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures),
+		outputDir + scenarioName + '/' + scenarioName + '.txt'
 
 rule lpFile:
 	input: 
-		outputDir + fileName + '.lp',
+		outputDir + modelName + '.lp',
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 rule solve:
 	input: 
-		outputDir + 'PostProcessed' + fileName + '.txt',
-		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+		outputDir + 'PostProcessed' + scenarioName + '.txt',
+		#expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 #####################################
 ## INTERMEDIATE RULES
@@ -146,7 +149,8 @@ rule PowerPlant:
 		inputDir + 'operational_life.csv',
 		inputDir + 'naming_convention_tech.csv',
 		inputDir + 'Costs Line expansion.xlsx',
-		inputDir + 'weo_region_mapping.csv'
+		inputDir + 'weo_region_mapping.csv',
+		'config.yaml'
 	output:
 		outputDir + 'data/CapitalCost.csv',
 		outputDir + 'data/EMISSION.csv',
@@ -171,7 +175,8 @@ rule TimeSlice:
 		inputDir + 'SolarPV 2015.csv',
 		inputDir + 'Hydro_Monthly_Profiles (15 year average).csv',
 		inputDir + 'Won 2015.csv',
-		inputDir + 'Woff 2015.csv'
+		inputDir + 'Woff 2015.csv',
+		'config.yaml'
 	output:
 		outputDir + 'data/CapacityFactor.csv',
 		outputDir + 'data/TIMESLICE.csv',
@@ -184,7 +189,8 @@ rule TimeSlice:
 rule VaribaleCosts:
 	input:
 		inputDir + 'CMO-April-2020-forecasts.xlsx',
-		outputDir + 'data/TECHNOLOGY.csv'
+		outputDir + 'data/TECHNOLOGY.csv',
+		'config.yaml'
 	output:
 		outputDir + 'data/VariableCost.csv'
 	shell:
@@ -197,7 +203,8 @@ rule DemandProjections:
 		inputDir + 'iamc_db_POP_Countries.xlsx',
 		inputDir + 'iamc_db_URB_Countries.xlsx',
 		inputDir + 'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
-		inputDir + 'T&D Losses.xlsx'
+		inputDir + 'T&D Losses.xlsx',
+		'config.yaml'
 	output:
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures),
 		outputDir + 'data/SpecifiedAnnualDemand.csv'
@@ -206,14 +213,18 @@ rule DemandProjections:
 		
 rule GeographicFilter:
 	input: 
+		expand(outputDir + 'data/{osemosysFile}', osemosysFile = osemosysFiles),
+		'config.yaml'
 	output:
+		expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles),
+		outputDir + scenarioName + '/datapackage.json'
 	shell:
 		'python OPG_geographic_filter.py'
 
 rule FileCheck:
 	input: 
 		expand('../../simplicity/data/{osemosysFile}', osemosysFile = osemosysFiles),
-		
+		'config.yaml'
 	output:
 		expand(outputDir + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles))
 	shell:
@@ -221,44 +232,47 @@ rule FileCheck:
 
 rule otooleConvert:
 	input:
-		datapackage = outputDir + 'datapackage.json',
-		csvFiles = expand(outputDir + 'data/{osemosysFile}', osemosysFile = osemosysFiles)
+		datapackage = outputDir + scenarioName + '/datapackage.json',
+		#csvFiles = expand(outputDir + 'data/{osemosysFile}', osemosysFile = osemosysFiles)
+		csvFiles = expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles)
 	output:
-		outputDir + fileName + '.txt'
+		#outputDir + modelName + '.txt'
+		outputDir + scenarioName + '/' + scenarioName + '.txt'
 	shell:
 		'otoole convert datapackage datafile {input.datapackage} {output}'
 
 rule preProcess:
 	input:
-		outputDir + fileName + '.txt'
+		#outputDir + modelName + '.txt'
+		outputDir + scenarioName + '/' + scenarioName + '.txt'
 	output:
-		outputDir + 'PreProcessed_' + fileName + '.txt'
+		outputDir + 'PreProcessed_' + scenarioName + '.txt'
 	shell:
 		'python preprocess_data.py otoole {input} {output}'
 
 rule createLP:
 	input:
 		modelFile = outputDir + 'osemosys_fast_preprocessed.txt',
-		dataFile = outputDir + 'PreProcessed_' + fileName + '.txt'
+		dataFile = outputDir + 'PreProcessed_' + scenarioName + '.txt'
 	output:
-		outputDir + fileName + '.lp'
+		outputDir + scenarioName + '.lp'
 	shell:
 		'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check'
 
 rule cbcSolve:
 	input:
-		outputDir + fileName + '.lp'
+		outputDir + scenarioName + '.lp'
 	output:
-		outputDir + fileName + '.sol'
+		outputDir + scenarioName + '.sol'
 	shell: 
 		'cbc {input} solve -solu {output}'
 
 rule postProcess:
 	input:
-		solutionFile = outputDir + fileName + '.sol',
-		preProcessFile = outputDir + 'PreProcessed_' + fileName + '.txt'
+		solutionFile = outputDir + scenarioName + '.sol',
+		preProcessFile = outputDir + 'PreProcessed_' + scenarioName + '.txt'
 	output:
-		outputDir + 'PostProcessed' + fileName + '.txt'
+		outputDir + 'PostProcessed' + scenarioName + '.txt'
 	shell: 
 		'otoole results cbc csv {input.solutionFile} results --input_datafile {input.preProcessFile}'
 
@@ -275,4 +289,4 @@ rule cleanFigs:
 
 rule cleanDataFile:
 	shell:
-		'rm -rf {outputDir}{fileName}.txt'
+		'rm -rf {outputDir}{modelName}.txt'

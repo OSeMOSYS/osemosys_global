@@ -7,12 +7,15 @@
 import pandas as pd
 import os
 import shutil
+import yaml
 
 
-# In[ ]:
+#Read in information from YAML file
+yaml_file = open("config.yaml")
+parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-input_dir = r'../../data/'
-output_dir = r'../../osemosys_global_model/data/'                       
+input_dir = parsed_yaml_file.get('inputDir')
+output_dir = parsed_yaml_file.get('outputDir') + 'data/'                    
 
 def create_csv_files(path):
     csv_file_dict = {} 

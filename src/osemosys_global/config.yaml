@@ -1,4 +1,11 @@
----
- inputDir : '../../data/'
- outputDir: '../../osemosys_global_model/'
- scenario: 'OsemosysGlobal'
+inputDir: '../../data/'
+outputDir: '../../osemosys_global_model/'
+modelName: 'OsemosysGlobal'
+region: 'GLOBAL'
+startYear: 2015
+endYear: 2050
+daytype: False
+scenario: 'testGeoFilterV2'
+geographic_scope:
+  - 'IND'
+  - 'CHN'
