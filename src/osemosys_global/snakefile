@@ -97,7 +97,6 @@ ruleorder:
 	FileCheck >
 	GeographicFilter 
 	
-
 #####################################
 ## HELPER FUNCTIONS
 #####################################
@@ -107,6 +106,9 @@ def fileCheckFunc(csvFiles):
 	# INPUT:      csvFiles = List of all otoole osemosys csv's
 	# OUTPUT:     csvFiles = List of all files that need to be created via OPG_filecheck 
 
+	if not os.path.exists(outputDir + 'data/'):
+		os.makedirs(outputDir + 'data/')
+	
 	for each_csv in os.listdir(outputDir + 'data/'):
 		if each_csv in csvFiles:
 			csvFiles.remove(each_csv)
@@ -119,23 +121,22 @@ def fileCheckFunc(csvFiles):
 
 rule all:
 	input: 
-		outputDir + 'PostProcessed' + modelName + '.txt',
+		outputDir + scenarioName + '/' + 'PostProcessed' + scenarioName + '.txt',
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 rule dataFile:
 	input:
-		#outputDir + modelName + '.txt',
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures),
 		outputDir + scenarioName + '/' + scenarioName + '.txt'
 
 rule lpFile:
 	input: 
-		outputDir + modelName + '.lp',
+		outputDir + scenarioName + '/' + scenarioName + '.lp',
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 rule solve:
 	input: 
-		outputDir + 'PostProcessed' + scenarioName + '.txt',
+		outputDir + scenarioName + '/' + scenarioName + '.sol',
 		#expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 #####################################
@@ -181,7 +182,6 @@ rule TimeSlice:
 		outputDir + 'data/CapacityFactor.csv',
 		outputDir + 'data/TIMESLICE.csv',
 		outputDir + 'data/SpecifiedDemandProfile.csv',
-		#outputDir + 'data/SpecifiedAnnualDemand.csv',
 		outputDir + 'data/YearSplit.csv'
 	shell:
 		'python OPG_TS_data.py'
@@ -224,6 +224,7 @@ rule GeographicFilter:
 rule FileCheck:
 	input: 
 		expand('../../simplicity/data/{osemosysFile}', osemosysFile = osemosysFiles),
+		inputDir + 'default_values.csv',
 		'config.yaml'
 	output:
 		expand(outputDir + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles))
@@ -233,46 +234,43 @@ rule FileCheck:
 rule otooleConvert:
 	input:
 		datapackage = outputDir + scenarioName + '/datapackage.json',
-		#csvFiles = expand(outputDir + 'data/{osemosysFile}', osemosysFile = osemosysFiles)
 		csvFiles = expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles)
 	output:
-		#outputDir + modelName + '.txt'
 		outputDir + scenarioName + '/' + scenarioName + '.txt'
 	shell:
 		'otoole convert datapackage datafile {input.datapackage} {output}'
 
 rule preProcess:
 	input:
-		#outputDir + modelName + '.txt'
 		outputDir + scenarioName + '/' + scenarioName + '.txt'
 	output:
-		outputDir + 'PreProcessed_' + scenarioName + '.txt'
+		outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	shell:
-		'python preprocess_data.py otoole {input} {output}'
+		'python ../../OSeMOSYS_GNU_MathProg/scripts/preprocess_data.py otoole {input} {output}'
 
 rule createLP:
 	input:
-		modelFile = outputDir + 'osemosys_fast_preprocessed.txt',
-		dataFile = outputDir + 'PreProcessed_' + scenarioName + '.txt'
+		modelFile = 'osemosys_fast_preprocessed.txt',
+		dataFile = outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	output:
-		outputDir + scenarioName + '.lp'
+		outputDir + scenarioName + '/' + scenarioName + '.lp'
 	shell:
 		'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check'
 
 rule cbcSolve:
 	input:
-		outputDir + scenarioName + '.lp'
+		outputDir + scenarioName + '/' + scenarioName + '.lp'
 	output:
-		outputDir + scenarioName + '.sol'
+		outputDir + scenarioName + '/' + scenarioName + '.sol'
 	shell: 
 		'cbc {input} solve -solu {output}'
 
 rule postProcess:
 	input:
-		solutionFile = outputDir + scenarioName + '.sol',
-		preProcessFile = outputDir + 'PreProcessed_' + scenarioName + '.txt'
+		solutionFile = outputDir + scenarioName + '/' + scenarioName + '.sol',
+		preProcessFile = outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	output:
-		outputDir + 'PostProcessed' + scenarioName + '.txt'
+		outputDir + scenarioName + '/' + 'PostProcessed' + scenarioName + '.txt'
 	shell: 
 		'otoole results cbc csv {input.solutionFile} results --input_datafile {input.preProcessFile}'
 

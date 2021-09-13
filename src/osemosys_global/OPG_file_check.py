@@ -9,13 +9,12 @@ import os
 import shutil
 import yaml
 
-
 #Read in information from YAML file
 yaml_file = open("config.yaml")
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
 input_dir = parsed_yaml_file.get('inputDir')
-output_dir = parsed_yaml_file.get('outputDir') + 'data/'                    
+output_dir = parsed_yaml_file.get('outputDir') + 'data/'
 
 def create_csv_files(path):
     csv_file_dict = {} 
@@ -23,7 +22,7 @@ def create_csv_files(path):
         if each_csv not in os.listdir(path):
             #copy default values csv with data
             if each_csv == "default_values.csv":
-                shutil.copy(r'../../simplicity/data/default_values.csv',path)
+                shutil.copy(r'../../data/default_values.csv',path)
             #copy file names and column headers only
             else:
                 csv_df_in = pd.read_csv(os.path.join(r'../../simplicity/data/',

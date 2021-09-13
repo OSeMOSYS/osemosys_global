@@ -77,8 +77,8 @@ emissions = []
 
 # Create 'output' directory if it doesn't exist 
 import os
-if not os.path.exists('osemosys_global_model/data'):
-    os.makedirs('osemosys_global_model/data')
+#if not os.path.exists('osemosys_global_model/data'):
+#    os.makedirs('osemosys_global_model/data')
 
 # Create main generator table
 gen_cols_1 = ["child_class", "child_object", "property", "value"]
