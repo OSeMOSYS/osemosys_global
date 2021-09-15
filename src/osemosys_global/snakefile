@@ -136,8 +136,8 @@ rule lpFile:
 
 rule solve:
 	input: 
-		outputDir + scenarioName + '/' + scenarioName + '.sol',
-		#expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
+		#outputDir + scenarioName + '/' + scenarioName + '.sol',
+		directory(outputDir + scenarioName + '/results/')
 
 #####################################
 ## INTERMEDIATE RULES
@@ -270,9 +270,9 @@ rule postProcess:
 		solutionFile = outputDir + scenarioName + '/' + scenarioName + '.sol',
 		preProcessFile = outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	output:
-		outputDir + scenarioName + '/' + 'PostProcessed' + scenarioName + '.txt'
+		outputFolder = directory(outputDir + scenarioName + '/results/')
 	shell: 
-		'otoole results cbc csv {input.solutionFile} results --input_datafile {input.preProcessFile}'
+		'otoole results cbc csv {input.solutionFile} {output.outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
 
 #####################################
 ## CLEANING RULES

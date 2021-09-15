@@ -5,7 +5,7 @@ region: 'GLOBAL'
 startYear: 2015
 endYear: 2050
 daytype: False
-scenario: 'OsemosysGlobal2016'
+scenario: 'OsemosysGlobal'
 geographic_scope:
   - 'IND'
   - 'CHN'
