@@ -6,4 +6,4 @@ src/osemosys_global/.snakemake
 src/osemosys_global/.vscode
 
 *.csv
-*.txt
+
