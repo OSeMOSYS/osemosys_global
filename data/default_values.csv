@@ -7,7 +7,7 @@ CapacityFactor,1
 CapacityOfOneTechnologyUnit,0
 CapacityToActivityUnit,1
 CapitalCost,0
-CapitalCostStorage,0
+CapitalCostStorage,0.001
 Conversionld,0
 Conversionlh,0
 Conversionls,0
@@ -50,5 +50,5 @@ TotalTechnologyAnnualActivityUpperLimit,-1
 TotalTechnologyModelPeriodActivityLowerLimit,0
 TotalTechnologyModelPeriodActivityUpperLimit,-1
 TradeRoute,0
-VariableCost,0
+VariableCost,0.001
 YearSplit,0
