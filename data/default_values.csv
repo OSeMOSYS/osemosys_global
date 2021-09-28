@@ -6,8 +6,8 @@ AvailabilityFactor,1
 CapacityFactor,1
 CapacityOfOneTechnologyUnit,0
 CapacityToActivityUnit,1
-CapitalCost,0
-CapitalCostStorage,0.001
+CapitalCost,0.001
+CapitalCostStorage,0
 Conversionld,0
 Conversionlh,0
 Conversionls,0
