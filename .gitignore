@@ -5,5 +5,5 @@ osemosys_global_model/figs/*
 src/osemosys_global/.snakemake
 src/osemosys_global/.vscode
 
-*.csv
+
 
