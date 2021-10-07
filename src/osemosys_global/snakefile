@@ -1,9 +1,38 @@
 import os
+#import pandas as pd
+
+#####################################
+## HELPER FUNCTIONS
+#####################################
+
+def fileCheckFunc(csvFiles):
+	# DEFENITION: Checks what files will need to be created via OPG_filecheck.py
+	# INPUT:      csvFiles = List of all otoole osemosys csv's
+	# OUTPUT:     csvFiles = List of all files that need to be created via OPG_filecheck 
+
+	if not os.path.exists(outputDir + 'data/'):
+		os.makedirs(outputDir + 'data/')
+	
+	for each_csv in os.listdir(outputDir + 'data/'):
+		if each_csv in csvFiles:
+			csvFiles.remove(each_csv)
+	
+	return csvFiles
+
+def getDataFiles(csvPath):
+	# DEFENITION: Gets list of all data files otoole needs to run 
+	# INPUT:      csvPath = path to *.csv file that has all the names of the files
+	# OUTPUT:     dataFiles = list containing strings of all files needed
+	
+	df = pd.read_csv(csvPath)
+	#dataFiles = df['file_name'].tolist()
+	#return dataFiles
 
 #####################################
 ## REQUIRED FILES 
 #####################################
 
+#osemosysFiles = getDataFiles('../../data/csv_file_list.csv')
 osemosysFiles = [
 	'AccumulatedAnnualDemand.csv',
 	'AnnualEmissionLimit.csv',
@@ -69,6 +98,31 @@ osemosysFiles = [
 	'YEAR.csv',
 	'YearSplit.csv'
 ]
+
+resultFiles = [
+	'AccumulatedNewCapacity.csv',
+	'AnnualEmissions.csv',
+	'AnnualFixedOperatingCost.csv',
+	'AnnualTechnologyEmission.csv',
+	'AnnualTechnologyEmissionByMode.csv',
+	'AnnualVariableOperatingCost.csv',
+	'CapitalInvestment.csv',
+	'Demand.csv',
+	'DiscountedTechnologyEmissionsPenalty.csv',
+	'NewCapacity.csv',
+	'ProductionByTechnology.csv',
+	'ProductionByTechnologyAnnual.csv',
+	'RateOfActivity.csv',
+	'RateOfProductionByTechnology.csv',
+	'RateOfProductionByTechnologyByMode.csv',
+	'RateOfUseByTechnology.csv',
+	'RateOfUseByTechnologyByMode.csv',
+	'TotalAnnualTechnologyActivityByMode.csv',
+	'TotalCapacityAnnual.csv',
+	'TotalTechnologyAnnualActivity.csv',
+	'TotalTechnologyModelPeriodActivity.csv',
+	'UseByTechnology.csv'
+]
 	
 demandFigures = [
 	'South America', 
@@ -89,6 +143,8 @@ inputDir = config['inputDir']
 outputDir = config['outputDir']
 scenarioName = config['scenario']
 
+outputFolder = directory(outputDir + scenarioName + '/results/')
+
 ruleorder: 
 	PowerPlant > 
 	TimeSlice > 
@@ -96,24 +152,6 @@ ruleorder:
 	DemandProjections > 
 	FileCheck >
 	GeographicFilter 
-	
-#####################################
-## HELPER FUNCTIONS
-#####################################
-
-def fileCheckFunc(csvFiles):
-	# DEFENITION: Checks what files will need to be created via OPG_filecheck.py
-	# INPUT:      csvFiles = List of all otoole osemosys csv's
-	# OUTPUT:     csvFiles = List of all files that need to be created via OPG_filecheck 
-
-	if not os.path.exists(outputDir + 'data/'):
-		os.makedirs(outputDir + 'data/')
-	
-	for each_csv in os.listdir(outputDir + 'data/'):
-		if each_csv in csvFiles:
-			csvFiles.remove(each_csv)
-	
-	return csvFiles
 
 #####################################
 ## TARGETS
@@ -137,7 +175,9 @@ rule lpFile:
 rule solve:
 	input: 
 		#outputDir + scenarioName + '/' + scenarioName + '.sol',
-		directory(outputDir + scenarioName + '/results/')
+		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles)
+	#output:
+		#directory(outputDir + scenarioName + '/results/')
 
 #####################################
 ## INTERMEDIATE RULES
@@ -227,7 +267,8 @@ rule FileCheck:
 		inputDir + 'default_values.csv',
 		'config.yaml'
 	output:
-		expand(outputDir + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles))
+		expand(outputDir + scenarioName + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles)),
+		outputDir + 'data/default_values.csv'
 	shell:
 		'python OPG_file_check.py'
 
@@ -270,9 +311,11 @@ rule postProcess:
 		solutionFile = outputDir + scenarioName + '/' + scenarioName + '.sol',
 		preProcessFile = outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	output:
-		outputFolder = directory(outputDir + scenarioName + '/results/')
+		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
+		#outputFolder = directory(outputDir + scenarioName + '/results/')
 	shell: 
-		'otoole results cbc csv {input.solutionFile} {output.outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
+		#'otoole results cbc csv {input.solutionFile} {output.outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
+		'otoole results cbc csv {input.solutionFile} {outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
 
 #####################################
 ## CLEANING RULES
