@@ -50,7 +50,7 @@ osemosysFiles = [
 	'DaysInDayType.csv',
 	'DaySplit.csv',
 	'DAYTYPE.csv',
-	'default_values.csv',
+	#'default_values.csv',
 	'DepreciationMethod.csv',
 	'DiscountRate.csv',
 	'DiscountRateStorage.csv',
@@ -267,7 +267,7 @@ rule FileCheck:
 		inputDir + 'default_values.csv',
 		'config.yaml'
 	output:
-		expand(outputDir + scenarioName + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles)),
+		expand(outputDir + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles)),
 		outputDir + 'data/default_values.csv'
 	shell:
 		'python OPG_file_check.py'
