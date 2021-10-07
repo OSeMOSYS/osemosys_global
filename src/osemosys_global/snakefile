@@ -148,7 +148,7 @@ outputFolder = directory(outputDir + scenarioName + '/results/')
 ruleorder: 
 	PowerPlant > 
 	TimeSlice > 
-	VaribaleCosts > 
+	VariableCosts > 
 	DemandProjections > 
 	FileCheck >
 	GeographicFilter 
@@ -226,7 +226,7 @@ rule TimeSlice:
 	shell:
 		'python OPG_TS_data.py'
 
-rule VaribaleCosts:
+rule VariableCosts:
 	input:
 		inputDir + 'CMO-April-2020-forecasts.xlsx',
 		outputDir + 'data/TECHNOLOGY.csv',
