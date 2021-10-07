@@ -55,7 +55,12 @@ for each_csv in (os.listdir(input_dir)):
     df.to_csv(os.path.join(os.path.join(output_dir,each_csv)), index = None)
 
 # copy datapackage over for otoole convert
-shutil.copyfile(input_dir + '../datapackage.json',output_dir + '/../datapackage.json')
+shutil.copyfile(os.path.join('../../simplicity', 
+                             'datapackage.json'),
+                os.path.join(parsed_yaml_file.get('outputDir'),
+                             scenario_name, 
+                             'datapackage.json')
+                )
 
 # In[ ]:
 
