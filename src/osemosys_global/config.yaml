@@ -8,4 +8,4 @@ daytype: False
 scenario: 'OsemosysGlobal'
 geographic_scope:
   - 'IND'
-  - 'CHN'
+  - 'AFG'
