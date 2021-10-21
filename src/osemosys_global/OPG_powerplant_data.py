@@ -10,12 +10,15 @@ import numpy as np
 import itertools
 import urllib
 import os
+import yaml
 
 
-# Import data files and user input
+#Read in information from YAML file
+yaml_file = open("config.yaml")
+parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-input_dir = r'../../data/'
-output_dir = r'../../osemosys_global_model/data/'
+input_dir = parsed_yaml_file.get('inputDir')
+output_dir = parsed_yaml_file.get('outputDir') + 'data/'
 
 #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
@@ -64,18 +67,18 @@ df_weo_regions = pd.read_csv(os.path.join(input_dir,
                                           "weo_region_mapping.csv")
                              )
 
-model_start_year = 2015
-model_end_year = 2050
+model_start_year = parsed_yaml_file.get('startYear')
+model_end_year = parsed_yaml_file.get('endYear')
 years = list(range(model_start_year, 
                    model_end_year + 1))
 
-region_name = 'GLOBAL'
+region_name = parsed_yaml_file.get('region')
 emissions = []
 
 # Create 'output' directory if it doesn't exist 
 import os
-if not os.path.exists('osemosys_global_model/data'):
-    os.makedirs('osemosys_global_model/data')
+#if not os.path.exists('osemosys_global_model/data'):
+#    os.makedirs('osemosys_global_model/data')
 
 # Create main generator table
 gen_cols_1 = ["child_class", "child_object", "property", "value"]

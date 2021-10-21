@@ -14,6 +14,7 @@ import urllib
 import xlsxwriter
 import os
 from sklearn.linear_model import LinearRegression
+import yaml
 
 
 # ## Input data and projection boundaries
@@ -22,8 +23,12 @@ from sklearn.linear_model import LinearRegression
 
 # In[2]:
 
-input_dir = r'../../data/'
-output_dir = r'../../osemosys_global_model/data/'                   
+#Read in information from YAML file
+yaml_file = open("config.yaml")
+parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+input_dir = parsed_yaml_file.get('inputDir')
+output_dir = parsed_yaml_file.get('outputDir') + 'data/'                
 
 #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 
@@ -742,6 +747,9 @@ Node_Peak_Demand_SSP_projected.to_csv(os.path.join(input_dir,'Final_Electricity_
         
 Node_Peak_Demand_SSP_projected.iloc[48:49]
 
+model_start_year = parsed_yaml_file.get('startYear')
+model_end_year = parsed_yaml_file.get('endYear')
+
 #Format demand projections
 with open(os.path.join(output_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
     f.write('REGION,FUEL,YEAR,VALUE\n')
@@ -750,5 +758,5 @@ with open(os.path.join(output_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
             FUEL = 'ELC' + x[3:6] + 'XX02'
         if len(x) == 9:
             FUEL = 'ELC' + x[3:6] + x[7:9] + '02'
-        for year in range(2010,2101):
+        for year in range(model_start_year,model_end_year+1):
             f.write('GLOBAL,' + str(FUEL) + ',' + str(year) + ',' + str(Node_Demand_SSP_projected_Incl_Losses.at[x, year]*(0.0036)) + '\n')

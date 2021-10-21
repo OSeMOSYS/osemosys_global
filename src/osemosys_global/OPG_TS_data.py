@@ -17,12 +17,16 @@ import matplotlib
 import matplotlib.pyplot as plt
 import urllib
 import os
+import yaml
 
 # ### Input data files and user input
 
-# In[3]:
-input_dir = r'../../data/'
-output_dir = r'../../osemosys_global_model/data/'
+#Read in information from YAML file
+yaml_file = open("config.yaml")
+parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+input_dir = parsed_yaml_file.get('inputDir')
+output_dir = parsed_yaml_file.get('outputDir') + 'data/'
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
@@ -52,9 +56,9 @@ dayparts_df = pd.read_csv(os.path.join(input_dir,
                                        'ts_dayparts.csv')
                           )
 
-daytype_included = False
-model_start_year = 2015
-model_end_year = 2050
+daytype_included = parsed_yaml_file.get('daytype')
+model_start_year = parsed_yaml_file.get('startYear')
+model_end_year = parsed_yaml_file.get('endYear')
 years = list(range(model_start_year, model_end_year+1))
 
 
@@ -287,8 +291,7 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
                                          'YEAR', 
                                          'VALUE']]
 
-#sp_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedDemandProfile.csv'), index=None)
-
+sp_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedDemandProfile.csv'), index=None)
 
 # ### CapacityFactor
 
