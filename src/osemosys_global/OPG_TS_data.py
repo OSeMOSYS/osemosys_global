@@ -293,7 +293,6 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
 
 sp_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedDemandProfile.csv'), index=None)
 
-
 # ### CapacityFactor
 
 # In[12]:
