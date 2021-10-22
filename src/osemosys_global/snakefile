@@ -325,7 +325,7 @@ rule postProcess:
 
 rule visualisation:
 	input:
-		directory(outputDir + scenarioName + '/results/')
+		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
 	output:
 		expand(outputDir + scenarioName + '/figures/{resultFigure}.html', resultFigure = resultFigures),
 	shell: 
