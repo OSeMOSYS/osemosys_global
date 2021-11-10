@@ -137,12 +137,14 @@ demandFigures = [
 ## GLOABL VARIABLES
 #####################################
 
+#get user values from configuration file 										 
 configfile: 'config.yaml'
 modelName = config['modelName']
 inputDir = config['inputDir']
 outputDir = config['outputDir']
 scenarioName = config['scenario']
 
+#directory for saving otoole formatted resutls 											   
 outputFolder = directory(outputDir + scenarioName + '/results/')
 
 ruleorder: 
@@ -160,7 +162,6 @@ ruleorder:
 rule all:
 	input: 
 		outputDir + scenarioName + '/' + 'PostProcessed' + scenarioName + '.txt',
-		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 rule dataFile:
 	input:
@@ -170,14 +171,14 @@ rule dataFile:
 rule lpFile:
 	input: 
 		outputDir + scenarioName + '/' + scenarioName + '.lp',
-		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures)
 
 rule solve:
 	input: 
-		#outputDir + scenarioName + '/' + scenarioName + '.sol',
 		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles)
-	#output:
-		#directory(outputDir + scenarioName + '/results/')
+
+rule makeDag:
+	shell:
+		'snakemake --dag <solve> | dot -Tpdf > dag.pdf'
 
 #####################################
 ## INTERMEDIATE RULES
@@ -275,7 +276,8 @@ rule FileCheck:
 rule otooleConvert:
 	input:
 		datapackage = outputDir + scenarioName + '/datapackage.json',
-		csvFiles = expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles)
+		csvFiles = expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles),
+		defaultValueCsv = outputDir + 'data/default_values.csv'												 
 	output:
 		outputDir + scenarioName + '/' + scenarioName + '.txt'
 	shell:
@@ -312,9 +314,7 @@ rule postProcess:
 		preProcessFile = outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	output:
 		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
-		#outputFolder = directory(outputDir + scenarioName + '/results/')
 	shell: 
-		#'otoole results cbc csv {input.solutionFile} {output.outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
 		'otoole results cbc csv {input.solutionFile} {outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
 
 #####################################
