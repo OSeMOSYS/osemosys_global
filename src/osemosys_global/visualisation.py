@@ -47,10 +47,10 @@ seasons_months_days = pd.read_csv(os.path.join(data_folder,
                                                ),
                                   encoding='latin-1')
 seasons_dict = dict([(m, s) for m, s
-                     in zip(seasons_months_days.month,
+                     in zip(seasons_months_days.month_name,
                             seasons_months_days.season)])
 days_dict = dict([(m, d) for m, d
-                  in zip(seasons_months_days.month,
+                  in zip(seasons_months_days.month_name,
                          seasons_months_days.days)])
 months = list(seasons_dict)
 hours = list(range(1, 25))
@@ -103,22 +103,23 @@ def transform_ts(df):
     df.drop(['REGION', 'TIMESLICE'],
             axis=1,
             inplace=True)
-    
+
     df = pd.merge(df,
                   df_ts_template,
                   how='left',
                   on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
     df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS'].mul(3600))
-    
-    df = df.pivot_table(index = ['MONTH', 'HOUR', 'YEAR'],
-                        columns = 'LABEL',
-                        values = 'VALUE', 
-                        aggfunc = 'sum').reset_index().fillna(0)
-    '''
-    # df['MONTH'] = pd.Categorical(df['MONTH'], categories=months, ordered=True)
+
+    df = df.pivot_table(index=['MONTH', 'HOUR', 'YEAR'],
+                        columns='LABEL',
+                        values='VALUE',
+                        aggfunc='sum').reset_index().fillna(0)
+
+    df['MONTH'] = pd.Categorical(df['MONTH'],
+                                 categories=months,
+                                 ordered=True)
     df = df.sort_values(by=['MONTH', 'HOUR'])
     # df = df.rename(columns = tech_names)
-    '''
     return df
 
 
@@ -138,9 +139,9 @@ def plot_totalcapacity():
                  color='LABEL',
                  # color_discrete_map=color_dict,
                  template='plotly_white',
-                 labels={'YEAR':'Year',
-                     'VALUE':'Gigawatts (GW)',
-                     'LABEL':'Country-Powerplant'})
+                 labels={'YEAR': 'Year',
+                         'VALUE': 'Gigawatts (GW)',
+                         'LABEL': 'Country-Powerplant'})
     # fig.update_xaxes(type='category')
     fig.update_layout(
         font_family="Arial",
