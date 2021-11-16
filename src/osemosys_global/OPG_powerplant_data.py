@@ -11,6 +11,8 @@ import itertools
 import urllib
 import os
 import yaml
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 #Read in information from YAML file
@@ -976,3 +978,4 @@ emissions_df.to_csv(os.path.join(output_dir,
                                  "EMISSION.csv"),
                 index = None)
 
+logging.info('Powerplant Data Created')

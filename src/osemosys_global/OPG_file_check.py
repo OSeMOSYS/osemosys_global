@@ -8,6 +8,8 @@ import pandas as pd
 import os
 import shutil
 import yaml
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 #Read in information from YAML file
 yaml_file = open("config.yaml")
@@ -38,7 +40,7 @@ def create_csv_files(path):
 
 
 create_csv_files(output_dir)
-
+logging.info('File Check Completed')
 
 # In[ ]:
 

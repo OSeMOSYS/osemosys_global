@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import urllib
 import os
 import yaml
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 # ### Input data files and user input
 
@@ -403,4 +405,6 @@ time_slice_df = pd.DataFrame(time_slice_list, columns = ['VALUE'])
 time_slice_df.to_csv(os.path.join(output_dir, 
                                   'TIMESLICE.csv'),
                      index=None)
+
+logging.info('Time Slicing Completed')
 

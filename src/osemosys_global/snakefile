@@ -161,7 +161,7 @@ ruleorder:
 
 rule all:
 	input: 
-		outputDir + scenarioName + '/' + 'PostProcessed' + scenarioName + '.txt',
+		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles)
 
 rule dataFile:
 	input:
@@ -178,7 +178,7 @@ rule solve:
 
 rule makeDag:
 	shell:
-		'snakemake --dag <solve> | dot -Tpdf > dag.pdf'
+		'snakemake --dag solve | dot -Tpdf > dag.pdf'
 
 #####################################
 ## INTERMEDIATE RULES
@@ -205,8 +205,12 @@ rule PowerPlant:
 		outputDir + 'data/ResidualCapacity.csv',
 		outputDir + 'data/TECHNOLOGY.csv',
 		outputDir + 'data/YEAR.csv',
+	conda:
+		'envs/powerPlant.yaml'
+	log:
+		'logs/PowerPlant.log'
 	shell:
-		'python OPG_powerplant_data.py'
+		'python OPG_powerplant_data.py 2> {log}'
 		
 rule TimeSlice:
 	input:
@@ -224,8 +228,12 @@ rule TimeSlice:
 		outputDir + 'data/TIMESLICE.csv',
 		outputDir + 'data/SpecifiedDemandProfile.csv',
 		outputDir + 'data/YearSplit.csv'
+	conda:
+		'envs/timeSlice.yaml'
+	log:
+		'logs/timeSlice.log'	
 	shell:
-		'python OPG_TS_data.py'
+		'python OPG_TS_data.py 2> {log}'
 
 rule VariableCosts:
 	input:
@@ -234,8 +242,12 @@ rule VariableCosts:
 		'config.yaml'
 	output:
 		outputDir + 'data/VariableCost.csv'
+	conda:
+		'envs/variableCosts.yaml'
+	log:
+		'logs/variableCosts.log'
 	shell:
-		'python OPG_variablecosts.py'
+		'python OPG_variablecosts.py 2> {log}'
 		
 rule DemandProjections:
 	input:
@@ -249,8 +261,12 @@ rule DemandProjections:
 	output:
 		expand(outputDir + 'figs/Demand projection {demandFigure}.jpg', demandFigure = demandFigures),
 		outputDir + 'data/SpecifiedAnnualDemand.csv'
+	conda:
+		'envs/demand.yaml'
+	log:
+		'logs/demandProjections.log'
 	shell:
-		'python OPG_demand_projection.py'
+		'python OPG_demand_projection.py 2> {log}'
 		
 rule GeographicFilter:
 	input: 
@@ -259,8 +275,12 @@ rule GeographicFilter:
 	output:
 		expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles),
 		outputDir + scenarioName + '/datapackage.json'
+	conda:
+		'envs/geoFilter.yaml'
+	log:
+		'logs/geographicFilter.log'
 	shell:
-		'python OPG_geographic_filter.py'
+		'python OPG_geographic_filter.py 2> {log}'
 
 rule FileCheck:
 	input: 
@@ -270,8 +290,12 @@ rule FileCheck:
 	output:
 		expand(outputDir + 'data/{missingFile}', missingFile = fileCheckFunc(osemosysFiles)),
 		outputDir + 'data/default_values.csv'
+	conda:
+		'envs/fileCheck.yaml'
+	log:
+		'logs/fileCheck.log'
 	shell:
-		'python OPG_file_check.py'
+		'python OPG_file_check.py 2> {log}'
 
 rule otooleConvert:
 	input:
@@ -280,16 +304,24 @@ rule otooleConvert:
 		defaultValueCsv = outputDir + 'data/default_values.csv'												 
 	output:
 		outputDir + scenarioName + '/' + scenarioName + '.txt'
+	conda:
+		'envs/otoole.yaml'
+	log:
+		'logs/otoole.log'
 	shell:
-		'otoole convert datapackage datafile {input.datapackage} {output}'
+		'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
 
 rule preProcess:
 	input:
 		outputDir + scenarioName + '/' + scenarioName + '.txt'
 	output:
 		outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
+	conda:
+		'envs/preProcessData.yaml'
+	log:
+		'logs/preprocess.log'
 	shell:
-		'python ../../OSeMOSYS_GNU_MathProg/scripts/preprocess_data.py otoole {input} {output}'
+		'python ../../OSeMOSYS_GNU_MathProg/scripts/preprocess_data.py otoole {input} {output} 2> {log}'
 
 rule createLP:
 	input:
@@ -297,16 +329,20 @@ rule createLP:
 		dataFile = outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	output:
 		outputDir + scenarioName + '/' + scenarioName + '.lp'
+	log:
+		'logs/createLP.log'
 	shell:
-		'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check'
+		'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check 2> {log}'
 
 rule cbcSolve:
 	input:
 		outputDir + scenarioName + '/' + scenarioName + '.lp'
 	output:
 		outputDir + scenarioName + '/' + scenarioName + '.sol'
+	log:
+		'logs/cbcSolve.log'
 	shell: 
-		'cbc {input} solve -solu {output}'
+		'cbc {input} solve -solu {output} 2> {log}'
 
 rule postProcess:
 	input:
@@ -314,8 +350,15 @@ rule postProcess:
 		preProcessFile = outputDir + scenarioName + '/' + 'PreProcessed_' + scenarioName + '.txt'
 	output:
 		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
+	conda:
+		'envs/otoole.yaml'
+	log:
+		'logs/postprocess.log'
 	shell: 
-		'otoole results cbc csv {input.solutionFile} {outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
+		'otoole results cbc csv {input.solutionFile} {outputFolder} ' 
+		'--input_datafile {input.preProcessFile} '
+		'--input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json ' 
+		'2> {log}'
 
 #####################################
 ## CLEANING RULES
