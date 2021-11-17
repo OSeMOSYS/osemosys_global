@@ -2,7 +2,7 @@ inputDir: '../../data/'
 outputDir: '../../osemosys_global_model/'
 modelName: 'OsemosysGlobal'
 region: 'GLOBAL'
-startYear: 2016
+startYear: 2015
 endYear: 2050
 daytype: False
 scenario: 'OsemosysGlobal'
