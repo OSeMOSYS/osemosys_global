@@ -852,7 +852,11 @@ costs_dict = {'Biomass - waste incineration - CHP':'WAS',
               'Steam Coal - SUBCRITICAL':'COA',
               'Steam Coal - SUPERCRITICAL':'COA', 
               'Steam Coal - ULTRASUPERCRITICAL':'COA',
-              'Wind onshore':'WON'} # Missing OIL, OTH, PET, WOF
+              'Wind onshore':'WON',
+              'Wind offshore':'WOF',
+              'Petroleum':'PET',
+              'Oil':'OIL',
+              'Other':'OTH',} # Added OIL, OTH, PET, WOF to WEO 2018
 
 df_costs = df_costs.loc[df_costs['technology'].isin(costs_dict.keys())]
 df_costs['technology_code'] = df_costs['technology'].replace(costs_dict)
