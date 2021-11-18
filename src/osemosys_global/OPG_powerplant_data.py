@@ -933,6 +933,26 @@ for each_cost in ['Capital', 'O&M']:
                               index = None)
 
 
+# Create CapacityToActivityUnit csv
+df_capact_final = df_oar_final[['REGION',
+                                'TECHNOLOGY'
+                                ]]
+df_capact_final = df_capact_final.drop_duplicates()
+df_capact_final = (df_capact_final
+                   .loc[(df_capact_final['TECHNOLOGY']
+                         .str.startswith('PWR')
+                         ) | 
+                        (df_capact_final['TECHNOLOGY']
+                         .str.contains('TRN')
+                         )
+                        ]
+                   )
+df_capact_final['VALUE'] = 31.536
+df_capact_final.to_csv(os.path.join(output_dir,
+                                    "CapacityToActivityUnit.csv"),
+                       index = None)
+
+
 # ## Create sets for TECHNOLOGIES, FUELS
 
 def create_sets(x):

@@ -133,6 +133,11 @@ demandFigures = [
 	'Africa'
 ]
 
+resultFigures = [
+	'TotalCapacityAnnual', 
+	'GenerationAnnual',
+]
+
 #####################################
 ## GLOABL VARIABLES
 #####################################
@@ -175,7 +180,8 @@ rule lpFile:
 rule solve:
 	input: 
 		#outputDir + scenarioName + '/' + scenarioName + '.sol',
-		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles)
+		#expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles)
+		expand(outputDir + scenarioName + '/figures/{resultFigure}.html', resultFigure = resultFigures)
 	#output:
 		#directory(outputDir + scenarioName + '/results/')
 
@@ -316,6 +322,16 @@ rule postProcess:
 	shell: 
 		#'otoole results cbc csv {input.solutionFile} {output.outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
 		'otoole results cbc csv {input.solutionFile} {outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
+
+rule visualisation:
+	input:
+		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
+	output:
+		expand(outputDir + scenarioName + '/figures/{resultFigure}.html', resultFigure = resultFigures),
+	shell: 
+		#'otoole results cbc csv {input.solutionFile} {output.outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
+		'python visualisation.py'
+
 
 #####################################
 ## CLEANING RULES
