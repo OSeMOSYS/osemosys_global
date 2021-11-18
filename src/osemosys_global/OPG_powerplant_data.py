@@ -20,6 +20,8 @@ parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 input_dir = parsed_yaml_file.get('inputDir')
 output_dir = parsed_yaml_file.get('outputDir') + 'data/'
 
+cross_border_trade = parsed_yaml_file.get('crossborderTrade')
+
 #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
     #Open = open(r"../../data/PLEXOS_World_2015_Gold_V1.1.xlsx")
@@ -956,6 +958,20 @@ df_capact_final.to_csv(os.path.join(output_dir,
                                     "CapacityToActivityUnit.csv"),
                        index = None)
 
+# Set cross-border trade to 0 if False
+df_crossborder_final = df_oar_final[['REGION',
+                                     'TECHNOLOGY'
+                                     ]]
+df_crossborder_final = df_crossborder_final.drop_duplicates()
+df_crossborder_final = (df_crossborder_final
+                        .loc[df_crossborder_final['TECHNOLOGY']
+                             .str.startswith('TRN')
+                             ]
+                        )
+df_crossborder_final['VALUE'] = 0
+df_crossborder_final.to_csv(os.path.join(output_dir,
+                                         "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
+                            index = None)
 
 # ## Create sets for TECHNOLOGIES, FUELS
 

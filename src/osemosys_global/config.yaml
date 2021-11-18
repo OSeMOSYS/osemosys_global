@@ -9,3 +9,4 @@ scenario: 'OsemosysGlobal'
 geographic_scope:
   - 'IND'
   - 'AFG'
+crossborderTrade: False
