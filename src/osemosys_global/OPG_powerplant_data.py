@@ -959,19 +959,20 @@ df_capact_final.to_csv(os.path.join(output_dir,
                        index = None)
 
 # Set cross-border trade to 0 if False
-df_crossborder_final = df_oar_final[['REGION',
-                                     'TECHNOLOGY'
-                                     ]]
-df_crossborder_final = df_crossborder_final.drop_duplicates()
-df_crossborder_final = (df_crossborder_final
-                        .loc[df_crossborder_final['TECHNOLOGY']
-                             .str.startswith('TRN')
-                             ]
-                        )
-df_crossborder_final['VALUE'] = 0
-df_crossborder_final.to_csv(os.path.join(output_dir,
-                                         "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
-                            index = None)
+if not cross_border_trade:
+    df_crossborder_final = df_oar_final[['REGION',
+                                        'TECHNOLOGY'
+                                        ]]
+    df_crossborder_final = df_crossborder_final.drop_duplicates()
+    df_crossborder_final = (df_crossborder_final
+                            .loc[df_crossborder_final['TECHNOLOGY']
+                                .str.startswith('TRN')
+                                ]
+                            )
+    df_crossborder_final['VALUE'] = 0
+    df_crossborder_final.to_csv(os.path.join(output_dir,
+                                            "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
+                                index = None)
 
 # ## Create sets for TECHNOLOGIES, FUELS
 
