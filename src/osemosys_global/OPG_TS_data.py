@@ -51,12 +51,21 @@ except IOError:
                                          'All_Demand_UTC_2015.csv'),
                             encoding='latin-1')
 
-seasons_df = pd.read_csv(os.path.join(input_dir,
-                                      'ts_seasons.csv')
-                         )
-dayparts_df = pd.read_csv(os.path.join(input_dir,
-                                       'ts_dayparts.csv')
-                          )
+seasons_raw = parsed_yaml_file.get('seasons')
+seasonsData = []
+for s, months in seasons_raw.items():
+    for month in months:
+        seasonsData.append([month, s]) 
+seasons_df = pd.DataFrame(seasonsData, 
+    columns = ['month', 'season'])
+seasons_df = seasons_df.sort_values(by = ['month']).reset_index(drop = True)
+
+dayparts_raw = parsed_yaml_file.get('dayparts')
+daypartData = []
+for dp, hr in dayparts_raw.items():
+    daypartData.append([dp, hr[0], hr[1]])
+dayparts_df = pd.DataFrame(daypartData, 
+    columns = ['daypart', 'start_hour', 'end_hour'])
 
 daytype_included = parsed_yaml_file.get('daytype')
 model_start_year = parsed_yaml_file.get('startYear')

@@ -215,8 +215,6 @@ rule PowerPlant:
 rule TimeSlice:
 	input:
 		inputDir + 'All_Demand_UTC_2015.csv',
-		inputDir + 'ts_seasons.csv',
-		inputDir + 'ts_dayparts.csv',
 		inputDir + 'CSP 2015.csv',
 		inputDir + 'SolarPV 2015.csv',
 		inputDir + 'Hydro_Monthly_Profiles (15 year average).csv',
