@@ -359,6 +359,42 @@ Nuclear,Russia,"Annual O&M Costs
 ($2017 per kW)",160,160,160
 Nuclear,United States,"Annual O&M Costs
 ($2017 per kW)",175,175,175
+Oil,Africa,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,Brazil,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,China,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,Europe,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,India,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,Japan,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,Middle East,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,Russia,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Oil,United States,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,Africa,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,Brazil,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,China,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,Europe,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,India,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,Japan,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,Middle East,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,Russia,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Other,United States,"Annual O&M Costs
+($2017 per kW)",21,21,21
 Oxyfuel + CCS,Africa,"Annual O&M Costs
 ($2017 per kW)",185,175,160
 Oxyfuel + CCS,Brazil,"Annual O&M Costs
@@ -377,6 +413,24 @@ Oxyfuel + CCS,Russia,"Annual O&M Costs
 ($2017 per kW)",160,150,140
 Oxyfuel + CCS,United States,"Annual O&M Costs
 ($2017 per kW)",175,165,155
+Petroleum,Africa,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,Brazil,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,China,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,Europe,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,India,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,Japan,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,Middle East,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,Russia,"Annual O&M Costs
+($2017 per kW)",21,21,21
+Petroleum,United States,"Annual O&M Costs
+($2017 per kW)",21,21,21
 Solar photovoltaics - Buildings,Africa,"Annual O&M Costs
 ($2017 per kW)",38,36,34
 Solar photovoltaics - Buildings,Brazil,"Annual O&M Costs
@@ -467,6 +521,24 @@ Steam Coal - ULTRASUPERCRITICAL,Russia,"Annual O&M Costs
 ($2017 per kW)",65,65,65
 Steam Coal - ULTRASUPERCRITICAL,United States,"Annual O&M Costs
 ($2017 per kW)",70,70,70
+Wind offshore,Africa,"Annual O&M Costs
+($2017 per kW)",110,80,70
+Wind offshore,Brazil,"Annual O&M Costs
+($2017 per kW)",115,80,70
+Wind offshore,China,"Annual O&M Costs
+($2017 per kW)",75,55,50
+Wind offshore,Europe,"Annual O&M Costs
+($2017 per kW)",75,55,45
+Wind offshore,India,"Annual O&M Costs
+($2017 per kW)",65,50,45
+Wind offshore,Japan,"Annual O&M Costs
+($2017 per kW)",80,60,50
+Wind offshore,Middle East,"Annual O&M Costs
+($2017 per kW)",115,80,70
+Wind offshore,Russia,"Annual O&M Costs
+($2017 per kW)",120,85,75
+Wind offshore,United States,"Annual O&M Costs
+($2017 per kW)",130,85,75
 Wind onshore,Africa,"Annual O&M Costs
 ($2017 per kW)",46,44,44
 Wind onshore,Brazil,"Annual O&M Costs
@@ -845,6 +917,42 @@ Nuclear,Russia,"Capital costs
 ($2017 per kW)",3800,3800,3800
 Nuclear,United States,"Capital costs
 ($2017 per kW)",5000,4800,4500
+Oil,Africa,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,Brazil,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,China,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,Europe,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,India,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,Japan,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,Middle East,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,Russia,"Capital costs
+($2017 per kW)",1240,1240,1240
+Oil,United States,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,Africa,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,Brazil,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,China,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,Europe,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,India,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,Japan,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,Middle East,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,Russia,"Capital costs
+($2017 per kW)",1240,1240,1240
+Other,United States,"Capital costs
+($2017 per kW)",1240,1240,1240
 Oxyfuel + CCS,Africa,"Capital costs
 ($2017 per kW)",4800,4600,4200
 Oxyfuel + CCS,Brazil,"Capital costs
@@ -863,6 +971,24 @@ Oxyfuel + CCS,Russia,"Capital costs
 ($2017 per kW)",5300,5100,4700
 Oxyfuel + CCS,United States,"Capital costs
 ($2017 per kW)",5800,5550,5100
+Petroleum,Africa,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,Brazil,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,China,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,Europe,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,India,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,Japan,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,Middle East,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,Russia,"Capital costs
+($2017 per kW)",1240,1240,1240
+Petroleum,United States,"Capital costs
+($2017 per kW)",1240,1240,1240
 Solar photovoltaics - Buildings,Africa,"Capital costs
 ($2017 per kW)",2580,1580,1360
 Solar photovoltaics - Buildings,Brazil,"Capital costs
@@ -953,6 +1079,24 @@ Steam Coal - ULTRASUPERCRITICAL,Russia,"Capital costs
 ($2017 per kW)",2200,2200,2200
 Steam Coal - ULTRASUPERCRITICAL,United States,"Capital costs
 ($2017 per kW)",2300,2300,2300
+Wind offshore,Africa,"Capital costs
+($2017 per kW)",4440,2780,2300
+Wind offshore,Brazil,"Capital costs
+($2017 per kW)",4620,2880,2400
+Wind offshore,China,"Capital costs
+($2017 per kW)",3000,1920,1640
+Wind offshore,Europe,"Capital costs
+($2017 per kW)",3800,2440,2040
+Wind offshore,India,"Capital costs
+($2017 per kW)",3140,2040,1700
+Wind offshore,Japan,"Capital costs
+($2017 per kW)",4100,2600,2170
+Wind offshore,Middle East,"Capital costs
+($2017 per kW)",4580,2860,2360
+Wind offshore,Russia,"Capital costs
+($2017 per kW)",4800,3000,2500
+Wind offshore,United States,"Capital costs
+($2017 per kW)",4260,2480,2160
 Wind onshore,Africa,"Capital costs
 ($2017 per kW)",1860,1740,1720
 Wind onshore,Brazil,"Capital costs

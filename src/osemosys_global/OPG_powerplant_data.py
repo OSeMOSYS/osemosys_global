@@ -22,6 +22,8 @@ parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 input_dir = parsed_yaml_file.get('inputDir')
 output_dir = parsed_yaml_file.get('outputDir') + 'data/'
 
+cross_border_trade = parsed_yaml_file.get('crossborderTrade')
+
 #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
     #Open = open(r"../../data/PLEXOS_World_2015_Gold_V1.1.xlsx")
@@ -854,7 +856,11 @@ costs_dict = {'Biomass - waste incineration - CHP':'WAS',
               'Steam Coal - SUBCRITICAL':'COA',
               'Steam Coal - SUPERCRITICAL':'COA', 
               'Steam Coal - ULTRASUPERCRITICAL':'COA',
-              'Wind onshore':'WON'} # Missing OIL, OTH, PET, WOF
+              'Wind onshore':'WON',
+              'Wind offshore':'WOF',
+              'Petroleum':'PET',
+              'Oil':'OIL',
+              'Other':'OTH',} # Added OIL, OTH, PET, WOF to WEO 2018
 
 df_costs = df_costs.loc[df_costs['technology'].isin(costs_dict.keys())]
 df_costs['technology_code'] = df_costs['technology'].replace(costs_dict)
@@ -934,6 +940,41 @@ for each_cost in ['Capital', 'O&M']:
                                            "FixedCost.csv"),
                               index = None)
 
+
+# Create CapacityToActivityUnit csv
+df_capact_final = df_oar_final[['REGION',
+                                'TECHNOLOGY'
+                                ]]
+df_capact_final = df_capact_final.drop_duplicates()
+df_capact_final = (df_capact_final
+                   .loc[(df_capact_final['TECHNOLOGY']
+                         .str.startswith('PWR')
+                         ) | 
+                        (df_capact_final['TECHNOLOGY']
+                         .str.contains('TRN')
+                         )
+                        ]
+                   )
+df_capact_final['VALUE'] = 31.536
+df_capact_final.to_csv(os.path.join(output_dir,
+                                    "CapacityToActivityUnit.csv"),
+                       index = None)
+
+# Set cross-border trade to 0 if False
+if not cross_border_trade:
+    df_crossborder_final = df_oar_final[['REGION',
+                                        'TECHNOLOGY'
+                                        ]]
+    df_crossborder_final = df_crossborder_final.drop_duplicates()
+    df_crossborder_final = (df_crossborder_final
+                            .loc[df_crossborder_final['TECHNOLOGY']
+                                .str.startswith('TRN')
+                                ]
+                            )
+    df_crossborder_final['VALUE'] = 0
+    df_crossborder_final.to_csv(os.path.join(output_dir,
+                                            "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
+                                index = None)
 
 # ## Create sets for TECHNOLOGIES, FUELS
 

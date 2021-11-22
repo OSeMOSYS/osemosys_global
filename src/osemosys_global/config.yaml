@@ -4,7 +4,7 @@ outputDir: '../../osemosys_global_model/'
 modelName: 'OsemosysGlobal'
 region: 'GLOBAL'
 
-# Unique Scenario Name 
+# Scenario Name 
 scenario: 'OsemosysGlobal'
 
 # Temporal Parameters 
@@ -16,7 +16,7 @@ dayparts:
   D1: [0, 12]
   D2: [12, 24]
 seasons:
-  #season : [month_1, month_2, ...]
+  #season : [month 1, month 2, ...]
   S1: [12, 1, 2]
   S2: [3, 4, 5]
   S3: [6, 7, 8]
@@ -26,3 +26,4 @@ seasons:
 geographic_scope:
   - 'IND'
   - 'AFG'
+crossborderTrade: False

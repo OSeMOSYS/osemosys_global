@@ -1,33 +1,31 @@
-tech,colour
-BIO,forestgreen
-COA,black
-CRU,red
-DSL,orange
-ELC,grey
-GEO,purple
-GSL,orange
-HFO,brown
-HYD,blue
-JFL,firebrick
-LNG,purple
-LPG,gold
-PCK,red
-GAS,purple
-OHC,grey
-PET,red
-SOL,gold
-URN,grey
-WAS,green
-WAT,blue
-LND,green
-WIN,violet
-OTH,grey
-COG,red
-OIL,red
-OCG,purple
-CCG,violet
-CSP,red
-SPV,gold
-WON,pink
-WOF,lightpink
-WAV,darkblue
+tech_id,tech_name,colour
+BIO,Biomass,forestgreen
+COA,Coal,black
+CRU,Crude oil,red
+DSL,Diesel,orange
+ELC,Electricity,grey
+GEO,Geothermal,purple
+GSL,Gasoline,orange
+HFO,HFO,brown
+HYD,Hydro,blue
+JFL,Jet fuel,firebrick
+LNG,LNG,purple
+LPG,LPG,gold
+PCK,Petroleum coke,red
+GAS,Natural gas,purple
+OHC,Other hydrocarbons,grey
+PET,Petroleum,red
+SOL,Solar,gold
+URN,Nuclear,grey
+WAS,Waste,green
+WIN,Wind,violet
+OTH,Other,grey
+COG,Cogeneration,red
+OIL,Oil,red
+OCG,Gas - Open cycle,purple
+CCG,Gas - Combined cycle,violet
+CSP,CSP,red
+SPV,Solar PV,gold
+WON,Wind - Onshore,pink
+WOF,Wind - Offshore,lightpink
+WAV,Wave,darkblue
