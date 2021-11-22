@@ -15,6 +15,8 @@ import xlsxwriter
 import os
 from sklearn.linear_model import LinearRegression
 import yaml
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 # ## Input data and projection boundaries
@@ -360,9 +362,10 @@ Country_POP_SSP_Missing = Spatial_Mapping_Country[(~Spatial_Mapping_Country.inde
 for x in Country_POP_SSP_Missing.index:
     a = x in Import_POP_Missing.index
     if a == False:
-        raise SystemExit(f'Country data for {x} is not available in the SSP or custom dataset! Add country-level data.')
+        logging.error('Country data for %s is not available in the SSP or custom dataset! Add country-level data.', x)
+        raise SystemExit(1)
     else: 
-        print(f'Country data for {x} included from custom dataset.')
+        logging.info('Country data for %s included from custom dataset.', x)
 
 #Filters data for relevant SSP
 Import_POP_Missing = Import_POP_Missing.loc[(Import_POP_Missing['Scenario'] == Pathway)]
@@ -400,9 +403,10 @@ Country_GDPppp_SSP_Missing = Spatial_Mapping_Country[(~Spatial_Mapping_Country.i
 for x in Country_GDPppp_SSP_Missing.index:
     a = x in Import_GDP_Missing.index
     if a == False:
-        raise SystemExit(f'Country data for {x} is not available in the SSP or custom dataset! Add country-level data.')
+        logging.error('Country data for %s is not available in the SSP or custom dataset! Add country-level data.', x)
+        raise SystemExit(1)
     else: 
-        print(f'Country data for {x} included from custom dataset.')
+        logging.info('Country data for %s included from custom dataset.', x)
 
 #Filters data for relevant SSP
 Import_GDP_Missing = Import_GDP_Missing.loc[(Import_GDP_Missing['Scenario'] == Pathway)]
@@ -440,9 +444,10 @@ Country_URB_SSP_Missing = Spatial_Mapping_Country[(~Spatial_Mapping_Country.inde
 for x in Country_URB_SSP_Missing.index:
     a = x in Import_URB_Missing.index
     if a == False:
-        raise SystemExit(f'Country data for {x} is not available in the SSP or custom dataset! Add country-level data.')
+        logging.error('Country data for %s is not available in the SSP or custom dataset! Add country-level data.', x)
+        raise SystemExit(1)
     else: 
-        print(f'Country data for {x} included from custom dataset.')
+        logging.info('Country data for %s included from custom dataset.', x)
 
 #Filters data for relevant SSP
 Import_URB_Missing = Import_URB_Missing.loc[(Import_URB_Missing['Scenario'] == Pathway)]
@@ -760,3 +765,5 @@ with open(os.path.join(output_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
             FUEL = 'ELC' + x[3:6] + x[7:9] + '02'
         for year in range(model_start_year,model_end_year+1):
             f.write('GLOBAL,' + str(FUEL) + ',' + str(year) + ',' + str(Node_Demand_SSP_projected_Incl_Losses.at[x, year]*(0.0036)) + '\n')
+
+logging.info('Demand Projections Completed')

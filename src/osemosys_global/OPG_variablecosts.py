@@ -13,6 +13,8 @@ import numpy as np
 import itertools
 import os
 import yaml
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 # ### Import data files and user input              
@@ -182,3 +184,5 @@ df_varcosts_final = df_varcost[['REGION',
                        'VALUE']]
 
 df_varcosts_final.to_csv(os.path.join(output_dir,'VariableCost.csv'), mode='w', header=True, index = None)
+
+logging.info('Variable Costs Completed')

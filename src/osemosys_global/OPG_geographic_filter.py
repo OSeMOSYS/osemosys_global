@@ -12,6 +12,8 @@ import pandas as pd
 import os
 import yaml
 import shutil
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 # In[ ]:
 
@@ -62,6 +64,7 @@ shutil.copyfile(os.path.join('../../simplicity',
                              'datapackage.json')
                 )
 
+logging.info('Geographic Filter Applied')
 # In[ ]:
 
 
