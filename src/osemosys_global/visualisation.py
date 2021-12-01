@@ -8,11 +8,27 @@ import matplotlib.pyplot as plt
 import itertools
 import os
 import sys
+import yaml
 
-input_folder = '../../osemosys_global_model/OsemosysGlobal/results'
-output_folder = '../../osemosys_global_model/OsemosysGlobal/figures'
-model_folder = '../../osemosys_global_model/OsemosysGlobal/data'
-data_folder = '../../data'
+#get paths from configuration file 
+yaml_file = open("config.yaml")
+parsed_yaml_file = yaml.load(yaml_file, Loader = yaml.FullLoader)
+input_folder = os.path.join(parsed_yaml_file.get('outputDir'), 
+                            parsed_yaml_file.get('scenario'), 
+                            'results')
+output_folder = os.path.join(parsed_yaml_file.get('outputDir'), 
+                            parsed_yaml_file.get('scenario'), 
+                            'figures')
+model_folder = os.path.join(parsed_yaml_file.get('outputDir'), 
+                            parsed_yaml_file.get('scenario'), 
+                            'data')
+data_folder = parsed_yaml_file.get('inputDir')
+
+
+#input_folder = '../../osemosys_global_model/OsemosysGlobal/results'
+#output_folder = '../../osemosys_global_model/OsemosysGlobal/figures'
+#model_folder = '../../osemosys_global_model/OsemosysGlobal/data'
+#data_folder = '../../data'
 
 try:
     os.makedirs(output_folder)
