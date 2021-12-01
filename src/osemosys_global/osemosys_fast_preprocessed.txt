@@ -267,7 +267,7 @@ var StorageLevelDayTypeFinish{r in REGION, s in STORAGE, ls in SEASON, ld in DAY
 var NumberOfNewTechnologyUnits{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0,integer;
 var NewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0;
 #var AccumulatedNewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0;
-#var TotalCapacityAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
+var TotalCapacityAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #
 #########                    Activity Variables                         #############
 #
@@ -358,7 +358,7 @@ minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR}
 #########               Capacity Adequacy A                     #############
 #
 #s.t. CAa1_TotalNewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR}:AccumulatedNewCapacity[r,t,y] = sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy];
-#s.t. CAa2_TotalAnnualCapacity{r in REGION, t in TECHNOLOGY, y in YEAR}: ((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y]) = TotalCapacityAnnual[r,t,y];
+s.t. CAa2_TotalAnnualCapacity{r in REGION, t in TECHNOLOGY, y in YEAR}: ((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y]) = TotalCapacityAnnual[r,t,y];
 #s.t. CAa3_TotalActivityOfEachTechnology{r in REGION, t in TECHNOLOGY, l in TIMESLICE, y in YEAR}: sum{m in MODEperTECHNOLOGY[t]} RateOfActivity[r,l,t,m,y] = RateOfTotalActivity[r,t,l,y];
 s.t. CAa4_Constraint_Capacity{r in REGION, l in TIMESLICE, t in TECHNOLOGY, y in YEAR}: sum{m in MODEperTECHNOLOGY[t]} RateOfActivity[r,l,t,m,y] <= ((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*CapacityFactor[r,t,l,y]*CapacityToActivityUnit[r,t];
 s.t. CAa5_TotalNewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR: CapacityOfOneTechnologyUnit[r,t,y]<>0}: CapacityOfOneTechnologyUnit[r,t,y]*NumberOfNewTechnologyUnits[r,t,y] = NewCapacity[r,t,y];
@@ -1053,7 +1053,7 @@ table TotalAnnualTechnologyActivityByMode
     sum{l in TIMESLICE}
         RateOfActivity[r,l,t,m,y] * YearSplit[l,y]~VALUE;
 
-table TotalCapacityAnnual
+table TotalCapacityAnnualResults
     {r in REGION, t in TECHNOLOGY, y in YEAR:
         ResidualCapacity[r,t,y] +
         (sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0}
