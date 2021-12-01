@@ -360,7 +360,7 @@ rule postProcess:
 	shell: 
 		'otoole results cbc csv {input.solutionFile} {outputFolder} ' 
 		'--input_datafile {input.preProcessFile} '
-		'--input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json ' 
+		'--input_datapackage {outputDir}{scenarioName}/datapackage.json ' 
 		'2> {log}'
 
 rule visualisation:
@@ -368,8 +368,9 @@ rule visualisation:
 		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
 	output:
 		expand(outputDir + scenarioName + '/figures/{resultFigure}.html', resultFigure = resultFigures),
+    log:
+        'logs/visualisation.log'
 	shell: 
-		#'otoole results cbc csv {input.solutionFile} {output.outputFolder} --input_datafile {input.preProcessFile} --input_datapackage ../../osemosys_global_model/OsemosysGlobal/datapackage.json'
 		'python visualisation.py'
 
 
