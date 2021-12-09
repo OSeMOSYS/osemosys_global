@@ -244,7 +244,7 @@ def plot_generation_hourly():
                           )
 
 
-#plot_generation_hourly()
+plot_generation_hourly()
 plot_totalcapacity()
-#plot_generationannual()
+plot_generationannual()
 

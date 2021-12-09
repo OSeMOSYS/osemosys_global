@@ -365,6 +365,7 @@ rule postProcess:
 
 rule visualisation:
 	input:
+		'config.yaml',
 		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
 	output:
 		expand(outputDir + scenarioName + '/figures/{resultFigure}.html', resultFigure = resultFigures),
