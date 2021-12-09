@@ -82,12 +82,13 @@ dayparts_dict = dict(zip(dayparts_hours.daypart,
 
 def powerplant_filter(df):
     filtered_df = df[~df.TECHNOLOGY.str.contains('TRN')]
+    filtered_df = filtered_df.loc[filtered_df.TECHNOLOGY.str[0:3] == 'PWR']
     filtered_df['TYPE'] = filtered_df.TECHNOLOGY.str[3:6]
     filtered_df['COUNTRY'] = filtered_df.TECHNOLOGY.str[6:9]
     filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
     filtered_df.drop(['TECHNOLOGY', 'TYPE', 'COUNTRY'],
             axis=1,
-            inplace=True)    
+            inplace=True)   
     return filtered_df
 
 
@@ -187,7 +188,7 @@ def plot_generationannual():
                  # color_discrete_map=color_dict,
                  template='plotly_white',
                  labels={'YEAR': 'Year',
-                         'VALUE': 'Gigawatts (GW)',
+                         'VALUE': 'Petajoules (PJ)',
                          'LABEL': 'Country-Powerplant'})
     fig.update_layout(
         font_family="Arial",
@@ -243,7 +244,7 @@ def plot_generation_hourly():
                           )
 
 
-plot_generation_hourly()
+#plot_generation_hourly()
 plot_totalcapacity()
-plot_generationannual()
+#plot_generationannual()
 
