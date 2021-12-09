@@ -365,13 +365,14 @@ rule postProcess:
 
 rule visualisation:
 	input:
+		'config.yaml',
 		expand(outputDir + scenarioName + '/results/{resultFile}', resultFile = resultFiles),
 	output:
 		expand(outputDir + scenarioName + '/figures/{resultFigure}.html', resultFigure = resultFigures),
-    log:
-        'logs/visualisation.log'
+	log:
+		'logs/visualisation.log'
 	shell: 
-		'python visualisation.py'
+		'python visualisation.py 2> {log}'
 
 
 #####################################

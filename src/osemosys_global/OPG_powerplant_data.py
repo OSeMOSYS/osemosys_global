@@ -976,6 +976,24 @@ if not cross_border_trade:
                                             "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
                                 index = None)
 
+# Create Operational Life data
+tech_code_dict_reverse = dict((v,k) for k,v in tech_code_dict.items())
+op_life_techs = list(set(list(df_iar_final['TECHNOLOGY'].unique()) + \
+    list(df_oar_final['TECHNOLOGY'].unique())))
+op_life_techs = [tech for tech in op_life_techs if 
+    (tech[0:3] == 'PWR') and (len(tech) == 13)]
+op_life_Out = []
+for op_life_tech in op_life_techs:
+    op_life_tech_name = tech_code_dict_reverse[op_life_tech[3:6]]
+    op_life_Out.append([
+        region_name, 
+        op_life_tech,
+        op_life_dict[op_life_tech_name]])
+df_op_life_Out = pd.DataFrame(op_life_Out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
+df_op_life_Out.to_csv(os.path.join(output_dir,
+                                            "OperationalLife.csv"),
+                                index = None)
+
 # ## Create sets for TECHNOLOGIES, FUELS
 
 def create_sets(x):
