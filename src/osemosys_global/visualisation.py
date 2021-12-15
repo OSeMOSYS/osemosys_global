@@ -8,11 +8,27 @@ import matplotlib.pyplot as plt
 import itertools
 import os
 import sys
+import yaml
 
-input_folder = '../../osemosys_global_model/OsemosysGlobal/results'
-output_folder = '../../osemosys_global_model/OsemosysGlobal/figures'
-model_folder = '../../osemosys_global_model/OsemosysGlobal/data'
-data_folder = '../../data'
+#get paths from configuration file 
+yaml_file = open("config.yaml")
+parsed_yaml_file = yaml.load(yaml_file, Loader = yaml.FullLoader)
+input_folder = os.path.join(parsed_yaml_file.get('outputDir'), 
+                            parsed_yaml_file.get('scenario'), 
+                            'results')
+output_folder = os.path.join(parsed_yaml_file.get('outputDir'), 
+                            parsed_yaml_file.get('scenario'), 
+                            'figures')
+model_folder = os.path.join(parsed_yaml_file.get('outputDir'), 
+                            parsed_yaml_file.get('scenario'), 
+                            'data')
+data_folder = parsed_yaml_file.get('inputDir')
+
+
+#input_folder = '../../osemosys_global_model/OsemosysGlobal/results'
+#output_folder = '../../osemosys_global_model/OsemosysGlobal/figures'
+#model_folder = '../../osemosys_global_model/OsemosysGlobal/data'
+#data_folder = '../../data'
 
 try:
     os.makedirs(output_folder)
@@ -66,12 +82,13 @@ dayparts_dict = dict(zip(dayparts_hours.daypart,
 
 def powerplant_filter(df):
     filtered_df = df[~df.TECHNOLOGY.str.contains('TRN')]
+    filtered_df = filtered_df.loc[filtered_df.TECHNOLOGY.str[0:3] == 'PWR']
     filtered_df['TYPE'] = filtered_df.TECHNOLOGY.str[3:6]
     filtered_df['COUNTRY'] = filtered_df.TECHNOLOGY.str[6:9]
     filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
     filtered_df.drop(['TECHNOLOGY', 'TYPE', 'COUNTRY'],
             axis=1,
-            inplace=True)    
+            inplace=True)   
     return filtered_df
 
 
@@ -171,7 +188,7 @@ def plot_generationannual():
                  # color_discrete_map=color_dict,
                  template='plotly_white',
                  labels={'YEAR': 'Year',
-                         'VALUE': 'Gigawatts (GW)',
+                         'VALUE': 'Petajoules (PJ)',
                          'LABEL': 'Country-Powerplant'})
     fig.update_layout(
         font_family="Arial",
