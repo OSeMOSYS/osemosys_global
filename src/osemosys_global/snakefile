@@ -285,6 +285,20 @@ rule GeographicFilter:
 	shell:
 		'python OPG_geographic_filter.py 2> {log}'
 
+rule otooleConvert:
+	input:
+		datapackage = outputDir + scenarioName + '/datapackage.json',
+		csvFiles = expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles),
+		defaultValueCsv = outputDir + 'data/default_values.csv'												 
+	output:
+		outputDir + scenarioName + '/' + scenarioName + '.txt'
+	conda:
+		'envs/otoole.yaml'
+	log:
+		'logs/otoole.log'
+	shell:
+		'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
+
 rule FileCheck:
 	input: 
 		expand('../../simplicity/data/{osemosysFile}', osemosysFile = osemosysFiles),
@@ -299,20 +313,6 @@ rule FileCheck:
 		'logs/fileCheck.log'
 	shell:
 		'python OPG_file_check.py 2> {log}'
-
-rule otooleConvert:
-	input:
-		datapackage = outputDir + scenarioName + '/datapackage.json',
-		csvFiles = expand(outputDir + scenarioName + '/data/{osemosysFile}', osemosysFile = osemosysFiles),
-		defaultValueCsv = outputDir + 'data/default_values.csv'												 
-	output:
-		outputDir + scenarioName + '/' + scenarioName + '.txt'
-	conda:
-		'envs/otoole.yaml'
-	log:
-		'logs/otoole.log'
-	shell:
-		'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
 
 rule preProcess:
 	input:
