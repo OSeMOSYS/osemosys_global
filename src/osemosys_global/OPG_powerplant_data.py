@@ -84,6 +84,67 @@ import os
 #if not os.path.exists('osemosys_global_model/data'):
 #    os.makedirs('osemosys_global_model/data')
 
+# Technologies that will have 00 and 01 suffixes to represent PLEXOS 
+# historical values and future values 
+duplicate_techs = ['CCG', 'OCG']
+
+def duplicatePlexosTechs(df_in, techs):
+    """Creates new technologies to replace PLEXOS technolgoies based on 
+    historical parameter values. New technologies will end in '01'
+    
+    Arguments: 
+    df_in = dataframe in otoole and og formatting with a TECHNOLOGY column
+    techs = List of technology triads to duplicate [CCG, HYD, ...]
+
+    Returns: 
+    df_out = dataframe with same columns as df_in. All tech names that include
+    techs values will be returned with updated naming. Remaining technologies 
+    are deleted 
+
+    Example:
+    df_out = duplicatePlexosTechs(df_in, ['CCG', 'OCG'])
+    df_in['TECHNOLOGY'] = [PWRCCGAFGXX01, PWROCGAFGXX01, PWRHYDAFGXX01]
+    df_out['TECHNOLOGY'] = [PWRCCGAFGXX02, PWROCGAFGXX02]
+    """
+
+    df_out = df_in.copy()
+    df_out = df_out.loc[df_out['TECHNOLOGY'].str[3:6].isin(techs)]
+    df_out['TECHNOLOGY'] = df_out['TECHNOLOGY'].str.slice_replace(
+        start=11, stop=13, repl='01')
+    return df_out
+
+def createPwrTechs(df_in, techs):
+    """Adds a 'TECHNOLOGY' column to a dataframe will to format power 
+    generation technology names. The names are formatted so the suffix for 
+    plants in the argument list will have 00, while everything else will 
+    have an 01 suffix
+    
+    Arguments: 
+    df_in = dataframe with a 'tech_codes' and 'node_codes' column
+    tList = List of technology triads to have 00 suffix [CCG, HYD, ...]
+
+    Returns: 
+    df_out = same dataframe as df_in, except with a 'TECHNOLOGY' column added 
+    to the end 
+
+    Example:
+    df_out = createPwrTechs(df_in, ['CCG', 'OCG'])
+    df_in['tech_code'] = ('CCG', SPV, 'OCG', 'HYD')
+    df_in['node_code'] = ('AGOXX', AGOXX, 'INDNP', 'INDNP')
+    df_out['TECHNOLOGY'] = [PWRCCGAFGXX00, PWRSPVAFGXX01, PWROCGINDNP00, PWRHYDINDNP01]
+    """
+    df_out = df_in.copy()
+    for t in techs:
+        df_out.loc[df_out['tech_code'] == t, 'tech_suffix'] = '00'
+    df_out['tech_suffix'] = df_out['tech_suffix'].fillna('01')
+    df_out['TECHNOLOGY'] = ('PWR' + 
+                            df_out['tech_code'] + 
+                            df_out['node_code'] + 
+                            df_out['tech_suffix']
+                            )
+    df_out = df_out.drop('tech_suffix', axis = 1)
+    return df_out
+
 # Create main generator table
 gen_cols_1 = ["child_class", "child_object", "property", "value"]
 df_gen = df[gen_cols_1]
@@ -298,11 +359,8 @@ df_res_cap = df_res_cap.groupby(
 )["value"].sum()
 
 # Add column with naming convention
-df_res_cap['node_code'] = df_res_cap['node_code']
-df_res_cap['tech'] = ('PWR' + 
-                      df_res_cap['tech_code'] + 
-                      df_res_cap['node_code'] + '01'
-                     )
+df_res_cap = createPwrTechs(df_res_cap, duplicate_techs)
+
 # Convert total capacity from MW to GW
 df_res_cap['value'] = df_res_cap['value'].div(1000)
 
@@ -313,8 +371,7 @@ df_res_cap_plot = df_res_cap[['node_code',
                              'value']]
 
 # Rename 'model_year' to 'year' and 'total_capacity' to 'value'
-df_res_cap.rename({'tech': 'TECHNOLOGY',
-                   'model_year': 'YEAR',
+df_res_cap.rename({'model_year': 'YEAR',
                    'value': 'VALUE'},
                   inplace=True,
                   axis=1)
@@ -328,6 +385,11 @@ df_res_cap['REGION'] = region_name
 
 # Reorder columns
 df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
+
+#set residual capaity for all new non-Plexos techs to zero 
+df_res_cap_newTechs = duplicatePlexosTechs(df_res_cap, duplicate_techs)
+df_res_cap_newTechs['VALUE'] = 0
+df_res_cap = df_res_cap.append(df_res_cap_newTechs, ignore_index=True)
 
 # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
 df_res_cap.to_csv(os.path.join(output_dir, 
@@ -408,10 +470,7 @@ df_ratios = pd.DataFrame(list(itertools.product(node_list,
                          columns = ['node_code', 'tech_code', 'MODE_OF_OPERATION', 'YEAR']
                          )
 
-df_ratios['TECHNOLOGY'] = ('PWR' + 
-                           df_ratios['tech_code'] + 
-                           df_ratios['node_code'] + '01'
-                          )
+df_ratios = createPwrTechs(df_ratios, duplicate_techs)
 
 thermal_fuel_list = ['COA',
                      'COG',
@@ -794,7 +853,20 @@ df_iar_final = df_iar_final[['REGION',
                              'FUEL',  
                              'MODE_OF_OPERATION',
                              'YEAR', 
-                             'VALUE',]]
+                             'VALUE']]
+
+# Add iar for techs not using PLEXOS values 
+df_iar_newTechs = duplicatePlexosTechs(df_iar_final, duplicate_techs)
+df_ccg = df_iar_newTechs.loc[df_iar_newTechs['TECHNOLOGY'].str[3:6] == 'CCG']
+df_ccg['VALUE'] = round(1/0.5, 3)
+df_iar_final.append(df_ccg, ignore_index=True)
+df_ocg = df_iar_newTechs.loc[df_iar_newTechs['TECHNOLOGY'].str[3:6] == 'OCG']
+df_ocg['VALUE'] = round(1/0.35, 3)
+df_iar_final.append(df_ocg, ignore_index=True)
+
+# Add oar for techs not using PLEXOS values 
+df_oar_newTechs = duplicatePlexosTechs(df_oar_final, duplicate_techs)
+df_oar_final = df_oar_final.append(df_oar_newTechs, ignore_index=True)
 
 #df_oar_final.to_csv(r"osemosys_global_model/data/OutputActivityRatio.csv", index = None)
 df_oar_final.to_csv(os.path.join(output_dir,
@@ -930,6 +1002,9 @@ for each_cost in ['Capital', 'O&M']:
                             )
     df_costs_final = df_costs_final[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
     df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
+
+    #df_costs_newTechs = duplicatePlexosTechs(df_costs_final, duplicate_techs)
+    #df_costs_final = df_costs_final.append(df_costs_newTechs, ignore_index=True)
     
     if each_cost in ['Capital']:
         df_costs_final.to_csv(os.path.join(output_dir, 
@@ -955,6 +1030,9 @@ df_capact_final = (df_capact_final
                          )
                         ]
                    )
+
+#df_capact_newTechs = duplicatePlexosTechs(df_capact_final, duplicate_techs)
+#df_capact_final = df_capact_final.append(df_capact_newTechs, ignore_index=True)
 df_capact_final['VALUE'] = 31.536
 df_capact_final.to_csv(os.path.join(output_dir,
                                     "CapacityToActivityUnit.csv"),
@@ -990,6 +1068,10 @@ for op_life_tech in op_life_techs:
         op_life_tech,
         op_life_dict[op_life_tech_name]])
 df_op_life_Out = pd.DataFrame(op_life_Out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
+
+#df_op_life_newTechs = duplicatePlexosTechs(df_op_life_Out, duplicate_techs)
+#df_op_life_Out = df_op_life_Out.append(df_op_life_newTechs, ignore_index=True)
+
 df_op_life_Out.to_csv(os.path.join(output_dir,
                                             "OperationalLife.csv"),
                                 index = None)
