@@ -44,7 +44,7 @@ tech_names = dict([(c, n) for c, n
                    in zip(name_color_codes.tech_id,
                           name_color_codes.tech_name)])
 color_dict = dict([(n, c) for n, c
-                   in zip(name_color_codes.tech_name,
+                   in zip(name_color_codes.tech_id,
                           name_color_codes.colour)])
 
 # Create list of generation technologies
@@ -86,6 +86,7 @@ def powerplant_filter(df):
     filtered_df['TYPE'] = filtered_df.TECHNOLOGY.str[3:6]
     filtered_df['COUNTRY'] = filtered_df.TECHNOLOGY.str[6:9]
     filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
+    filtered_df['COLOR'] = filtered_df['TYPE'].map(color_dict)
     filtered_df.drop(['TECHNOLOGY', 'TYPE', 'COUNTRY'],
             axis=1,
             inplace=True)   
@@ -146,6 +147,7 @@ def plot_totalcapacity():
                                   )
                      )
     df = powerplant_filter(df)
+    plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
     df = df.groupby(['LABEL', 'YEAR'],
                     as_index=False)['VALUE'].sum()
@@ -154,7 +156,7 @@ def plot_totalcapacity():
                  x='YEAR',
                  y='VALUE',
                  color='LABEL',
-                 # color_discrete_map=color_dict,
+                 color_discrete_map=plot_colors,
                  template='plotly_white',
                  labels={'YEAR': 'Year',
                          'VALUE': 'Gigawatts (GW)',
@@ -162,8 +164,10 @@ def plot_totalcapacity():
     # fig.update_xaxes(type='category')
     fig.update_layout(
         font_family="Arial",
-        font_size=14)
+        font_size=14,
+        legend_traceorder="reversed")
     fig.update_traces(marker_line_width=0, opacity=0.8)
+
 
     return fig.write_html(os.path.join(output_folder,
                                        'TotalCapacityAnnual.html'
@@ -177,6 +181,7 @@ def plot_generationannual():
                                   )
                      )
     df = powerplant_filter(df)
+    plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
     df = df.groupby(['LABEL', 'YEAR'],
                     as_index=False)['VALUE'].sum()
@@ -185,14 +190,15 @@ def plot_generationannual():
                  x='YEAR',
                  y='VALUE',
                  color='LABEL',
-                 # color_discrete_map=color_dict,
+                 color_discrete_map=plot_colors,
                  template='plotly_white',
                  labels={'YEAR': 'Year',
                          'VALUE': 'Petajoules (PJ)',
                          'LABEL': 'Country-Powerplant'})
     fig.update_layout(
         font_family="Arial",
-        font_size=14)
+        font_size=14,
+        legend_traceorder="reversed")
     fig.update_traces(marker_line_width=0,
                       opacity=0.8)
 
@@ -208,6 +214,7 @@ def plot_generation_hourly():
                                   )
                      )
     df = powerplant_filter(df)
+    plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
     df = transform_ts(df)
 
@@ -220,13 +227,15 @@ def plot_generation_hourly():
                   title='',
                   facet_col='MONTH',
                   facet_col_spacing=0.005,
-                  # color_discrete_map=color_dict,
+                  color_discrete_map=plot_colors,
                   animation_frame='YEAR',
                   template='seaborn+plotly_white',
                   labels={
                       "variable": ""
                   }
                   )
+    fig.update_layout(
+        legend_traceorder="reversed")
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     '''
     for axis in fig.layout:
