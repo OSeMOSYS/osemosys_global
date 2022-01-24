@@ -214,6 +214,7 @@ def plot_generation_hourly():
                                   )
                      )
     df = powerplant_filter(df)
+    plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
     df = transform_ts(df)
 
@@ -226,13 +227,15 @@ def plot_generation_hourly():
                   title='',
                   facet_col='MONTH',
                   facet_col_spacing=0.005,
-                  # color_discrete_map=color_dict,
+                  color_discrete_map=plot_colors,
                   animation_frame='YEAR',
                   template='seaborn+plotly_white',
                   labels={
                       "variable": ""
                   }
                   )
+    fig.update_layout(
+        legend_traceorder="reversed")
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     '''
     for axis in fig.layout:
@@ -250,7 +253,7 @@ def plot_generation_hourly():
                           )
 
 
-#plot_generation_hourly()
+plot_generation_hourly()
 plot_totalcapacity()
 plot_generationannual()
 
