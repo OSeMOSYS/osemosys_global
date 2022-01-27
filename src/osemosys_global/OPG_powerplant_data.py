@@ -5,6 +5,7 @@
 
 # Import modules
 import pandas as pd
+from datetime import datetime
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 import itertools
@@ -110,6 +111,7 @@ def main():
     df_dict_nodes = df_dict[df_dict["collection"] == "Nodes"]
     df_dict_nodes = df_dict_nodes[["powerplant", "child_object"]]
     df_dict_2 = pd.merge(df_dict_fuel, df_dict_nodes, how="outer", on="powerplant")
+
 
     ## Merge original generator dataframe with nodes and fuels
     df_gen_2 = pd.merge(df_gen_2, df_dict_2, how="outer", on="powerplant")
