@@ -21,6 +21,7 @@ yaml_file = open("config.yaml")
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
 geographic_scope = parsed_yaml_file.get('geographic_scope')
+geographic_scope.append('INT') #Do not filter out international connections
 scenario_name = parsed_yaml_file.get('scenario')
          
 input_dir = parsed_yaml_file.get('outputDir') + 'data/'

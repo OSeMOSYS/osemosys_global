@@ -796,12 +796,9 @@ def main():
 
     # Add iar for techs not using PLEXOS values 
     df_iar_newTechs = duplicatePlexosTechs(df_iar_final, duplicate_techs)
-    df_ccg = df_iar_newTechs.loc[df_iar_newTechs['TECHNOLOGY'].str[3:6] == 'CCG']
-    df_ccg['VALUE'] = round(1/0.5, 3)
-    df_iar_final = df_iar_final.append(df_ccg, ignore_index=True)
-    df_ocg = df_iar_newTechs.loc[df_iar_newTechs['TECHNOLOGY'].str[3:6] == 'OCG']
-    df_ocg['VALUE'] = round(1/0.35, 3)
-    df_iar_final = df_iar_final.append(df_ocg, ignore_index=True)
+    for duplicate_tech in duplicate_techs:
+        df_new_iar = newIar(df_iar_newTechs, duplicate_tech)
+        df_iar_final = df_iar_final.append(df_new_iar)
 
     # Add oar for techs not using PLEXOS values 
     df_oar_newTechs = duplicatePlexosTechs(df_oar_final, duplicate_techs)
@@ -1019,7 +1016,7 @@ def main():
                                     )       
     df_max_cap_invest.to_csv(os.path.join(output_dir, 
                                             'TotalAnnualMaxCapacityInvestment.csv'),
-                                        index = None)                                             
+                                        index = None)                                              
 
     # ## Create sets for TECHNOLOGIES, FUELS
     create_sets('TECHNOLOGY', df_oar_final, output_dir)
@@ -1130,6 +1127,36 @@ def createPwrTechs(df_in, techs):
                             )
     df_out = df_out.drop('tech_suffix', axis = 1)
     return df_out
+
+def newIar(df_in, tech):
+    """Replaces the input activity ratio value with a hardcoded value 
+    defined in this function
+
+    Arguments: 
+    df = dataframe with a 'TECHNOLOGY' and 'VALUE' column
+    tech = technology to replace iar for (CCG, HYD, SPV...)
+    
+    Returns: 
+    df_out = same dataframe as df_in with a new values in 'VALUE'
+    
+    Example:
+    df_out = newIar(df_in, 'CCG')
+    df_out['TECHNOLOGY'] = [PWRCCGINDNP01, PWRCCGINDNW01]
+    df_out['VALUE'] = [2, 2]
+    """
+
+    df_out = df_in.loc[df_in['TECHNOLOGY'].str[3:6] == tech]
+    if tech == 'CCG':
+        iar = 0.5
+    elif tech == 'OCG':
+        iar = 0.35
+    else: 
+        logging.warning(f'Default IAR used for new {tech} power plants')
+        iar = 1
+    df_out['VALUE'] = round(1/iar, 3)
+    return df_out
+
+
 
 if __name__ == "__main__":
     main()
