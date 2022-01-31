@@ -120,7 +120,9 @@ def main():
     )
 
     ## Extract start year from Commission Date
-    df_gen_2["Commission Date"] = pd.to_datetime(df_gen_2["Commission Date"])
+    df_gen_2["Commission Date"] = (pd.TimedeltaIndex(df_gen_2["Commission Date"].astype(int),
+                                                unit='d') + 
+                               datetime(1900, 1, 1))
     df_gen_2["start_year"] = df_gen_2["Commission Date"].dt.year
     df_gen_2.drop("Commission Date", axis=1, inplace=True)
 
