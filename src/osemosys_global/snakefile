@@ -278,7 +278,7 @@ rule Emissions:
         outputDir + 'data/InputActivityRatio.csv'
     output: 
         outputDir + 'data/EmissionActivityRatio.csv',
-        outputDir + 'data/EmissionPenalty.csv',
+        outputDir + 'data/EmissionsPenalty.csv',
         outputDir + 'data/EMISSION.csv'
     log:
         'logs/emissions.log'
