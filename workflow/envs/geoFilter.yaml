@@ -1,0 +1,5 @@
+channels:
+ - conda-forge
+dependencies:
+ - pandas==1.2.2
+ - PyYAML==5.4.1

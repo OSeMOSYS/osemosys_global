@@ -1,0 +1,28 @@
+# High Level Configuration
+inputDir: 'resources'
+outputDir: 'results'
+modelName: 'OsemosysGlobal'
+region: 'GLOBAL'
+
+# Scenario Name 
+scenario: 'OsemosysGlobal'
+
+# Temporal Parameters 
+startYear: 2015
+endYear: 2050
+daytype: False
+dayparts:
+  #daypart : [start_hour, end_hour]
+  D1: [0, 12]
+  D2: [12, 24]
+seasons:
+  #season : [month 1, month 2, ...]
+  S1: [12, 1, 2]
+  S2: [3, 4, 5]
+  S3: [6, 7, 8]
+  S4: [9, 10, 11]
+  
+# Spatial Parameters 
+geographic_scope:
+  - 'IND'
+crossborderTrade: False

@@ -7,3 +7,4 @@ src/osemosys_global/.vscode
 osemosys_global_model/*
 *logs/
 *.vscode
+.snakemake

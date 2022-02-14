@@ -1,0 +1,23 @@
+# OSeMOSYS files
+*.sol
+*.lp
+results/*
+SelectedResults.csv
+*.csv
+
+# Otoole
+*.xlsx
+*.graphml
+*.pdf
+
+# Python and development files
+.pytest_cache
+.vscode
+*.diff
+*/__pycache__
+
+# System files
+.DS*
+
+# Build folder
+osemosys_gnu_mathprog_*

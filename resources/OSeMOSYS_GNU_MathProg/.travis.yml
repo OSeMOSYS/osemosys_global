@@ -1,0 +1,31 @@
+language: python
+dist: xenial
+os: linux
+python:
+- 3.7
+before_install:
+- sudo apt-get install -y glpk-utils libglpk-dev coinor-cbc pandoc
+install:
+- pip install pytest pandas
+script:
+- pytest tests
+before_deploy: 
+  - make release 
+  # - . pre-release.sh $TRAVIS_TAG
+deploy:
+  provider: releases
+  tag_name: $TRAVIS_TAG
+  name: $TRAVIS_TAG
+  # prerelease: $prerelease
+  edge: true
+  cleanup: false
+  release_notes_file: "docs/changelog.md"
+  api_key:
+    secure: aZ/HJr7KB0z7s4PPjfy5et7i9cwIAoNNxnmZ7wFfr6etauId92UANaB1khH8+Yhd5WQaDBtzp9Zb/307CmwAy1X/T+Q9cv8jNmUfXhR6yhAfUbuExa02ApTSpqsyceyYVn5kdzUHldY3Hwr5bNIvmqXHlI1TrKi7Z7XJYTcZgNQMtZxd7NF7NOWzdsufoXhBSgbAA1wEBgfjCW3ljzOxZz98M8sIYgHfG8Zi1LjvsTG0cV/AlUtDTTIen9GaBI8KbMYYGQtzytVqFwob78jlkatKho34N0GdWkgHqDKJhhoWPwGKbU77kyfZggbccNHtJJPou3H56cO+1No7kIxgiY/j0JYjnUy7wUqxhmLpZvwJZY+IfV8fA/2y6wwH2P4EZEfHP1CFXjUAkN/WoGGybna/fXSRAD+YDBlTjXBrO627ig4svvE6Iea4ZqWNtUUM0alVdQ4J24If5wBZcebbl8hfBrhsLSGqhTxOmTAaK7Z0eAXW3kopQ6XUx4C6142qcixNGpLEJCSOx451UwI1M9Rw8wkt0Srv+6yjg7+rGHEq2jgPldK0PZuLEjPMLojc8tqaQ0oVcjK6LG1hRX5h/n7zS/h6KsCZ3+PycDEvipfkFuVNpDM0SwwA951LOxHoH2kmpqdjwaxPMw4vO1f6A7utSzH+OFn/SJFgyID95TU=
+  file: 
+    - "osemosys_gnu_mathprog_$TRAVIS_TAG.zip"
+  on:
+    repo: OSeMOSYS/OSeMOSYS_GNU_MathProg
+    tags: true
+notifications:
+  email: false
