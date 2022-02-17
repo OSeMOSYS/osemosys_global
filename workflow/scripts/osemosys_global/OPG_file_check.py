@@ -23,18 +23,16 @@ output_data_dir = os.path.join(output_dir, 'data')
 
 simplicity_data = os.path.join(input_dir, 'simplicity/data')
 
-csv_file_dict = {} 
 for each_csv in os.listdir(simplicity_data):
     #copy default values csv with data
     if each_csv == "default_values.csv":
             shutil.copy(os.path.join(input_data_dir, each_csv),
-                        os.path.join(output_dir, 'data', each_csv))
+                        os.path.join(output_data_dir, each_csv))
     if each_csv not in os.listdir(output_data_dir):
         csv_df_in = pd.read_csv(os.path.join(simplicity_data, each_csv))
         csv_df_out = pd.DataFrame(columns = list(csv_df_in.columns))
-        csv_df_out.to_csv(os.path.join(output_dir, 'data', each_csv),
+        csv_df_out.to_csv(os.path.join(output_data_dir, each_csv),
                              index = None)
-        csv_file_dict[each_csv] = list(csv_df_in.columns)
     
 
 logging.info('File Check Completed')

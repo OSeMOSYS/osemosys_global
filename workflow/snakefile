@@ -1,0 +1,400 @@
+import os
+from pathlib import Path
+
+#####################################
+## HELPER FUNCTIONS
+#####################################
+
+def fileCheckFunc(csvFiles):
+	# DEFENITION: Checks what files will need to be created via OPG_filecheck.py
+	# INPUT:      csvFiles = List of all otoole osemosys csv's
+	# OUTPUT:     csvFiles = List of all files that need to be created via OPG_filecheck 
+	
+	for each_csv in os.listdir(Path(outputDir, 'data')):
+		if each_csv in csvFiles:
+			csvFiles.remove(each_csv)
+	
+	return csvFiles
+
+def getDataFiles(csvPath):
+	# DEFENITION: Gets list of all data files otoole needs to run 
+	# INPUT:      csvPath = path to *.csv file that has all the names of the files
+	# OUTPUT:     dataFiles = list containing strings of all files needed
+	
+	df = pd.read_csv(csvPath)
+	#dataFiles = df['file_name'].tolist()
+	#return dataFiles
+
+#####################################
+## REQUIRED FILES 
+#####################################
+
+#osemosysFiles = getDataFiles('../../data/csv_file_list.csv')
+osemosysFiles = [
+	'AccumulatedAnnualDemand.csv',
+	'AnnualEmissionLimit.csv',
+	'AnnualExogenousEmission.csv',
+	'AvailabilityFactor.csv',
+	'CapacityFactor.csv',
+	'CapacityOfOneTechnologyUnit.csv',
+	'CapacityToActivityUnit.csv',
+	'CapitalCost.csv',
+	'CapitalCostStorage.csv',
+	'Conversionld.csv',
+	'Conversionlh.csv',
+	'Conversionls.csv',
+	'DAILYTIMEBRACKET.csv',
+	'DaysInDayType.csv',
+	'DaySplit.csv',
+	'DAYTYPE.csv',
+	#'default_values.csv',
+	'DepreciationMethod.csv',
+	'DiscountRate.csv',
+	'DiscountRateStorage.csv',
+	'EMISSION.csv',
+	'EmissionActivityRatio.csv',
+	'FixedCost.csv',
+	'FUEL.csv',
+	'InputActivityRatio.csv',
+	'MinStorageCharge.csv',
+	'MODE_OF_OPERATION.csv',
+	'ModelPeriodEmissionLimit.csv',
+	'ModelPeriodExogenousEmission.csv',
+	'OutputActivityRatio.csv',
+	'OperationalLife.csv',
+	'REMinProductionTarget.csv',
+	'REGION.csv',
+	'ReserveMargin.csv',
+	'ReserveMarginTagFuel.csv',
+	'ReserveMarginTagTechnology.csv',
+	'ResidualCapacity.csv',
+	'ResidualStorageCapacity.csv',
+	'RETagFuel.csv',
+	'RETagTechnology.csv',
+	'SEASON.csv',
+	'SpecifiedAnnualDemand.csv',
+	'SpecifiedDemandProfile.csv',
+	'STORAGE.csv',
+	'StorageLevelStart.csv',
+	'StorageMaxChargeRate.csv',
+	'StorageMaxDischargeRate.csv',
+	'TECHNOLOGY.csv',
+	'TechnologyFromStorage.csv',
+	'TechnologyToStorage.csv',
+	'TIMESLICE.csv',
+	'TotalAnnualMaxCapacity.csv',
+	'TotalAnnualMaxCapacityInvestment.csv',
+	'TotalAnnualMinCapacity.csv',
+	'TotalAnnualMinCapacityInvestment.csv',
+	'TotalTechnologyAnnualActivityLowerLimit.csv',
+	'TotalTechnologyAnnualActivityUpperLimit.csv',
+	'TotalTechnologyModelPeriodActivityLowerLimit.csv',
+	'TotalTechnologyModelPeriodActivityUpperLimit.csv',
+	'TradeRoute.csv',
+	'VariableCost.csv',
+	'YEAR.csv',
+	'YearSplit.csv'
+]
+
+resultFiles = [
+	'AccumulatedNewCapacity.csv',
+	'AnnualEmissions.csv',
+	'AnnualFixedOperatingCost.csv',
+	'AnnualTechnologyEmission.csv',
+	'AnnualTechnologyEmissionByMode.csv',
+	'AnnualVariableOperatingCost.csv',
+	'CapitalInvestment.csv',
+	'Demand.csv',
+	'DiscountedTechnologyEmissionsPenalty.csv',
+	'NewCapacity.csv',
+	'ProductionByTechnology.csv',
+	'ProductionByTechnologyAnnual.csv',
+	'RateOfActivity.csv',
+	'RateOfProductionByTechnology.csv',
+	'RateOfProductionByTechnologyByMode.csv',
+	'RateOfUseByTechnology.csv',
+	'RateOfUseByTechnologyByMode.csv',
+	'TotalAnnualTechnologyActivityByMode.csv',
+	'TotalCapacityAnnual.csv',
+	'TotalTechnologyAnnualActivity.csv',
+	'TotalTechnologyModelPeriodActivity.csv',
+	'UseByTechnology.csv'
+]
+	
+demandFigures = [
+	'South America', 
+	'Oceania', 
+	'North America', 
+	'Europe', 
+	'Asia', 
+	'Africa'
+]
+
+resultFigures = [
+	'TotalCapacityAnnual', 
+	'GenerationAnnual',
+]
+
+flag_files = [
+    'demand_projections',
+    'timeslice',
+    'variable_costs'
+]
+
+#####################################
+## GLOABL VARIABLES
+#####################################
+
+#get user values from configuration file 										 
+configfile: 'config/config.yaml'
+modelName = config['modelName']
+inputDir = config['inputDir']
+outputDir = config['outputDir']
+scenarioName = config['scenario']
+
+#directory for saving otoole formatted resutls 											   
+outputFolder = directory(Path(outputDir, scenarioName, 'results'))
+
+
+ruleorder: 
+	PowerPlant > 
+	TimeSlice > 
+	VariableCosts > 
+	DemandProjections > 
+	FileCheck >
+	GeographicFilter 
+
+
+#####################################
+## TARGETS
+#####################################
+
+rule all:
+	input: 
+		expand(Path(outputDir, scenarioName, '/results/{resultFile}'), resultFile = resultFiles)
+
+rule dataFile:
+	input:
+		expand(Path(outputDir, 'figs/Demand projection {demandFigure}.jpg'), demandFigure = demandFigures),
+		Path(outputDir, scenarioName, f'{scenarioName}.txt')
+
+rule lpFile:
+	input: 
+		Path(outputDir, scenarioName, f'{scenarioName}.lp')
+
+rule solve:
+	input: 
+		expand(Path(outputDir, scenarioName, 'figures/{resultFigure}.html'), resultFigure = resultFigures)
+
+rule makeDag:
+	shell:
+		'snakemake --dag solve | dot -Tpdf > dag.pdf'
+
+#####################################
+## INTERMEDIATE RULES
+#####################################
+
+rule PowerPlant:
+	input:
+		Path(inputDir, 'data/PLEXOS_World_2015_Gold_V1.1.xlsx'),
+		Path(inputDir, 'data/weo_2018_powerplant_costs.csv'),
+		Path(inputDir, 'data/operational_life.csv'),
+		Path(inputDir, 'data/naming_convention_tech.csv'),
+		Path(inputDir, 'data/Costs Line expansion.xlsx'),
+		Path(inputDir, 'data/weo_region_mapping.csv'),
+		'config/config.yaml'
+	output:
+		Path(outputDir, 'data/CapitalCost.csv'),
+		Path(outputDir, 'data/EMISSION.csv'),
+		Path(outputDir, 'data/FixedCost.csv'),
+		Path(outputDir, 'data/FUEL.csv'),
+		Path(outputDir, 'data/InputActivityRatio.csv'),
+		Path(outputDir, 'data/MODE_OF_OPERATION.csv'),
+		Path(outputDir, 'data/OutputActivityRatio.csv'),
+		Path(outputDir, 'data/REGION.csv'),
+		Path(outputDir, 'data/ResidualCapacity.csv'),
+		Path(outputDir, 'data/TECHNOLOGY.csv'),
+		Path(outputDir, 'data/YEAR.csv'),
+	conda:
+		'envs/powerPlant.yaml'
+	log:
+		'workflow/logs/PowerPlant.log'
+	shell:
+		'python workflow/scripts/osemosys_global/OPG_powerplant_data.py 2> {log}'
+		
+rule TimeSlice:
+	input:
+		Path(inputDir, 'data/All_Demand_UTC_2015.csv'),
+		Path(inputDir, 'data/CSP 2015.csv'),
+		Path(inputDir, 'data/SolarPV 2015.csv'),
+		Path(inputDir, 'data/Hydro_Monthly_Profiles (15 year average).csv'),
+		Path(inputDir, 'data/Won 2015.csv'),
+		Path(inputDir, 'data/Woff 2015.csv'),
+		'config/config.yaml'
+	output:
+		Path(outputDir, 'data/CapacityFactor.csv'),
+		Path(outputDir, 'data/TIMESLICE.csv'),
+		Path(outputDir, 'data/SpecifiedDemandProfile.csv'),
+		Path(outputDir, 'data/YearSplit.csv'),
+		touch('workflow/rules/flags/timeslice.done')
+	conda:
+		'envs/timeSlice.yaml'
+	log:
+		'workflow/logs/timeSlice.log'	
+	shell:
+		'python workflow/scripts/osemosys_global/OPG_TS_data.py 2> {log}'
+
+rule VariableCosts:
+	input:
+		Path(inputDir, 'data/CMO-April-2020-forecasts.xlsx'),
+		Path(outputDir, 'data/TECHNOLOGY.csv'),
+		'config/config.yaml'
+	output:
+		Path(outputDir, 'data/VariableCost.csv'),
+		touch('workflow/rules/flags/variable_costs.done')
+	conda:
+		'envs/variableCosts.yaml'
+	log:
+		'workflow/logs/variableCosts.log'
+	shell:
+		'python workflow/scripts/osemosys_global/OPG_variablecosts.py 2> {log}'
+		
+rule DemandProjections:
+	input:
+		Path(inputDir, 'data/PLEXOS_World_2015_Gold_V1.1.xlsx'),
+		Path(inputDir, 'data/iamc_db_GDPppp_Countries.xlsx'),
+		Path(inputDir, 'data/iamc_db_POP_Countries.xlsx'),
+		Path(inputDir, 'data/iamc_db_URB_Countries.xlsx'),
+		Path(inputDir, 'data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx'),
+		Path(inputDir, 'data/T&D Losses.xlsx'),
+		'config/config.yaml'
+	output:
+		expand(Path(outputDir, 'figs/Demand projection {demandFigure}.jpg'), demandFigure = demandFigures),
+		Path(outputDir, 'data/SpecifiedAnnualDemand.csv'),
+		touch('workflow/rules/flags/demand_projections.done')
+	conda:
+		'envs/demand.yaml'
+	log:
+		'workflow/logs/demandProjections.log'
+	shell:
+		'python workflow/scripts/osemosys_global/OPG_demand_projection.py 2> {log}'
+		
+rule GeographicFilter:
+	input: 
+		expand(Path(outputDir, 'data/{osemosysFile}'), osemosysFile = osemosysFiles),
+		'config/config.yaml'
+	output:
+		expand(Path(outputDir, scenarioName, 'data/{osemosysFile}'), osemosysFile = osemosysFiles),
+		Path(outputDir, scenarioName, 'datapackage.json')
+	conda:
+		'envs/geoFilter.yaml'
+	log:
+		'workflow/logs/geographicFilter.log'
+	shell:
+		'python workflow/scripts/osemosys_global/OPG_geographic_filter.py 2> {log}'
+
+rule otooleConvert:
+	input:
+		datapackage = Path(outputDir, scenarioName, 'datapackage.json'),
+		csvFiles = expand(Path(outputDir, scenarioName, 'data/{osemosysFile}'), osemosysFile = osemosysFiles),
+		defaultValueCsv = Path(outputDir, 'data/default_values.csv')												 
+	output:
+		Path(outputDir, scenarioName, f'{scenarioName}.txt')
+	conda:
+		'envs/otoole.yaml'
+	log:
+		'workflow/logs/otoole.log'
+	shell:
+		'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
+
+rule FileCheck:
+	input: 
+		expand(Path(inputDir, 'simplicity/data/{missingFile}'), missingFile = fileCheckFunc(osemosysFiles)),
+		Path(inputDir, 'data/default_values.csv'),
+		'config/config.yaml',
+		expand('workflow/rules/flags/{flag_file}.done', flag_file = flag_files)
+	output:
+		expand(Path(outputDir,'data/{missingFile}'), missingFile = fileCheckFunc(osemosysFiles)),
+		Path(outputDir, 'data/default_values.csv')
+	conda:
+		'envs/fileCheck.yaml'
+	log:
+		'workflow/logs/fileCheck.log'
+	shell:
+		'python workflow/scripts/osemosys_global/OPG_file_check.py 2> {log}'
+
+rule preProcess:
+	input:
+		Path(outputDir, scenarioName, f'{scenarioName}.txt')
+	output:
+		Path(outputDir, scenarioName, f'PreProcessed_{scenarioName}.txt')
+	conda:
+		'envs/preProcessData.yaml'
+	log:
+		'workflow/logs/preprocess.log'
+	shell:
+		'python {inputDir}/OSeMOSYS_GNU_MathProg/scripts/preprocess_data.py otoole {input} {output} 2> {log}'
+
+rule createLP:
+	input:
+		modelFile = Path(inputDir, 'osemosys_fast_preprocessed.txt'),
+		dataFile = Path(outputDir, scenarioName, f'PreProcessed_{scenarioName}.txt')
+	output:
+		Path(outputDir, scenarioName, f'{scenarioName}.lp')
+	log:
+		'workflow/logs/createLP.log'
+	shell:
+		'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check 2> {log}'
+
+rule cbcSolve:
+	input:
+		Path(outputDir, scenarioName, f'{scenarioName}.lp')
+	output:
+		Path(outputDir, scenarioName, f'{scenarioName}.sol')
+	log:
+		'workflow/logs/cbcSolve.log'
+	shell: 
+		'cbc {input} solve -solu {output} 2> {log}'
+
+rule postProcess:
+	input:
+		solutionFile = Path(outputDir, scenarioName, f'{scenarioName}.sol'),
+		preProcessFile = Path(outputDir, scenarioName, f'PreProcessed_{scenarioName}.txt')
+	output:
+		expand(Path(outputDir, scenarioName, 'results/{resultFile}'), resultFile = resultFiles),
+	conda:
+		'envs/otoole.yaml'
+	log:
+		'workflow/logs/postprocess.log'
+	shell: 
+		'otoole results cbc csv {input.solutionFile} {outputFolder} ' 
+		'--input_datafile {input.preProcessFile} '
+		'--input_datapackage {outputDir}/{scenarioName}/datapackage.json ' 
+		'2> {log}'
+
+rule visualisation:
+	input:
+		expand(Path(outputDir, scenarioName, 'results/{resultFile}'), resultFile = resultFiles),
+		'config/config.yaml',
+	output:
+		expand(Path(outputDir, scenarioName, 'figures/{resultFigure}.html'), resultFigure = resultFigures),
+	log:
+		'workflow/logs/visualisation.log'
+	shell: 
+		'python workflow/scripts/osemosys_global/visualisation.py 2> {log}'
+
+
+#####################################
+## CLEANING RULES
+#####################################
+rule cleanData:
+	shell:
+		'rm -rf {outputDir}data/*'
+
+rule cleanFigs:
+	shell:
+		'rm -rf {outputDir}figs/*'
+
+rule cleanDataFile:
+	shell:
+		'rm -rf {outputDir}{modelName}.txt'
