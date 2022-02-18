@@ -9,18 +9,17 @@ import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
+_PY_DIR = os.path.dirname(__file__)
+
 #Read in information from YAML file
-yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
+yaml_file = open(os.path.join(_PY_DIR, '../../..',
                               'config/config.yaml'))
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-input_dir = os.path.join(os.path.dirname(__file__), '../../..',
-    parsed_yaml_file.get('inputDir'))
+input_dir = os.path.join(_PY_DIR, '../../..', parsed_yaml_file.get('inputDir'))
 input_data_dir = os.path.join(input_dir, 'data')
-output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
-    parsed_yaml_file.get('outputDir'))
+output_dir = os.path.join(_PY_DIR, '../../..', parsed_yaml_file.get('outputDir'))
 output_data_dir = os.path.join(output_dir, 'data')
-
 simplicity_data = os.path.join(input_dir, 'simplicity/data')
 
 for each_csv in os.listdir(simplicity_data):
