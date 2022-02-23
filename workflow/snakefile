@@ -13,10 +13,28 @@ include: 'rules/model.smk'
 include: 'rules/postprocess.smk'
 include: 'rules/file_check.smk'
 
+# HANDLERS 
+        
+onsuccess:
+    print('Workflow finished successfully!')
+
+onerror:
+    print('An error occurred, submit issue to '
+        'https://github.com/OSeMOSYS/osemosys_global/issues')
+
+# AMBIGUITY FOR FILE CHECK 
+
+ruleorder: 
+	PowerPlant > 
+	TimeSlice > 
+	VariableCosts > 
+	DemandProjections > 
+	FileCheck
+
 # TARGET RULES
 
 rule all:
-    input: 
+    input:
         rules.visualisation.output
         #Path(output_dir, scenario, 'figures/{result_figure}.html')
 
@@ -40,6 +58,10 @@ rule makeDag:
         'snakemake --dag all | dot -Tpdf > dag.pdf'
 
 # CLEANING RULES
+
+rule cleanAll:
+    shell:
+        'rm -rf {output_dir}/*'
 
 rule cleanData:
     shell:

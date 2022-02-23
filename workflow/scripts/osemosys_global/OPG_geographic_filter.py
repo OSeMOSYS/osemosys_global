@@ -18,7 +18,7 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 # In[ ]:
 
 _PY_DIR = os.path.dirname(__file__)
-yaml_file = open(os.path.join(_PY_DIR, '../../..','config/config.yaml'))
+yaml_file = open(os.path.join(_PY_DIR, '../../../config/config.yaml'))
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
 geographic_scope = parsed_yaml_file.get('geographic_scope')
