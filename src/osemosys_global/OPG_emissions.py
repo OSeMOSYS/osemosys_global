@@ -1,4 +1,4 @@
-"""Generates emission set, emission activity ratio and emission penalty"""
+"""Generates emission set, emission activity ratio, and emission penalty"""
 
 import logging
 import pandas as pd
@@ -22,7 +22,9 @@ _TECH_TO_FUEL = {
 }
 
 # Global emission penalty 
-_EMISSION_PENALTY = 100 # M$/MT
+yaml_file = open('config.yaml')
+parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+_EMISSION_PENALTY = parsed_yaml_file.get('emission_penalty') # M$/MT
 
 # Emission name 
 _EMISSION = 'CO2'
@@ -56,7 +58,7 @@ def main():
     # ASSIGN EMISSION 
 
     df_emission = pd.DataFrame([_EMISSION], columns=['VALUE'])
-    df_emission.to_csv(Path(output_dir, 'EMISSION.csv'))
+    df_emission.to_csv(Path(output_dir, 'EMISSION.csv'), index=False)
     logging.info('Successfully generated emission set')
 
 
@@ -76,7 +78,7 @@ def get_co2_emission_factors():
     Example: 
         co2_factors = get_co2_emission_factors()
         co2_factors['Natural Gas'] 
-        (Returns )
+        -> 0.0503
     """
 
     # Source for all emission factors comes from: 
