@@ -23,11 +23,6 @@ configfile: 'config/config.yaml'
 input_dir = config['inputDir']
 output_dir = config['outputDir']
 
-# FILE CREATION CHECK 
-
-if not os.path.isdir(Path(output_dir, 'data')):
-    os.mkdir(Path(output_dir, 'data'))
-
 # GET LIST OF MISSING FILES 
 
 missing_files = os.listdir(Path(input_dir, 'simplicity/data'))
@@ -45,6 +40,7 @@ missing_files.remove('default_values.csv')
 [missing_files.remove(csv) for csv in power_plant_files]
 [missing_files.remove(csv) for csv in timeslice_files]
 [missing_files.remove(csv) for csv in variable_cost_files]
+[missing_files.remove(csv) for csv in emission_files]
 
 # RULE
 

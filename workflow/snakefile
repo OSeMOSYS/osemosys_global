@@ -24,6 +24,11 @@ onerror:
     print('An error occurred, please submit issue to '
         'https://github.com/OSeMOSYS/osemosys_global/issues')
 
+# FILE CREATION CHECK 
+
+if not os.path.isdir(Path(output_dir, 'data')):
+    Path(output_dir, 'data').mkdir(parents=True)
+
 # TARGET RULES
 
 rule all:

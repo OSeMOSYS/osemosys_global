@@ -1058,13 +1058,6 @@ def main():
                       index = None)
 
 
-    # ## Create set for EMISSION 
-
-    emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
-    emissions_df.to_csv(os.path.join(output_data_dir, 
-                                     "EMISSION.csv"),
-                    index = None)
-
 def create_sets(x, df, output_dir):
     """Creates a formatted otoole set csv 
     

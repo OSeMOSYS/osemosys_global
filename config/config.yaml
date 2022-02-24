@@ -27,3 +27,6 @@ geographic_scope:
   - 'IND'
   - 'AFG'
 crossborderTrade: False
+
+# Emission Parameters 
+emission_penalty: 50 # M$/MT CO2

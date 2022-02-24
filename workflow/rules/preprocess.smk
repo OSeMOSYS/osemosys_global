@@ -23,7 +23,8 @@ demand_figures = [
 flag_files = [
     'demand_projections',
     'timeslice',
-    'variable_costs'
+    'variable_costs',
+    'emissions'
 ]
 
 # SCRIPT OUTPUT FILES 
@@ -35,7 +36,6 @@ power_plant_files = [
     'OperationalLife.csv',
     'TotalAnnualMaxCapacityInvestment.csv',
     'TotalTechnologyModelPeriodActivityUpperLimit.csv',
-    'EMISSION.csv',
     'FUEL.csv',
     'InputActivityRatio.csv',
     'OutputActivityRatio.csv',
@@ -60,6 +60,12 @@ variable_cost_files = [
 demand_files = [
     'SpecifiedAnnualDemand.csv'
     ]
+
+emission_files = [
+    'EmissionActivityRatio.csv',
+    'EmissionsPenalty.csv',
+    'EMISSION.csv'
+]
 
 # DATA PROCESSING RULES 
 
@@ -143,5 +149,20 @@ rule demand_projections:
     shell:
         'python workflow/scripts/osemosys_global/OPG_demand_projection.py 2> {log}'
 
-
+rule emissions:
+    message:
+        'Generating emission data...'
+    input:
+        Path(input_dir, 'data/emission_factors.csv'),
+        Path(output_dir, 'data/InputActivityRatio.csv'),
+        'config/config.yaml'
+    output: 
+        expand(Path(output_dir, 'data/{output_file}'), output_file = emission_files),
+        touch('workflow/rules/flags/emissions.done')
+    conda:
+        '../envs/data_processing.yaml'
+    log:
+        'workflow/logs/emissions.log'
+    shell:
+        'python workflow/scripts/osemosys_global/OPG_emissions.py 2> {log}'
 
