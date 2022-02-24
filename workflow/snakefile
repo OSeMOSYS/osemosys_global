@@ -1,4 +1,6 @@
 import os
+from snakemake.utils import min_version
+min_version("6.0")
 
 # CONFIGURATION
 
@@ -19,59 +21,46 @@ onsuccess:
     print('Workflow finished successfully!')
 
 onerror:
-    print('An error occurred, submit issue to '
+    print('An error occurred, please submit issue to '
         'https://github.com/OSeMOSYS/osemosys_global/issues')
-
-# AMBIGUITY FOR FILE CHECK 
-
-ruleorder: 
-	PowerPlant > 
-	TimeSlice > 
-	VariableCosts > 
-	DemandProjections > 
-	FileCheck
 
 # TARGET RULES
 
 rule all:
+    message:
+        'All rules executed successfully...'
     input:
         rules.visualisation.output
-        #Path(output_dir, scenario, 'figures/{result_figure}.html')
 
-rule dataFile:
+rule data_file:
+    message: 
+        'Scenario data file created successfully!'
     input:
-        rules.preProcess.output
-        #Path(output_dir, scenario, '{scenario}.txt')
+        rules.preprocess_data_file.output
 
-rule lpFile:
-    input: 
-        rules.createLP.output
-        #Path(output_dir, scenario, '{scenario}.lp')
-
-rule solve:
-    input: 
-        rules.cbcSolve.output
-        #Path(output_dir, scenario, 'figures/{result_figure}.html')
-
-rule makeDag:
+rule make_dag:
+    message:
+        'dag created successfully and saved as docs/dag.pdf'
     shell:
-        'snakemake --dag all | dot -Tpdf > dag.pdf'
+        'snakemake --dag all | dot -Tpdf > docs/dag.pdf'
 
 # CLEANING RULES
 
-rule cleanAll:
+rule clean_all:
+    message:
+        'Reseting to defaults...'
     shell:
         'rm -rf {output_dir}/*'
 
-rule cleanData:
+rule clean_data:
     shell:
         'rm -rf {output_dir}/data/*'
 
-rule cleanFigs:
+rule clean_figures:
     shell:
         'rm -rf {output_dir}/figs/*'
 
-rule cleanScenario:
+rule clean_scenario:
     shell: 
         'rm -r {output_dir}/{scenario}/*'
 

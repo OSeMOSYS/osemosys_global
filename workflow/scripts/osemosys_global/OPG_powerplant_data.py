@@ -992,9 +992,14 @@ def main():
                                     ]
                                 )
         df_crossborder_final['VALUE'] = 0
-        df_crossborder_final.to_csv(os.path.join(output_data_dir,
-                                                "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
-                                    index = None)
+    else:
+        df_crossborder_final = pd.DataFrame(columns=['REGION', 
+                                                    'TECHNOLOGY',
+                                                    'VALUE'])
+    df_crossborder_final.to_csv(os.path.join(output_data_dir,
+                                            "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
+                                index = None)
+
 
     # Create Operational Life data
     tech_code_dict_reverse = dict((v,k) for k,v in tech_code_dict.items())

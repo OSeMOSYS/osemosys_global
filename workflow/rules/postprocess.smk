@@ -40,28 +40,34 @@ result_figures = [
 
 # RULES
 
-rule postProcess:
+rule otoole_results:
+    message:
+        'Generating result csv files...'
     input:
         solution_file = Path(output_dir, scenario, f'{scenario}.sol'),
         pre_process_file = Path(output_dir, scenario, f'PreProcessed_{scenario}.txt')
     output:
         expand(Path(output_dir, scenario, 'results/{result_file}'), result_file = result_files),
     conda:
-        'envs/otoole.yaml'
+        '../envs/otoole.yaml'
     log:
-        'workflow/logs/postprocess.log'
+        'workflow/logs/otoole_results.log'
     shell: 
-        'otoole results cbc csv {input.solution_file} {otoole_output_dir} ' 
+        'otoole results cbc csv {input.solution_file} {output_dir}/{scenario}/results ' 
         '--input_datafile {input.pre_process_file} '
         '--input_datapackage {output_dir}/{scenario}/datapackage.json ' 
         '2> {log}'
 
 rule visualisation:
+    message:
+        'Generating result figures...'
     input:
-        rules.postProcess.output,
+        expand(Path(output_dir, scenario, 'results/{result_file}'), result_file = result_files),
         'config/config.yaml',
     output:
         expand(Path(output_dir, scenario, 'figures/{result_figure}.html'), result_figure = result_figures),
+    conda:
+        '../envs/data_processing.yaml'
     log:
         'workflow/logs/visualisation.log'
     shell: 

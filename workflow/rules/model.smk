@@ -9,13 +9,13 @@ scenario = config['scenario']
 
 # OUTPUT FILES 
 
-otoole_output_dir = directory(Path(input_dir, scenario, 'results'))
-
 osemosys_files = os.listdir(Path(input_dir, 'simplicity/data'))
 
 # RULES
 
-rule GeographicFilter:
+rule geographic_filter:
+    message:
+        'Applying geographic filter...'
     input: 
         expand(Path(output_dir, 'data/{osemosys_file}'), osemosys_file = osemosys_files),
         'config/config.yaml'
@@ -23,13 +23,15 @@ rule GeographicFilter:
         expand(Path(output_dir, scenario, 'data/{osemosys_file}'), osemosys_file = osemosys_files),
         Path(output_dir, scenario, 'datapackage.json')
     conda:
-        'envs/geoFilter.yaml'
+        '../envs/data_processing.yaml'
     log:
         'workflow/logs/geographicFilter.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_geographic_filter.py 2> {log}'
 
-rule otooleConvert:
+rule otoole_convert:
+    message:
+        'Creating data file...'
     input:
         datapackage = Path(output_dir, scenario, 'datapackage.json'),
         csv_files = expand(Path(output_dir, scenario, 'data/{osemosys_file}'), osemosys_file = osemosys_files),
@@ -37,41 +39,47 @@ rule otooleConvert:
     output:
         Path(output_dir, scenario, f'{scenario}.txt')
     conda:
-        'envs/otoole.yaml'
+        '../envs/otoole.yaml'
     log:
-        'workflow/logs/otoole.log'
+        'workflow/logs/otoole_convert.log'
     shell:
         'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
 
-rule preProcess:
+rule preprocess_data_file:
+    message:
+        'Preprocessing data file...'
     input:
         Path(output_dir, scenario, f'{scenario}.txt')
     output:
         Path(output_dir, scenario, f'PreProcessed_{scenario}.txt')
     conda:
-        'envs/preProcessData.yaml'
+        '../envs/data_processing.yaml'
     log:
-        'workflow/logs/preprocess.log'
+        'workflow/logs/preprocess_data_file.log'
     shell:
         'python {input_dir}/OSeMOSYS_GNU_MathProg/scripts/preprocess_data.py otoole {input} {output} 2> {log}'
 
-rule createLP:
+rule create_lp_file:
+    message:
+        'Creating lp file...'
     input:
         modelFile = Path(input_dir, 'osemosys_fast_preprocessed.txt'),
         dataFile = Path(output_dir, scenario, f'PreProcessed_{scenario}.txt')
     output:
         Path(output_dir, scenario, f'{scenario}.lp')
     log:
-        'workflow/logs/createLP.log'
+        'workflow/logs/create_lp_file.log'
     shell:
         'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check 2> {log}'
 
-rule cbcSolve:
+rule cbc_solve:
+    message:
+        'Solving model...'
     input:
         Path(output_dir, scenario, f'{scenario}.lp')
     output:
         Path(output_dir, scenario, f'{scenario}.sol')
     log:
-        'workflow/logs/cbcSolve.log'
+        'workflow/logs/cbc_solve.log'
     shell: 
         'cbc {input} solve -solu {output} 2> {log}'

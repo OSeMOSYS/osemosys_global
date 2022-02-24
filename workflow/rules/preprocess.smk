@@ -34,6 +34,7 @@ power_plant_files = [
     'CapacityToActivityUnit.csv',
     'OperationalLife.csv',
     'TotalAnnualMaxCapacityInvestment.csv',
+    'TotalTechnologyModelPeriodActivityUpperLimit.csv',
     'EMISSION.csv',
     'FUEL.csv',
     'InputActivityRatio.csv',
@@ -62,7 +63,9 @@ demand_files = [
 
 # DATA PROCESSING RULES 
 
-rule PowerPlant:
+rule powerplant:
+    message:
+        'Generating powerplant data...'
     input:
         Path(input_dir, 'data/PLEXOS_World_2015_Gold_V1.1.xlsx'),
         Path(input_dir, 'data/weo_2018_powerplant_costs.csv'),
@@ -74,13 +77,15 @@ rule PowerPlant:
     output:
         expand(Path(output_dir, 'data/{output_file}'), output_file = power_plant_files)
     conda:
-        'envs/powerPlant.yaml'
+        '../envs/data_processing.yaml'
     log:
-        'workflow/logs/PowerPlant.log'
+        'workflow/logs/powerplant.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_powerplant_data.py 2> {log}'
 
-rule TimeSlice:
+rule timeslice:
+    message:
+        'Generating timeslice data...'
     input:
         Path(input_dir, 'data/All_Demand_UTC_2015.csv'),
         Path(input_dir, 'data/CSP 2015.csv'),
@@ -93,13 +98,15 @@ rule TimeSlice:
         expand(Path(output_dir, 'data/{output_file}'), output_file=timeslice_files),
         touch('workflow/rules/flags/timeslice.done')
     conda:
-        'envs/timeSlice.yaml'
+        '../envs/data_processing.yaml'
     log:
-        'workflow/logs/timeSlice.log'    
+        'workflow/logs/timeslice.log'    
     shell:
         'python workflow/scripts/osemosys_global/OPG_TS_data.py 2> {log}'
 
-rule VariableCosts:
+rule variable_costs:
+    message:
+        'Generating variable cost data...'
     input:
         Path(input_dir, 'data/CMO-April-2020-forecasts.xlsx'),
         Path(output_dir, 'data/TECHNOLOGY.csv'),
@@ -108,13 +115,15 @@ rule VariableCosts:
         expand(Path(output_dir, 'data/{output_file}'), output_file=variable_cost_files),
         touch('workflow/rules/flags/variable_costs.done')
     conda:
-        'envs/variableCosts.yaml'
+        '../envs/data_processing.yaml'
     log:
-        'workflow/logs/variableCosts.log'
+        'workflow/logs/variable_costs.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_variablecosts.py 2> {log}'
 
-rule DemandProjections:
+rule demand_projections:
+    message:
+        'Generating demand data...'
     input:
         Path(input_dir, 'data/PLEXOS_World_2015_Gold_V1.1.xlsx'),
         Path(input_dir, 'data/iamc_db_GDPppp_Countries.xlsx'),
@@ -128,9 +137,9 @@ rule DemandProjections:
         expand(Path(output_dir, 'figs/Demand projection {demand_figure}.jpg'), demand_figure = demand_figures),
         touch('workflow/rules/flags/demand_projections.done')
     conda:
-        'envs/demand.yaml'
+        '../envs/data_processing.yaml'
     log:
-        'workflow/logs/demandProjections.log'
+        'workflow/logs/demand_projections.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_demand_projection.py 2> {log}'
 
