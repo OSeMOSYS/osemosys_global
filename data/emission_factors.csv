@@ -1,0 +1,66 @@
+FUEL TYPE,co2_factor,ch4_factor,n2o_factor,co2_gwp,ch4_gwp,n2o_gwp
+UNIT,kg_per_mmBtu,g_per_mmBtu,g_per_mmBtu,na,na,na
+Anthracite Coal,103.69,11,1.6,1,25,298
+Bituminous Coal,93.28,11,1.6,1,25,298
+Sub-bituminous Coal,97.17,11,1.6,1,25,298
+Lignite Coal,97.72,11,1.6,1,25,298
+Mixed (Commercial Sector),94.27,11,1.6,1,25,298
+Mixed (Electric Power Sector),95.52,11,1.6,1,25,298
+Mixed (Industrial Coking),93.9,11,1.6,1,25,298
+Mixed (Industrial Sector),94.67,11,1.6,1,25,298
+Coal Coke,113.67,11,1.6,1,25,298
+Municipal Solid Waste,90.7,32,4.2,1,25,298
+Petroleum Coke (Solid),102.41,32,4.2,1,25,298
+Plastics,75,32,4.2,1,25,298
+Tires,85.97,32,4.2,1,25,298
+Agricultural Byproducts,118.17,32,4.2,1,25,298
+Peat,111.84,32,4.2,1,25,298
+Solid Byproducts,105.51,32,4.2,1,25,298
+Wood and Wood Residuals,93.8,7.2,3.6,1,25,298
+Natural Gas,53.06,1,0.1,1,25,298
+Blast Furnace Gas,274.32,0.022,0.1,1,25,298
+Coke Oven Gas,46.85,0.48,0.1,1,25,298
+Fuel Gas,59,3,0.6,1,25,298
+Propane Gas,61.46,3,0.6,1,25,298
+Landfill Gas,52.07,3.2,0.63,1,25,298
+Other Biomass Gases,52.07,3.2,0.63,1,25,298
+Asphalt and Road Oil,75.36,3,0.6,1,25,298
+Aviation Gasoline,69.25,3,0.6,1,25,298
+Butane,64.77,3,0.6,1,25,298
+Butylene,68.72,3,0.6,1,25,298
+Crude Oil,74.54,3,0.6,1,25,298
+Distillate Fuel Oil No. 1,73.25,3,0.6,1,25,298
+Distillate Fuel Oil No. 2,73.96,3,0.6,1,25,298
+Distillate Fuel Oil No. 4,75.04,3,0.6,1,25,298
+Ethane,59.6,3,0.6,1,25,298
+Ethylene,65.96,3,0.6,1,25,298
+Heavy Gas Oils,74.92,3,0.6,1,25,298
+Isobutane,64.94,3,0.6,1,25,298
+Isobutylene,68.86,3,0.6,1,25,298
+Kerosene,75.2,3,0.6,1,25,298
+Kerosene-Type Jet Fuel,72.22,3,0.6,1,25,298
+Liquefied Petroleum Gases (LPG),61.71,3,0.6,1,25,298
+Lubricants,74.27,3,0.6,1,25,298
+Motor Gasoline,70.22,3,0.6,1,25,298
+Naphtha (<401 deg F),68.02,3,0.6,1,25,298
+Natural Gasoline,66.88,3,0.6,1,25,298
+Other Oil (>401 deg F),76.22,3,0.6,1,25,298
+Pentanes Plus,70.02,3,0.6,1,25,298
+Petrochemical Feedstocks,71.02,3,0.6,1,25,298
+Petroleum Coke,102.41,3,0.6,1,25,298
+Propane,62.87,3,0.6,1,25,298
+Propylene,67.77,3,0.6,1,25,298
+Residual Fuel Oil No. 5,72.93,3,0.6,1,25,298
+Residual Fuel Oil No. 6,75.1,3,0.6,1,25,298
+Special Naphtha,72.34,3,0.6,1,25,298
+Unfinished Oils,74.54,3,0.6,1,25,298
+Used Oil,74,3,0.6,1,25,298
+Biodiesel (100%),73.84,1.1,0.11,1,25,298
+Ethanol (100%),68.44,1.1,0.11,1,25,298
+Rendered Animal Fat,71.06,1.1,0.11,1,25,298
+Vegetable Oil,81.55,1.1,0.11,1,25,298
+North American Softwood,94.4,1.9,0.42,1,25,298
+North American Hardwood,93.7,1.9,0.42,1,25,298
+Bagasse,95.5,1.9,0.42,1,25,298
+Bamboo,93.7,1.9,0.42,1,25,298
+Straw,95.1,1.9,0.42,1,25,298

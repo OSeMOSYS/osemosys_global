@@ -153,12 +153,13 @@ scenarioName = config['scenario']
 outputFolder = directory(outputDir + scenarioName + '/results/')
 
 ruleorder: 
-	PowerPlant > 
-	TimeSlice > 
-	VariableCosts > 
-	DemandProjections > 
-	FileCheck >
-	GeographicFilter 
+    PowerPlant > 
+    TimeSlice > 
+    VariableCosts > 
+    DemandProjections > 
+    Emissions >
+    FileCheck >
+    GeographicFilter 
 
 #####################################
 ## TARGETS
@@ -271,6 +272,19 @@ rule DemandProjections:
 	shell:
 		'python OPG_demand_projection.py 2> {log}'
 		
+rule Emissions:
+    input:
+        inputDir + 'emission_factors.csv',
+        outputDir + 'data/InputActivityRatio.csv'
+    output: 
+        outputDir + 'data/EmissionActivityRatio.csv',
+        outputDir + 'data/EmissionsPenalty.csv',
+        outputDir + 'data/EMISSION.csv'
+    log:
+        'logs/emissions.log'
+    shell:
+        'python OPG_emissions.py 2> {log}'
+
 rule GeographicFilter:
 	input: 
 		expand(outputDir + 'data/{osemosysFile}', osemosysFile = osemosysFiles),
