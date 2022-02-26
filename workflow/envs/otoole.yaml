@@ -1,7 +1,9 @@
 name: otoole
+
 channels:
  - conda-forge
+
 dependencies:
- - pip==21.0.1
+ - pip
  - pip: 
     - otoole==0.11.0
