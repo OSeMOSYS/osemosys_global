@@ -81,10 +81,10 @@ def main():
 
     # GET RESIDUAL CAPACITY VALUES 
 
-    df_res_cap = pd.read_csv(os.path.join(output_dir, 'data/ResidualCapacity.csv'))
-    df_res_cap = df_res_cap.loc[
-        (df_res_cap['YEAR']==2015) &
-        (df_res_cap['TECHNOLOGY'].str[3:6].isin(list(dict_reslimit.values())))]
+    df_res_cap_raw = pd.read_csv(os.path.join(output_dir, 'data/ResidualCapacity.csv'))
+    df_res_cap = df_res_cap_raw.loc[
+        (df_res_cap_raw['YEAR']==2015) &
+        (df_res_cap_raw['TECHNOLOGY'].str[3:6].isin(list(dict_reslimit.values())))]
     df_res_cap['VALUE'] = df_res_cap.loc[:,'VALUE'].round(4)
     res_cap = df_res_cap.set_index('TECHNOLOGY').to_dict()['VALUE']
     
@@ -102,7 +102,25 @@ def main():
                     max_capacity
             ])
         except KeyError:
-            logging.warning(f'No max cap set for {tech}')
+            # For Hydro, an empty value means that no economic locations 
+            # exist following the used study -> No capacity expansion
+            if tech[3:6] == 'HYD':
+                # Get biggest residual capacity value to account for 
+                # planned capacity additions 
+                df_residual_hydro = df_res_cap_raw.loc[
+                    df_res_cap_raw['TECHNOLOGY'] == tech
+                ]
+                max_capacity = df_residual_hydro['VALUE'].max()
+                for year in years:
+                    out_data.append([
+                        region,
+                        tech,
+                        year,
+                        max_capacity
+                    ])
+                logging.info(f'No capacity expansion allowed for {tech}')
+            else: # SPV, CSP, WON, WOF
+                logging.info(f'No capacity limit set for {tech}')
 
     df_max_capacity = pd.DataFrame(out_data, columns=[
         'REGION',
@@ -115,3 +133,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    logging.info(f'Max capacity limits sucessfully set')
