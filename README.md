@@ -14,8 +14,16 @@ as demonstrated in the [Simplicity example model](https://github.com/OSeMOSYS/si
 
 # Installation
 
+**Option One**
+
 1. [Install miniconda](https://docs.conda.io/en/latest/miniconda.html)
-2. Create a conda environment containing a minimal version of snakemake
-   `conda create -c conda-forge -c bioconda -n snakemake snakemake-minimal`
-3. Install ***otoole** `pip install otoole`
-3. Activate the environment `conda activate snakemake`
+2. Create a conda environment with `conda env create -f workflow/envs/osemosys-global.yaml`
+3. Activate the new `osemosys-global` environment with `conda activate osemosys-global`
+4. In the root folder (`osemosys_global/`) run the command `snakemake -c` to execute the workflow
+
+**Option Two**
+
+1. [Install miniconda](https://docs.conda.io/en/latest/miniconda.html)
+2. [Install snakemake](https://snakemake.readthedocs.io/en/stable/#) in a new environment with `conda create -c conda-forge -c bioconda -n osemosys-global snakemake`
+3. Activate the new `osemosys-global` environment with `conda activate osemosys-global`
+4. In the root folder (`osemosys_global/`) run the command `snakemake -c --use-conda` to execute the workflow
