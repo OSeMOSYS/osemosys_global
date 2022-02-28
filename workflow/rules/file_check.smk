@@ -41,6 +41,7 @@ missing_files.remove('default_values.csv')
 [missing_files.remove(csv) for csv in timeslice_files]
 [missing_files.remove(csv) for csv in variable_cost_files]
 [missing_files.remove(csv) for csv in emission_files]
+[missing_files.remove(csv) for csv in max_capacity_files]
 
 # RULE
 
