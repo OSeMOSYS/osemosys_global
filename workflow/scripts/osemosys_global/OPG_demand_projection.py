@@ -19,45 +19,50 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 # ### Imports relevant input data
 
 # Read in information from YAML file
-yaml_file = open("config.yaml")
+yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
+                              'config/config.yaml'))
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-input_dir = parsed_yaml_file.get('inputDir')
-output_dir = parsed_yaml_file.get('outputDir') + 'data/'                
+input_dir = os.path.join(os.path.dirname(__file__), '../../..',
+    parsed_yaml_file.get('inputDir'))
+input_data_dir = os.path.join(input_dir, 'data')
+output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
+    parsed_yaml_file.get('outputDir'))
+output_dir_data = os.path.join(output_dir, 'data')
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 
 try:
-    Open = open(os.path.join(input_dir,'PLEXOS_World_2015_Gold_V1.1.xlsx'))
+    Open = open(os.path.join(input_data_dir,'PLEXOS_World_2015_Gold_V1.1.xlsx'))
     
 except IOError:
     urllib.request.urlretrieve("https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true" , 
-                               os.path.join(input_dir,"PLEXOS_World_2015_Gold_V1.1.xlsx"))
+                               os.path.join(input_data_dir,"PLEXOS_World_2015_Gold_V1.1.xlsx"))
     
-    Open = open(os.path.join(input_dir,"PLEXOS_World_2015_Gold_V1.1.xlsx"))
+    Open = open(os.path.join(input_data_dir,"PLEXOS_World_2015_Gold_V1.1.xlsx"))
 
 finally:
     Open.close()
 
-Import_memberships = pd.read_excel(os.path.join(input_dir,"PLEXOS_World_2015_Gold_V1.1.xlsx") , sheet_name = "Memberships")
+Import_memberships = pd.read_excel(os.path.join(input_data_dir,"PLEXOS_World_2015_Gold_V1.1.xlsx") , sheet_name = "Memberships")
 
 # Imports SSP GDPppp and Population projections (https://tntcat.iiasa.ac.at/SspDb/dsd?Action=htmlpage&page=30)
-Import_iamc_db_GDPppp_Countries = pd.read_excel(os.path.join(input_dir,'iamc_db_GDPppp_Countries.xlsx'))
-Import_iamc_db_POP_Countries = pd.read_excel(os.path.join(input_dir,'iamc_db_POP_Countries.xlsx'))
-Import_iamc_db_URB_Countries = pd.read_excel(os.path.join(input_dir,'iamc_db_URB_Countries.xlsx'))
+Import_iamc_db_GDPppp_Countries = pd.read_excel(os.path.join(input_data_dir,'iamc_db_GDPppp_Countries.xlsx'))
+Import_iamc_db_POP_Countries = pd.read_excel(os.path.join(input_data_dir,'iamc_db_POP_Countries.xlsx'))
+Import_iamc_db_URB_Countries = pd.read_excel(os.path.join(input_data_dir,'iamc_db_URB_Countries.xlsx'))
 
 # Imports custom GDPppp and Population projections for countries not included in the SSP datasets.
-Import_POP_Missing = pd.read_excel(os.path.join(input_dir,'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx') , 
+Import_POP_Missing = pd.read_excel(os.path.join(input_data_dir,'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx') , 
                                    sheet_name = 'POP').set_index('Region')
 
-Import_GDP_Missing = pd.read_excel(os.path.join(input_dir,'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx') , 
+Import_GDP_Missing = pd.read_excel(os.path.join(input_data_dir,'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx') , 
                                    sheet_name = 'GDP|PPP').set_index('Region')
 
-Import_URB_Missing = pd.read_excel(os.path.join(input_dir,'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx') , 
+Import_URB_Missing = pd.read_excel(os.path.join(input_data_dir,'iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx') , 
                                    sheet_name = 'URB').set_index('Region')
 
 # Imports T&D losses projections (https://www.sciencedirect.com/science/article/pii/S0142061518335075?via%3Dihub)
-Import_Incl_Losses = pd.read_excel(os.path.join(input_dir,'T&D Losses.xlsx'))
+Import_Incl_Losses = pd.read_excel(os.path.join(input_data_dir,'T&D Losses.xlsx'))
 
 # ### Set boundaries for the regression
 
@@ -95,15 +100,15 @@ Spatial_Mapping_Node = Spatial_Mapping_Node.loc[~Spatial_Mapping_Node.index.dupl
 
 #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
-    Open = open(os.path.join(input_dir,'All_Demand_UTC_2015.csv'))
+    Open = open(os.path.join(input_data_dir,'All_Demand_UTC_2015.csv'))
     
-    Import_Hourly_Demand_2015 = pd.read_csv(os.path.join(input_dir,'All_Demand_UTC_2015.csv') , encoding='latin-1')
+    Import_Hourly_Demand_2015 = pd.read_csv(os.path.join(input_data_dir,'All_Demand_UTC_2015.csv') , encoding='latin-1')
     
 except IOError:
     urllib.request.urlretrieve ('https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true', 
-                                os.path.join(input_dir,'All_Demand_UTC_2015.csv'))
+                                os.path.join(input_data_dir,'All_Demand_UTC_2015.csv'))
     
-    Import_Hourly_Demand_2015 = pd.read_csv(os.path.join(input_dir,'All_Demand_UTC_2015.csv') , encoding='latin-1')
+    Import_Hourly_Demand_2015 = pd.read_csv(os.path.join(input_data_dir,'All_Demand_UTC_2015.csv') , encoding='latin-1')
 
 # ### Determines relative 2015 share of demand per sub-country node
 
@@ -171,7 +176,7 @@ Country_Urb_WB = Country_Urb_WB.reset_index().rename(columns =
     
 # Extracts data from Our World In Data per capita electricity consumption dataset. Original data is based on sources from BP and Ember. 
 # Dataset retreived through (https://ourworldindata.org/energy-production-consumption).
-Country_Elec_OWID = pd.read_csv(os.path.join(input_dir,'owid_pcconsumption.csv') , 
+Country_Elec_OWID = pd.read_csv(os.path.join(input_data_dir,'owid_pcconsumption.csv') , 
                                 encoding='latin-1').iloc[: , -3:].rename(columns = {'Per capita electricity (kWh)' : 'OWID_Elec' , 
                                                                                      'Code' : 'Country'}).set_index('Country')
 
@@ -286,7 +291,9 @@ for a in Country_Regression_Grouped.index.unique():
     ax1.set_ylabel('Electricity demand per capita (kWh)')
     plt.rcParams["figure.figsize"] = [8,4]
 
-    plt.savefig(os.path.join(output_dir,r'../figs',f'{a} R2 = {w2}'+'.jpg'))
+    if not os.path.exists(os.path.join(output_dir,'figs')):
+        os.makedirs(os.path.join(output_dir,'figs'))
+    plt.savefig(os.path.join(output_dir,'figs',f'{a} R2 = {w2}'+'.jpg'))
 
 # ## Country-level Projections
 
@@ -488,7 +495,7 @@ for a in Spatial_Mapping_Country['child_object'].unique():
     ax1.set_ylabel('Electricity demand per capita (kWh)')
     plt.rcParams["figure.figsize"] = [8,4]
 
-    plt.savefig(os.path.join(output_dir,r'../figs',f'Demand projection {a}'+'.jpg'))
+    plt.savefig(os.path.join(output_dir,'figs',f'Demand projection {a}'+'.jpg'))
 
 
 # ### Aggregates projected demand per person to full country-level
@@ -634,7 +641,7 @@ model_start_year = parsed_yaml_file.get('startYear')
 model_end_year = parsed_yaml_file.get('endYear')
 
 # Format demand projections
-with open(os.path.join(output_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
+with open(os.path.join(output_dir_data, 'SpecifiedAnnualDemand.csv'),'w') as f:
     f.write('REGION,FUEL,YEAR,VALUE\n')
     for x in Node_Demand_SSP_projected_Incl_Losses.index:
         if len(x) == 6:

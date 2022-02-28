@@ -28,20 +28,25 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 # using 85 as the headers (years) and skipping the energy header...
 
 #Read in information from YAML file
-yaml_file = open("config.yaml")
+yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
+                              'config/config.yaml'))
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-input_dir = parsed_yaml_file.get('inputDir')
-output_dir = parsed_yaml_file.get('outputDir') + 'data/'
+input_dir = os.path.join(os.path.dirname(__file__), '../../..',
+    parsed_yaml_file.get('inputDir'))
+input_data_dir = os.path.join(input_dir, 'data')
+output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
+    parsed_yaml_file.get('outputDir'))
+output_data_dir =  os.path.join(output_dir, 'data')
 
 #### REPLACE FROM BELOW ONCE FIGURED OUT...df_prices = pd.read_excel(
 df_prices = pd.read_excel(
-    os.path.join(input_dir,
+    os.path.join(input_data_dir,
     "CMO-April-2020-forecasts.xlsx"), header=1, skiprows=83, nrows=6
 )
 
 # Read in Technologies
-df_techs = pd.read_csv(os.path.join(output_dir,'TECHNOLOGY.csv'))
+df_techs = pd.read_csv(os.path.join(output_data_dir,'TECHNOLOGY.csv'))
 
 model_start_year = parsed_yaml_file.get('startYear')
 model_end_year = parsed_yaml_file.get('endYear')
@@ -183,6 +188,6 @@ df_varcosts_final = df_varcost[['REGION',
                        'YEAR', 
                        'VALUE']]
 
-df_varcosts_final.to_csv(os.path.join(output_dir,'VariableCost.csv'), mode='w', header=True, index = None)
+df_varcosts_final.to_csv(os.path.join(output_data_dir,'VariableCost.csv'), mode='w', header=True, index = None)
 
 logging.info('Variable Costs Completed')

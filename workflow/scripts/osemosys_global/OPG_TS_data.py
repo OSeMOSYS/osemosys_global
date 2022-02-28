@@ -24,30 +24,36 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 # ### Input data files and user input
 
 #Read in information from YAML file
-yaml_file = open("config.yaml")
+yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
+                              'config/config.yaml'))
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-input_dir = parsed_yaml_file.get('inputDir')
-output_dir = parsed_yaml_file.get('outputDir') + 'data/'
+input_dir = os.path.join(os.path.dirname(__file__), '../../..',
+    parsed_yaml_file.get('inputDir'))
+input_data_dir = os.path.join(input_dir, 'data')
+
+output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
+    parsed_yaml_file.get('outputDir'))
+output_data_dir =  os.path.join(output_dir, 'data')
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
     # Open = open(r'data/All_Demand_UTC_2015.csv')
-    Open = open(os.path.join(input_dir,
+    Open = open(os.path.join(input_data_dir,
                              'All_Demand_UTC_2015.csv')
                 )    
     # demand_df = pd.read_csv(r'data/All_Demand_UTC_2015.csv' , encoding='latin-1')
-    demand_df = pd.read_csv(os.path.join(input_dir,
+    demand_df = pd.read_csv(os.path.join(input_data_dir,
                                          'All_Demand_UTC_2015.csv'),
                             encoding='latin-1')
 
 except IOError:
     urllib.request.urlretrieve ('https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true', 
-                                os.path.join(input_dir,
+                                os.path.join(input_data_dir,
                                              'All_Demand_UTC_2015.csv')
                                 )
 
-    demand_df = pd.read_csv(os.path.join(input_dir,
+    demand_df = pd.read_csv(os.path.join(input_data_dir,
                                          'All_Demand_UTC_2015.csv'),
                             encoding='latin-1')
 
@@ -76,27 +82,27 @@ years = list(range(model_start_year, model_end_year+1))
 # In[4]:
 
 
-csp_df = pd.read_csv(os.path.join(input_dir,
+csp_df = pd.read_csv(os.path.join(input_data_dir,
                                   'CSP 2015.csv'),
                      encoding='latin-1')
 csp_df.name = 'CSP'
 
-spv_df = pd.read_csv(os.path.join(input_dir,
+spv_df = pd.read_csv(os.path.join(input_data_dir,
                                   'SolarPV 2015.csv'),
                      encoding='latin-1')
 spv_df.name = 'SPV'
 
-hyd_df = pd.read_csv(os.path.join(input_dir,
+hyd_df = pd.read_csv(os.path.join(input_data_dir,
                                   'Hydro_Monthly_Profiles (15 year average).csv'),
                      encoding='latin-1')
 hyd_df.name = 'HYD'
 
-won_df = pd.read_csv(os.path.join(input_dir,
+won_df = pd.read_csv(os.path.join(input_data_dir,
                                   'Won 2015.csv'),
                      encoding='latin-1')
 won_df.name = 'WON'
 
-wof_df = pd.read_csv(os.path.join(input_dir,
+wof_df = pd.read_csv(os.path.join(input_data_dir,
                                   'Woff 2015.csv'),
                      encoding='latin-1')
 wof_df.name = 'WOF'
@@ -108,8 +114,8 @@ wof_df.name = 'WOF'
 
 
 import os
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+if not os.path.exists(output_data_dir):
+    os.makedirs(output_data_dir)
 
 
 # ### Create columns for year, month, day, hour, and day type
@@ -198,7 +204,7 @@ yearsplit_final = pd.DataFrame(list(itertools.product(yearsplit['TIMESLICE'].uni
                               )
 yearsplit_final = yearsplit_final.join(yearsplit.set_index('TIMESLICE'), 
                                        on = 'TIMESLICE')
-yearsplit_final.to_csv(os.path.join(output_dir, 
+yearsplit_final.to_csv(os.path.join(output_data_dir, 
                                     'YearSplit.csv'),
                        index=None)
 
@@ -302,7 +308,7 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
                                          'YEAR', 
                                          'VALUE']]
 
-sp_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedDemandProfile.csv'), index=None)
+sp_demand_df_final.to_csv(os.path.join(output_data_dir,'SpecifiedDemandProfile.csv'), index=None)
 
 # ### CapacityFactor
 
@@ -399,7 +405,7 @@ for each in [csp_df, spv_df, won_df, wof_df]:
     capfac_all_df = capfac_all_df.append(capacity_factor(each),
                                          ignore_index = True)
     
-capfac_all_df.to_csv(os.path.join(output_dir, 
+capfac_all_df.to_csv(os.path.join(output_data_dir, 
                                   'CapacityFactor.csv'),
                      index=None)
 
@@ -411,7 +417,7 @@ capfac_all_df.to_csv(os.path.join(output_dir,
 
 time_slice_list = list(demand_df['TIMESLICE'].unique())
 time_slice_df = pd.DataFrame(time_slice_list, columns = ['VALUE'])
-time_slice_df.to_csv(os.path.join(output_dir, 
+time_slice_df.to_csv(os.path.join(output_data_dir, 
                                   'TIMESLICE.csv'),
                      index=None)
 

@@ -1,6 +1,6 @@
 # High Level Configuration
-inputDir: '../../data/'
-outputDir: '../../osemosys_global_model/'
+inputDir: 'resources'
+outputDir: 'results'
 modelName: 'OsemosysGlobal'
 region: 'GLOBAL'
 

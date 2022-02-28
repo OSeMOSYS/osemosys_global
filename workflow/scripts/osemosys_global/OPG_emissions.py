@@ -4,6 +4,7 @@ import logging
 import pandas as pd
 from pathlib import Path
 import yaml
+import os
 
 
 # Logging formatting 
@@ -21,10 +22,10 @@ _TECH_TO_FUEL = {
     'OTH':'Natural Gas'
 }
 
-# Global emission penalty 
-yaml_file = open('config.yaml')
-parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-_EMISSION_PENALTY = parsed_yaml_file.get('emission_penalty') # M$/MT
+# Config File 
+_PY_DIR = os.path.dirname(__file__)
+_YAML_FILE = open(os.path.join(_PY_DIR, '../../../config/config.yaml'))
+_PARSED_YAML_FILE = yaml.load(_YAML_FILE, Loader=yaml.FullLoader)
 
 # Emission name 
 _EMISSION = 'CO2'
@@ -39,9 +40,8 @@ def main():
 
     # PARAMETERS 
 
-    yaml_file = open('config.yaml')
-    parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-    output_dir = Path(parsed_yaml_file.get('outputDir'), 'data', index=False)
+    output_dir = Path(_PARSED_YAML_FILE.get('outputDir'), 'data', index=False)
+    emission_penalty = _PARSED_YAML_FILE.get('emission_penalty') # M$/MT
 
     # ASSIGN EMISSION ACTIVITY RATIOS
 
@@ -51,7 +51,7 @@ def main():
 
     # ASSIGN EMISSION PENALTY 
 
-    df_emission_penalty = get_emission_penalty(_EMISSION, _EMISSION_PENALTY)
+    df_emission_penalty = get_emission_penalty(_EMISSION, emission_penalty)
     df_emission_penalty.to_csv(Path(output_dir, 'EmissionsPenalty.csv'), index=False)
     logging.info('Successfully generated emission penalty')
 
@@ -85,9 +85,7 @@ def get_co2_emission_factors():
     # https://www.epa.gov/sites/default/files/2018-03/documents/emission-factors_mar_2018_0.pdf
 
     # Read in emission factors 
-    yaml_file = open('config.yaml')
-    parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-    input_dir = Path(parsed_yaml_file.get('inputDir'))
+    input_dir = Path(_PARSED_YAML_FILE.get('inputDir'), 'data')
     df_raw = pd.read_csv(Path(input_dir,'emission_factors.csv'))
     df_raw = df_raw.drop([0]).reset_index(drop=True) # drop units row
 
@@ -132,9 +130,7 @@ def get_ear(emission):
 
     # PARAMETERS
 
-    yaml_file = open('config.yaml')
-    parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-    output_dir = Path(parsed_yaml_file.get('outputDir'), 'data')
+    output_dir = Path(_PARSED_YAML_FILE.get('outputDir'), 'data')
 
     # GET EMISSION FACTORS 
 
@@ -186,11 +182,9 @@ def get_emission_penalty(emission, penalty):
 
     # PARAMETERS
 
-    yaml_file = open('config.yaml')
-    parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-    start_year = parsed_yaml_file.get('startYear')
-    end_year = parsed_yaml_file.get('endYear')
-    region = parsed_yaml_file.get('region')
+    start_year = _PARSED_YAML_FILE.get('startYear')
+    end_year = _PARSED_YAML_FILE.get('endYear')
+    region = _PARSED_YAML_FILE.get('region')
 
     # GENERATE DATA
     

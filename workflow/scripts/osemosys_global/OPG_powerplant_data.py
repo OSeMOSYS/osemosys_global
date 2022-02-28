@@ -18,58 +18,68 @@ import os
 
 def main():
     #Read in information from YAML file
-    yaml_file = open("config.yaml")
+    yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
+                                  'config/config.yaml'))
     parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-    input_dir = parsed_yaml_file.get('inputDir')
-    output_dir = parsed_yaml_file.get('outputDir') + 'data/'
+    input_dir = os.path.join(os.path.dirname(__file__), '../../..',
+        parsed_yaml_file.get('inputDir'))
+    input_data_dir = os.path.join(input_dir, 'data')
+
+    output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
+        parsed_yaml_file.get('outputDir'))
+    output_data_dir =  os.path.join(output_dir, 'data')
 
     cross_border_trade = parsed_yaml_file.get('crossborderTrade')
+
+    # Create output directory 
+    if not os.path.exists(output_data_dir):
+        os.makedirs(output_data_dir)
 
     #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
     try:
         #Open = open(r"../../data/PLEXOS_World_2015_Gold_V1.1.xlsx")
-        Open = open(os.path.join(input_dir,
+        Open = open(os.path.join(input_data_dir,
                                  "PLEXOS_World_2015_Gold_V1.1.xlsx"))
 
     except IOError:
         urllib.request.urlretrieve("https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true" , 
-                                   os.path.join(input_dir,
+                                   os.path.join(input_data_dir,
                                                 "PLEXOS_World_2015_Gold_V1.1.xlsx")
                                    )
 
-        Open = open(os.path.join(input_dir,
+        Open = open(os.path.join(input_data_dir,
                                  "PLEXOS_World_2015_Gold_V1.1.xlsx")
                     )
 
     finally:
         Open.close()
 
-    df = pd.read_excel(os.path.join(input_dir,
+    df = pd.read_excel(os.path.join(input_data_dir,
                                     "PLEXOS_World_2015_Gold_V1.1.xlsx"), 
                        sheet_name = "Properties")
 
-    df_dict = pd.read_excel(os.path.join(input_dir, 
+    df_dict = pd.read_excel(os.path.join(input_data_dir, 
                                          "PLEXOS_World_2015_Gold_V1.1.xlsx"), 
                             sheet_name = "Memberships")
 
     df_dict = df_dict[df_dict["parent_class"] == "Generator"].rename(
         {"parent_object": "powerplant"}, axis=1
         )
-    df_weo_data = pd.read_csv(os.path.join(input_dir,
+    df_weo_data = pd.read_csv(os.path.join(input_data_dir,
                                            "weo_2018_powerplant_costs.csv")
                               )
-    df_op_life = pd.read_csv(os.path.join(input_dir,
+    df_op_life = pd.read_csv(os.path.join(input_data_dir,
                                           "operational_life.csv")
                              )
-    df_tech_code = pd.read_csv(os.path.join(input_dir,
+    df_tech_code = pd.read_csv(os.path.join(input_data_dir,
                                             "naming_convention_tech.csv")
                                )
-    df_trn_efficiencies = pd.read_excel(os.path.join(input_dir,
+    df_trn_efficiencies = pd.read_excel(os.path.join(input_data_dir,
                                                      "Costs Line expansion.xlsx"),
                                         sheet_name = 'Interface'
                                         )
-    df_weo_regions = pd.read_csv(os.path.join(input_dir,
+    df_weo_regions = pd.read_csv(os.path.join(input_data_dir,
                                               "weo_region_mapping.csv")
                                  )
 
@@ -333,7 +343,7 @@ def main():
     df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
 
     # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
-    df_res_cap.to_csv(os.path.join(output_dir, 
+    df_res_cap.to_csv(os.path.join(output_data_dir, 
                                    "ResidualCapacity.csv"),
                       index=None)
 
@@ -807,11 +817,11 @@ def main():
     df_oar_final = df_oar_final.append(df_oar_newTechs, ignore_index=True)
 
     #df_oar_final.to_csv(r"osemosys_global_model/data/OutputActivityRatio.csv", index = None)
-    df_oar_final.to_csv(os.path.join(output_dir,
+    df_oar_final.to_csv(os.path.join(output_data_dir,
                                      "OutputActivityRatio.csv"),
                         index=None)
     # df_iar_final.to_csv(r"osemosys_global_model/data/InputActivityRatio.csv", index = None)
-    df_iar_final.to_csv(os.path.join(output_dir,
+    df_iar_final.to_csv(os.path.join(output_data_dir,
                                      "InputActivityRatio.csv"),
                         index=None)
 
@@ -941,11 +951,11 @@ def main():
         df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
 
         if each_cost in ['Capital']:
-            df_costs_final.to_csv(os.path.join(output_dir, 
+            df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "CapitalCost.csv"),
                                   index = None)
         if each_cost in ['O&M']:
-            df_costs_final.to_csv(os.path.join(output_dir, 
+            df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "FixedCost.csv"),
                                   index = None)
 
@@ -966,7 +976,7 @@ def main():
                        )
 
     df_capact_final['VALUE'] = 31.536
-    df_capact_final.to_csv(os.path.join(output_dir,
+    df_capact_final.to_csv(os.path.join(output_data_dir,
                                         "CapacityToActivityUnit.csv"),
                            index = None)
 
@@ -982,9 +992,14 @@ def main():
                                     ]
                                 )
         df_crossborder_final['VALUE'] = 0
-        df_crossborder_final.to_csv(os.path.join(output_dir,
-                                                "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
-                                    index = None)
+    else:
+        df_crossborder_final = pd.DataFrame(columns=['REGION', 
+                                                    'TECHNOLOGY',
+                                                    'VALUE'])
+    df_crossborder_final.to_csv(os.path.join(output_data_dir,
+                                            "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
+                                index = None)
+
 
     # Create Operational Life data
     tech_code_dict_reverse = dict((v,k) for k,v in tech_code_dict.items())
@@ -1001,7 +1016,7 @@ def main():
             op_life_dict[op_life_tech_name]])
     df_op_life_Out = pd.DataFrame(op_life_Out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
 
-    df_op_life_Out.to_csv(os.path.join(output_dir,
+    df_op_life_Out.to_csv(os.path.join(output_data_dir,
                                                 "OperationalLife.csv"),
                                     index = None)
 
@@ -1016,39 +1031,32 @@ def main():
     df_max_cap_invest = pd.DataFrame(maxCapInvestData,
                                     columns = ['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']
                                     )       
-    df_max_cap_invest.to_csv(os.path.join(output_dir, 
+    df_max_cap_invest.to_csv(os.path.join(output_data_dir, 
                                             'TotalAnnualMaxCapacityInvestment.csv'),
                                         index = None)                                              
 
     # ## Create sets for TECHNOLOGIES, FUELS
-    create_sets('TECHNOLOGY', df_oar_final, output_dir)
-    create_sets('FUEL', df_oar_final, output_dir)                             
+    create_sets('TECHNOLOGY', df_oar_final, output_data_dir)
+    create_sets('FUEL', df_oar_final, output_data_dir)                             
 
     # ## Create set for YEAR, REGION, MODE_OF_OPERATION
 
     years_df = pd.DataFrame(years, columns = ['VALUE'])
-    years_df.to_csv(os.path.join(output_dir, 
+    years_df.to_csv(os.path.join(output_data_dir, 
                                  "YEAR.csv"),
                     index = None)
 
     mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE'])
-    mode_list_df.to_csv(os.path.join(output_dir, 
+    mode_list_df.to_csv(os.path.join(output_data_dir, 
                                      "MODE_OF_OPERATION.csv"),
                         index = None)
 
     regions_df = pd.DataFrame(columns = ['VALUE'])
     regions_df.loc[0] = region_name
-    regions_df.to_csv(os.path.join(output_dir, 
+    regions_df.to_csv(os.path.join(output_data_dir, 
                                    "REGION.csv"),
                       index = None)
 
-
-    # ## Create set for EMISSION 
-
-    emissions_df = pd.DataFrame(emissions, columns = ['VALUE'])
-    emissions_df.to_csv(os.path.join(output_dir, 
-                                     "EMISSION.csv"),
-                    index = None)
 
 def create_sets(x, df, output_dir):
     """Creates a formatted otoole set csv 
