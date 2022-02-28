@@ -20,11 +20,13 @@ demand_figures = [
     'Africa'
 ]
 
+# Can instead replace with rule order
 flag_files = [
     'demand_projections',
     'timeslice',
     'variable_costs',
-    'emissions'
+    'emissions',
+    'max_capacity'
 ]
 
 # SCRIPT OUTPUT FILES 
@@ -65,6 +67,10 @@ emission_files = [
     'EmissionActivityRatio.csv',
     'EmissionsPenalty.csv',
     'EMISSION.csv'
+]
+
+max_capacity_files = [
+    'TotalAnnualMaxCapacity.csv'
 ]
 
 # DATA PROCESSING RULES 
@@ -166,3 +172,18 @@ rule emissions:
     shell:
         'python workflow/scripts/osemosys_global/OPG_emissions.py 2> {log}'
 
+rule max_capacity:
+    message: 
+        'Generating capacity limits...'
+    input:
+        Path(input_dir, 'data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'),
+        Path(output_dir, 'data/ResidualCapacity.csv')
+    output:
+        expand(Path(output_dir, 'data/{output_file}'), output_file = max_capacity_files),
+        touch('workflow/rules/flags/max_capacity.done')
+    conda:
+        '../envs/data_processing.yaml'
+    log:
+        'workflow/logs/max_capacity.log'
+    shell:
+        'python workflow/scripts/osemosys_global/OPG_max_capacity.py 2> {log}'
