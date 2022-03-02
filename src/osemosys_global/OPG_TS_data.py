@@ -86,10 +86,47 @@ spv_df = pd.read_csv(os.path.join(input_dir,
                      encoding='latin-1')
 spv_df.name = 'SPV'
 
+nodes = ['-'.join(x.split('-')[1:])
+         for x in spv_df.columns
+         if x
+         not in ['Datetime']]
+regions = [x
+           for x in spv_df.columns
+           if x
+           not in ['Datetime']]
+
+node_region_dict = dict(zip(nodes,
+                            regions))
+
 hyd_df = pd.read_csv(os.path.join(input_dir,
                                   'Hydro_Monthly_Profiles (15 year average).csv'),
                      encoding='latin-1')
-hyd_df.name = 'HYD'
+hyd_df = hyd_df.loc[hyd_df['NAME'].str.endswith('Capacity Scaler')]
+hyd_df['NAME'] = (hyd_df['NAME']
+                  .str.split('_')
+                  .str[0])
+hyd_df = hyd_df.set_index('NAME').T.reset_index()
+hyd_df.rename(columns={'index': 'MONTH'},
+              inplace=True)
+hyd_df['MONTH'] = (hyd_df['MONTH']
+                   .str.replace('M', '')
+                   .astype(int))
+
+hyd_df_processed = pd.DataFrame(columns=['Datetime'])
+hyd_df_processed['Datetime'] = spv_df['Datetime']
+hyd_df_processed['MONTH'] = (hyd_df_processed['Datetime']
+                             .str.split('/')
+                             .str[1]
+                             .astype(int))
+hyd_df_processed = pd.merge(hyd_df_processed,
+                            hyd_df,
+                            how='left',
+                            on='MONTH')
+hyd_df_processed.drop(columns='MONTH',
+                      inplace=True)
+hyd_df_processed.rename(columns=node_region_dict,
+                        inplace=True)
+hyd_df_processed.name = 'HYD'
 
 won_df = pd.read_csv(os.path.join(input_dir,
                                   'Won 2015.csv'),
@@ -370,7 +407,7 @@ def capacity_factor(df):
                                    str.join("") +
                                    '01')
     
-    # Create master table for SpecifiedDemandProfile
+    # Create master table for CapacityFactor
     capfac_df_final = pd.DataFrame(list(itertools.product(capfac_df['TIMESLICE'].unique(),
                                                           capfac_df['TECHNOLOGY'].unique(),
                                                           years)
@@ -395,7 +432,7 @@ def capacity_factor(df):
     return capfac_df_final
 
 
-for each in [csp_df, spv_df, won_df, wof_df]:
+for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
     capfac_all_df = capfac_all_df.append(capacity_factor(each),
                                          ignore_index = True)
     
