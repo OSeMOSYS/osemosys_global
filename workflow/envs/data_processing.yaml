@@ -1,0 +1,21 @@
+name: data_processing
+
+channels:
+ - conda-forge
+
+dependencies:
+ - python>=3.8
+ - pip
+ - pandas
+ - numpy
+ - urllib3
+ - matplotlib
+ - seaborn
+ - PyYAML
+ - xlsxwriter
+ - openpyxl
+ - plotly
+
+ - pip:
+      - world-bank-data
+      - sklearn

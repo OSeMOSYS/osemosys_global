@@ -1,0 +1,71 @@
+import os
+from snakemake.utils import min_version
+min_version("6.0")
+
+# CONFIGURATION
+
+configfile: 'config/config.yaml'
+output_dir = config['outputDir']
+scenario = config['scenario']
+
+# HELPER FILES
+
+include: 'rules/preprocess.smk'
+include: 'rules/model.smk'
+include: 'rules/postprocess.smk'
+include: 'rules/file_check.smk'
+
+# HANDLERS 
+        
+onsuccess:
+    print('Workflow finished successfully!')
+
+onerror:
+    print('An error occurred, please submit issue to '
+        'https://github.com/OSeMOSYS/osemosys_global/issues')
+
+# FILE CREATION CHECK 
+
+if not os.path.isdir(Path(output_dir, 'data')):
+    Path(output_dir, 'data').mkdir(parents=True)
+
+# TARGET RULES
+
+rule all:
+    message:
+        'All rules executed successfully...'
+    input:
+        rules.visualisation.output
+
+rule data_file:
+    message: 
+        'Scenario data file created successfully!'
+    input:
+        rules.preprocess_data_file.output
+
+rule make_dag:
+    message:
+        'dag created successfully and saved as docs/dag.pdf'
+    shell:
+        'snakemake --dag all | dot -Tpdf > docs/dag.pdf'
+
+# CLEANING RULES
+
+rule clean_all:
+    message:
+        'Reseting to defaults...'
+    shell:
+        'rm -rf {output_dir}/*'
+
+rule clean_data:
+    shell:
+        'rm -rf {output_dir}/data/*'
+
+rule clean_figures:
+    shell:
+        'rm -rf {output_dir}/figs/*'
+
+rule clean_scenario:
+    shell: 
+        'rm -r {output_dir}/{scenario}/*'
+
