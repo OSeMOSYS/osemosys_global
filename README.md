@@ -12,7 +12,20 @@ line to run the workflow.
 as demonstrated in the [Simplicity example model](https://github.com/OSeMOSYS/simplicity)
 - **otoole** is used to perform data conversions and generate OSeMOSYS datafiles from the pre-processed data
 
-# Installation
+# Setup
+## Installation
+
+Clone the git repository
+
+``` git clone --recurse-submodules https://github.com/OSeMOSYS/osemosys_global.git ```
+
+If the repository was cloned without the `--recurse-submodules` flag, run the command
+
+```
+git submodule init
+git submodule update 
+```
+## Running 
 
 **Option One**
 
