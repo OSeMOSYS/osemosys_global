@@ -21,12 +21,13 @@ _PY_DIR = os.path.dirname(__file__)
 yaml_file = open(os.path.join(_PY_DIR, '../../../config/config.yaml'))
 parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-geographic_scope = parsed_yaml_file.get('geographic_scope')
-geographic_scope.append('INT') # 'INT' for international fuels added by default
 scenario_name = parsed_yaml_file.get('scenario')
-
 input_dir = os.path.join(_PY_DIR, '../../..', parsed_yaml_file.get('outputDir'), 'data')
 output_dir = os.path.join(_PY_DIR, '../../..', parsed_yaml_file.get('outputDir'),  scenario_name, 'data')
+
+geographic_scope = parsed_yaml_file.get('geographic_scope')
+geographic_scope.append('INT') # 'INT' for international fuels added by default
+international_fuels = ['COA', 'COG', 'GAS', 'OIL', 'PET', 'OTH', 'URN']
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
@@ -43,11 +44,13 @@ for each_csv in (os.listdir(input_dir)):
 
             if 'FUEL' in df.columns:
                 df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
-                            df['FUEL'].str[6:9].isin(geographic_scope)]
+                            df['FUEL'].str[6:9].isin(geographic_scope) |
+                            df['FUEL'].isin(international_fuels)]
 
             if each_csv == 'FUEL.csv':
                 df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
-                            df['VALUE'].str[6:9].isin(geographic_scope)]
+                            df['VALUE'].str[6:9].isin(geographic_scope) |
+                            df['VALUE'].isin(international_fuels)]
 
             if each_csv == 'TECHNOLOGY.csv':
                 df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
