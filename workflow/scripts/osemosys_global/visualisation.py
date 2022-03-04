@@ -10,96 +10,128 @@ import os
 import sys
 import yaml
 
-#get paths from configuration file 
-yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
+# PATH CONSTANTS 
+
+_YAML_FILE = open(os.path.join(os.path.dirname(__file__), '../../..',
                               'config/config.yaml'))
-parsed_yaml_file = yaml.load(yaml_file, Loader = yaml.FullLoader)
+_PARSED_YAML_FILE = yaml.load(_YAML_FILE, Loader = yaml.FullLoader)
 
-input_folder = os.path.join(os.path.dirname(__file__), '../../..',
-                            parsed_yaml_file.get('outputDir'), 
-                            parsed_yaml_file.get('scenario'), 
+_INPUT_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
+                            _PARSED_YAML_FILE.get('outputDir'), 
+                            _PARSED_YAML_FILE.get('scenario'), 
                             'results')
-output_folder = os.path.join(os.path.dirname(__file__), '../../..',
-                            parsed_yaml_file.get('outputDir'), 
-                            parsed_yaml_file.get('scenario'), 
+_OUTPUT_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
+                            _PARSED_YAML_FILE.get('outputDir'), 
+                            _PARSED_YAML_FILE.get('scenario'), 
                             'figures')
-model_folder = os.path.join(os.path.dirname(__file__), '../../..',
-                            parsed_yaml_file.get('outputDir'), 
-                            parsed_yaml_file.get('scenario'), 
+_MODEL_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
+                            _PARSED_YAML_FILE.get('outputDir'), 
+                            _PARSED_YAML_FILE.get('scenario'), 
                             'data')
-data_folder = os.path.join(os.path.dirname(__file__), '../../..',
-                           parsed_yaml_file.get('inputDir'), 'data')
+_DATA_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
+                           _PARSED_YAML_FILE.get('inputDir'), 'data')
 
+# IMPORT TECH COLOUR CODES
 
-#input_folder = '../../osemosys_global_model/OsemosysGlobal/results'
-#output_folder = '../../osemosys_global_model/OsemosysGlobal/figures'
-#model_folder = '../../osemosys_global_model/OsemosysGlobal/data'
-#data_folder = '../../data'
+_NAME_COLOUR_CODES = pd.read_csv(os.path.join(_DATA_FOLDER,
+                                                'color_codes.csv'
+                                                ),
+                                   encoding='latin-1')
 
-try:
-    os.makedirs(output_folder)
-except FileExistsError:
-    pass
+def main():
+    '''Creates system level and country level graphs. '''
 
-# Import tech-color codes table
-name_color_codes = pd.read_csv(os.path.join(data_folder,
-                                            'color_codes.csv'
-                                            ),
-                               encoding='latin-1')
-tech_names = dict([(c, n) for c, n
-                   in zip(name_color_codes.tech_id,
-                          name_color_codes.tech_name)])
-color_dict = dict([(n, c) for n, c
-                   in zip(name_color_codes.tech_id,
-                          name_color_codes.colour)])
+    # Check for output directory 
+    try:
+        os.makedirs(_OUTPUT_FOLDER)
+    except FileExistsError:
+        pass
+    
+    # Get system level results 
+    plot_generation_hourly()
+    plot_totalcapacity(country = None)
+    plot_generationannual(country = None)
 
-# Create list of generation technologies
-df_gen = pd.read_csv(os.path.join(model_folder,
-                                  'TECHNOLOGY.csv'))
-generation = list(df_gen.VALUE.unique())
+    # Flag if to produce results per country 
+    results_by_country = _PARSED_YAML_FILE.get('results_by_country')
 
-# Import years
-df_years = pd.read_csv(os.path.join(model_folder,
-                                    'YEAR.csv'))
-years = list(df_years.VALUE.unique())
+    # If producing by country results, check for folder structure 
+    if results_by_country:
+        countries = _PARSED_YAML_FILE.get('geographic_scope')
+        for country in countries:
+            try:
+                os.makedirs(os.path.join(_OUTPUT_FOLDER, country))
+            except FileExistsError:
+                pass
+    
+            plot_totalcapacity(country = country)
+            plot_generationannual(country = country)
 
-# Import timeslice definition
-seasons_months_days = pd.read_csv(os.path.join(data_folder,
-                                               'ts_seasons.csv'
-                                               ),
-                                  encoding='latin-1')
-seasons_dict = dict([(m, s) for m, s
-                     in zip(seasons_months_days.month_name,
-                            seasons_months_days.season)])
-days_dict = dict([(m, d) for m, d
-                  in zip(seasons_months_days.month_name,
-                         seasons_months_days.days)])
-months = list(seasons_dict)
-hours = list(range(1, 25))
-dayparts_hours = pd.read_csv(os.path.join(data_folder,
-                                          'ts_dayparts.csv'
-                                          ),
-                             encoding='latin-1')
-dayparts_dict = dict(zip(dayparts_hours.daypart,
-                         zip(dayparts_hours.start_hour,
-                             dayparts_hours.end_hour))
-                     )
+def powerplant_filter(df, country = None):
 
+    # Get colour mapping dictionary
+    color_dict = dict([(n, c) for n, c
+                   in zip(_NAME_COLOUR_CODES.tech_id,
+                          _NAME_COLOUR_CODES.colour)])
 
-def powerplant_filter(df):
     filtered_df = df[~df.TECHNOLOGY.str.contains('TRN')]
     filtered_df = filtered_df.loc[filtered_df.TECHNOLOGY.str[0:3] == 'PWR']
     filtered_df['TYPE'] = filtered_df.TECHNOLOGY.str[3:6]
     filtered_df['COUNTRY'] = filtered_df.TECHNOLOGY.str[6:9]
-    filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
+
+    if country:
+        filtered_df = filtered_df.loc[filtered_df['COUNTRY'] == country]
+        filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
+    else:
+        filtered_df['LABEL'] = filtered_df['TYPE']
+    
     filtered_df['COLOR'] = filtered_df['TYPE'].map(color_dict)
     filtered_df.drop(['TECHNOLOGY', 'TYPE', 'COUNTRY'],
             axis=1,
-            inplace=True)   
+            inplace=True)
     return filtered_df
 
-
 def transform_ts(df):
+
+    # GET GENERATION TECHS
+
+    df_gen = pd.read_csv(os.path.join(_MODEL_FOLDER,
+                                      'TECHNOLOGY.csv'))
+    generation = list(df_gen.VALUE.unique())
+
+    # GET YEARS 
+
+    years = range(
+        _PARSED_YAML_FILE.get('startYear'),
+        _PARSED_YAML_FILE.get('endYear') + 1,
+    )
+
+    # GET TIMESLICE DEFENITION 
+
+    seasons_months_days = pd.read_csv(os.path.join(_DATA_FOLDER,
+                                               'ts_seasons.csv'
+                                               ),
+                                  encoding='latin-1')
+    seasons_dict = dict([(m, s) for m, s
+                         in zip(seasons_months_days.month_name,
+                                seasons_months_days.season)])
+    days_dict = dict([(m, d) for m, d
+                      in zip(seasons_months_days.month_name,
+                             seasons_months_days.days)])
+    months = list(seasons_dict)
+    hours = list(range(1, 25))
+
+    dayparts_hours = pd.read_csv(os.path.join(_DATA_FOLDER,
+                                              'ts_dayparts.csv'
+                                              ),
+                                 encoding='latin-1')
+    dayparts_dict = dict(zip(dayparts_hours.daypart,
+                             zip(dayparts_hours.start_hour,
+                                 dayparts_hours.end_hour))
+                         )
+
+    # APPLY TRANSFORMATION
+
     df_ts_template = pd.DataFrame(list(itertools.product(generation,
                                                          months,
                                                          hours,
@@ -110,6 +142,7 @@ def transform_ts(df):
                                            'HOUR',
                                            'YEAR']
                                   )
+
     df_ts_template = df_ts_template.sort_values(by=['TECHNOLOGY', 'YEAR'])
     df_ts_template['DAYS'] = df_ts_template['MONTH'].map(days_dict)
     df_ts_template['SEASON'] = df_ts_template['MONTH'].map(seasons_dict)
@@ -143,16 +176,25 @@ def transform_ts(df):
                                  categories=months,
                                  ordered=True)
     df = df.sort_values(by=['MONTH', 'HOUR'])
-    # df = df.rename(columns = tech_names)
+
+    '''
+    tech_names = dict([(c, n) for c, n
+                   in zip(_NAME_COLOUR_CODES.tech_id,
+                          _NAME_COLOUR_CODES.tech_name)])
+
+    df = df.rename(columns = tech_names)
+    '''
     return df
 
 
-def plot_totalcapacity():
-    df = pd.read_csv(os.path.join(input_folder,
+def plot_totalcapacity(country = None):
+    df = pd.read_csv(os.path.join(_INPUT_FOLDER,
                                   'TotalCapacityAnnual.csv'
                                   )
                      )
-    df = powerplant_filter(df)
+
+    df = powerplant_filter(df, country)
+
     plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
     df = df.groupby(['LABEL', 'YEAR'],
@@ -174,19 +216,21 @@ def plot_totalcapacity():
         legend_traceorder="reversed")
     fig.update_traces(marker_line_width=0, opacity=0.8)
 
+    if country:
+        fig_file = os.path.join(_OUTPUT_FOLDER, country, 'TotalCapacityAnnual.html')
+    else:
+        fig_file = os.path.join(_OUTPUT_FOLDER, 'TotalCapacityAnnual.html')
 
-    return fig.write_html(os.path.join(output_folder,
-                                       'TotalCapacityAnnual.html'
-                                       )
-                          )
+    return fig.write_html(fig_file)
 
-
-def plot_generationannual():
-    df = pd.read_csv(os.path.join(input_folder,
+def plot_generationannual(country=None):
+    df = pd.read_csv(os.path.join(_INPUT_FOLDER,
                                   'ProductionByTechnologyAnnual.csv'
                                   )
                      )
-    df = powerplant_filter(df)
+
+    df = powerplant_filter(df, country)
+
     plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
     df = df.groupby(['LABEL', 'YEAR'],
@@ -208,18 +252,20 @@ def plot_generationannual():
     fig.update_traces(marker_line_width=0,
                       opacity=0.8)
 
-    return fig.write_html(os.path.join(output_folder,
-                                       'GenerationAnnual.html'
-                                       )
-                          )
+    if country:
+        fig_file = os.path.join(_OUTPUT_FOLDER, country, 'GenerationAnnual.html')
+    else:
+        fig_file = os.path.join(_OUTPUT_FOLDER, 'GenerationAnnual.html')
+
+    return fig.write_html(fig_file)
 
 
 def plot_generation_hourly():
-    df = pd.read_csv(os.path.join(input_folder,
+    df = pd.read_csv(os.path.join(_INPUT_FOLDER,
                                   'ProductionByTechnology.csv'
                                   )
                      )
-    df = powerplant_filter(df)
+    df = powerplant_filter(df, country=False)
     plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
     df = transform_ts(df)
@@ -253,13 +299,10 @@ def plot_generation_hourly():
         fig['layout']['xaxis']['title']['text']=''
         fig['layout']['xaxis7']['title']['text']='Hours'
     '''
-    return fig.write_html(os.path.join(output_folder,
+    return fig.write_html(os.path.join(_OUTPUT_FOLDER,
                                        'GenerationHourly.html'
                                        )
                           )
 
-
-plot_generation_hourly()
-plot_totalcapacity()
-plot_generationannual()
-
+if __name__ == '__main__':
+    main()
