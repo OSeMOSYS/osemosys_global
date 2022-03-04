@@ -1021,14 +1021,24 @@ def main():
                                     index = None)
 
     # Create totalAnnualMaxCapacityInvestment data 
+
     # Do not alllow capacity investment for all PWRxxxxxxxx00 technolgoies 
-    maxCapInvestTechs = list(set(
+    max_cap_invest_techs = list(set(
         df_iar_final.loc[df_iar_final['TECHNOLOGY'].str.endswith('00')]['TECHNOLOGY'].tolist()))
-    maxCapInvestData = []
-    for tech in maxCapInvestTechs:
+    max_cap_invest_data = []
+    for tech in max_cap_invest_techs:
         for year in years: 
-            maxCapInvestData.append([region_name, tech, year, 0])
-    df_max_cap_invest = pd.DataFrame(maxCapInvestData,
+            max_cap_invest_data.append([region_name, tech, year, 0])
+
+    # Do not allow investment for all xxxGEOxxxxxxx technologies
+    max_cap_invest_techs = list(set(
+        df_iar_final.loc[df_iar_final['TECHNOLOGY'].str[3:6] == 'GEO']['TECHNOLOGY'].tolist()))
+    for tech in max_cap_invest_techs:
+        for year in years: 
+            max_cap_invest_data.append([region_name, tech, year, 0])
+    
+    # Save totalAnnualMaxCapacityInvestment
+    df_max_cap_invest = pd.DataFrame(max_cap_invest_data,
                                     columns = ['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']
                                     )       
     df_max_cap_invest.to_csv(os.path.join(output_data_dir, 
