@@ -200,6 +200,13 @@ def plot_totalcapacity(country = None):
     df = df.groupby(['LABEL', 'YEAR'],
                     as_index=False)['VALUE'].sum()
 
+    if not country: # System level titles
+        graph_title = 'Total System Capacity'
+        legend_title = 'Powerplant'
+    else: # Country level titles
+        graph_title = f'{country} System Capacity'
+        legend_title = 'Country-Powerplant'
+
     fig = px.bar(df,
                  x='YEAR',
                  y='VALUE',
@@ -208,12 +215,15 @@ def plot_totalcapacity(country = None):
                  template='plotly_white',
                  labels={'YEAR': 'Year',
                          'VALUE': 'Gigawatts (GW)',
-                         'LABEL': 'Country-Powerplant'})
+                         'LABEL': legend_title},
+                 title=graph_title)
     # fig.update_xaxes(type='category')
     fig.update_layout(
         font_family="Arial",
         font_size=14,
-        legend_traceorder="reversed")
+        legend_traceorder="reversed",
+        title_x=0.5)
+    fig['layout']['title']['font'] = dict(size=24)
     fig.update_traces(marker_line_width=0, opacity=0.8)
 
     if country:
@@ -236,6 +246,13 @@ def plot_generationannual(country=None):
     df = df.groupby(['LABEL', 'YEAR'],
                     as_index=False)['VALUE'].sum()
 
+    if not country: # System level titles
+        graph_title = 'Total System Generation'
+        legend_title = 'Powerplant'
+    else: # Country level titles
+        graph_title = f'{country} System Generation'
+        legend_title = 'Country-Powerplant'
+
     fig = px.bar(df,
                  x='YEAR',
                  y='VALUE',
@@ -244,11 +261,14 @@ def plot_generationannual(country=None):
                  template='plotly_white',
                  labels={'YEAR': 'Year',
                          'VALUE': 'Petajoules (PJ)',
-                         'LABEL': 'Country-Powerplant'})
+                         'LABEL': legend_title},
+                 title=graph_title)
     fig.update_layout(
         font_family="Arial",
         font_size=14,
-        legend_traceorder="reversed")
+        legend_traceorder="reversed",
+        title_x=0.5)
+    fig['layout']['title']['font'] = dict(size=24)
     fig.update_traces(marker_line_width=0,
                       opacity=0.8)
 
@@ -276,18 +296,18 @@ def plot_generation_hourly():
                      x in df.columns
                      if x not in ['MONTH', 'HOUR']
                     ],
-                  title='',
+                  title='System Hourly Generation',
                   facet_col='MONTH',
                   facet_col_spacing=0.005,
                   color_discrete_map=plot_colors,
                   animation_frame='YEAR',
                   template='seaborn+plotly_white',
                   labels={
-                      "variable": ""
-                  }
-                  )
+                      "variable": ""})
     fig.update_layout(
-        legend_traceorder="reversed")
+        legend_traceorder="reversed",
+        title_x=0.5)
+    fig['layout']['title']['font'] = dict(size=24)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     '''
     for axis in fig.layout:
