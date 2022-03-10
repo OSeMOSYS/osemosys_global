@@ -82,10 +82,10 @@ def main():
     # GET RESIDUAL CAPACITY VALUES 
 
     df_res_cap_raw = pd.read_csv(os.path.join(output_dir, 'data/ResidualCapacity.csv'))
+    df_res_cap_raw['VALUE'] = df_res_cap_raw.loc[:,'VALUE'].round(4)
     df_res_cap = df_res_cap_raw.loc[
-        (df_res_cap_raw['YEAR']==2015) &
-        (df_res_cap_raw['TECHNOLOGY'].str[3:6].isin(list(dict_reslimit.values())))]
-    df_res_cap['VALUE'] = df_res_cap.loc[:,'VALUE'].round(4)
+        df_res_cap_raw['TECHNOLOGY'].str[3:6].isin(list(dict_reslimit.values()))]
+    df_res_cap = get_max_value_per_technology(df_res_cap)
     res_cap = df_res_cap.set_index('TECHNOLOGY').to_dict()['VALUE']
     
     # CALCULATE AND FORMAT DATA 
@@ -93,7 +93,8 @@ def main():
     out_data = []
     for tech, residual in res_cap.items():
         try:
-            max_capacity = residual + cap_addition_limit[tech]
+            # Add the 0.0001 to avoid rounding errors 
+            max_capacity = (residual + 0.0001) + cap_addition_limit[tech]
             for year in years:
                 out_data.append([
                     region,
@@ -130,6 +131,42 @@ def main():
     ])
     df_max_capacity.to_csv(os.path.join(
         output_dir, "data/TotalAnnualMaxCapacity.csv"), index = None)
+
+
+def get_max_value_per_technology(df):
+    '''Gets the max value for each unique technology in a dataframe. 
+
+    This function will search through a 'TECHNOLOGY' column to idnetify each
+    unique technology. The input dataframe will be filtered based on each 
+    unique technology and only keep one datapoint per technology - the 
+    datapoint cooresponding to the max value in the 'VALUE' column. 
+
+    Args: 
+        df: Dataframe with at minimum a 'TECHNOLOGY' and 'VALUE' columns
+
+    Returns: 
+        df: Filtered dataframe giving max values per technology. 
+    ''' 
+
+    # Get list of techs to filter over 
+    techs = df['TECHNOLOGY'].unique().tolist()
+
+    #output list to hold filtered data
+    out_data = []
+
+    # perform filtering
+    for tech in techs:
+    # for tech in ['PWRHYDCHNJS01']: 
+        df_tech_filter = df.loc[df['TECHNOLOGY'] == tech]
+        df_value_filter = df_tech_filter.loc[
+            df_tech_filter['VALUE'] == df_tech_filter['VALUE'].max()].reset_index(drop=True)
+        df_value_filter = df_value_filter.drop_duplicates(subset=['VALUE'])
+        value_filter_data = df_value_filter.values.tolist()
+        out_data.append(value_filter_data[0])
+    
+    # setup dataframe to return
+    df_out = pd.DataFrame(out_data, columns=list(df))
+    return df_out
 
 if __name__ == '__main__':
     main()
