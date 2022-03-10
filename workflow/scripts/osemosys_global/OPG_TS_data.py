@@ -111,6 +111,9 @@ hyd_df = hyd_df.loc[hyd_df['NAME'].str.endswith('Capacity Scaler')]
 hyd_df['NAME'] = (hyd_df['NAME']
                   .str.split('_')
                   .str[0])
+# Drop Brazil transmission nodes J1, J2, J3
+brazil_j_nodes = ['BRA-J1', 'BRA-J2', 'BRA-J3']
+hyd_df = hyd_df.loc[~hyd_df['NAME'].isin(brazil_j_nodes)]
 hyd_df = hyd_df.set_index('NAME').T.reset_index()
 hyd_df.rename(columns={'index': 'MONTH'},
               inplace=True)

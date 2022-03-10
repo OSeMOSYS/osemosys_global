@@ -1030,9 +1030,11 @@ def main():
         for year in years: 
             max_cap_invest_data.append([region_name, tech, year, 0])
 
-    # Do not allow investment for all xxxGEOxxxxxxx technologies
-    max_cap_invest_techs = list(set(
-        df_iar_final.loc[df_iar_final['TECHNOLOGY'].str[3:6] == 'GEO']['TECHNOLOGY'].tolist()))
+    # Do not allow investment for all xxxABCxxxxxxx technologies
+    no_investment_techs = ['GEO', 'WOF', 'CSP', 'WAV']
+    max_cap_invest_techs = list(set(df_iar_final.loc[
+        df_iar_final['TECHNOLOGY'].str[3:6].isin(no_investment_techs)][
+        'TECHNOLOGY'].tolist()))
     for tech in max_cap_invest_techs:
         for year in years: 
             max_cap_invest_data.append([region_name, tech, year, 0])
