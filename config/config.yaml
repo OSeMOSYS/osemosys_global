@@ -30,3 +30,6 @@ crossborderTrade: False
 
 # Emission Parameters 
 emission_penalty: 50 # M$/MT CO2
+
+# Result Parameters 
+results_by_country: True
