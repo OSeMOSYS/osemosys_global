@@ -1,14 +1,14 @@
 tech_id,tech_name,colour
-BIO,Biomass,forestgreen
+BIO,Biomass,darkgreen
 COA,Coal,black
 ELC,Electricity,yellow
 GEO,Geothermal,darkseagreen
-HYD,Hydro,blue
+HYD,Hydro,dodgerblue
 GAS,Natural gas,orange
 PET,Petroleum,dimgrey
 SOL,Solar,gold
-URN,Nuclear,grey
-WAS,Waste,limegreen
+URN,Nuclear,mediumseagreen
+WAS,Waste,grey
 OTH,Other,teal
 COG,Cogeneration,peru
 OIL,Oil,dimgrey
