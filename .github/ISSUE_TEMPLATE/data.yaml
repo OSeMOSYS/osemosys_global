@@ -1,0 +1,55 @@
+name: Data 
+description: Issues relating to missing or incorrect data
+title: "[DATA] <Short description>"
+labels: ["data"]
+body:
+
+- type: input
+  attributes:
+    label: Data In Question
+    description: Name of data or datafile that needs to be added/reviewed
+    placeholder: "ie. Capital costs for nuclear power plants"
+  validations:
+    required: true
+    
+- type: dropdown
+  attributes:
+    label: Type of data issue. 
+    options:
+      - Missing Data 
+      - Incorect Data
+      - Unit Error
+  validations:
+    required: true
+    
+- type: input
+  attributes:
+    label: Does the data in question have an existing issue?
+    description: To refer to a an existing bug, you can use `#bugid`
+    placeholder: "#bugid 10"
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Issue
+    description: Detailed description the issue with the data.
+    placeholder: |
+      ie. A new dataset for nucelar power plant capital costs has been released for North America. 
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: Suggested Data Source
+    description: Do you have a source for new data? Please include the URL. 
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Additional Info
+    description: |
+      Please provide any additional information or resources that will help us correct/update the data. 
+  validations:
+    required: false
