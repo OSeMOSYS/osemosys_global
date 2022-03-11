@@ -27,37 +27,71 @@ TBD
 ## Dependencies
 OSeMOSYS Global relies on [Snakemake](https://snakemake.readthedocs.io/en/stable/), 
 a [Python](https://www.python.org/downloads/) based workflow management system 
-to execute the workflow. This requires [Conda](https://docs.conda.io/projects/conda/en/latest/) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html), an open-source package management system. 
+to execute the workflow. This requires [Conda](https://docs.conda.io/projects/conda/en/latest/) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html), a open-source package management system. 
 
 OSeMOSYS data is stored using a [Tabular Datapackage](https://specs.frictionlessdata.io/tabular-data-package/) as demonstrated in the [Simplicity example model](https://github.com/OSeMOSYS/simplicity). The python package [otoole](https://github.com/OSeMOSYS/otoole) is 
 used to perform data conversions and generate OSeMOSYS datafiles. 
+
+OSeMOSYS Global uses the open-source GNU Linear Programming Kit, [GLPK](https://www.gnu.org/software/glpk/), and the open-source solver solver, [CBC](https://github.com/coin-or/Cbc).
+
 ## Installation
-1. [Install miniconda](https://docs.conda.io/en/latest/miniconda.html)
-2. Clone the git repository
+1. Install [GLPK](https://www.gnu.org/software/glpk/)
+2. Install [CBC](https://github.com/coin-or/Cbc)
+3. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
+4. Clone the git repository
 
 ```bash
-git clone --recurse-submodules https://github.com/OSeMOSYS/osemosys_global.git 
+~/osemosys_global$ git clone --recurse-submodules https://github.com/OSeMOSYS/osemosys_global.git 
 ```
 
 If the repository was cloned without the `--recurse-submodules` flag, run the 
 commands
 
 ```bash
-git submodule init
-git submodule update 
+~/osemosys_global$ git submodule init
+~/osemosys_global$ git submodule update 
 ```
 
-3. Create a conda environment from the supplied environment file 
+5. Create a conda environment from the supplied environment file 
 
 ```bash
-/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml
+(base) ~/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml
 ```
 
-4. Activate the new `osemosys-global` environment 
+6. Activate the new `osemosys-global` environment 
 
 ```bash
-conda activate osemosys-global
+(base) ~/osemosys_global$ conda activate osemosys-global
 ```
+### Troubleshooting
+1. Verify that GLPK is installed by running the command `glpsol`.
+```bash
+(osemosys-global) ~/osemosys_global$ glpsol
+```
+```bash
+GLPSOL: GLPK LP/MIP Solver, v4.65
+No input problem file specified; try glpsol --help
+```
+2. Verify that CBC is installed by running the command `cbc`
+```bash
+(osemosys-global) ~/osemosys_global$ cbc
+```
+```bash
+Welcome to the CBC MILP Solver 
+Version: 2.10.3 
+Build Date: Mar 24 2020 
+
+CoinSolver takes input from arguments ( - switches to stdin)
+Enter ? for list of commands or help
+Coin:
+```
+Quit the solver with the command `quit`
+
+3. Verify that Conda is installed by running the command `conda info`
+```bash
+(osemosys-global) ~/osemosys_global$ conda info
+```
+
 ## Getting Started 
 
  - Running the workflow 
