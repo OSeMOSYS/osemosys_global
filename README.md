@@ -147,21 +147,8 @@ osemosys_global
 ### Configuration File
 
 Numerous parameters have been exposed to the user to control the model. These
-parameters are stored in the `osemosys_global/config/config.yaml` file.
-Below is a table describing the parameters.
-
-| Parameter  | Description | Limits |
-|------------|-------------|--------|
-| `scenario` | Scenario name |     |
-| `startYear` | Start year of model | 2015 |
-| `endYear`| End year of model | 2050 |
-| `dayType`|   |   |
-| `daydayParts` | Hours included in each day part | Include all values between 0-24 |
-| `seasons` | Months included in each season | Include all values between 1-12 |
-| `geographic_scope` | Countries to include in scenario | Three letter codes using [this source](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) |
-| `crossborderTrade` | Enable trading of resources between all countries in scenario | True or False |
-| `emission_penalty`   | Global carbon tax in Million Dollars per MegaTonne | Number greater than or equal to zero |
-| `results_by_country` | Plot results by country in addition to system level results | True or False |
+parameters are stored in the `osemosys_global/config/config.yaml`
+[file](https://github.com/OSeMOSYS/osemosys_global/tree/master/config).
 
 ### Examples
 
@@ -215,8 +202,6 @@ Below is a table describing the parameters.
 
 #### Run a World scenario from 2020 to 2040 graphing results at a system level only
 
-**Note: This scenarion will take ~7hrs to run on a high performance computer**
-
 1. Change the scenario name in `config/config.yaml`
 
     ```bash
@@ -242,7 +227,8 @@ Below is a table describing the parameters.
     results_by_country: False
     ```
 
-5. Run the command `snakemake -c`
+5. Run the command `snakemake -c` 
+**(This scenarion will take ~7hrs to run on a high performance computer)**
 
     ```bash
     (osemosys-global) ~/osemosys_global$ snakemake -c
