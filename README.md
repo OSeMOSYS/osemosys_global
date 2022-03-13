@@ -12,31 +12,17 @@ energy system model.
 ## Table of Contents
 
 - [Documentation](#documentation)
-- [Dependencies](#dependencies)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [Support + Feedback](#support--feedback)
+- [Dependencies](#dependencies)
 - [License](#license)
 - [Citing](#citing)
 
 ## Documentation
 
 TBD
-
-## Dependencies
-
-OSeMOSYS Global relies on [Snakemake](https://snakemake.readthedocs.io/en/stable/),
-a [Python](https://www.python.org/downloads/) based workflow management system
-to execute the workflow. This requires [Conda](https://docs.conda.io/projects/conda/en/latest/)
-or [Miniconda](https://docs.conda.io/en/latest/miniconda.html), a open-source package management system.
-
-OSeMOSYS data is stored using a [Tabular Datapackage](https://specs.frictionlessdata.io/tabular-data-package/)
-as demonstrated in the [Simplicity example model](https://github.com/OSeMOSYS/simplicity).The python package [otoole](https://github.com/OSeMOSYS/otoole) is
-used to perform data conversions and generate OSeMOSYS datafiles.
-
-OSeMOSYS Global uses the open-source GNU Linear Programming Kit, [GLPK](https://www.gnu.org/software/glpk/),
-and the open-source solver solver, [CBC](https://github.com/coin-or/Cbc).
 
 ## Installation
 
@@ -112,35 +98,162 @@ and the open-source solver solver, [CBC](https://github.com/coin-or/Cbc).
 
 ## Getting Started
 
+### Flowchart
+
+A high level overview of OSeMOSYS Global is shown below. The green boxes
+highlight where the user interfaces with the model. The red boxes highlight
+automated actions that run behind the scenes.
+
 ```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+flowchart LR
+    db[(Raw Data)]-->scripts(Data Processing Scripts)
+    config(Configuration File)-->scripts
+    scripts-->df(Data File)
+    df-->sol(Solver)
+    ose(OSeMOSYS File)-->sol
+    sol-->res(Results)
+
+    style db stroke:#f66
+    style scripts stroke:#f66
+    style df stroke:#f66
+    style ose stroke:#f66
+    style sol stroke:#f66
+    style config stroke:#66ff66
+    style res stroke:#66ff66
 ```
 
-Running the workflow
+### Directory Structure
 
-TBD
+The main components of the directory that the user will interface with are
+highlighted below. It follows the recommended [snakemake directory structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
 
-Modifying the configuration file
+``` bash
+osemosys_global
+├── config                        # User configurable setup files
+│   ├── config.yaml               
+├── resources                      
+├── resutls                       # Will appear after running 
+│   ├── data                      
+│   ├── figs                      # Global demand projection figures 
+│   ├── scenario_name             # Repeted folder for each scenario run
+│   │   ├── data/                 # Scenario input CSV data
+│   │   ├── figures/              # Scenario result figures
+│   │   ├── results/              # Scenario result CSV data
+│   │   ├── scenario_name.txt     # Scenario data file
+├── workflow                         
+└── ...
+```
 
-TBD
+### Configuration File
 
-Resetting to defaults
+Numerous parameters have been exposed to the user to control the model. These
+parameters are stored in the `osemosys_global/config/config.yaml` file.
+Below is a table describing the parameters.
 
-TBD
+| Parameter  | Description | Limits |
+|------------|-------------|--------|
+| `scenario` | Scenario name |     |
+| `startYear` | Start year of model | 2015 |
+| `endYear`| End year of model | 2050 |
+| `dayType`|   |   |
+| `daydayParts` | Hours included in each day part | Include all values between 0-24 |
+| `seasons` | Months included in each season | Include all values between 1-12 |
+| `geographic_scope` | Countries to include in scenario | Three letter codes using [this source](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) |
+| `crossborderTrade` | Enable trading of resources between all countries in scenario | True or False |
+| `emission_penalty`   | Global carbon tax in Million Dollars per MegaTonne | Number greater than or equal to zero |
+| `results_by_country` | Plot results by country in addition to system level results | True or False |
 
-Commands
+### Examples
 
-In the root folder (`osemosys_global/`) run the command `snakemake -c` to execute the workflow
+#### Run the Workflow with Default Settings
 
-In the root folder (`osemosys_global/`) run the command `snakemake -c --use-conda` to execute the workflow
+1. Run the command `snakemake -c`
+
+    ```bash
+    (osemosys-global) ~/osemosys_global$ snakemake -c
+    ```
+
+2. View system level results in the `results/India/figures` folder
+
+#### Run a scenario for Bangladesh, Bhutan, India, and Nepal (BBIN) with trade and an emission penalty of $25/Tonne
+
+1. Change the scenario name in `config/config.yaml`
+
+    ```bash
+    scenario: 'BBIN'
+    ```
+
+2. Change the geographic scope in `config/config.yaml`
+
+    ```bash
+    geographic_scope:
+    - 'IND'
+    - 'BGD'
+    - 'BTN'
+    - 'NPL'
+    ```
+
+3. Update the `crossborderTrade` parameter in `config/config.yaml`
+
+    ```bash
+    crossborderTrade: True
+    ```
+
+4. Change the emission penalty in `config/config.yaml`
+
+    ```bash
+    emission_penalty: 25 
+    ```
+
+5. Run the command `snakemake -c`
+
+    ```bash
+    (osemosys-global) ~/osemosys_global$ snakemake -c
+    ```
+
+6. View system level and country results in the `results/BBIN/figures` folder
+
+#### Run a World scenario from 2020 to 2040 graphing results at a system level only
+
+**Note: This scenarion will take ~7hrs to run on a high performance computer**
+
+1. Change the scenario name in `config/config.yaml`
+
+    ```bash
+    scenario: 'WORLD'
+    ```
+
+2. Delete everything under the geographic scope in `config/config.yaml`
+
+    ```bash
+    geographic_scope:
+    ```
+
+3. Change the startYear and endYear parameters in `config/config.yaml`
+
+    ```bash
+    startYear: 2020
+    endYear: 2040
+    ```
+
+4. Set the results to only graph at a system level in `config/config.yaml`
+
+    ```bash
+    results_by_country: False
+    ```
+
+5. Run the command `snakemake -c`
+
+    ```bash
+    (osemosys-global) ~/osemosys_global$ snakemake -c
+    ```
+
+6. View system level results in the `results/WORLD/figures` folder
 
 ## Contributing
 
-We appreciate feedback and contribution to this repo! Please see our [contribution guide](CONTRIBUTING.md) for information on how to conribute.
+We appreciate feedback and contribution to this repo! Please see our
+[contribution guide](CONTRIBUTING.md) for information on how to conribute.
 
 ## Support + Feedback
 
@@ -150,9 +263,32 @@ encounter.
 - For asking general usage questions, please use the commuity fourm.
 - For reporting code and data issues, please use the appropiate issue template
 
+## Dependencies
+
+OSeMOSYS Global relies on numerous open-source community supported tools.
+Below is a list on the heavily used packages that we hope you investigate
+further for yourself!
+
+- [Python](https://www.python.org/downloads/) is used for all data processing
+- [Anaconda](https://docs.conda.io/projects/conda/en/latest/) and
+[Miniconda](https://docs.conda.io/en/latest/miniconda.html) are used to manage
+Python packages
+- [Snakemake](https://snakemake.readthedocs.io/en/stable/) is a Python based
+workflow management tool
+- [otoole](https://github.com/OSeMOSYS/otoole) is a Python based command line
+interface used generate OSeMOSYS input and output datafiles
+- [Pandas](https://pandas.pydata.org/) is a Python package used to transform
+and analyze data
+- [Plotly](https://plotly.com/) is a Python package for data visualization
+- [GLPK](https://www.gnu.org/software/glpk/) is used to create linear programming
+data files
+- [CBC](https://github.com/coin-or/Cbc) is a linear programming and mixed integer
+program solver
+
 ## License
 
-OSeMOSYS Global is liscenced under a MIT liscence. Please see our [LICENSE](LICENSE) doc for more information.
+OSeMOSYS Global is liscenced under a MIT liscence. Please see our [LICENSE](LICENSE)
+doc for more information.
 
 ## Citing
 
