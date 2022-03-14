@@ -15,6 +15,7 @@ import yaml
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 import os
+import OPG_helper as hlp
 
 def main():
     #Read in information from YAML file
@@ -734,30 +735,8 @@ def main():
     # Drop NaN values
     df_trn_efficiencies = df_trn_efficiencies.dropna(subset=["From"])
 
-    # Create To and From Codes:
-    # If from column has length 6 then it's the last three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["From"].str.len() == 6, "From"] = (
-        df_trn_efficiencies["From"].str[3:6] + "XX"
-    )
-    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["From"].str.len() == 9, "From"] = (
-        df_trn_efficiencies["From"].str[3:6] + df_trn_efficiencies["From"].str[7:9]
-    )
-    # If from column has length 6 then it's the last three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["To"].str.len() == 6, "To"] = (
-        df_trn_efficiencies["To"].str[3:6] + "XX"
-    )
-    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
-    df_trn_efficiencies.loc[df_trn_efficiencies["To"].str.len() == 9, "To"] = (
-        df_trn_efficiencies["To"].str[3:6] + df_trn_efficiencies["To"].str[7:9]
-    )
-
-    # Combine From and To columns.
-    # If the From is earlier in the alphabet the technology is in order, add tech with mode 1.
-    df_trn_efficiencies["TECHNOLOGY"] = ("TRN" + df_trn_efficiencies["From"] + df_trn_efficiencies["To"])
-
-    # Drop to and from columns
-    df_trn_efficiencies = df_trn_efficiencies.drop(["From", "To"], axis=1)
+    # Create tech column from To and From Codes:
+    df_trn_efficiencies = hlp.format_transmission_name(df_trn_efficiencies)
 
     # Rename column 'VALUES'
     df_trn_efficiencies = df_trn_efficiencies.rename(columns={"Losses": "VALUE"})
