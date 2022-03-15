@@ -12,25 +12,29 @@ import itertools
 import urllib
 import os
 import yaml
+from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 import os
 
 def main():
-    #Read in information from YAML file
-    yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
-                                  'config/config.yaml'))
-    parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+    
+    # CONFIGURATION PARAMETERS
 
-    input_dir = os.path.join(os.path.dirname(__file__), '../../..',
-        parsed_yaml_file.get('inputDir'))
-    input_data_dir = os.path.join(input_dir, 'data')
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')
 
-    output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
-        parsed_yaml_file.get('outputDir'))
-    output_data_dir =  os.path.join(output_dir, 'data')
+    input_dir = config_paths.input_dir
+    input_data_dir = config_paths.input_data_dir
+    output_dir = config_paths.output_dir
+    output_data_dir = config_paths.output_data_dir
 
-    cross_border_trade = parsed_yaml_file.get('crossborderTrade')
+    cross_border_trade = config.get('crossborderTrade')
+    model_start_year = config.get('startYear')
+    model_end_year = config.get('endYear')
+    years = list(range(model_start_year, model_end_year + 1))
+
+    region_name = config.get('region')
 
     # Create output directory 
     if not os.path.exists(output_data_dir):
@@ -83,12 +87,6 @@ def main():
                                               "weo_region_mapping.csv")
                                  )
 
-    model_start_year = parsed_yaml_file.get('startYear')
-    model_end_year = parsed_yaml_file.get('endYear')
-    years = list(range(model_start_year, 
-                       model_end_year + 1))
-
-    region_name = parsed_yaml_file.get('region')
     emissions = []
 
     # Technologies that will have 00 and 01 suffixes to represent PLEXOS 

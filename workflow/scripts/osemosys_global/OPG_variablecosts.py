@@ -13,8 +13,19 @@ import numpy as np
 import itertools
 import os
 import yaml
+from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
+# CONFIGURATION PARAMETERS
+
+config_paths = ConfigPaths()
+config = ConfigFile('config')
+
+input_dir = config_paths.input_dir
+input_data_dir = config_paths.input_data_dir
+output_dir = config_paths.output_dir
+output_data_dir = config_paths.output_data_dir
 
 
 # ### Import data files and user input              
@@ -27,18 +38,6 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 # Read in World Bank Commodity Price Outlook - we only want rows 87 - 91
 # using 85 as the headers (years) and skipping the energy header...
 
-#Read in information from YAML file
-yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
-                              'config/config.yaml'))
-parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-
-input_dir = os.path.join(os.path.dirname(__file__), '../../..',
-    parsed_yaml_file.get('inputDir'))
-input_data_dir = os.path.join(input_dir, 'data')
-output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
-    parsed_yaml_file.get('outputDir'))
-output_data_dir =  os.path.join(output_dir, 'data')
-
 #### REPLACE FROM BELOW ONCE FIGURED OUT...df_prices = pd.read_excel(
 df_prices = pd.read_excel(
     os.path.join(input_data_dir,
@@ -48,11 +47,11 @@ df_prices = pd.read_excel(
 # Read in Technologies
 df_techs = pd.read_csv(os.path.join(output_data_dir,'TECHNOLOGY.csv'))
 
-model_start_year = parsed_yaml_file.get('startYear')
-model_end_year = parsed_yaml_file.get('endYear')
+model_start_year = config.get('startYear')
+model_end_year = config.get('endYear')
 years = [range(model_start_year, model_end_year + 1)]
 
-region_name = parsed_yaml_file.get('region')
+region_name = config.get('region')
 emissions = []
 
 
