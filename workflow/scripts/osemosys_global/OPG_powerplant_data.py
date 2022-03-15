@@ -15,7 +15,6 @@ import yaml
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 import os
-import OPG_helper as hlp
 
 def main():
     #Read in information from YAML file
@@ -736,7 +735,7 @@ def main():
     df_trn_efficiencies = df_trn_efficiencies.dropna(subset=["From"])
 
     # Create tech column from To and From Codes:
-    df_trn_efficiencies = hlp.format_transmission_name(df_trn_efficiencies)
+    df_trn_efficiencies = format_transmission_name(df_trn_efficiencies)
 
     # Rename column 'VALUES'
     df_trn_efficiencies = df_trn_efficiencies.rename(columns={"Losses": "VALUE"})
@@ -750,11 +749,7 @@ def main():
         df_int_trn_oar, df_trn_efficiencies, how="outer", on="TECHNOLOGY"
     )
 
-
     # #### Output IAR and OAR
-
-    # In[ ]:
-
 
     # Combine the pieces from above and output to csv:
 
@@ -870,7 +865,25 @@ def main():
                                    )
                             ]
                            )
+    
+    # Get transmission costs
+    df_trans_capex, df_trans_fix = get_transmission_costs()
 
+    df_trans_capex['REGION'] = region_name
+    df_trans_capex['YEAR'] = [years] * len(df_trans_capex)
+    df_trans_capex = df_trans_capex.explode('YEAR')
+
+    df_trans_fix['REGION'] = region_name
+    df_trans_fix['YEAR'] = [years] * len(df_trans_fix)
+    df_trans_fix = df_trans_fix.explode('YEAR')
+
+    # Filter out techs that don't have activity ratios 
+    df_trans_capex = df_trans_capex.loc[
+        df_trans_capex['TECHNOLOGY'].isin(df_oar_final['TECHNOLOGY'])]
+    df_trans_fix = df_trans_fix.loc[
+        df_trans_fix['TECHNOLOGY'].isin(df_oar_final['TECHNOLOGY'])]
+
+    # Create formatted CSVs
     for each_cost in ['Capital', 'O&M']:
         df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
         df_costs_temp.drop(['technology', 'parameter'], 
@@ -930,10 +943,12 @@ def main():
         df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
 
         if each_cost in ['Capital']:
+            df_costs_final = df_costs_final.merge(df_trans_capex, how='outer')
             df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "CapitalCost.csv"),
                                   index = None)
         if each_cost in ['O&M']:
+            df_costs_final = df_costs_final.merge(df_trans_fix, how='outer')
             df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "FixedCost.csv"),
                                   index = None)
@@ -1157,7 +1172,114 @@ def newIar(df_in, tech):
     df_out['VALUE'] = round(1/iar, 3)
     return df_out
 
+def get_transmission_costs():
+    '''Gets electrical transmission capital and fixed cost per technology. 
 
+    Both the capital costs and fixed cost are written out to avoid having 
+    to read in the excel file twice 
+    
+    Returns: 
+        df_capex: DataFrame with the columns 'TECHNOLOGY' and 'VALUE' 
+            representing CAPITAL cost in millions of dollars per year. 
+        df_fix: DataFrame with the columns 'TECHNOLOGY' and 'VALUE' 
+            representing FIXED cost in millions of dollars per year. 
+    '''
+
+    #Read in input folder from yaml file 
+    yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
+                                  'config/config.yaml'))
+    parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+    input_data_dir = os.path.join(os.path.dirname(__file__), '../../..',
+        parsed_yaml_file.get('inputDir'), 'data')
+
+    # Read in raw data
+    df = pd.read_excel(os.path.join(input_data_dir,
+                                                 "Costs Line expansion.xlsx"),
+                                    sheet_name = 'Lines')
+
+    # Drop unneeded columns
+    df = df.drop(
+        [
+            "Line",
+            "KM distance",
+            "HVAC/HVDC/Subsea",
+            "Losses",
+            "Unnamed: 8",
+            "Line Max Size (MW)",
+            "Unnamed: 10",
+            "Unnamed: 11",
+            "Unnamed: 12",
+            "Subsea lines",
+            "Unnamed: 14"
+        ],
+        axis=1,
+    )
+
+    # Use to/from codes to create a TECHNOLOGY columns
+    df = format_transmission_name(df)
+
+    # Changes units
+    # Raw given in dollars -> model units in million dollars
+    df = df.rename(columns={'Annual FO&M (3.5% of CAPEX) ($2010 in $000)':'O&M'})
+    df = df.rename(columns={'Build Cost ($2010 in $000)':'CAPEX'})
+    df['O&M'] = df['O&M'].astype(float) / 1000000
+    df['CAPEX'] = df['CAPEX'].astype(float) / 1000000
+    df = df.round({'O&M': 3, 'CAPEX': 3, })
+
+    # Spereate out fixed and capex and return values 
+    df_capex = df.drop(['O&M'], axis=1)
+    df_capex = df_capex.rename(columns={'CAPEX':'VALUE'})
+    df_fix = df.drop(['CAPEX'], axis=1)
+    df_fix = df_fix.rename(columns={'O&M':'VALUE'})
+
+    return df_capex, df_fix
+
+def format_transmission_name(df):
+    '''Formats PLEXOS transmission names into OSeMOSYS Global names.
+
+    Args:
+        df: Pandas DataFrame with columns 'From' and 'To' describing the 
+               transmission from and to contries. ie. 
+
+              From   |   To   | Losses
+            ---------------------------
+             AF-COD  | AF-COG | 0.001
+             EU-AUT  | EU-SVK | 0.004
+             AS-LBN  | AS-SYR | 0.006
+    
+    Retruns: 
+        df: Same as df_in, except the 'From' and 'To' columns are replaced 
+            with a single 'TECHNOLOGY' column holding OSeMOSYS Global 
+            naming conventions 
+
+             Losses |   TECHNOLOGY
+            ------------------------
+             0.001  | TRNCODXXCOGXX
+             0.004  | TRNAUTXXSVKXX
+             0.006  | TRNLBNXXSYRXX
+    '''
+
+    # If from column has length 6 then it's the last three chars plus XX
+    df.loc[df["From"].str.len() == 6, "From"] = (df["From"].str[3:6] + "XX")
+
+    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
+    df.loc[df["From"].str.len() == 9, "From"] = (
+        df["From"].str[3:6] + df["From"].str[7:9])
+
+    # If to column has length 6 then it's the last three chars plus XX
+    df.loc[df["To"].str.len() == 6, "To"] = (df["To"].str[3:6] + "XX")
+
+    # If to column has length 9 then it's the 3:6 and 7:9 three chars plus XX
+    df.loc[df["To"].str.len() == 9, "To"] = (
+        df["To"].str[3:6] + df["To"].str[7:9])
+
+    # Combine From and To columns.
+    df["TECHNOLOGY"] = ("TRN" + df["From"] + df["To"])
+
+    # Drop to and from columns
+    df = df.drop(["From", "To"], axis=1)
+
+    return df
 
 if __name__ == "__main__":
     main()
