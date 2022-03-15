@@ -3,6 +3,7 @@ import urllib
 import os
 import yaml
 import pandas as pd
+from OPG_configuration import ConfigFile, ConfigPaths
 
 # LOGGING
 import logging
@@ -17,12 +18,14 @@ _PARSED_YAML_FILE = yaml.load(_YAML_FILE, Loader=yaml.FullLoader)
 def main():
     '''Creates capacity limits on renewable technologies.'''
     
-    input_dir = _PARSED_YAML_FILE.get('inputDir')
-    output_dir = _PARSED_YAML_FILE.get('outputDir')
-    region = _PARSED_YAML_FILE.get('region')
-    years = range(
-        _PARSED_YAML_FILE.get('startYear'),
-        _PARSED_YAML_FILE.get('endYear') + 1)
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')  
+
+    input_dir = config_paths.input_dir
+    output_data_dir = config_paths.output_data_dir
+    region = config.get('region')
+    years = range(config.get('startYear'), config.get('endYear') + 1)
 
     ## Checks whether PLEXOS-World/MESSAGEix-GLOBIOM soft-link model data needs to be 
     # retrieved from the PLEXOS-World Harvard Dataverse.
@@ -81,7 +84,7 @@ def main():
 
     # GET RESIDUAL CAPACITY VALUES 
 
-    df_res_cap_raw = pd.read_csv(os.path.join(output_dir, 'data/ResidualCapacity.csv'))
+    df_res_cap_raw = pd.read_csv(os.path.join(output_data_dir, 'ResidualCapacity.csv'))
     df_res_cap_raw['VALUE'] = df_res_cap_raw.loc[:,'VALUE'].round(4)
     df_res_cap = df_res_cap_raw.loc[
         df_res_cap_raw['TECHNOLOGY'].str[3:6].isin(list(dict_reslimit.values()))]
@@ -130,7 +133,7 @@ def main():
         'VALUE'
     ])
     df_max_capacity.to_csv(os.path.join(
-        output_dir, "data/TotalAnnualMaxCapacity.csv"), index = None)
+        output_data_dir, "TotalAnnualMaxCapacity.csv"), index = None)
 
 
 def get_max_value_per_technology(df):
