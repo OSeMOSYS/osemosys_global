@@ -1183,12 +1183,10 @@ def get_transmission_costs():
             representing FIXED cost in millions of dollars per year. 
     '''
 
-    #Read in input folder from yaml file 
-    yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
-                                  'config/config.yaml'))
-    parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
-    input_data_dir = os.path.join(os.path.dirname(__file__), '../../..',
-        parsed_yaml_file.get('inputDir'), 'data')
+    # CONFIGURATION PARAMETERS
+
+    config_paths = ConfigPaths()
+    input_data_dir = config_paths.input_data_dir
 
     # Read in raw data
     df = pd.read_excel(os.path.join(input_data_dir,
