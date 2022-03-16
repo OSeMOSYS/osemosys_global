@@ -12,11 +12,11 @@ startYear: 2015
 endYear: 2050
 daytype: False
 dayparts:
-  #daypart : [start_hour, end_hour]
+  #daypart : [start_hour (inclusive), end_hour (exclusive)]
   D1: [0, 12]
   D2: [12, 24]
 seasons:
-  #season : [month 1, month 2, ...]
+  #season : [month 1, month 2, ...] (all inclusive)
   S1: [12, 1, 2]
   S2: [3, 4, 5]
   S3: [6, 7, 8]
