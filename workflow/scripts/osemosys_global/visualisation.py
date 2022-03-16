@@ -9,41 +9,19 @@ import itertools
 import os
 import sys
 import yaml
-
-# PATH CONSTANTS 
-
-_YAML_FILE = open(os.path.join(os.path.dirname(__file__), '../../..',
-                              'config/config.yaml'))
-_PARSED_YAML_FILE = yaml.load(_YAML_FILE, Loader = yaml.FullLoader)
-
-_INPUT_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
-                            _PARSED_YAML_FILE.get('outputDir'), 
-                            _PARSED_YAML_FILE.get('scenario'), 
-                            'results')
-_OUTPUT_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
-                            _PARSED_YAML_FILE.get('outputDir'), 
-                            _PARSED_YAML_FILE.get('scenario'), 
-                            'figures')
-_MODEL_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
-                            _PARSED_YAML_FILE.get('outputDir'), 
-                            _PARSED_YAML_FILE.get('scenario'), 
-                            'data')
-_DATA_FOLDER = os.path.join(os.path.dirname(__file__), '../../..',
-                           _PARSED_YAML_FILE.get('inputDir'), 'data')
-
-# IMPORT TECH COLOUR CODES
-
-_NAME_COLOUR_CODES = pd.read_csv(os.path.join(_DATA_FOLDER,
-                                                'color_codes.csv'
-                                                ),
-                                   encoding='latin-1')
+from OPG_configuration import ConfigFile, ConfigPaths
 
 def main():
     '''Creates system level and country level graphs. '''
 
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')
+    scenario_figs_dir = config_paths.scenario_figs_dir
+    results_by_country = config.get('results_by_country')
+
     # Check for output directory 
     try:
-        os.makedirs(_OUTPUT_FOLDER)
+        os.makedirs(scenario_figs_dir)
     except FileExistsError:
         pass
     
@@ -52,15 +30,12 @@ def main():
     plot_totalcapacity(country = None)
     plot_generationannual(country = None)
 
-    # Flag if to produce results per country 
-    results_by_country = _PARSED_YAML_FILE.get('results_by_country')
-
     # If producing by country results, check for folder structure 
     if results_by_country:
-        countries = _PARSED_YAML_FILE.get('geographic_scope')
+        countries = config.get('geographic_scope')
         for country in countries:
             try:
-                os.makedirs(os.path.join(_OUTPUT_FOLDER, country))
+                os.makedirs(os.path.join(scenario_figs_dir, country))
             except FileExistsError:
                 pass
     
@@ -69,10 +44,18 @@ def main():
 
 def powerplant_filter(df, country = None):
 
+    # CONFIGURATION PARAMETERS 
+    config_paths = ConfigPaths()
+    input_data_dir = config_paths.input_data_dir
+    name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
+                                                'color_codes.csv'
+                                                ),
+                                   encoding='latin-1')
+
     # Get colour mapping dictionary
     color_dict = dict([(n, c) for n, c
-                   in zip(_NAME_COLOUR_CODES.tech_id,
-                          _NAME_COLOUR_CODES.colour)])
+                   in zip(name_colour_codes.tech_id,
+                          name_colour_codes.colour)])
 
     filtered_df = df[~df.TECHNOLOGY.str.contains('TRN')]
     filtered_df = filtered_df.loc[filtered_df.TECHNOLOGY.str[0:3] == 'PWR']
@@ -93,22 +76,22 @@ def powerplant_filter(df, country = None):
 
 def transform_ts(df):
 
-    # GET GENERATION TECHS
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')
+    scenario_data_dir = config_paths.scenario_data_dir
+    input_data_dir = config_paths.input_data_dir
+    years = range(config.get('startYear'), config.get('endYear') + 1)
 
-    df_gen = pd.read_csv(os.path.join(_MODEL_FOLDER,
+    # GET TECHS TO PLOT
+
+    df_gen = pd.read_csv(os.path.join(scenario_data_dir,
                                       'TECHNOLOGY.csv'))
     generation = list(df_gen.VALUE.unique())
 
-    # GET YEARS 
-
-    years = range(
-        _PARSED_YAML_FILE.get('startYear'),
-        _PARSED_YAML_FILE.get('endYear') + 1,
-    )
-
     # GET TIMESLICE DEFENITION 
 
-    seasons_months_days = pd.read_csv(os.path.join(_DATA_FOLDER,
+    seasons_months_days = pd.read_csv(os.path.join(input_data_dir,
                                                'ts_seasons.csv'
                                                ),
                                   encoding='latin-1')
@@ -121,7 +104,7 @@ def transform_ts(df):
     months = list(seasons_dict)
     hours = list(range(1, 25))
 
-    dayparts_hours = pd.read_csv(os.path.join(_DATA_FOLDER,
+    dayparts_hours = pd.read_csv(os.path.join(input_data_dir,
                                               'ts_dayparts.csv'
                                               ),
                                  encoding='latin-1')
@@ -179,8 +162,8 @@ def transform_ts(df):
 
     '''
     tech_names = dict([(c, n) for c, n
-                   in zip(_NAME_COLOUR_CODES.tech_id,
-                          _NAME_COLOUR_CODES.tech_name)])
+                   in zip(name_colour_codes.tech_id,
+                          name_colour_codes.tech_name)])
 
     df = df.rename(columns = tech_names)
     '''
@@ -188,7 +171,15 @@ def transform_ts(df):
 
 
 def plot_totalcapacity(country = None):
-    df = pd.read_csv(os.path.join(_INPUT_FOLDER,
+
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_figs_dir = config_paths.scenario_figs_dir
+    scenario_results_dir = config_paths.scenario_results_dir
+
+    # GET RESULTS
+
+    df = pd.read_csv(os.path.join(scenario_results_dir,
                                   'TotalCapacityAnnual.csv'
                                   )
                      )
@@ -227,14 +218,20 @@ def plot_totalcapacity(country = None):
     fig.update_traces(marker_line_width=0, opacity=0.8)
 
     if country:
-        fig_file = os.path.join(_OUTPUT_FOLDER, country, 'TotalCapacityAnnual.html')
+        fig_file = os.path.join(scenario_figs_dir, country, 'TotalCapacityAnnual.html')
     else:
-        fig_file = os.path.join(_OUTPUT_FOLDER, 'TotalCapacityAnnual.html')
+        fig_file = os.path.join(scenario_figs_dir, 'TotalCapacityAnnual.html')
 
     return fig.write_html(fig_file)
 
 def plot_generationannual(country=None):
-    df = pd.read_csv(os.path.join(_INPUT_FOLDER,
+
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_figs_dir = config_paths.scenario_figs_dir
+    scenario_results_dir = config_paths.scenario_results_dir
+
+    df = pd.read_csv(os.path.join(scenario_results_dir,
                                   'ProductionByTechnologyAnnual.csv'
                                   )
                      )
@@ -273,15 +270,21 @@ def plot_generationannual(country=None):
                       opacity=0.8)
 
     if country:
-        fig_file = os.path.join(_OUTPUT_FOLDER, country, 'GenerationAnnual.html')
+        fig_file = os.path.join(scenario_figs_dir, country, 'GenerationAnnual.html')
     else:
-        fig_file = os.path.join(_OUTPUT_FOLDER, 'GenerationAnnual.html')
+        fig_file = os.path.join(scenario_figs_dir, 'GenerationAnnual.html')
 
     return fig.write_html(fig_file)
 
 
 def plot_generation_hourly():
-    df = pd.read_csv(os.path.join(_INPUT_FOLDER,
+
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_figs_dir = config_paths.scenario_figs_dir
+    scenario_results_dir = config_paths.scenario_results_dir
+
+    df = pd.read_csv(os.path.join(scenario_results_dir,
                                   'ProductionByTechnology.csv'
                                   )
                      )
@@ -319,7 +322,7 @@ def plot_generation_hourly():
         fig['layout']['xaxis']['title']['text']=''
         fig['layout']['xaxis7']['title']['text']='Hours'
     '''
-    return fig.write_html(os.path.join(_OUTPUT_FOLDER,
+    return fig.write_html(os.path.join(scenario_figs_dir,
                                        'GenerationHourly.html'
                                        )
                           )

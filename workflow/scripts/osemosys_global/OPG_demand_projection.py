@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import urllib
 import os
 from sklearn.linear_model import LinearRegression
-import yaml
+from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -18,17 +18,14 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 # ### Imports relevant input data
 
-# Read in information from YAML file
-yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
-                              'config/config.yaml'))
-parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+# CONFIGURATION PARAMETERS
+config_paths = ConfigPaths()
+config = ConfigFile('config')
 
-input_dir = os.path.join(os.path.dirname(__file__), '../../..',
-    parsed_yaml_file.get('inputDir'))
-input_data_dir = os.path.join(input_dir, 'data')
-output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
-    parsed_yaml_file.get('outputDir'))
-output_dir_data = os.path.join(output_dir, 'data')
+input_dir = config_paths.input_dir
+input_data_dir = config_paths.input_data_dir
+output_dir = config_paths.output_dir
+output_data_dir = config_paths.output_data_dir
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 
@@ -637,11 +634,11 @@ for x in Years_List:
 #Adds unit.
 Node_Peak_Demand_SSP_projected['Unit'] = 'MW'
 
-model_start_year = parsed_yaml_file.get('startYear')
-model_end_year = parsed_yaml_file.get('endYear')
+model_start_year = config.get('startYear')
+model_end_year = config.get('endYear')
 
 # Format demand projections
-with open(os.path.join(output_dir_data, 'SpecifiedAnnualDemand.csv'),'w') as f:
+with open(os.path.join(output_data_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
     f.write('REGION,FUEL,YEAR,VALUE\n')
     for x in Node_Demand_SSP_projected_Incl_Losses.index:
         if len(x) == 6:

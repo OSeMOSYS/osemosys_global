@@ -3,8 +3,7 @@
 import logging
 import pandas as pd
 from pathlib import Path
-import yaml
-import os
+from OPG_configuration import ConfigFile, ConfigPaths
 
 
 # Logging formatting 
@@ -22,14 +21,8 @@ _TECH_TO_FUEL = {
     'OTH':'Natural Gas'
 }
 
-# Config File 
-_PY_DIR = os.path.dirname(__file__)
-_YAML_FILE = open(os.path.join(_PY_DIR, '../../../config/config.yaml'))
-_PARSED_YAML_FILE = yaml.load(_YAML_FILE, Loader=yaml.FullLoader)
-
 # Emission name 
 _EMISSION = 'CO2'
-
 
 def main():
     """Assigns CO2 equivalent values to each technology over all its modes 
@@ -38,27 +31,30 @@ def main():
     emission type (CO2) is written to the emission set. 
     """
 
-    # PARAMETERS 
+    # CONFIGURATION PARAMETERS
 
-    output_dir = Path(_PARSED_YAML_FILE.get('outputDir'), 'data', index=False)
-    emission_penalty = _PARSED_YAML_FILE.get('emission_penalty') # M$/MT
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')  
+    
+    output_data_dir = config_paths.output_data_dir
+    emission_penalty = config.get('emission_penalty') # M$/MT
 
     # ASSIGN EMISSION ACTIVITY RATIOS
 
     df_ear = get_ear(_EMISSION)
-    df_ear.to_csv(Path(output_dir, 'EmissionActivityRatio.csv'), index=False)
+    df_ear.to_csv(Path(output_data_dir, 'EmissionActivityRatio.csv'), index=False)
     logging.info('Successfully generated emission activity ratio')
 
     # ASSIGN EMISSION PENALTY 
 
     df_emission_penalty = get_emission_penalty(_EMISSION, emission_penalty)
-    df_emission_penalty.to_csv(Path(output_dir, 'EmissionsPenalty.csv'), index=False)
+    df_emission_penalty.to_csv(Path(output_data_dir, 'EmissionsPenalty.csv'), index=False)
     logging.info('Successfully generated emission penalty')
 
     # ASSIGN EMISSION 
 
     df_emission = pd.DataFrame([_EMISSION], columns=['VALUE'])
-    df_emission.to_csv(Path(output_dir, 'EMISSION.csv'), index=False)
+    df_emission.to_csv(Path(output_data_dir, 'EMISSION.csv'), index=False)
     logging.info('Successfully generated emission set')
 
 
@@ -84,9 +80,12 @@ def get_co2_emission_factors():
     # Source for all emission factors comes from: 
     # https://www.epa.gov/sites/default/files/2018-03/documents/emission-factors_mar_2018_0.pdf
 
+    # Configuration parameters
+    config_paths = ConfigPaths()
+
     # Read in emission factors 
-    input_dir = Path(_PARSED_YAML_FILE.get('inputDir'), 'data')
-    df_raw = pd.read_csv(Path(input_dir,'emission_factors.csv'))
+    input_data_dir = config_paths.input_data_dir
+    df_raw = pd.read_csv(Path(input_data_dir,'emission_factors.csv'))
     df_raw = df_raw.drop([0]).reset_index(drop=True) # drop units row
 
     # Convert co2 factors from kg/mmbtu to MT/PJ 
@@ -128,9 +127,9 @@ def get_ear(emission):
                x   |      x     |    x     |        x          |  x   |  x
     """
 
-    # PARAMETERS
-
-    output_dir = Path(_PARSED_YAML_FILE.get('outputDir'), 'data')
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    output_data_dir = config_paths.output_data_dir
 
     # GET EMISSION FACTORS 
 
@@ -138,7 +137,7 @@ def get_ear(emission):
 
     # GET INFO FROM INPUT ACTIVITY RATIO
 
-    df_iar = pd.read_csv(Path(output_dir, 'InputActivityRatio.csv'))
+    df_iar = pd.read_csv(Path(output_data_dir, 'InputActivityRatio.csv'))
     df = df_iar.drop(['FUEL', 'VALUE'], axis=1)
 
     # ADD IN EMISSION COLUMN
@@ -180,11 +179,11 @@ def get_emission_penalty(emission, penalty):
                x   |    x     |  x   |   x
     """
 
-    # PARAMETERS
-
-    start_year = _PARSED_YAML_FILE.get('startYear')
-    end_year = _PARSED_YAML_FILE.get('endYear')
-    region = _PARSED_YAML_FILE.get('region')
+    # CONFIGURATION PARAMETERS
+    config = ConfigFile('config')
+    start_year = config.get('startYear')
+    end_year = config.get('endYear')
+    region = config.get('region')
 
     # GENERATE DATA
     

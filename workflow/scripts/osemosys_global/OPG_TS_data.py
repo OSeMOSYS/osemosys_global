@@ -17,24 +17,22 @@ import matplotlib
 import matplotlib.pyplot as plt
 import urllib
 import os
-import yaml
+from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 # ### Input data files and user input
 
-#Read in information from YAML file
-yaml_file = open(os.path.join(os.path.dirname(__file__), '../../..',
-                              'config/config.yaml'))
-parsed_yaml_file = yaml.load(yaml_file, Loader=yaml.FullLoader)
+# CONFIGURATION PARAMETERS
 
-input_dir = os.path.join(os.path.dirname(__file__), '../../..',
-    parsed_yaml_file.get('inputDir'))
-input_data_dir = os.path.join(input_dir, 'data')
+config_paths = ConfigPaths()
+config = ConfigFile('config')
 
-output_dir = os.path.join(os.path.dirname(__file__), '../../..', 
-    parsed_yaml_file.get('outputDir'))
-output_data_dir =  os.path.join(output_dir, 'data')
+input_dir = config_paths.input_dir
+input_data_dir = config_paths.input_data_dir
+output_dir = config_paths.output_dir
+output_data_dir = config_paths.output_data_dir
+
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
@@ -57,7 +55,7 @@ except IOError:
                                          'All_Demand_UTC_2015.csv'),
                             encoding='latin-1')
 
-seasons_raw = parsed_yaml_file.get('seasons')
+seasons_raw = config.get('seasons')
 seasonsData = []
 for s, months in seasons_raw.items():
     for month in months:
@@ -66,16 +64,16 @@ seasons_df = pd.DataFrame(seasonsData,
     columns = ['month', 'season'])
 seasons_df = seasons_df.sort_values(by = ['month']).reset_index(drop = True)
 
-dayparts_raw = parsed_yaml_file.get('dayparts')
+dayparts_raw = config.get('dayparts')
 daypartData = []
 for dp, hr in dayparts_raw.items():
     daypartData.append([dp, hr[0], hr[1]])
 dayparts_df = pd.DataFrame(daypartData, 
     columns = ['daypart', 'start_hour', 'end_hour'])
 
-daytype_included = parsed_yaml_file.get('daytype')
-model_start_year = parsed_yaml_file.get('startYear')
-model_end_year = parsed_yaml_file.get('endYear')
+daytype_included = config.get('daytype')
+model_start_year = config.get('startYear')
+model_end_year = config.get('endYear')
 years = list(range(model_start_year, model_end_year+1))
 
 
@@ -111,6 +109,9 @@ hyd_df = hyd_df.loc[hyd_df['NAME'].str.endswith('Capacity Scaler')]
 hyd_df['NAME'] = (hyd_df['NAME']
                   .str.split('_')
                   .str[0])
+# Drop Brazil transmission nodes J1, J2, J3
+brazil_j_nodes = ['BRA-J1', 'BRA-J2', 'BRA-J3']
+hyd_df = hyd_df.loc[~hyd_df['NAME'].isin(brazil_j_nodes)]
 hyd_df = hyd_df.set_index('NAME').T.reset_index()
 hyd_df.rename(columns={'index': 'MONTH'},
               inplace=True)
