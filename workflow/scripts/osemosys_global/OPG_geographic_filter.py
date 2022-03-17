@@ -45,6 +45,13 @@ for each_csv in (os.listdir(output_data_dir)):
                             df['TECHNOLOGY'].str[6:9].isin(geographic_scope) | 
                             df['TECHNOLOGY'].str[8:11].isin(geographic_scope)]
 
+                # Filter out all international TRN techs 
+                df = df.loc[~(
+                    df['TECHNOLOGY'].str.startswith('TRN') &
+                    (~(df['TECHNOLOGY'].str[3:6].isin(geographic_scope)) |
+                    ~(df['TECHNOLOGY'].str[8:11].isin(geographic_scope)))
+                    )]
+
             if 'FUEL' in df.columns:
                 df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
                             df['FUEL'].str[6:9].isin(geographic_scope) |
@@ -59,6 +66,12 @@ for each_csv in (os.listdir(output_data_dir)):
                 df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
                             df['VALUE'].str[6:9].isin(geographic_scope) | 
                             df['VALUE'].str[8:11].isin(geographic_scope)]
+
+                df = df.loc[~(
+                    df['VALUE'].str.startswith('TRN') &
+                    (~(df['VALUE'].str[3:6].isin(geographic_scope)) |
+                    ~(df['VALUE'].str[8:11].isin(geographic_scope)))
+                    )]
         
     df.to_csv(os.path.join(os.path.join(scenario_data_dir, each_csv)), index = None)
 
