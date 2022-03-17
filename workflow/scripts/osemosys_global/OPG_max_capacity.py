@@ -9,12 +9,6 @@ from OPG_configuration import ConfigFile, ConfigPaths
 import logging
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
-# CONFIGURATION
-
-_PY_DIR = os.path.dirname(__file__)
-_YAML_FILE = open(os.path.join(_PY_DIR, '../../../config/config.yaml'))
-_PARSED_YAML_FILE = yaml.load(_YAML_FILE, Loader=yaml.FullLoader)
-
 def main():
     '''Creates capacity limits on renewable technologies.'''
     
