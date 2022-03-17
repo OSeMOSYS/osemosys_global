@@ -37,9 +37,6 @@ if not os.path.exists(scenario_data_dir):
 for each_csv in (os.listdir(output_data_dir)):
     df = pd.read_csv(os.path.join(output_data_dir, each_csv))
 
-    if each_csv == 'TECHNOLOGY.csv':
-        pass
-
     if not df.empty:
         # Do not filter if only element is international fuels
         if geographic_scope[0] != 'INT': 
