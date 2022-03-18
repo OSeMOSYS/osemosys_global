@@ -32,7 +32,7 @@ output_data_dir = config_paths.output_data_dir
 
 ## Data for variable costs of fuels taken from World Bank Commodity Market Outlooks:
 ##    https://www.worldbank.org/en/research/commodity-markets
-## Download the 'Charts and Data' zip file and extract the forecasts file (CMO-April-2020-forecasts.xlsx).
+## Download the 'Charts and Data' zip file and extract the forecasts file (CMO-October-2021-forecasts.xlsx).
 ## Adjust filename below for forecasts done at a different date.
 
 # Read in World Bank Commodity Price Outlook - we only want rows 87 - 91
@@ -41,7 +41,7 @@ output_data_dir = config_paths.output_data_dir
 #### REPLACE FROM BELOW ONCE FIGURED OUT...df_prices = pd.read_excel(
 df_prices = pd.read_excel(
     os.path.join(input_data_dir,
-    "CMO-April-2020-forecasts.xlsx"), header=1, skiprows=83, nrows=6
+    "CMO-October-2021-forecasts.xlsx"), header=1, skiprows=83, nrows=6
 )
 
 # Read in Technologies
@@ -109,8 +109,8 @@ df_prices = df_prices.drop("Unit", axis = 0)
 #       KFCOAL_AUS KFCRUDE_PETRO KFNGAS_EUR KFNGAS_US KFNGAS_JP
 #Unit       $/mt         $/bbl    $/mmbtu   $/mmbtu   $/mmbtu
 
-df_prices['MINCOA'] = df_prices['MINCOA'] / 29.31
-df_prices['MINOIL'] = df_prices['MINOIL'] / 0.00000612 / 1000000
+df_prices['MINCOA'] = df_prices['MINCOA'] / 0.00002931
+df_prices['MINOIL'] = df_prices['MINOIL'] / 6.12
 df_prices['MINGAS'] = df_prices['MINGAS'] / 1.055056
 df_prices['KFNGAS_US'] = df_prices['KFNGAS_US'] / 1.055056
 df_prices['KFNGAS_JP'] = df_prices['KFNGAS_JP'] / 1.055056
