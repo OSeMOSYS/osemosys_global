@@ -96,6 +96,10 @@ def main():
         except KeyError:
             max_capacity = maxad
 
+        # Add 0.0002 to enusre there is no rounding mismathch between total 
+        # annual max capacity and residual capacity 
+        max_capacity = round(max_capacity, 4) + 0.0002
+
         for year in years:
             out_data.append([
                 region,
