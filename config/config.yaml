@@ -5,7 +5,7 @@ modelName: 'OsemosysGlobal'
 region: 'GLOBAL'
 
 # Scenario Name 
-scenario: 'OsemosysGlobal'
+scenario: 'osemosys-global'
 
 # Temporal Parameters 
 startYear: 2015
@@ -25,11 +25,17 @@ seasons:
 # Spatial Parameters 
 geographic_scope:
   - 'IND'
-  - 'AFG'
-crossborderTrade: False
+crossborderTrade: True
 
 # Emission Parameters 
 emission_penalty: 50 # M$/MT CO2
+
+# Investment Parameters 
+no_invest_technologies: 
+  - 'GEO'
+  - 'CSP'
+  - 'WAV'
+  - 'BIO'
 
 # Result Parameters 
 results_by_country: True
