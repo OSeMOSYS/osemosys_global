@@ -1179,7 +1179,7 @@ def main():
             max_cap_invest_data.append([region_name, tech, year, 0])
 
     # Do not allow investment for all xxxABCxxxxxxx technologies
-    no_investment_techs = ['GEO', 'CSP', 'WAV']
+    no_investment_techs = ['GEO', 'CSP', 'WAV', 'BIO']
     max_cap_invest_techs = list(set(df_iar_final.loc[
         df_iar_final['TECHNOLOGY'].str[3:6].isin(no_investment_techs)][
         'TECHNOLOGY'].tolist()))
