@@ -6,7 +6,7 @@ Thank you for contributing to OSeMOSYS Global! The following information will he
 
 [How do I ask a question?](#how-do-i-ask-a-question)
 
-[Code of Conduct](#code-of-conduct)
+[comment]: <[Code of Conduct](#code-of-conduct)> (After Code of Conduct is added) 
 
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
 
@@ -26,9 +26,8 @@ Thank you for contributing to OSeMOSYS Global! The following information will he
 
 For general questions, please use the discussions tab on the repository.
 
-## Code of Conduct
-
-Before contributing in any way, please review our code of conduct document. 
+[comment]: <## Code of Conduct>
+[comment]: <Before contributing in any way, please review our code of conduct document.>
 
 ## What should I know before I get started?
 
@@ -132,22 +131,43 @@ you do not follow the steps below, your pull request may be denied.
     * If the issue already exists, assign your name to the issue ticket
     * If the issue does not exist, submit a new issue ticket following the
     instruictions in the [issues section](#issues) and assign your name to it.
-2. Checkout the `master` branch and pull in the latest changes
+    
+2. Fork the `osemosys_global` repository
+
+3. Clone the forked repository
+
+    ```bash 
+    (base) ~/repositories$ git checkout https://github.com/<github_username>/OSeMOSYS/osemosys_global.git
+    ```
+
+4. Install or activate the `osemosys-global` conda environment 
+
+    To install the environment...
+    ```bash
+    (base) ~/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml    
+    ```
+    
+    To activate the environment if already installed...
+    ```bash
+    (base) ~/osemosys_global$ conda activate osemosys-global    
+    ```
+
+5. Checkout the `master` branch and pull in the latest changes
 
     ```bash
     (osemosys-global) ~/osemosys_global$ git checkout master
     (osemosys-global) ~/osemosys_global$ git pull
     ```
 
-3. Create a new branch with a name in the form of `issue-###` where `###` is
+6. Create a new branch with a name in the form of `issue-###` where `###` is
 the autoassigned issue number from GitHub.
 
     ```bash
     (osemosys-global) ~/osemosys_global$ git checkout -b issue-110
     ```
 
-4. Make the code changes to correctly fix the issue.
-5. Commit and push the changes to the remote repository
+7. Make the code changes to fix the issue.
+8. Commit and push the changes to the remote repository
 
     ```bash
     (osemosys-global) ~/osemosys_global$ git add <file_name>
@@ -155,7 +175,7 @@ the autoassigned issue number from GitHub.
     (osemosys-global) ~/osemosys_global$ git push
     ```
 
-6. Launch a new [pull request](https://github.com/OSeMOSYS/osemosys_global/pulls)
+9. Launch a new [pull request](https://github.com/OSeMOSYS/osemosys_global/pulls)
 on the repository. You will see a template to fill out to capture all details
 of your pull request.
 
