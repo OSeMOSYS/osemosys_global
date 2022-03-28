@@ -228,7 +228,7 @@ parameters are stored in the `osemosys_global/config/config.yaml`
     ```
 
 5. Run the command `snakemake -c` 
-**(This scenarion will take ~7hrs to run on a high performance computer)**
+**(This scenarion will take ~20hrs to run on a high performance computer with CPLEX)**
 
     ```bash
     (osemosys-global) ~/osemosys_global$ snakemake -c
@@ -246,8 +246,10 @@ We appreciate feedback and contribution to this repo! Please see our
 We encourage community memebers to ask questions and report any issues they
 encounter.
 
-- For asking general usage questions, please use the commuity fourm.
-- For reporting code and data issues, please use the appropiate issue template
+- For asking general usage questions, please use the [commuity fourm]
+(https://github.com/OSeMOSYS/osemosys_global/discussions/categories/q-a).
+- For reporting code and data issues, please use the appropiate [issue template]
+(https://github.com/OSeMOSYS/osemosys_global/issues/new/choose)
 
 ## Dependencies
 
