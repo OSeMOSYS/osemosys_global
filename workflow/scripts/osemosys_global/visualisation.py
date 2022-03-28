@@ -306,10 +306,11 @@ def plot_generation_hourly():
                   animation_frame='YEAR',
                   template='seaborn+plotly_white',
                   labels={
-                      "variable": ""})
+                      "variable":"",})
     fig.update_layout(
         legend_traceorder="reversed",
-        title_x=0.5)
+        title_x=0.5,
+        yaxis_title = 'Petajoules (PJ)')
     fig['layout']['title']['font'] = dict(size=24)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     '''
