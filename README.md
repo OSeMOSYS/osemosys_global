@@ -246,10 +246,8 @@ We appreciate feedback and contribution to this repo! Please see our
 We encourage community memebers to ask questions and report any issues they
 encounter.
 
-- For asking general usage questions, please use the [commuity fourm]
-(https://github.com/OSeMOSYS/osemosys_global/discussions/categories/q-a).
-- For reporting code and data issues, please use the appropiate [issue template]
-(https://github.com/OSeMOSYS/osemosys_global/issues/new/choose)
+- For asking general usage questions, please use the [commuity fourm](https://github.com/OSeMOSYS/osemosys_global/discussions/categories/q-a).
+- For reporting code and data issues, please use the appropiate [issue template](https://github.com/OSeMOSYS/osemosys_global/issues/new/choose)
 
 ## Dependencies
 
