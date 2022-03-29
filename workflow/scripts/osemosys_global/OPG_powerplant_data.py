@@ -1180,6 +1180,8 @@ def main():
 
     # Do not allow investment for all xxxABCxxxxxxx technologies
     no_investment_techs = config.get('no_invest_technologies')
+    if not no_investment_techs:
+        no_investment_techs = [] # Change from None type to empty list
     max_cap_invest_techs = list(set(df_iar_final.loc[
         df_iar_final['TECHNOLOGY'].str[3:6].isin(no_investment_techs)][
         'TECHNOLOGY'].tolist()))
