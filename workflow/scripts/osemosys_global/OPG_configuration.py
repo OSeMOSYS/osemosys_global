@@ -44,6 +44,8 @@ class ConfigPaths:
         self.scenario_data_dir = Path(self.scenario_dir, 'data')
         self.scenario_figs_dir = Path(self.scenario_dir, 'figures')
         self.scenario_results_dir = Path(self.scenario_dir, 'results')
+        self.scenario_result_summaries_dir = Path(self.scenario_dir,
+                                                  'result_summaries')
 
         self.simplicity = Path(self.input_dir, 'simplicity')
         self.simplicity_data = Path(self.input_dir, 'simplicity/data')
