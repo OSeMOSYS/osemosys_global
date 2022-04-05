@@ -118,6 +118,21 @@ def headline_metrics():
     df_metrics.loc[df_metrics['Metric'].str.startswith('Total System Cost'),
                    'Value'] = (system_cost_total/1000).round(0)
 
+    # Cost of electricity generation
+    df_demand = pd.read_csv(os.path.join(scenario_results_dir,
+                                         'Demand.csv'
+                                         )
+                            )
+    demand_total = df_demand.VALUE.sum()  # Total demand in TWh
+    df_metrics.loc[df_metrics['Metric'].str.startswith('Cost of electricity'),
+                   'Value'] = (system_cost_total/(demand_total*0.2778)).round(0)
+
+    return df_metrics.to_csv(os.path.join(scenario_result_summaries_dir,
+                                          'Metrics.csv'
+                                          ),
+                             index=None
+                             )
+
     return df_metrics.to_csv(os.path.join(scenario_result_summaries_dir,
                                           'Metrics.csv'
                                           ),
