@@ -198,8 +198,8 @@ check{r in REGION, t in TECHNOLOGY, y in YEAR:TotalAnnualMaxCapacity[r,t,y]<>0 &
 #####    'Time Slice' check     #####
 printf "Checking TimeSlices/YearSplits for y in YEAR \n";
 #
-check{y in YEAR}: sum{l in TIMESLICE} YearSplit[l,y] >= 0.9999;
-check{y in YEAR}: sum{l in TIMESLICE} YearSplit[l,y] <= 1.0001;
+check{y in YEAR}: sum{l in TIMESLICE} YearSplit[l,y] >= 0.98;
+check{y in YEAR}: sum{l in TIMESLICE} YearSplit[l,y] <= 1.02;
 #
 #####   'Model period activity limit' check   #####
 printf "Checking Model period activity bounds for r in REGION, t in TECHNOLOGY \n";
@@ -306,7 +306,7 @@ var OperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #var AnnualVariableOperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #var AnnualFixedOperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #var TotalDiscountedCostByTechnology{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
-#var TotalDiscountedCost{r in REGION, y in YEAR}>= 0;
+var TotalDiscountedCost{r in REGION, y in YEAR}>= 0;
 #var ModelPeriodCostByRegion{r in REGION} >= 0;
 #
 #########                        Reserve Margin                                #############
@@ -488,7 +488,7 @@ s.t. SV4_SalvageValueDiscountedToStartYear{r in REGION, t in TECHNOLOGY, y in YE
 #########               Total Discounted Costs                 #############
 #
 #s.t. TDC1_TotalDiscountedCostByTechnology{r in REGION, t in TECHNOLOGY, y in YEAR}: ((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y])/DiscountFactorMid[r,y]+CapitalCost[r,t,y] * NewCapacity[r,t,y]/DiscountFactor[r,y]+DiscountedTechnologyEmissionsPenalty[r,t,y]-DiscountedSalvageValue[r,t,y]) = TotalDiscountedCostByTechnology[r,t,y];
-####s.t. TDC2_TotalDiscountedCost{r in REGION, y in YEAR}: sum{t in TECHNOLOGY}((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y])/DiscountFactorMid[r,y]+CapitalCost[r,t,y] * NewCapacity[r,t,y]/DiscountFactor[r,y]+DiscountedTechnologyEmissionsPenalty[r,t,y]-DiscountedSalvageValue[r,t,y]) + sum{s in STORAGE} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]-CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]) = TotalDiscountedCost[r,y];
+s.t. TDC2_TotalDiscountedCost{r in REGION, y in YEAR}: sum{t in TECHNOLOGY}((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y])/DiscountFactorMid[r,y]+CapitalCost[r,t,y] * NewCapacity[r,t,y]/DiscountFactor[r,y]+DiscountedTechnologyEmissionsPenalty[r,t,y]-DiscountedSalvageValue[r,t,y]) + sum{s in STORAGE} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]-CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]) = TotalDiscountedCost[r,y];
 #
 #########                      Total Capacity Constraints         ##############
 #
