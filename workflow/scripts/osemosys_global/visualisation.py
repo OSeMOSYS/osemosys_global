@@ -81,7 +81,7 @@ def transform_ts(df):
     config = ConfigFile('config')
     scenario_data_dir = config_paths.scenario_data_dir
     input_data_dir = config_paths.input_data_dir
-    years = range(config.get('startYear'), config.get('endYear') + 1)
+    # years = range(config.get('startYear'), config.get('endYear') + 1)
 
     # GET TECHS TO PLOT
 
@@ -90,7 +90,7 @@ def transform_ts(df):
     generation = list(df_gen.VALUE.unique())
 
     # GET TIMESLICE DEFENITION 
-
+    '''
     seasons_months_days = pd.read_csv(os.path.join(input_data_dir,
                                                'ts_seasons.csv'
                                                ),
@@ -112,6 +112,81 @@ def transform_ts(df):
                              zip(dayparts_hours.start_hour,
                                  dayparts_hours.end_hour))
                          )
+    '''
+
+    seasons_raw = config.get('seasons')
+    seasonsData = []
+
+    for s, months in seasons_raw.items():
+        for month in months:
+            seasonsData.append([month, s]) 
+    seasons_df = pd.DataFrame(seasonsData, 
+                              columns=['month', 'season'])
+    seasons_df = seasons_df.sort_values(by=['month']).reset_index(drop=True)
+    dayparts_raw = config.get('dayparts')
+    daypartData = []
+    for dp, hr in dayparts_raw.items():
+        daypartData.append([dp, hr[0], hr[1]])
+    dayparts_df = pd.DataFrame(daypartData,
+                               columns=['daypart', 'start_hour', 'end_hour'])
+
+    month_names = {1: 'Jan',
+                   2: 'Feb',
+                   3: 'Mar',
+                   4: 'Apr',
+                   5: 'May',
+                   6: 'Jun',
+                   7: 'Jul',
+                   8: 'Aug',
+                   9: 'Sep',
+                   10: 'Oct',
+                   11: 'Nov',
+                   12: 'Dec',
+                   }
+
+    days_per_month = {'Jan': 31,
+                      'Feb': 28,
+                      'Mar': 31,
+                      'Apr': 30,
+                      'May': 31,
+                      'Jun': 30,
+                      'Jul': 31,
+                      'Aug': 31,
+                      'Sep': 30,
+                      'Oct': 31,
+                      'Nov': 30,
+                      'Dec': 31,
+                      }
+
+    seasons_df['month_name'] = seasons_df['month'].map(month_names)
+    seasons_df['days'] = seasons_df['month_name'].map(days_per_month)
+    seasons_df_grouped = seasons_df.groupby(['season'],
+                                            as_index=False)['days'].sum()
+    days_dict = dict(zip(list(seasons_df_grouped['season']),
+                         list(seasons_df_grouped['days'])
+                         )
+                     )
+    seasons_df['days'] = seasons_df['season'].map(days_dict)
+
+    model_start_year = config.get('startYear')
+    model_end_year = config.get('endYear')
+    years = list(range(model_start_year, model_end_year+1))
+
+    seasons_dict = dict(zip(list(seasons_df['month']),
+                            list(seasons_df['season'])
+                            )
+                        )
+
+    dayparts_dict = {i: [j, k]
+                     for i, j, k
+                     in zip(list(dayparts_df['daypart']),
+                            list(dayparts_df['start_hour']),
+                            list(dayparts_df['end_hour'])
+                            )
+                     }
+
+    months = list(seasons_dict)
+    hours = list(range(1, 25))
 
     # APPLY TRANSFORMATION
 
@@ -127,8 +202,8 @@ def transform_ts(df):
                                   )
 
     df_ts_template = df_ts_template.sort_values(by=['TECHNOLOGY', 'YEAR'])
-    df_ts_template['DAYS'] = df_ts_template['MONTH'].map(days_dict)
     df_ts_template['SEASON'] = df_ts_template['MONTH'].map(seasons_dict)
+    df_ts_template['DAYS'] = df_ts_template['SEASON'].map(days_dict)
     df_ts_template['YEAR'] = df_ts_template['YEAR'].astype(int)
     df_ts_template = powerplant_filter(df_ts_template)
 
