@@ -4,6 +4,7 @@ import os
 import sys
 import yaml
 from OPG_configuration import ConfigFile, ConfigPaths
+from visualisation import transform_ts, powerplant_filter
 pd.set_option('mode.chained_assignment', None)
 
 
@@ -25,6 +26,7 @@ def main():
     headline_metrics()
     capacity_summary()
     generation_summary()
+    trade_flows()
 
 
 def renewables_filter(df):
@@ -61,7 +63,6 @@ def headline_metrics():
     config_paths = ConfigPaths()
 
     # Fix path below to config_paths
-    # scenario_results_dir = '/home/abhi/osemosys_global/results/osemosys-global/results'
     scenario_results_dir = config_paths.scenario_results_dir
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
 
@@ -155,14 +156,9 @@ def powerplant_summary(df):
     df['NODE'] = (df['TECHNOLOGY'].str[6:9] +
                   '-' +
                   df['TECHNOLOGY'].str[9:11])
-    df['POWERPLANT'] = df['TECHNOLOGY'].str[3:6]
-    df = df.groupby(['NODE', 'POWERPLANT', 'YEAR'],
-                    as_index=False)['VALUE'].sum()
+    df['LABEL'] = df['TECHNOLOGY'].str[3:6]
     df = df.replace(color_dict)
-    df = df.sort_values(by=['YEAR',
-                            'NODE',
-                            'POWERPLANT'])
-    df['VALUE'] = df['VALUE'].round(2)
+    
     return df
 
 
@@ -177,7 +173,17 @@ def capacity_summary():
                                              'TotalCapacityAnnual.csv'
                                              )
                                 )
-    df_capacities = powerplant_summary(df_capacities)
+
+    df_capacities['NODE'] = (df_capacities['TECHNOLOGY'].str[6:9] +
+                             '-' +
+                             df_capacities['TECHNOLOGY'].str[9:11])
+    df_capacities = powerplant_filter(df_capacities, country=None)
+    df_capacities = df_capacities.groupby(['NODE', 'LABEL', 'YEAR'],
+                                          as_index=False)['VALUE'].sum()
+    df_capacities = df_capacities.sort_values(by=['YEAR',
+                                                  'NODE',
+                                                  'LABEL'])
+    df_capacities['VALUE'] = df_capacities['VALUE'].round(2)
 
     return df_capacities.to_csv(os.path.join(scenario_result_summaries_dir,
                                              'Capacities.csv'
@@ -194,16 +200,43 @@ def generation_summary():
 
     # Capacities
     df_generation = pd.read_csv(os.path.join(scenario_results_dir,
-                                             'ProductionByTechnologyAnnual.csv'
+                                             'ProductionByTechnology.csv'
                                              )
                                 )
-    df_generation = powerplant_summary(df_generation)
+    df_generation = powerplant_filter(df_generation, country=None)
+    df_generation = transform_ts(df_generation)
+    df_generation = pd.melt(df_generation,
+                            id_vars=['MONTH', 'HOUR', 'YEAR'],
+                            value_vars=[x for x in df_generation.columns
+                                        if x not in ['MONTH', 'HOUR', 'YEAR']],
+                            value_name='VALUE')
+    df_generation = df_generation[['YEAR', 'MONTH', 'HOUR', 'LABEL', 'VALUE']]
 
     return df_generation.to_csv(os.path.join(scenario_result_summaries_dir,
                                              'Generation.csv'
                                              ),
                                 index=None
                                 )
+
+
+def trade_flows():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+
+    # Fix path below to config_paths
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Trade flows
+    df_flows = pd.read_csv(os.path.join(scenario_results_dir,
+                                        'TotalAnnualTechnologyActivityByMode.csv'
+                                        )
+                           )
+    df_flows = df_flows[df_flows.TECHNOLOGY.str.startswith('TRN')]
+    
+    return print(df_flows)
+    
+    
 
 
 if __name__ == '__main__':
