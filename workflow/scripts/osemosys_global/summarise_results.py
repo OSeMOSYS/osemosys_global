@@ -12,9 +12,14 @@ def main():
 
     config_paths = ConfigPaths()
     config = ConfigFile('config')
-    scenario_results_dir = '/home/abhi/osemosys_global/results/osemosys-global/results'
-    
-    print(os.getcwd())
+
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Check for output directory
+    try:
+        os.makedirs(scenario_result_summaries_dir)
+    except FileExistsError:
+        pass
 
     # SUMMARISE RESULTS
     headline_metrics()
@@ -50,18 +55,36 @@ def headline_metrics():
 
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()
-    scenario_results_dir = '/home/abhi/osemosys_global/results/osemosys-global/results'
-    
+
+    # Fix path below to config_paths
+    # scenario_results_dir = '/home/abhi/osemosys_global/results/osemosys-global/results'
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
     # GET RESULTS
 
-    metrics = {}
-    # Total Emissions
+    df_metrics = pd.DataFrame(columns=['Metric', 'Unit', 'Value'])
+    df_metrics['Metric'] = ['Emissions',
+                            'RE Share',
+                            'Total System Cost',
+                            'Cost of electricity',
+                            'Fossil fuel share']
+    df_metrics['Unit'] = ['Million tonnes of CO2-eq.',
+                          '%',
+                          'Billion $',
+                          '$/MWh',
+                          '%']
+
+    print(df_metrics)
+
+    # Emissions
     df_emissions = pd.read_csv(os.path.join(scenario_results_dir,
                                             'AnnualEmissions.csv'
                                             )
                                )
     emissions_total = df_emissions.VALUE.sum()
-    metrics['Emissions'] = emissions_total.round(0)
+    df_metrics.loc[df_metrics['Metric'].str.startswith('Emissions'),
+                   'Value'] = emissions_total.round(0)
 
     # RE Share
     df_re_share = pd.read_csv(os.path.join(scenario_results_dir,
@@ -73,7 +96,8 @@ def headline_metrics():
     df_re_share = renewables_filter(df_re_share)
     re_total = df_re_share.VALUE.sum()
     re_share = re_total / gen_total
-    metrics['RE Share'] = (re_share*100).round(0)
+    df_metrics.loc[df_metrics['Metric'].str.startswith('RE Share'),
+                   'Value'] = (re_share*100).round(0)
 
     # Total System Cost
     df_system_cost = pd.read_csv(os.path.join(scenario_results_dir,
@@ -81,8 +105,16 @@ def headline_metrics():
                                               )
                                  )
     system_cost_total = df_system_cost.VALUE.sum()
+    # metrics['Total System Cost'] = system_cost_total.round(0)
+    df_metrics.loc[df_metrics['Metric'].str.startswith('Total System Cost'),
+                   'Value'] = system_cost_total.round(0)
+    
 
-    return print(metrics)
+    return df_metrics.to_csv(os.path.join(scenario_result_summaries_dir,
+                                          'Metrics.csv'
+                                          ),
+                             index=None
+                             )
 
 
 if __name__ == '__main__':
