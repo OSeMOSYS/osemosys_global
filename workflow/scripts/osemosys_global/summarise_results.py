@@ -8,7 +8,7 @@ pd.set_option('mode.chained_assignment', None)
 
 
 def main():
-    '''Creates system level and country level graphs. '''
+    '''Creates summaries of results'''
 
     config_paths = ConfigPaths()
     config = ConfigFile('config')
@@ -28,7 +28,8 @@ def main():
 def renewables_filter(df):
     '''Function to filter and keep only renewable
     technologies'''
-    renewables = ['BIO', 'CSP', 'GEO', 'HYD', 'SPV', 'WON', 'WOF']
+    renewables = ['BIO', 'CSP', 'GEO', 'HYD', 'SPV', 'WAS', 'WAV', 'WON', 'WOF']
+    df = df[~df.TECHNOLOGY.str.contains('TRN')]
     df = df.loc[(df.TECHNOLOGY.str.startswith('PWR')) &
                 (df.TECHNOLOGY.str[3:6].isin(renewables))
                 ]
@@ -38,7 +39,8 @@ def renewables_filter(df):
 def fossil_filter(df):
     '''Function to filter and keep only fossil fuel
     technologies'''
-    fossil_fuels = ['BIO', 'CSP', 'HYD', 'SPV', 'WON', 'WOF']
+    fossil_fuels = ['COA', 'COG', 'OCG', 'CCG', 'PET', 'OIL', 'OTH']
+    df = df[~df.TECHNOLOGY.str.contains('TRN')]
     df = df.loc[(df.TECHNOLOGY.str.startswith('PWR')) &
                 (df.TECHNOLOGY.str[3:6].isin(fossil_fuels))
                 ]
@@ -75,8 +77,6 @@ def headline_metrics():
                           '$/MWh',
                           '%']
 
-    print(df_metrics)
-
     # Emissions
     df_emissions = pd.read_csv(os.path.join(scenario_results_dir,
                                             'AnnualEmissions.csv'
@@ -86,18 +86,28 @@ def headline_metrics():
     df_metrics.loc[df_metrics['Metric'].str.startswith('Emissions'),
                    'Value'] = emissions_total.round(0)
 
+    # Shares of RE and Fossil fuels
+    df_shares = pd.read_csv(os.path.join(scenario_results_dir,
+                                         'ProductionByTechnologyAnnual.csv'
+                                         )
+                            )
+    df_shares = df_shares[~df_shares.TECHNOLOGY.str.contains('TRN')]
+    gen_total = df_shares.loc[df_shares.TECHNOLOGY.str.startswith('PWR'),
+                              'VALUE'].sum()
+
     # RE Share
-    df_re_share = pd.read_csv(os.path.join(scenario_results_dir,
-                                           'ProductionByTechnologyAnnual.csv'
-                                           )
-                              )
-    gen_total = df_re_share.loc[df_re_share.TECHNOLOGY.str.startswith('PWR'),
-                                'VALUE'].sum()
-    df_re_share = renewables_filter(df_re_share)
+    df_re_share = renewables_filter(df_shares)
     re_total = df_re_share.VALUE.sum()
     re_share = re_total / gen_total
     df_metrics.loc[df_metrics['Metric'].str.startswith('RE Share'),
                    'Value'] = (re_share*100).round(0)
+
+    # Fossil Fuel Share
+    df_ff_share = fossil_filter(df_shares)
+    ff_total = df_ff_share.VALUE.sum()
+    ff_share = ff_total / gen_total
+    df_metrics.loc[df_metrics['Metric'].str.startswith('Fossil fuel share'),
+                   'Value'] = (ff_share*100).round(0)
 
     # Total System Cost
     df_system_cost = pd.read_csv(os.path.join(scenario_results_dir,
@@ -105,10 +115,8 @@ def headline_metrics():
                                               )
                                  )
     system_cost_total = df_system_cost.VALUE.sum()
-    # metrics['Total System Cost'] = system_cost_total.round(0)
     df_metrics.loc[df_metrics['Metric'].str.startswith('Total System Cost'),
-                   'Value'] = system_cost_total.round(0)
-    
+                   'Value'] = (system_cost_total/1000).round(0)
 
     return df_metrics.to_csv(os.path.join(scenario_result_summaries_dir,
                                           'Metrics.csv'
