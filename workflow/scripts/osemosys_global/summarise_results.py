@@ -23,6 +23,8 @@ def main():
 
     # SUMMARISE RESULTS
     headline_metrics()
+    capacity_summary()
+    generation_summary()
 
 
 def renewables_filter(df):
@@ -133,11 +135,75 @@ def headline_metrics():
                              index=None
                              )
 
-    return df_metrics.to_csv(os.path.join(scenario_result_summaries_dir,
-                                          'Metrics.csv'
-                                          ),
-                             index=None
-                             )
+
+def powerplant_summary(df):
+    config_paths = ConfigPaths()
+    input_data_dir = config_paths.input_data_dir
+    name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
+                                                 'color_codes.csv'
+                                                 ),
+                                    encoding='latin-1')
+
+    # Get colour mapping dictionary
+    color_dict = dict([(i, n) for i, n
+                       in zip(name_colour_codes.tech_id,
+                              name_colour_codes.tech_name)])
+
+    # Capacities
+    df = df[~df.TECHNOLOGY.str.contains('TRN')]
+    df = df[df.TECHNOLOGY.str.startswith('PWR')]
+    df['NODE'] = (df['TECHNOLOGY'].str[6:9] +
+                  '-' +
+                  df['TECHNOLOGY'].str[9:11])
+    df['POWERPLANT'] = df['TECHNOLOGY'].str[3:6]
+    df = df.groupby(['NODE', 'POWERPLANT', 'YEAR'],
+                    as_index=False)['VALUE'].sum()
+    df = df.replace(color_dict)
+    df = df.sort_values(by=['YEAR',
+                            'NODE',
+                            'POWERPLANT'])
+    df['VALUE'] = df['VALUE'].round(2)
+    return df
+
+
+def capacity_summary():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Capacities
+    df_capacities = pd.read_csv(os.path.join(scenario_results_dir,
+                                             'TotalCapacityAnnual.csv'
+                                             )
+                                )
+    df_capacities = powerplant_summary(df_capacities)
+
+    return df_capacities.to_csv(os.path.join(scenario_result_summaries_dir,
+                                             'Capacities.csv'
+                                             ),
+                                index=None
+                                )
+
+
+def generation_summary():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Capacities
+    df_generation = pd.read_csv(os.path.join(scenario_results_dir,
+                                             'ProductionByTechnologyAnnual.csv'
+                                             )
+                                )
+    df_generation = powerplant_summary(df_generation)
+
+    return df_generation.to_csv(os.path.join(scenario_result_summaries_dir,
+                                             'Generation.csv'
+                                             ),
+                                index=None
+                                )
 
 
 if __name__ == '__main__':
