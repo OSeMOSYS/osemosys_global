@@ -35,6 +35,7 @@ rule all:
     message:
         'All rules executed successfully...'
     input:
+        rules.summarise_results.output,
         rules.visualisation.output
 
 rule data_file:

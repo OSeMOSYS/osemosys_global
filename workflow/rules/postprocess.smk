@@ -38,6 +38,10 @@ result_figures = [
     'GenerationAnnual',
 ]
 
+result_summaries = [
+    'Metrics'
+]
+
 # RULES
 
 rule otoole_results:
@@ -72,3 +76,18 @@ rule visualisation:
         'workflow/logs/visualisation.log'
     shell: 
         'python workflow/scripts/osemosys_global/visualisation.py 2> {log}'
+
+rule summarise_results:
+    message:
+        'Generating summary of results...'
+    input:
+        expand(Path(output_dir, scenario, 'results/{result_file}'), result_file = result_files),
+        'config/config.yaml',
+    output:
+        expand(Path(output_dir, scenario, 'result_summaries/{result_summary}.csv'), result_summary = result_summaries),
+    conda:
+        '../envs/data_processing.yaml'
+    log:
+        'workflow/logs/summarise_results.log'
+    shell: 
+        'python workflow/scripts/osemosys_global/summarise_results.py 2> {log}'
