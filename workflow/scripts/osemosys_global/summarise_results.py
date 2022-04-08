@@ -362,6 +362,9 @@ def trade_flows():
              'MODE_OF_OPERATION',
              'VALUE']]
     df['MODE_OF_OPERATION'] = df['MODE_OF_OPERATION'].astype(int)
+    df.loc[df['MODE_OF_OPERATION'] == 2, 'VALUE'] *= -1
+
+    '''
     df['MODE_OF_OPERATION'].replace({1: 'NODE_1 to NODE_2',
                                      2: 'NODE_2 to NODE_1'},
                                     inplace=True)
@@ -371,14 +374,25 @@ def trade_flows():
                         columns='MODE_OF_OPERATION',
                         values='VALUE',
                         aggfunc='sum').reset_index().fillna(0)
+    '''
 
     df['NODE_1'] = df.TECHNOLOGY.str[3:8]
     df['NODE_2'] = df.TECHNOLOGY.str[8:13]
+    df.drop(columns=['TECHNOLOGY', 'MODE_OF_OPERATION'],
+            axis=1,
+            inplace=True)
 
     df['MONTH'] = pd.Categorical(df['MONTH'],
                                  categories=months,
                                  ordered=True)
     df = df.sort_values(by=['MONTH', 'HOUR'])
+    df['VALUE'] = df['VALUE'].round(2)
+    df = df[['YEAR',
+             'MONTH',
+             'HOUR',
+             'NODE_1',
+             'NODE_2',
+             'VALUE']]
 
     return df.to_csv(os.path.join(scenario_result_summaries_dir,
                                   'TradeFlows.csv'
