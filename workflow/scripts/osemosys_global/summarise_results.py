@@ -198,7 +198,7 @@ def generation_summary():
     scenario_results_dir = config_paths.scenario_results_dir
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
 
-    # Capacities
+    # Generation
     df_generation = pd.read_csv(os.path.join(scenario_results_dir,
                                              'ProductionByTechnology.csv'
                                              )
@@ -210,6 +210,7 @@ def generation_summary():
                             value_vars=[x for x in df_generation.columns
                                         if x not in ['MONTH', 'HOUR', 'YEAR']],
                             value_name='VALUE')
+    df_generation['VALUE'] = df_generation['VALUE'].round(2)
     df_generation = df_generation[['YEAR', 'MONTH', 'HOUR', 'LABEL', 'VALUE']]
 
     return df_generation.to_csv(os.path.join(scenario_result_summaries_dir,
