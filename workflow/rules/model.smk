@@ -29,6 +29,24 @@ rule geographic_filter:
     shell:
         'python workflow/scripts/osemosys_global/OPG_geographic_filter.py 2> {log}'
 
+rule user_capacity:
+    message: 
+        'Generating user-defined capacities...'
+    input:
+        Path(output_dir, scenario, 'data/TECHNOLOGY.csv'),
+        Path(output_dir, scenario, 'data/TotalAnnualMinCapacityInvestment.csv'),
+        Path(output_dir, scenario, 'data/TotalAnnualMaxCapacityInvestment.csv'),
+        'config/config.yaml'
+    output:
+        expand(Path(output_dir, scenario, 'data/{output_file}'), output_file = user_capacity_files),
+        touch('workflow/rules/flags/user_capacity.done')
+    conda:
+        '../envs/data_processing.yaml'
+    log:
+        'workflow/logs/user_defined_capacity.log'
+    shell:
+        'python workflow/scripts/osemosys_global/user_defined_capacity.py 2> {log}'
+
 rule otoole_convert:
     message:
         'Creating data file...'
