@@ -71,7 +71,7 @@ def main():
         {"parent_object": "powerplant"}, axis=1
         )
     df_weo_data = pd.read_csv(os.path.join(input_data_dir,
-                                           "weo_2018_powerplant_costs.csv")
+                                           "weo_2020_powerplant_costs.csv")
                               )
     df_op_life = pd.read_csv(os.path.join(input_data_dir,
                                           "operational_life.csv")
@@ -957,7 +957,7 @@ def main():
 
     df_costs = pd.melt(df_weo_data, 
                        id_vars = ['technology', 'weo_region', 'parameter'], 
-                       value_vars = ['2017', '2030', '2040'], 
+                       value_vars = ['2019', '2030', '2040'], 
                        var_name = ['YEAR'])
     df_costs['parameter'] = df_costs['parameter'].str.split('\r\n').str[0]
     df_costs['value'] = df_costs['value'].replace({'n.a.':0})
