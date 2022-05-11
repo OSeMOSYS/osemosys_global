@@ -70,4 +70,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    logging.info(f'Max capacity limits sucessfully set')
+    logging.info(f'User-defined capacities sucessfully set')
