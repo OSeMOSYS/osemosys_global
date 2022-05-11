@@ -73,6 +73,11 @@ max_capacity_files = [
     'TotalAnnualMaxCapacity.csv'
 ]
 
+user_capacity_files = [
+    'TotalAnnualMinCapacityInvestment.csv',
+    'TotalAnnualMaxCapacityInvestment.csv'
+]
+
 # DATA PROCESSING RULES 
 
 rule powerplant:
