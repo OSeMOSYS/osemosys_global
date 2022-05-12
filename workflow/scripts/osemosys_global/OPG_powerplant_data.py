@@ -1455,14 +1455,12 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
     tech_capacity_df['REGION'] = region
     tech_capacity_df = tech_capacity_df[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
 
-    '''
-    tech_set = pd.read_csv(os.path.join(scenario_data_dir, 'TECHNOLOGY.csv'))
+    tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
 
     for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
         if each_tech not in list(tech_set['VALUE']):
             tech_capacity_df = tech_capacity_df.loc[~(tech_capacity_df['TECHNOLOGY'].isin([each_tech]))]
-    '''
-
+    
     df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
                                               'TotalAnnualMinCapacityInvestment.csv'))
     df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
