@@ -37,6 +37,7 @@ power_plant_files = [
     'CapacityToActivityUnit.csv',
     'OperationalLife.csv',
     'TotalAnnualMaxCapacityInvestment.csv',
+    'TotalAnnualMinCapacityInvestment.csv',
     'TotalTechnologyModelPeriodActivityUpperLimit.csv',
     'FUEL.csv',
     'InputActivityRatio.csv',
