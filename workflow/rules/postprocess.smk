@@ -48,8 +48,10 @@ rule otoole_results:
     message:
         'Generating result csv files...'
     input:
-        solution_file = Path(output_dir, scenario, f'{scenario}.sol'),
-        pre_process_file = Path(output_dir, scenario, f'PreProcessed_{scenario}.txt')
+        solution_file = f'output_dir/scenario/{scenario}.sol',
+        pre_process_file = f'output_dir/scenario/PreProcessed_{scenario}.txt'
+        # solution_file = Path(output_dir, scenario, f'{scenario}.sol'),
+        # pre_process_file = Path(output_dir, scenario, f'PreProcessed_{scenario}.txt')
     output:
         expand(Path(output_dir, scenario, 'results/{result_file}'), result_file = result_files),
     conda:
@@ -57,10 +59,13 @@ rule otoole_results:
     log:
         'workflow/logs/otoole_results.log'
     shell: 
-        'otoole results cbc csv {input.solution_file} {output_dir}/{scenario}/results ' 
-        '--input_datafile {input.pre_process_file} '
-        '--input_datapackage {output_dir}/{scenario}/datapackage.json ' 
-        '2> {log}'
+        '''
+        otoole results {config[solver]} csv \
+        {input.solution_file} {output_dir}/{scenario}/results \
+        --input_datafile {input.pre_process_file} \
+        --input_datapackage {output_dir}/{scenario}/datapackage.json \
+        2> {log} 
+        '''
 
 rule visualisation:
     message:

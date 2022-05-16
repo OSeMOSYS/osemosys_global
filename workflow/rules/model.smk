@@ -72,14 +72,27 @@ rule create_lp_file:
     shell:
         'glpsol -m {input.modelFile} -d {input.dataFile} --wlp {output} --check 2> {log}'
 
-rule cbc_solve:
+rule solve_lp:
     message:
         'Solving model...'
     input:
         Path(output_dir, scenario, f'{scenario}.lp')
     output:
-        Path(output_dir, scenario, f'{scenario}.sol')
+        solution = f'results/{scenario}/{scenario}.sol'
+    params:
+        json = f'results/{scenario}/{scenario}.json',
+        ilp = f'results/{scenario}/{scenario}.ilp'
     log:
         'workflow/logs/cbc_solve.log'
     shell: 
-        'cbc {input} solve -solu {output} 2> {log}'
+        '''
+        if [ {config[solver]} = gurobi ]
+        then
+          gurobi_cl OutputFlag=0 Method=2 ResultFile={output.solution} ResultFile={params.json} ResultFile={params.ilp} {input} 2> {log}
+        elif [{config[solver]}=cplex]
+        then
+          cplex -c "read {input}" "optimize" "write {output.solution}" 2> {log}
+        else
+          cbc {input} solve -sec 1500 -solu {output.solution} 2> {log}
+        fi
+        '''

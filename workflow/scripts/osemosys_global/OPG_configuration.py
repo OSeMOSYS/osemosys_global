@@ -23,6 +23,11 @@ class ConfigFile:
             parsed_yaml_file = yaml.load(yaml_file, Loader = yaml.FullLoader).get(name)
         return parsed_yaml_file
 
+    def get_years(self):
+        start_year = self.get('startYear')
+        end_year = self.get('endYear')
+        return list(range(start_year, end_year + 1))
+
 class ConfigPaths:
     '''Class to hold relative paths from file called from. '''    
 
