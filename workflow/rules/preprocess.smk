@@ -3,12 +3,10 @@ import os
 # REQUIRED 
 
 configfile: 'config/config.yaml'
-input_dir = config['inputDir']
-output_dir = config['outputDir']
 
 # MODEL AND SCENARIO OUTPUT FILES 
 
-osemosys_files = os.listdir(Path(input_dir, 'simplicity/data'))
+osemosys_files = os.listdir('resources/simplicity/data')
 osemosys_files.remove('default_values.csv') #taken from input_dir
 
 demand_figures = [
@@ -79,19 +77,23 @@ rule powerplant:
     message:
         'Generating powerplant data...'
     input:
-        Path(input_dir, 'data/PLEXOS_World_2015_Gold_V1.1.xlsx'),
-        Path(input_dir, 'data/weo_2018_powerplant_costs.csv'),
-        Path(input_dir, 'data/operational_life.csv'),
-        Path(input_dir, 'data/naming_convention_tech.csv'),
-        Path(input_dir, 'data/Costs Line expansion.xlsx'),
-        Path(input_dir, 'data/weo_region_mapping.csv'),
-        'config/config.yaml'
+        'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        'resources/data/weo_2018_powerplant_costs.csv',
+        'resources/data/operational_life.csv',
+        'resources/data/naming_convention_tech.csv',
+        'resources/data/Costs Line expansion.xlsx',
+        'resources/data/weo_region_mapping.csv',
+    params: 
+        config['crossborderTrade'],
+        config['startYear'],
+        config['endYear'],
+        config['no_invest_technologies']
     output:
-        expand(Path(output_dir, 'data/{output_file}'), output_file = power_plant_files)
+        expand('results/data/{output_file}', output_file = power_plant_files)
     conda:
         '../envs/data_processing.yaml'
     log:
-        'workflow/logs/powerplant.log'
+        log = 'results/logs/powerplant.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_powerplant_data.py 2> {log}'
 
@@ -99,20 +101,25 @@ rule timeslice:
     message:
         'Generating timeslice data...'
     input:
-        Path(input_dir, 'data/All_Demand_UTC_2015.csv'),
-        Path(input_dir, 'data/CSP 2015.csv'),
-        Path(input_dir, 'data/SolarPV 2015.csv'),
-        Path(input_dir, 'data/Hydro_Monthly_Profiles (15 year average).csv'),
-        Path(input_dir, 'data/Won 2015.csv'),
-        Path(input_dir, 'data/Woff 2015.csv'),
-        'config/config.yaml'
+        'resources/data/All_Demand_UTC_2015.csv',
+        'resources/data/CSP 2015.csv',
+        'resources/data/SolarPV 2015.csv',
+        'resources/data/Hydro_Monthly_Profiles (15 year average).csv',
+        'resources/data/Won 2015.csv',
+        'resources/data/Woff 2015.csv',
+    params:
+        config['startYear'],
+        config['endYear'],
+        config['daytype'],
+        config['dayparts'],
+        config['seasons'],
     output:
-        expand(Path(output_dir, 'data/{output_file}'), output_file=timeslice_files),
-        touch('workflow/rules/flags/timeslice.done')
+        csv_files = expand('results/data/{output_file}', output_file=timeslice_files),
+        flag_file = touch('workflow/rules/flags/timeslice.done')
     conda:
         '../envs/data_processing.yaml'
     log:
-        'workflow/logs/timeslice.log'    
+        log = 'results/logs/timeslice.log'    
     shell:
         'python workflow/scripts/osemosys_global/OPG_TS_data.py 2> {log}'
 
@@ -120,16 +127,18 @@ rule variable_costs:
     message:
         'Generating variable cost data...'
     input:
-        Path(input_dir, 'data/CMO-April-2020-forecasts.xlsx'),
-        Path(output_dir, 'data/TECHNOLOGY.csv'),
-        'config/config.yaml'
+        'resources/data/CMO-April-2020-forecasts.xlsx',
+        'results/data/TECHNOLOGY.csv',
+    params:
+        config['startYear'],
+        config['endYear'],
     output:
-        expand(Path(output_dir, 'data/{output_file}'), output_file=variable_cost_files),
-        touch('workflow/rules/flags/variable_costs.done')
+        csv_files = expand('results/data/{output_file}', output_file=variable_cost_files),
+        flag_file = touch('workflow/rules/flags/variable_costs.done')
     conda:
         '../envs/data_processing.yaml'
     log:
-        'workflow/logs/variable_costs.log'
+        log = 'results/logs/variable_costs.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_variablecosts.py 2> {log}'
 
@@ -137,21 +146,23 @@ rule demand_projections:
     message:
         'Generating demand data...'
     input:
-        Path(input_dir, 'data/PLEXOS_World_2015_Gold_V1.1.xlsx'),
-        Path(input_dir, 'data/iamc_db_GDPppp_Countries.xlsx'),
-        Path(input_dir, 'data/iamc_db_POP_Countries.xlsx'),
-        Path(input_dir, 'data/iamc_db_URB_Countries.xlsx'),
-        Path(input_dir, 'data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx'),
-        Path(input_dir, 'data/T&D Losses.xlsx'),
-        'config/config.yaml'
+        'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        'resources/data/iamc_db_GDPppp_Countries.xlsx',
+        'resources/data/iamc_db_POP_Countries.xlsx',
+        'resources/data/iamc_db_URB_Countries.xlsx',
+        'resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
+        'resources/data/T&D Losses.xlsx',
+    params:
+        config['startYear'],
+        config['endYear'],
     output:
-        expand(Path(output_dir, 'data/{output_file}'), output_file = demand_files),
-        expand(Path(output_dir, 'figs/Demand projection {demand_figure}.jpg'), demand_figure = demand_figures),
-        touch('workflow/rules/flags/demand_projections.done')
+        csv_files = expand('results/data/{output_file}', output_file = demand_files),
+        figures = expand('results/figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
+        flag_file = touch('workflow/rules/flags/demand_projections.done')
     conda:
         '../envs/data_processing.yaml'
     log:
-        'workflow/logs/demand_projections.log'
+        log = 'results/logs/demand_projections.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_demand_projection.py 2> {log}'
 
@@ -159,16 +170,19 @@ rule emissions:
     message:
         'Generating emission data...'
     input:
-        Path(input_dir, 'data/emission_factors.csv'),
-        Path(output_dir, 'data/InputActivityRatio.csv'),
-        'config/config.yaml'
+        'resources/data/emission_factors.csv',
+        'results/data/InputActivityRatio.csv',
+    params:
+        config['startYear'],
+        config['endYear'],
+        config['emission_penalty'],
     output: 
-        expand(Path(output_dir, 'data/{output_file}'), output_file = emission_files),
-        touch('workflow/rules/flags/emissions.done')
+        csv_files = expand('results/data/{output_file}', output_file = emission_files),
+        flag_file = touch('workflow/rules/flags/emissions.done')
     conda:
         '../envs/data_processing.yaml'
     log:
-        'workflow/logs/emissions.log'
+        log = 'results/logs/emissions.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_emissions.py 2> {log}'
 
@@ -176,14 +190,17 @@ rule max_capacity:
     message: 
         'Generating capacity limits...'
     input:
-        Path(input_dir, 'data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'),
-        Path(output_dir, 'data/ResidualCapacity.csv')
+        'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
+        'results/data/ResidualCapacity.csv'
+    params:
+        config['startYear'],
+        config['endYear'],
     output:
-        expand(Path(output_dir, 'data/{output_file}'), output_file = max_capacity_files),
-        touch('workflow/rules/flags/max_capacity.done')
+        csv_files = expand('results/data/{output_file}', output_file = max_capacity_files),
+        flag_file = touch('workflow/rules/flags/max_capacity.done')
     conda:
         '../envs/data_processing.yaml'
     log:
-        'workflow/logs/max_capacity.log'
+        log = 'results/logs/max_capacity.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_max_capacity.py 2> {log}'

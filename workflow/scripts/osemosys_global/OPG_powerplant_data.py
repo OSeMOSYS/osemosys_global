@@ -24,18 +24,15 @@ def main():
 
     config_paths = ConfigPaths()
     config = ConfigFile('config')
+    region_name = config.region_name
 
-    input_dir = config_paths.input_dir
     input_data_dir = config_paths.input_data_dir
-    output_dir = config_paths.output_dir
     output_data_dir = config_paths.output_data_dir
 
     cross_border_trade = config.get('crossborderTrade')
     model_start_year = config.get('startYear')
     model_end_year = config.get('endYear')
     years = list(range(model_start_year, model_end_year + 1))
-
-    region_name = config.get('region')
 
     # Create output directory 
     if not os.path.exists(output_data_dir):

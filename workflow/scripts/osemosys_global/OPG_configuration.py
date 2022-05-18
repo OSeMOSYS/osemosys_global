@@ -14,6 +14,10 @@ class ConfigFile:
         config.get('geographic_scope')
         -> ['IND','NPL']
     '''
+
+    # non changing parameters 
+    region_name = 'GLOBAL' 
+
     def __init__ (self, config_file_name): 
         self.file_path = Path(Path(__file__).resolve().parent, 
             '../../../config', f'{config_file_name}.yaml')

@@ -47,12 +47,9 @@ df_prices = pd.read_excel(
 # Read in Technologies
 df_techs = pd.read_csv(os.path.join(output_data_dir,'TECHNOLOGY.csv'))
 df_trn_techs = df_techs.copy()
+years = config.get_years()
 
-model_start_year = config.get('startYear')
-model_end_year = config.get('endYear')
-years = [range(model_start_year, model_end_year + 1)]
-
-region_name = config.get('region')
+region_name = config.region_name
 emissions = []
 
 
@@ -68,7 +65,7 @@ df_techs = pd.concat([df_techs,df_techs_temp])
 df_techs.rename(columns={'VALUE':'TECHNOLOGY'}, inplace=True)
 
 
-df_techs['YEAR'] = [range(model_start_year, model_end_year+1)] * len(df_techs)
+df_techs['YEAR'] = [range(years[0], years[-1] + 1)] * len(df_techs)
 
 df_techs = df_techs.explode('YEAR')
 
@@ -130,7 +127,7 @@ df_prices['INTCOG'] = df_prices['MINCOG'] * 0.15
 df_prices['INTOTH'] = df_prices['MINOTH'] * 0.15
 df_prices['INTPET'] = df_prices['MINPET'] * 0.15
 
-df_prices = df_prices.reindex(range(model_start_year, model_end_year+1))
+df_prices = df_prices.reindex(years)
 
 df_prices = df_prices.apply(pd.to_numeric)
 
@@ -178,7 +175,7 @@ df_trn_techs = df_trn_techs.loc[
 df_trn_varcosts = df_trn_techs.copy()
 df_trn_varcosts = df_trn_varcosts.rename(columns={'VALUE':'TECHNOLOGY'})
 df_trn_varcosts['REGION'] = region_name
-df_trn_varcosts['YEAR'] = years * len(df_trn_varcosts)
+df_trn_varcosts['YEAR'] = [range(years[0], years[-1] + 1)] * len(df_trn_varcosts)
 df_trn_varcosts['MODE_OF_OPERATION'] = [[1,2] for x in range(len(df_trn_varcosts))]
 df_trn_varcosts = df_trn_varcosts.explode('MODE_OF_OPERATION')
 df_trn_varcosts = df_trn_varcosts.explode('YEAR')

@@ -1,21 +1,21 @@
 tech_id,tech_name,colour
 BIO,Biomass,darkgreen
+CCG,Gas - Combined cycle,lightcoral
 COA,Coal,black
+COG,Cogeneration,peru
+CSP,CSP,wheat
 ELC,Electricity,yellow
+GAS,Natural gas,orange
 GEO,Geothermal,darkseagreen
 HYD,Hydro,dodgerblue
-GAS,Natural gas,orange
-PET,Petroleum,dimgrey
-SOL,Solar,gold
-URN,Nuclear,mediumseagreen
-WAS,Waste,grey
-OTH,Other,teal
-COG,Cogeneration,peru
-OIL,Oil,dimgrey
 OCG,Gas - Open cycle,firebrick
-CCG,Gas - Combined cycle,lightcoral
-CSP,CSP,wheat
+OIL,Oil,lightgrey
+OTH,Other,teal
+PET,Petroleum,grey
+SOL,Solar,gold
 SPV,Solar PV,gold
-WON,Wind - Onshore,blueviolet
-WOF,Wind - Offshore,violet
+URN,Nuclear,mediumseagreen
+WAS,Waste,darkkhaki
 WAV,Wave,navy
+WOF,Wind - Offshore,violet
+WON,Wind - Onshore,blueviolet

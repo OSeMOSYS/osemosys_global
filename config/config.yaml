@@ -1,11 +1,5 @@
-# High Level Configuration
-inputDir: 'resources'
-outputDir: 'results'
-modelName: 'OsemosysGlobal'
-region: 'GLOBAL'
-
 # Scenario Name 
-scenario: 'osemosys-global'
+scenario: 'osemosys_global'
 
 # Temporal Parameters 
 startYear: 2015
@@ -39,3 +33,6 @@ no_invest_technologies:
 
 # Result Parameters 
 results_by_country: True
+
+# solver parameters
+solver: 'gurobi' # cbc, cplex, gurobi

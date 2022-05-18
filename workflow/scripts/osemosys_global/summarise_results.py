@@ -293,10 +293,8 @@ def trade_flows():
                          )
                      )
     seasons_df['days'] = seasons_df['season'].map(days_dict)
-
-    model_start_year = config.get('startYear')
-    model_end_year = config.get('endYear')
-    years = list(range(model_start_year, model_end_year+1))
+    
+    years = config.get_years()
 
     seasons_dict = dict(zip(list(seasons_df['month']),
                             list(seasons_df['season'])

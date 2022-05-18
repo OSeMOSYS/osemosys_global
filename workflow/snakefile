@@ -5,8 +5,6 @@ min_version("6.0")
 # CONFIGURATION
 
 configfile: 'config/config.yaml'
-output_dir = config['outputDir']
-scenario = config['scenario']
 
 # HELPER FILES
 
@@ -26,23 +24,25 @@ onerror:
 
 # FILE CREATION CHECK 
 
-if not os.path.isdir(Path(output_dir, 'data')):
-    Path(output_dir, 'data').mkdir(parents=True)
+if not os.path.isdir(Path('results', 'data')):
+    Path('results', 'data').mkdir(parents=True)
 
 # TARGET RULES
 
 rule all:
     message:
-        'All rules executed successfully...'
+        'All rules executed successfully...' 
     input:
-        rules.summarise_results.output,
-        rules.visualisation.output
+        expand('results/{scenario}/result_summaries/{result_summary}.csv', 
+            scenario=config['scenario'], result_summary=result_summaries), 
+        expand('results/{scenario}/figures/{result_figure}.html', 
+            scenario=config['scenario'], result_figure = result_figures)
 
 rule data_file:
     message: 
         'Scenario data file created successfully!'
     input:
-        rules.preprocess_data_file.output
+        expand('results/{scenario}/{scenario}.txt', scenario=config['scenario'])
 
 rule make_dag:
     message:
@@ -56,17 +56,17 @@ rule clean_all:
     message:
         'Reseting to defaults...'
     shell:
-        'rm -rf {output_dir}/*'
+        'rm -rf results/*'
 
 rule clean_data:
     shell:
-        'rm -rf {output_dir}/data/*'
+        'rm -rf results/data/*'
 
 rule clean_figures:
     shell:
-        'rm -rf {output_dir}/figs/*'
+        'rm -rf results/figs/*'
 
-rule clean_scenario:
-    shell: 
-        'rm -r {output_dir}/{scenario}/*'
+# rule clean_scenario:
+#     shell: 
+#         'rm -r results/{scenario}/*'
 
