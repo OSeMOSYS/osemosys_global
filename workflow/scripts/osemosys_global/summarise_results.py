@@ -255,6 +255,9 @@ def trade_flows():
         daypartData.append([dp, hr[0], hr[1]])
     dayparts_df = pd.DataFrame(daypartData,
                                columns=['daypart', 'start_hour', 'end_hour'])
+    timeshift = config.get('timeshift')
+    dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
+    dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
 
     month_names = {1: 'Jan',
                    2: 'Feb',
@@ -332,10 +335,15 @@ def trade_flows():
     df_ts_template['DAYS'] = df_ts_template['SEASON'].map(days_dict)
     df_ts_template['YEAR'] = df_ts_template['YEAR'].astype(int)
 
-    for each in dayparts_dict:
-        df_ts_template.loc[(df_ts_template.HOUR > dayparts_dict[each][0]) &
-                           (df_ts_template.HOUR <= dayparts_dict[each][1]),
-                           'DAYPART'] = each
+    for daypart in dayparts_dict:
+        if dayparts_dict[daypart][0] > dayparts_dict[daypart][1]: # loops over 24hrs
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) |
+                          (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                          'DAYPART'] = daypart
+        else:
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) &
+                      (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                      'DAYPART'] = daypart
 
     # Trade flows
     df = pd.read_csv(os.path.join(scenario_results_dir,
@@ -401,6 +409,21 @@ def trade_flows():
                      index=None
                      )
 
+
+def apply_timeshift(x, timeshift):
+    '''Applies timeshift to organize dayparts.
+    
+    Args:
+        x = Value between 0-24
+        timeshift = value offset from UTC (-11 -> +12)'''
+
+    x += timeshift
+    if x > 23:
+        return x - 24
+    elif x < 0:
+        return x + 24
+    else:
+        return x
 
 
 if __name__ == '__main__':
