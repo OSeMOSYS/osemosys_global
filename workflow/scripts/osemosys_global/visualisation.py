@@ -129,6 +129,9 @@ def transform_ts(df):
         daypartData.append([dp, hr[0], hr[1]])
     dayparts_df = pd.DataFrame(daypartData,
                                columns=['daypart', 'start_hour', 'end_hour'])
+    timeshift = config.get('timeshift')
+    dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
+    dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
 
     month_names = {1: 'Jan',
                    2: 'Feb',
@@ -205,10 +208,15 @@ def transform_ts(df):
     df_ts_template['YEAR'] = df_ts_template['YEAR'].astype(int)
     df_ts_template = powerplant_filter(df_ts_template)
 
-    for each in dayparts_dict:
-        df_ts_template.loc[(df_ts_template.HOUR > dayparts_dict[each][0]) &
-                           (df_ts_template.HOUR <= dayparts_dict[each][1]),
-                           'DAYPART'] = each
+    for daypart in dayparts_dict:
+        if dayparts_dict[daypart][0] > dayparts_dict[daypart][1]: # loops over 24hrs
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) |
+                          (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                          'DAYPART'] = daypart
+        else:
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) &
+                      (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                      'DAYPART'] = daypart
 
     df['SEASON'] = df['TIMESLICE'].str[0:2]
     df['DAYPART'] = df['TIMESLICE'].str[2:]
@@ -400,6 +408,21 @@ def plot_generation_hourly():
                                        'GenerationHourly.html'
                                        )
                           )
+
+def apply_timeshift(x, timeshift):
+    '''Applies timeshift to organize dayparts.
+    
+    Args:
+        x = Value between 0-24
+        timeshift = value offset from UTC (-11 -> +12)'''
+
+    x += timeshift
+    if x > 23:
+        return x - 24
+    elif x < 0:
+        return x + 24
+    else:
+        return x
 
 if __name__ == '__main__':
     main()
