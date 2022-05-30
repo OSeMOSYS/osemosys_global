@@ -1447,53 +1447,55 @@ def format_transmission_name(df):
 
 def user_defined_capacity(region, years, output_data_dir, tech_capacity):
     techCapacity = []
-
-    for tech, tech_params in tech_capacity.items():
-        techCapacity.append([tech, tech_params[0], tech_params[1]])
-    tech_capacity_df = pd.DataFrame(techCapacity,
-                                    columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
-    tech_capacity_df['REGION'] = region
-    tech_capacity_df = tech_capacity_df[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
-
-    tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
-
-    for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
-        if each_tech not in list(tech_set['VALUE']):
-            tech_capacity_df = tech_capacity_df.loc[~(tech_capacity_df['TECHNOLOGY'].isin([each_tech]))]
     
-    df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
-                                              'TotalAnnualMinCapacityInvestment.csv'))
-    df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
-    df_min_cap_inv.drop_duplicates(inplace=True)
+    if not tech_capacity is None:
 
-    df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
-                                              'TotalAnnualMaxCapacityInvestment.csv'))
+        for tech, tech_params in tech_capacity.items():
+            techCapacity.append([tech, tech_params[0], tech_params[1]])
+        tech_capacity_df = pd.DataFrame(techCapacity,
+                                        columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
+        tech_capacity_df['REGION'] = region
+        tech_capacity_df = tech_capacity_df[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
 
-    max_cap_techs = []
-    for index, row in tech_capacity_df.iterrows():
-        for each_year in years:
-            if row['YEAR'] == each_year:
-                value = row['VALUE']
-            else:
-                value = 0
-            max_cap_techs.append([row['REGION'],
-                                row['TECHNOLOGY'],
-                                each_year,
-                                value])
-    max_cap_techs_df = pd.DataFrame(max_cap_techs,
-                                    columns=['REGION',
-                                            'TECHNOLOGY',
-                                            'YEAR',
-                                            'VALUE'])
-    df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
-    df_max_cap_inv.drop_duplicates(inplace=True)
+        tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
 
-    df_max_cap_inv.to_csv(os.path.join(output_data_dir,
-                                    "TotalAnnualMaxCapacityInvestment.csv"),
-                        index=None)
-    df_min_cap_inv.to_csv(os.path.join(output_data_dir,
-                                    "TotalAnnualMinCapacityInvestment.csv"),
-                        index=None)
+        for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
+            if each_tech not in list(tech_set['VALUE']):
+                tech_capacity_df = tech_capacity_df.loc[~(tech_capacity_df['TECHNOLOGY'].isin([each_tech]))]
+        
+        df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
+                                                'TotalAnnualMinCapacityInvestment.csv'))
+        df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
+        df_min_cap_inv.drop_duplicates(inplace=True)
+
+        df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
+                                                'TotalAnnualMaxCapacityInvestment.csv'))
+
+        max_cap_techs = []
+        for index, row in tech_capacity_df.iterrows():
+            for each_year in years:
+                if row['YEAR'] == each_year:
+                    value = row['VALUE']
+                else:
+                    value = 0
+                max_cap_techs.append([row['REGION'],
+                                    row['TECHNOLOGY'],
+                                    each_year,
+                                    value])
+        max_cap_techs_df = pd.DataFrame(max_cap_techs,
+                                        columns=['REGION',
+                                                'TECHNOLOGY',
+                                                'YEAR',
+                                                'VALUE'])
+        df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
+        df_max_cap_inv.drop_duplicates(inplace=True)
+
+        df_max_cap_inv.to_csv(os.path.join(output_data_dir,
+                                        "TotalAnnualMaxCapacityInvestment.csv"),
+                            index=None)
+        df_min_cap_inv.to_csv(os.path.join(output_data_dir,
+                                        "TotalAnnualMinCapacityInvestment.csv"),
+                            index=None)
             
 
 if __name__ == "__main__":
