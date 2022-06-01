@@ -36,6 +36,8 @@ def main():
     years = list(range(model_start_year, model_end_year + 1))
 
     region_name = config.get('region')
+    
+    tech_capacity = config.get('user_defined_capacity')
 
     # Create output directory 
     if not os.path.exists(output_data_dir):
@@ -1195,7 +1197,13 @@ def main():
                                     )       
     df_max_cap_invest.to_csv(os.path.join(output_data_dir, 
                                             'TotalAnnualMaxCapacityInvestment.csv'),
-                                        index = None)                                              
+                                        index = None)
+    
+    df_min_cap_invest = pd.DataFrame(columns = ['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']
+                                    )
+    df_min_cap_invest.to_csv(os.path.join(output_data_dir, 
+                                            'TotalAnnualMinCapacityInvestment.csv'),
+                                        index = None)
 
     # ## Create sets for TECHNOLOGIES, FUELS
     create_sets('TECHNOLOGY', df_oar_final, output_data_dir)
@@ -1218,6 +1226,8 @@ def main():
     regions_df.to_csv(os.path.join(output_data_dir, 
                                    "REGION.csv"),
                       index = None)
+    
+    user_defined_capacity(region_name, years, output_data_dir, tech_capacity)
 
 
 def create_sets(x, df, output_dir):
@@ -1434,6 +1444,59 @@ def format_transmission_name(df):
     df = df.drop(["From", "To"], axis=1)
 
     return df
+
+def user_defined_capacity(region, years, output_data_dir, tech_capacity):
+    techCapacity = []
+    
+    if not tech_capacity is None:
+
+        for tech, tech_params in tech_capacity.items():
+            techCapacity.append([tech, tech_params[0], tech_params[1]])
+        tech_capacity_df = pd.DataFrame(techCapacity,
+                                        columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
+        tech_capacity_df['REGION'] = region
+        tech_capacity_df = tech_capacity_df[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
+
+        tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
+
+        for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
+            if each_tech not in list(tech_set['VALUE']):
+                tech_capacity_df = tech_capacity_df.loc[~(tech_capacity_df['TECHNOLOGY'].isin([each_tech]))]
+        
+        df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
+                                                'TotalAnnualMinCapacityInvestment.csv'))
+        df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
+        df_min_cap_inv.drop_duplicates(inplace=True)
+
+        df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
+                                                'TotalAnnualMaxCapacityInvestment.csv'))
+
+        max_cap_techs = []
+        for index, row in tech_capacity_df.iterrows():
+            for each_year in years:
+                if row['YEAR'] == each_year:
+                    value = row['VALUE']
+                else:
+                    value = 0
+                max_cap_techs.append([row['REGION'],
+                                    row['TECHNOLOGY'],
+                                    each_year,
+                                    value])
+        max_cap_techs_df = pd.DataFrame(max_cap_techs,
+                                        columns=['REGION',
+                                                'TECHNOLOGY',
+                                                'YEAR',
+                                                'VALUE'])
+        df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
+        df_max_cap_inv.drop_duplicates(inplace=True)
+
+        df_max_cap_inv.to_csv(os.path.join(output_data_dir,
+                                        "TotalAnnualMaxCapacityInvestment.csv"),
+                            index=None)
+        df_min_cap_inv.to_csv(os.path.join(output_data_dir,
+                                        "TotalAnnualMinCapacityInvestment.csv"),
+                            index=None)
+            
 
 if __name__ == "__main__":
     main()
