@@ -17,10 +17,11 @@ dayparts:
   D2: [12, 24]
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 4, 5, 6]
-  S2: [6, 7, 8, 9, 10, 11, 12]
-  # S3: [6, 7, 8]
-  # S4: [9, 10, 11]
+  S1: [12, 1, 2]
+  S2: [3, 4, 5]
+  S3: [6, 7, 8]
+  S4: [9, 10, 11]
+timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:

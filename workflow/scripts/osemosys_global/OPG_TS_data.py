@@ -33,6 +33,22 @@ input_data_dir = config_paths.input_data_dir
 output_dir = config_paths.output_dir
 output_data_dir = config_paths.output_data_dir
 
+# helper functions
+
+def apply_timeshift(x, timeshift):
+    '''Applies timeshift to organize dayparts.
+    
+    Args:
+        x = Value between 0-24
+        timeshift = value offset from UTC (-11 -> +12)'''
+
+    x += timeshift
+    if x > 23:
+        return x - 24
+    elif x < 0:
+        return x + 24
+    else:
+        return x
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
@@ -70,6 +86,9 @@ for dp, hr in dayparts_raw.items():
     daypartData.append([dp, hr[0], hr[1]])
 dayparts_df = pd.DataFrame(daypartData, 
     columns = ['daypart', 'start_hour', 'end_hour'])
+timeshift = config.get('timeshift')
+dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
+dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
 
 daytype_included = config.get('daytype')
 model_start_year = config.get('startYear')
@@ -203,8 +222,14 @@ dayparts_dict = {i: [j, k]
 demand_df['Season'] = demand_df['Month']
 demand_df['Season'].replace(seasons_dict, inplace=True)
 
+demand_df['Hour'] = demand_df['Hour'].map(lambda x: apply_timeshift(int(x), timeshift))
 for daypart in dayparts_dict:
-    demand_df.loc[(demand_df['Hour'] >= dayparts_dict[daypart][0]) &
+    if dayparts_dict[daypart][0] > dayparts_dict[daypart][1]: # loops over 24hrs
+        demand_df.loc[(demand_df['Hour'] >= dayparts_dict[daypart][0]) |
+                      (demand_df['Hour'] < dayparts_dict[daypart][1]),
+                      'Daypart'] = daypart
+    else:
+        demand_df.loc[(demand_df['Hour'] >= dayparts_dict[daypart][0]) &
                   (demand_df['Hour'] < dayparts_dict[daypart][1]),
                   'Daypart'] = daypart
 
@@ -460,4 +485,3 @@ time_slice_df.to_csv(os.path.join(output_data_dir,
                      index=None)
 
 logging.info('Time Slicing Completed')
-
