@@ -2,32 +2,34 @@ import os
 from snakemake.utils import min_version
 min_version("6.0")
 
-# CONFIGURATION
+# configuration
 
 configfile: 'config/config.yaml'
 
-# HELPER FILES
+# helper files
 
 include: 'rules/preprocess.smk'
 include: 'rules/model.smk'
 include: 'rules/postprocess.smk'
-include: 'rules/file_check.smk'
 
-# HANDLERS 
+# handlers 
         
 onsuccess:
     print('Workflow finished successfully!')
+
+    # Will fix this in next update so that preprocessing steps dont always need to be rerun
+    [f.unlink() for f in Path('results', 'data').glob("*") if f.is_file()] 
 
 onerror:
     print('An error occurred, please submit issue to '
         'https://github.com/OSeMOSYS/osemosys_global/issues')
 
-# FILE CREATION CHECK 
+# file creation check 
 
 if not os.path.isdir(Path('results', 'data')):
     Path('results', 'data').mkdir(parents=True)
 
-# TARGET RULES
+# target rules
 
 rule all:
     message:
@@ -50,7 +52,7 @@ rule make_dag:
     shell:
         'snakemake --dag all | dot -Tpdf > docs/dag.pdf'
 
-# CLEANING RULES
+# cleaning rules
 
 rule clean_all:
     message:
@@ -65,8 +67,3 @@ rule clean_data:
 rule clean_figures:
     shell:
         'rm -rf results/figs/*'
-
-# rule clean_scenario:
-#     shell: 
-#         'rm -r results/{scenario}/*'
-

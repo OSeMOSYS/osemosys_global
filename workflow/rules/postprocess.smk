@@ -40,7 +40,7 @@ result_summaries = [
     'Metrics'
 ]
 
-# INPUT FUNCTIONS
+# imput functions
 
 def solver_file_type(wildcards):
     if config['solver'] == 'cplex':
@@ -48,7 +48,7 @@ def solver_file_type(wildcards):
     else: 
         return 'results/{scenario}/{scenario}.sol'
 
-# RULES
+# rules
 
 rule otoole_results:
     message:
@@ -77,12 +77,12 @@ rule visualisation:
     input:
         csv_files = expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
     params:
-        config['startYear'],
-        config['endYear'],
-        config['dayparts'],
-        config['seasons'],
-        config['results_by_country'],
-        config['geographic_scope'],
+        start_year = config['startYear'],
+        end_year = config['endYear'],
+        dayparts = config['dayparts'],
+        seasons = config['seasons'],
+        by_country = config['results_by_country'],
+        geographic_scope = config['geographic_scope'],
     output:
         expand('results/{{scenario}}/figures/{result_figure}.html', result_figure = result_figures)
     conda:
@@ -98,10 +98,10 @@ rule summarise_results:
     input:
         csv_files = expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
     params:
-        config['startYear'],
-        config['endYear'],
-        config['dayparts'],
-        config['seasons'],
+        start_year = config['startYear'],
+        end_year = config['endYear'],
+        dayparts = config['dayparts'],
+        seasons = config['seasons'],
     output:
         expand('results/{{scenario}}/result_summaries/{result_summary}.csv', 
             result_summary = result_summaries),

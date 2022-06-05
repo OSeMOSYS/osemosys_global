@@ -34,7 +34,7 @@ def main():
     # CONFIGURATION PARAMETERS
 
     config_paths = ConfigPaths()
-    config = ConfigFile('config')  
+    config = ConfigFile('config')
     
     output_data_dir = config_paths.output_data_dir
     emission_penalty = config.get('emission_penalty') # M$/MT

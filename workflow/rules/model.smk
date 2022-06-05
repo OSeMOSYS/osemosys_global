@@ -16,8 +16,7 @@ rule geographic_filter:
     input: 
         csv_files = expand('results/data/{osemosys_file}', osemosys_file = osemosys_files),
     params:
-        config['scenario'],
-        config['geographic_scope']
+        geographic_scope = config['geographic_scope']
     output:
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
         datapackage = 'results/{scenario}/datapackage.json'
@@ -25,8 +24,6 @@ rule geographic_filter:
         '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/geographicFilter.log'
-    # wildcard_constraints:
-    #     scenario="[^a-zA-Z0-9_]"
     shell:
         'python workflow/scripts/osemosys_global/OPG_geographic_filter.py 2> {log}'
 
