@@ -20,6 +20,9 @@ timeshift: 0 # value between -11 and 12
 # Spatial Parameters 
 geographic_scope:
   - 'IND'
+  - 'NPL'
+  - 'BGD'
+  - 'BTN'
 crossborderTrade: True
 
 # Emission Parameters 
@@ -37,3 +40,10 @@ results_by_country: True
 
 # solver parameters
 solver: 'gurobi' # cbc, cplex, gurobi
+
+user_defined_capacity:
+  #technology: [capacity, first_year,]
+  TRNINDEANPLXX: [10, 2017]
+  TRNINDEAINDSO: [5, 2048]
+  TRNINDNOINDWE: [2, 2035]
+

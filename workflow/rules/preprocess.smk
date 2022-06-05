@@ -26,6 +26,7 @@ power_plant_files = [
     'CapacityToActivityUnit.csv',
     'OperationalLife.csv',
     'TotalAnnualMaxCapacityInvestment.csv',
+    'TotalAnnualMinCapacityInvestment.csv',
     'TotalTechnologyModelPeriodActivityUpperLimit.csv',
     'FUEL.csv',
     'InputActivityRatio.csv',
@@ -78,6 +79,11 @@ for file_list in generated_files:
 rule make_data_dir:
     output: directory('results/data')
     shell: 'mkdir -p {output}'
+
+user_capacity_files = [
+    'TotalAnnualMinCapacityInvestment.csv',
+    'TotalAnnualMaxCapacityInvestment.csv'
+]
 
 rule powerplant:
     message:
