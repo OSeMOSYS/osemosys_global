@@ -24,10 +24,9 @@ def main():
 
     config_paths = ConfigPaths()
     config = ConfigFile('config')
+    region_name = config.region_name
 
-    input_dir = config_paths.input_dir
     input_data_dir = config_paths.input_data_dir
-    output_dir = config_paths.output_dir
     output_data_dir = config_paths.output_data_dir
 
     cross_border_trade = config.get('crossborderTrade')
@@ -36,7 +35,6 @@ def main():
     years = list(range(model_start_year, model_end_year + 1))
 
     region_name = config.get('region')
-    
     tech_capacity = config.get('user_defined_capacity')
 
     # Create output directory 
