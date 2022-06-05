@@ -18,8 +18,8 @@ def main():
 
     input_dir = config_paths.input_dir
     output_data_dir = config_paths.output_data_dir
-    region = config.get('region')
-    years = range(config.get('startYear'), config.get('endYear') + 1)
+    region = config.region_name
+    years = config.get_years()
 
     ## Checks whether PLEXOS-World/MESSAGEix-GLOBIOM soft-link model data needs to be 
     # retrieved from the PLEXOS-World Harvard Dataverse.

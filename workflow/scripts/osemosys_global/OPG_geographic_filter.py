@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import yaml
 import shutil
+from pathlib import Path
 from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -34,7 +35,7 @@ international_fuels = ['COA', 'COG', 'GAS', 'OIL', 'PET', 'OTH', 'URN']
 if not os.path.exists(scenario_data_dir):
     os.makedirs(scenario_data_dir)
 
-for each_csv in (os.listdir(output_data_dir)):
+for each_csv in Path(output_data_dir).glob('*.csv'):
     df = pd.read_csv(os.path.join(output_data_dir, each_csv))
 
     if not df.empty:
@@ -73,7 +74,7 @@ for each_csv in (os.listdir(output_data_dir)):
                     ~(df['VALUE'].str[8:11].isin(geographic_scope)))
                     )]
         
-    df.to_csv(os.path.join(os.path.join(scenario_data_dir, each_csv)), index = None)
+    df.to_csv(os.path.join(os.path.join(scenario_data_dir, each_csv.name)), index = None)
 
 # copy datapackage over for otoole convert
 shutil.copyfile(os.path.join(simplicity_dir, 'datapackage.json'),

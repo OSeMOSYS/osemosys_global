@@ -14,6 +14,10 @@ class ConfigFile:
         config.get('geographic_scope')
         -> ['IND','NPL']
     '''
+
+    # non changing parameters 
+    region_name = 'GLOBAL' 
+
     def __init__ (self, config_file_name): 
         self.file_path = Path(Path(__file__).resolve().parent, 
             '../../../config', f'{config_file_name}.yaml')
@@ -22,6 +26,11 @@ class ConfigFile:
         with open(self.file_path, encoding='utf-8') as yaml_file:
             parsed_yaml_file = yaml.load(yaml_file, Loader = yaml.FullLoader).get(name)
         return parsed_yaml_file
+
+    def get_years(self):
+        start_year = self.get('startYear')
+        end_year = self.get('endYear')
+        return list(range(start_year, end_year + 1))
 
 class ConfigPaths:
     '''Class to hold relative paths from file called from. '''    

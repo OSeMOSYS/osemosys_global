@@ -34,7 +34,7 @@ def main():
     # CONFIGURATION PARAMETERS
 
     config_paths = ConfigPaths()
-    config = ConfigFile('config')  
+    config = ConfigFile('config')
     
     output_data_dir = config_paths.output_data_dir
     emission_penalty = config.get('emission_penalty') # M$/MT
@@ -183,7 +183,7 @@ def get_emission_penalty(emission, penalty):
     config = ConfigFile('config')
     start_year = config.get('startYear')
     end_year = config.get('endYear')
-    region = config.get('region')
+    region = config.region_name
 
     # GENERATE DATA
     

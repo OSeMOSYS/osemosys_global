@@ -19,6 +19,7 @@ dependencies:
  - plotly
  - snakemake-minimal
  - basemap
+ - pytest
 
  - pip:
       - world-bank-data

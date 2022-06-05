@@ -29,9 +29,9 @@ def main():
         pass
     
     # Get system level results 
-    plot_generation_hourly()
     plot_totalcapacity(country = None)
     plot_generationannual(country = None)
+    plot_generation_hourly()
 
     # If producing by country results, check for folder structure 
     if results_by_country:
@@ -180,9 +180,7 @@ def transform_ts(df):
                      )
     seasons_df['days'] = seasons_df['season'].map(days_dict)
 
-    model_start_year = config.get('startYear')
-    model_end_year = config.get('endYear')
-    years = list(range(model_start_year, model_end_year+1))
+    years = config.get_years()
 
     seasons_dict = dict(zip(list(seasons_df['month']),
                             list(seasons_df['season'])
