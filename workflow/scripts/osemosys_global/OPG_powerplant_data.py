@@ -34,7 +34,7 @@ def main():
     model_end_year = config.get('endYear')
     years = list(range(model_start_year, model_end_year + 1))
 
-    region_name = config.get('region')
+    region_name = config.region_name
     tech_capacity = config.get('user_defined_capacity')
 
     # Create output directory 
