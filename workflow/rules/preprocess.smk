@@ -63,6 +63,11 @@ max_capacity_files = [
     'TotalAnnualMaxCapacity.csv'
 ]
 
+user_capacity_files = [
+    'TotalAnnualMinCapacityInvestment.csv',
+    'TotalAnnualMaxCapacityInvestment.csv'
+]
+
 check_files = os.listdir('resources/simplicity/data')
 generated_files = [
     power_plant_files, 
@@ -79,11 +84,6 @@ for file_list in generated_files:
 rule make_data_dir:
     output: directory('results/data')
     shell: 'mkdir -p {output}'
-
-user_capacity_files = [
-    'TotalAnnualMinCapacityInvestment.csv',
-    'TotalAnnualMaxCapacityInvestment.csv'
-]
 
 rule powerplant:
     message:
