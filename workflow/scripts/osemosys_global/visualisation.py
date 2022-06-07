@@ -10,6 +10,9 @@ import os
 import sys
 import yaml
 from OPG_configuration import ConfigFile, ConfigPaths
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from mpl_toolkits.basemap import Basemap
 
 def main():
     '''Creates system level and country level graphs. '''
@@ -41,6 +44,12 @@ def main():
     
             plot_totalcapacity(country = country)
             plot_generationannual(country = country)
+    
+    # Creates transmission maps by year      
+    years = [2050]
+    for a in years:
+        plot_transmission_capacity(a)
+        plot_transmission_flow(a)
 
 def powerplant_filter(df, country = None):
 
@@ -408,6 +417,171 @@ def plot_generation_hourly():
                                        'GenerationHourly.html'
                                        )
                           )
+
+def midpoint(x1, y1, x2, y2):
+    return ((x1 + x2)/2, (y1 + y2)/2)
+
+def plot_transmission_capacity(year):
+
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_figs_dir = config_paths.scenario_figs_dir
+    scenario_results_dir = config_paths.scenario_results_dir
+    input_data_dir = config_paths.input_data_dir
+    
+    df = pd.read_csv(os.path.join(scenario_results_dir,
+                                  'TotalCapacityAnnual.csv'
+                                  )
+                     )
+    
+    df_centerpoints = pd.read_excel(os.path.join(input_data_dir,
+                                                'Costs Line expansion.xlsx',
+                                                ), sheet_name = 'Centerpoints'
+                                    )
+    
+    df_centerpoints['Node'] = df_centerpoints['Node'].str.split('-', n = 1).str[1]
+    df_centerpoints['Node'] = np.where(df_centerpoints['Node'].str.len()==3, 
+                                       df_centerpoints['Node'] + 'XX', 
+                                       df_centerpoints['Node'].str.replace('-', '')
+                                       )
+    
+    df_centerpoints.set_index('Node', inplace = True)
+    
+    df = df.loc[df['TECHNOLOGY'].str.startswith('TRN')]
+    df.VALUE = df.VALUE.astype('float64')
+    df['FROM'], df['TO'] = df.TECHNOLOGY.str[3:8], df.TECHNOLOGY.str[8:]
+    
+    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'FROM', right_index = True)
+    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
+    df = df.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'Longitude_FROM', 'Latitude_FROM', 'Longitude_TO', 'Latitude_TO'],
+                    as_index=False)['VALUE'].sum()
+    
+    scaler = MinMaxScaler()
+    maxlinewidth = 3
+    df['line_width'] = (scaler.fit_transform(df[['VALUE']]) * maxlinewidth).round(1)
+    df['line_width'].where(df['line_width'] >= 0.3, 0.3, inplace = True)
+    
+    np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
+    
+    dfyear = df.loc[df['YEAR'] == year]
+    
+    maplatmin = int(df[['Latitude_FROM', 'Latitude_TO']].min().min() +-6)
+    maplatmax = int(df[['Latitude_FROM', 'Latitude_TO']].max().max() +6)
+    maplonmin = int(df[['Longitude_FROM', 'Longitude_TO']].min().min() +-6)
+    maplonmax = int(df[['Longitude_FROM', 'Longitude_TO']].max().max() +6)
+    
+    # create new figure
+    fig, ax = plt.subplots()
+    #ax.set_title(f'Total Transmission Capacity in {year} (GW)', fontsize = '6')
+    npa = np.array #basemap has limited input data options, doesn't read floats
+    
+    # setup mercator map projection.
+    m = Basemap(projection='cyl',llcrnrlat=maplatmin,urcrnrlat=maplatmax,\
+                llcrnrlon=maplonmin,urcrnrlon=maplonmax,resolution='c'
+                )
+    
+    # generates all lines and map text
+    for y in dfyear.index.unique():
+        Map_Filter = dfyear.loc[(dfyear.index == y)]
+        x1,y1 = npa(Map_Filter['Longitude_FROM']) , npa(Map_Filter['Latitude_FROM'])
+        x2,y2 = npa(Map_Filter['Longitude_TO']) , npa(Map_Filter['Latitude_TO'])
+        
+        midco = midpoint(x1, y1, x2, y2)
+        
+        m.drawgreatcircle(x1 , y1 , x2, y2, linewidth = npa(Map_Filter['line_width']) , color = 'crimson')       
+        m.drawcoastlines(color = 'black', linewidth = 0.3)
+        m.drawmapboundary(fill_color='#46bcec')
+        m.fillcontinents(color = 'lightgrey')
+        m.drawcountries(color="black", linewidth = 0.3)
+       # plt.text(x1, y1, Map_Filter['FROM'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
+       # plt.text(x2, y2, Map_Filter['TO'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
+        plt.text(midco[0], midco[1], int(npa(Map_Filter['VALUE'].iloc[0])), fontsize = 2.5, fontweight= 'bold', ha = 'right', va = 'top', alpha = .8)
+
+    return fig.savefig(os.path.join(scenario_figs_dir,
+                         f'TransmissionCapacity{year}.jpg'
+                         ), dpi = 500, bbox_inches = 'tight'
+            )
+
+def plot_transmission_flow(year):
+
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_figs_dir = config_paths.scenario_figs_dir
+    scenario_results_dir = config_paths.scenario_results_dir
+    input_data_dir = config_paths.input_data_dir
+    
+    df = pd.read_csv(os.path.join(scenario_results_dir,
+                                  'ProductionByTechnologyAnnual.csv'
+                                  )
+                     )
+    
+    df_centerpoints = pd.read_excel(os.path.join(input_data_dir,
+                                                'Costs Line expansion.xlsx',
+                                                ), sheet_name = 'Centerpoints'
+                                    )
+    
+    df_centerpoints['Node'] = df_centerpoints['Node'].str.split('-', n = 1).str[1]
+    df_centerpoints['Node'] = np.where(df_centerpoints['Node'].str.len()==3, 
+                                       df_centerpoints['Node'] + 'XX', 
+                                       df_centerpoints['Node'].str.replace('-', '')
+                                       )
+    
+    df_centerpoints.set_index('Node', inplace = True)
+    
+    df = df.loc[df['TECHNOLOGY'].str.startswith('TRN')]
+    df.VALUE = df.VALUE.astype('float64')
+    df['FROM'], df['TO'] = df.TECHNOLOGY.str[3:8], df.TECHNOLOGY.str[8:]
+    
+    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'FROM', right_index = True)
+    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
+    df = df.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'Longitude_FROM', 'Latitude_FROM', 'Longitude_TO', 'Latitude_TO'],
+                    as_index=False)['VALUE'].sum()
+    
+    scaler = MinMaxScaler()
+    maxlinewidth = 3
+    df['line_width'] = (scaler.fit_transform(df[['VALUE']]) * maxlinewidth).round(1)
+    df['line_width'].where(df['line_width'] >= 0.3, 0.3, inplace = True)
+    
+    np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
+    
+    dfyear = df.loc[df['YEAR'] == year]
+    
+    maplatmin = int(df[['Latitude_FROM', 'Latitude_TO']].min().min() +-6)
+    maplatmax = int(df[['Latitude_FROM', 'Latitude_TO']].max().max() +6)
+    maplonmin = int(df[['Longitude_FROM', 'Longitude_TO']].min().min() +-6)
+    maplonmax = int(df[['Longitude_FROM', 'Longitude_TO']].max().max() +6)
+    
+    # create new figure
+    fig, ax = plt.subplots()
+    #ax.set_title(f'Total Transmission Flow in {year} (PJ)', fontsize = '6')
+    npa = np.array #basemap has limited input data options, doesn't read floats
+    
+    # setup mercator map projection.
+    m = Basemap(projection='cyl',llcrnrlat=maplatmin,urcrnrlat=maplatmax,\
+                llcrnrlon=maplonmin,urcrnrlon=maplonmax,resolution='c'
+                )
+    
+    # generates all lines and map text
+    for y in dfyear.index.unique():
+        Map_Filter = dfyear.loc[(dfyear.index == y)]
+        x1,y1 = npa(Map_Filter['Longitude_FROM']) , npa(Map_Filter['Latitude_FROM'])
+        x2,y2 = npa(Map_Filter['Longitude_TO']) , npa(Map_Filter['Latitude_TO'])
+        
+        midco = midpoint(x1, y1, x2, y2)
+        
+        m.drawgreatcircle(x1 , y1 , x2, y2, linewidth = npa(Map_Filter['line_width']) , color = 'crimson')       
+        m.drawcoastlines(color = 'black', linewidth = 0.3)
+        m.drawmapboundary(fill_color='#46bcec')
+        m.fillcontinents(color = 'lightgrey')
+        m.drawcountries(color="black", linewidth = 0.3)
+       # plt.text(x1, y1, Map_Filter['FROM'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
+       # plt.text(x2, y2, Map_Filter['TO'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
+        plt.text(midco[0], midco[1], int(npa(Map_Filter['VALUE'].iloc[0])), fontsize = 2.5, fontweight= 'bold', ha = 'right', va = 'top', alpha = .8)
+
+    return fig.savefig(os.path.join(scenario_figs_dir,
+                         f'TransmissionFlow{year}.jpg'
+                         ), dpi = 500, bbox_inches = 'tight'
+            )
 
 def apply_timeshift(x, timeshift):
     '''Applies timeshift to organize dayparts.
