@@ -39,11 +39,9 @@ no_invest_technologies:
 results_by_country: True
 
 # solver parameters
-solver: 'gurobi' # cbc, cplex, gurobi
+solver: 'cbc' # cbc, cplex, gurobi
 
 user_defined_capacity:
-  #technology: [capacity, first_year,]
-  TRNINDEANPLXX: [10, 2017]
-  TRNINDEAINDSO: [5, 2048]
-  TRNINDNOINDWE: [2, 2035]
+  # technology: [capacity, first_year,]
+  # ie. TRNINDEANPLXX: [10, 2017]
 
