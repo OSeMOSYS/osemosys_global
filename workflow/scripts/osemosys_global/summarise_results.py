@@ -192,6 +192,34 @@ def capacity_summary():
                                 )
 
 
+def generation_summary():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Generation
+    df_generation = pd.read_csv(os.path.join(scenario_results_dir,
+                                             'ProductionByTechnology.csv'
+                                             )
+                                )
+    df_generation = powerplant_filter(df_generation, country=None)
+    df_generation = transform_ts(df_generation)
+    df_generation = pd.melt(df_generation,
+                            id_vars=['MONTH', 'HOUR', 'YEAR'],
+                            value_vars=[x for x in df_generation.columns
+                                        if x not in ['MONTH', 'HOUR', 'YEAR']],
+                            value_name='VALUE')
+    df_generation['VALUE'] = df_generation['VALUE'].round(2)
+    df_generation = df_generation[['YEAR', 'MONTH', 'HOUR', 'LABEL', 'VALUE']]
+
+    return df_generation.to_csv(os.path.join(scenario_result_summaries_dir,
+                                             'Generation.csv'
+                                             ),
+                                index=None
+                                )
+
+
 def generation_by_node_summary():
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()
@@ -202,14 +230,14 @@ def generation_by_node_summary():
     input_data_dir = config_paths.input_data_dir
 
     # Generation
-    df_generation = pd.read_csv(os.path.join(scenario_results_dir,
+    df_gen_by_node = pd.read_csv(os.path.join(scenario_results_dir,
                                              'ProductionByTechnology.csv'
                                              )
                                 )
     # GET TECHS TO PLOT
-    generation = list(df_generation.TECHNOLOGY.unique())
-    df_generation['NODE'] = (df_generation['TECHNOLOGY'].str[6:11])
-    df_generation = powerplant_filter(df_generation, country=None)
+    generation = list(df_gen_by_node.TECHNOLOGY.unique())
+    df_gen_by_node['NODE'] = (df_gen_by_node['TECHNOLOGY'].str[6:11])
+    df_gen_by_node = powerplant_filter(df_gen_by_node, country=None)
     # df_generation = transform_ts(df_generation)
 
     # GET TIMESLICE DEFINITION
@@ -290,7 +318,6 @@ def generation_by_node_summary():
     hours = list(range(1, 25))
 
     # APPLY TRANSFORMATION
-    print(generation, months, hours, years)
     df_ts_template = pd.DataFrame(list(itertools.product(generation,
                                                          months,
                                                          hours,
@@ -318,29 +345,28 @@ def generation_by_node_summary():
                       (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
                       'DAYPART'] = daypart
 
-    df_generation['SEASON'] = df_generation['TIMESLICE'].str[0:2]
-    df_generation['DAYPART'] = df_generation['TIMESLICE'].str[2:]
-    df_generation['YEAR'] = df_generation['YEAR'].astype(int)
-    df_generation.drop(['REGION', 'TIMESLICE'],
+    df_gen_by_node['SEASON'] = df_gen_by_node['TIMESLICE'].str[0:2]
+    df_gen_by_node['DAYPART'] = df_gen_by_node['TIMESLICE'].str[2:]
+    df_gen_by_node['YEAR'] = df_gen_by_node['YEAR'].astype(int)
+    df_gen_by_node.drop(['REGION', 'TIMESLICE'],
                        axis=1,
                        inplace=True)
 
-    df_generation = pd.merge(df_generation,
+    df_gen_by_node = pd.merge(df_gen_by_node,
                              df_ts_template,
                              how='left',
                              on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
-    df_generation['VALUE'] = (df_generation['VALUE'].mul(1e6))/(df_generation['DAYS'].mul(3600))
+    df_gen_by_node['VALUE'] = (df_gen_by_node['VALUE'].mul(1e6))/(df_gen_by_node['DAYS'].mul(3600))
 
-    df_generation = df_generation.pivot_table(index=['MONTH', 'HOUR', 'YEAR', 'NODE'],
+    df_gen_by_node = df_gen_by_node.pivot_table(index=['MONTH', 'HOUR', 'YEAR', 'NODE'],
                                               columns='LABEL',
                                               values='VALUE',
                                               aggfunc='sum').reset_index().fillna(0)
 
-    df_generation['MONTH'] = pd.Categorical(df_generation['MONTH'],
+    df_gen_by_node['MONTH'] = pd.Categorical(df_gen_by_node['MONTH'],
                                             categories=months,
                                             ordered=True)
-    df_generation = df_generation.sort_values(by=['MONTH', 'HOUR'])
-    print(df_generation)
+    df_gen_by_node = df_gen_by_node.sort_values(by=['MONTH', 'HOUR'])
     '''
     df_generation = pd.melt(df_generation,
                             id_vars=['MONTH', 'HOUR', 'YEAR', 'NODE'],
@@ -348,12 +374,12 @@ def generation_by_node_summary():
                                         if x not in ['MONTH', 'HOUR', 'YEAR', 'NODE']],
                             value_name='VALUE')
     '''
-    cols_round = [x for x in df_generation.columns
+    cols_round = [x for x in df_gen_by_node.columns
                   if x not in ['MONTH', 'HOUR', 'YEAR', 'NODE']]
-    df_generation[cols_round] = df_generation[cols_round].round(2)
+    df_gen_by_node[cols_round] = df_gen_by_node[cols_round].round(2)
     # df_generation = df_generation[['YEAR', 'MONTH', 'HOUR', 'NODE', 'LABEL', 'VALUE']]
 
-    return df_generation.to_csv(os.path.join(scenario_result_summaries_dir,
+    return df_gen_by_node.to_csv(os.path.join(scenario_result_summaries_dir,
                                              'Generation_By_Node.csv'
                                              ),
                                 index=None

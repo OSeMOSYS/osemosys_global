@@ -381,6 +381,7 @@ def plot_generation_hourly():
     df = powerplant_filter(df, country=False)
     plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
     df.VALUE = df.VALUE.astype('float64')
+
     df = transform_ts(df)
 
     fig = px.area(df,
