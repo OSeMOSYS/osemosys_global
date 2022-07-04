@@ -58,16 +58,15 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
                             df['FUEL'].str[6:9].isin(geographic_scope) |
                             df['FUEL'].isin(international_fuels)]
 
-            if each_csv == 'FUEL.csv':
+            if str(each_csv).split('/')[-1] == 'FUEL.csv':
                 df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
                             df['VALUE'].str[6:9].isin(geographic_scope) |
                             df['VALUE'].isin(international_fuels)]
 
-            if each_csv == 'TECHNOLOGY.csv':
+            if str(each_csv).split('/')[-1] == 'TECHNOLOGY.csv':
                 df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
                             df['VALUE'].str[6:9].isin(geographic_scope) | 
                             df['VALUE'].str[8:11].isin(geographic_scope)]
-
                 df = df.loc[~(
                     df['VALUE'].str.startswith('TRN') &
                     (~(df['VALUE'].str[3:6].isin(geographic_scope)) |
