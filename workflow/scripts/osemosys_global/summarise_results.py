@@ -26,6 +26,7 @@ def main():
     headline_metrics()
     capacity_summary()
     generation_summary()
+    generation_by_node_summary()
     trade_flows()
 
 
@@ -314,6 +315,14 @@ def generation_by_node_summary():
                             )
                      }
 
+    hours_dict = {i: abs(k-j)
+                  for i, j, k
+                  in zip(list(dayparts_df['daypart']),
+                         list(dayparts_df['start_hour']),
+                         list(dayparts_df['end_hour'])
+                         )
+                  }
+
     months = list(seasons_dict)
     hours = list(range(1, 25))
 
@@ -342,21 +351,24 @@ def generation_by_node_summary():
                           'DAYPART'] = daypart
         else:
             df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) &
-                      (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
-                      'DAYPART'] = daypart
+                               (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                               'DAYPART'] = daypart
+
+    df_ts_template = df_ts_template.drop_duplicates()
 
     df_gen_by_node['SEASON'] = df_gen_by_node['TIMESLICE'].str[0:2]
     df_gen_by_node['DAYPART'] = df_gen_by_node['TIMESLICE'].str[2:]
     df_gen_by_node['YEAR'] = df_gen_by_node['YEAR'].astype(int)
     df_gen_by_node.drop(['REGION', 'TIMESLICE'],
-                       axis=1,
-                       inplace=True)
+                        axis=1,
+                        inplace=True)
 
     df_gen_by_node = pd.merge(df_gen_by_node,
-                             df_ts_template,
-                             how='left',
-                             on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
-    df_gen_by_node['VALUE'] = (df_gen_by_node['VALUE'].mul(1e6))/(df_gen_by_node['DAYS'].mul(3600))
+                              df_ts_template,
+                              how='left',
+                              on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
+    df_gen_by_node['HOUR_COUNT'] = df_gen_by_node['DAYPART'].map(hours_dict)
+    df_gen_by_node['VALUE'] = (df_gen_by_node['VALUE'].mul(1e6))/(df_gen_by_node['DAYS']*df_gen_by_node['HOUR_COUNT'].mul(3600))
 
     df_gen_by_node = df_gen_by_node.pivot_table(index=['MONTH', 'HOUR', 'YEAR', 'NODE'],
                                               columns='LABEL',
@@ -462,7 +474,7 @@ def trade_flows():
                          )
                      )
     seasons_df['days'] = seasons_df['season'].map(days_dict)
-    
+
     years = config.get_years()
 
     seasons_dict = dict(zip(list(seasons_df['month']),
@@ -477,6 +489,14 @@ def trade_flows():
                             list(dayparts_df['end_hour'])
                             )
                      }
+
+    hours_dict = {i: abs(k-j)
+                  for i, j, k
+                  in zip(list(dayparts_df['daypart']),
+                         list(dayparts_df['start_hour']),
+                         list(dayparts_df['end_hour'])
+                         )
+                  }
 
     months = list(seasons_dict)
     hours = list(range(1, 25))
@@ -509,6 +529,8 @@ def trade_flows():
                       (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
                       'DAYPART'] = daypart
 
+    df_ts_template = df_ts_template.drop_duplicates()
+
     # Trade flows
     df = pd.read_csv(os.path.join(scenario_results_dir,
                                   'TotalAnnualTechnologyActivityByMode.csv'
@@ -526,7 +548,8 @@ def trade_flows():
                   df_ts_template,
                   how='left',
                   on=['TECHNOLOGY', 'SEASON', 'DAYPART', 'YEAR']).dropna()
-    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS'].mul(3600))
+    df['HOUR_COUNT'] = df['DAYPART'].map(hours_dict)
+    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS']*df['HOUR_COUNT'].mul(3600))
 
     df = df[['YEAR',
              'MONTH',
