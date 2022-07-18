@@ -26,6 +26,7 @@ def main():
     headline_metrics()
     capacity_summary()
     generation_summary()
+    generation_by_node_summary()
     trade_flows()
 
 
@@ -220,6 +221,183 @@ def generation_summary():
                                 )
 
 
+def generation_by_node_summary():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+    scenario_data_dir = config_paths.scenario_data_dir
+    input_data_dir = config_paths.input_data_dir
+
+    # Generation
+    df_gen_by_node = pd.read_csv(os.path.join(scenario_results_dir,
+                                             'ProductionByTechnology.csv'
+                                             )
+                                )
+    # GET TECHS TO PLOT
+    generation = list(df_gen_by_node.TECHNOLOGY.unique())
+    df_gen_by_node['NODE'] = (df_gen_by_node['TECHNOLOGY'].str[6:11])
+    df_gen_by_node = powerplant_filter(df_gen_by_node, country=None)
+    # df_generation = transform_ts(df_generation)
+
+    # GET TIMESLICE DEFINITION
+
+    seasons_raw = config.get('seasons')
+    seasonsData = []
+
+    for s, months in seasons_raw.items():
+        for month in months:
+            seasonsData.append([month, s]) 
+    seasons_df = pd.DataFrame(seasonsData, 
+                              columns=['month', 'season'])
+    seasons_df = seasons_df.sort_values(by=['month']).reset_index(drop=True)
+    dayparts_raw = config.get('dayparts')
+    daypartData = []
+    for dp, hr in dayparts_raw.items():
+        daypartData.append([dp, hr[0], hr[1]])
+    dayparts_df = pd.DataFrame(daypartData,
+                               columns=['daypart', 'start_hour', 'end_hour'])
+    timeshift = config.get('timeshift')
+    dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
+    dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
+
+    month_names = {1: 'Jan',
+                   2: 'Feb',
+                   3: 'Mar',
+                   4: 'Apr',
+                   5: 'May',
+                   6: 'Jun',
+                   7: 'Jul',
+                   8: 'Aug',
+                   9: 'Sep',
+                   10: 'Oct',
+                   11: 'Nov',
+                   12: 'Dec',
+                   }
+
+    days_per_month = {'Jan': 31,
+                      'Feb': 28,
+                      'Mar': 31,
+                      'Apr': 30,
+                      'May': 31,
+                      'Jun': 30,
+                      'Jul': 31,
+                      'Aug': 31,
+                      'Sep': 30,
+                      'Oct': 31,
+                      'Nov': 30,
+                      'Dec': 31,
+                      }
+
+    seasons_df['month_name'] = seasons_df['month'].map(month_names)
+    seasons_df['days'] = seasons_df['month_name'].map(days_per_month)
+    seasons_df_grouped = seasons_df.groupby(['season'],
+                                            as_index=False)['days'].sum()
+    days_dict = dict(zip(list(seasons_df_grouped['season']),
+                         list(seasons_df_grouped['days'])
+                         )
+                     )
+    seasons_df['days'] = seasons_df['season'].map(days_dict)
+
+    years = config.get_years()
+
+    seasons_dict = dict(zip(list(seasons_df['month']),
+                            list(seasons_df['season'])
+                            )
+                        )
+
+    dayparts_dict = {i: [j, k]
+                     for i, j, k
+                     in zip(list(dayparts_df['daypart']),
+                            list(dayparts_df['start_hour']),
+                            list(dayparts_df['end_hour'])
+                            )
+                     }
+
+    hours_dict = {i: abs(k-j)
+                  for i, j, k
+                  in zip(list(dayparts_df['daypart']),
+                         list(dayparts_df['start_hour']),
+                         list(dayparts_df['end_hour'])
+                         )
+                  }
+
+    months = list(seasons_dict)
+    hours = list(range(1, 25))
+
+    # APPLY TRANSFORMATION
+    df_ts_template = pd.DataFrame(list(itertools.product(generation,
+                                                         months,
+                                                         hours,
+                                                         years)
+                                       ),
+                                  columns=['TECHNOLOGY',
+                                           'MONTH',
+                                           'HOUR',
+                                           'YEAR']
+                                  )
+
+    df_ts_template = df_ts_template.sort_values(by=['TECHNOLOGY', 'YEAR'])
+    df_ts_template['SEASON'] = df_ts_template['MONTH'].map(seasons_dict)
+    df_ts_template['DAYS'] = df_ts_template['SEASON'].map(days_dict)
+    df_ts_template['YEAR'] = df_ts_template['YEAR'].astype(int)
+    df_ts_template = powerplant_filter(df_ts_template)
+
+    for daypart in dayparts_dict:
+        if dayparts_dict[daypart][0] > dayparts_dict[daypart][1]: # loops over 24hrs
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) |
+                          (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                          'DAYPART'] = daypart
+        else:
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) &
+                               (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                               'DAYPART'] = daypart
+
+    df_ts_template = df_ts_template.drop_duplicates()
+
+    df_gen_by_node['SEASON'] = df_gen_by_node['TIMESLICE'].str[0:2]
+    df_gen_by_node['DAYPART'] = df_gen_by_node['TIMESLICE'].str[2:]
+    df_gen_by_node['YEAR'] = df_gen_by_node['YEAR'].astype(int)
+    df_gen_by_node.drop(['REGION', 'TIMESLICE'],
+                        axis=1,
+                        inplace=True)
+
+    df_gen_by_node = pd.merge(df_gen_by_node,
+                              df_ts_template,
+                              how='left',
+                              on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
+    df_gen_by_node['HOUR_COUNT'] = df_gen_by_node['DAYPART'].map(hours_dict)
+    df_gen_by_node['VALUE'] = (df_gen_by_node['VALUE'].mul(1e6))/(df_gen_by_node['DAYS']*df_gen_by_node['HOUR_COUNT'].mul(3600))
+
+    df_gen_by_node = df_gen_by_node.pivot_table(index=['MONTH', 'HOUR', 'YEAR', 'NODE'],
+                                              columns='LABEL',
+                                              values='VALUE',
+                                              aggfunc='sum').reset_index().fillna(0)
+
+    df_gen_by_node['MONTH'] = pd.Categorical(df_gen_by_node['MONTH'],
+                                            categories=months,
+                                            ordered=True)
+    df_gen_by_node = df_gen_by_node.sort_values(by=['MONTH', 'HOUR'])
+    '''
+    df_generation = pd.melt(df_generation,
+                            id_vars=['MONTH', 'HOUR', 'YEAR', 'NODE'],
+                            value_vars=[x for x in df_generation.columns
+                                        if x not in ['MONTH', 'HOUR', 'YEAR', 'NODE']],
+                            value_name='VALUE')
+    '''
+    cols_round = [x for x in df_gen_by_node.columns
+                  if x not in ['MONTH', 'HOUR', 'YEAR', 'NODE']]
+    df_gen_by_node[cols_round] = df_gen_by_node[cols_round].round(2)
+    # df_generation = df_generation[['YEAR', 'MONTH', 'HOUR', 'NODE', 'LABEL', 'VALUE']]
+
+    return df_gen_by_node.to_csv(os.path.join(scenario_result_summaries_dir,
+                                             'Generation_By_Node.csv'
+                                             ),
+                                index=None
+                                )
+
+
 def trade_flows():
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()
@@ -296,7 +474,7 @@ def trade_flows():
                          )
                      )
     seasons_df['days'] = seasons_df['season'].map(days_dict)
-    
+
     years = config.get_years()
 
     seasons_dict = dict(zip(list(seasons_df['month']),
@@ -311,6 +489,14 @@ def trade_flows():
                             list(dayparts_df['end_hour'])
                             )
                      }
+
+    hours_dict = {i: abs(k-j)
+                  for i, j, k
+                  in zip(list(dayparts_df['daypart']),
+                         list(dayparts_df['start_hour']),
+                         list(dayparts_df['end_hour'])
+                         )
+                  }
 
     months = list(seasons_dict)
     hours = list(range(1, 25))
@@ -343,6 +529,8 @@ def trade_flows():
                       (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
                       'DAYPART'] = daypart
 
+    df_ts_template = df_ts_template.drop_duplicates()
+
     # Trade flows
     df = pd.read_csv(os.path.join(scenario_results_dir,
                                   'TotalAnnualTechnologyActivityByMode.csv'
@@ -360,7 +548,8 @@ def trade_flows():
                   df_ts_template,
                   how='left',
                   on=['TECHNOLOGY', 'SEASON', 'DAYPART', 'YEAR']).dropna()
-    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS'].mul(3600))
+    df['HOUR_COUNT'] = df['DAYPART'].map(hours_dict)
+    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS']*df['HOUR_COUNT'].mul(3600))
 
     df = df[['YEAR',
              'MONTH',
@@ -370,18 +559,6 @@ def trade_flows():
              'VALUE']]
     df['MODE_OF_OPERATION'] = df['MODE_OF_OPERATION'].astype(int)
     df.loc[df['MODE_OF_OPERATION'] == 2, 'VALUE'] *= -1
-
-    '''
-    df['MODE_OF_OPERATION'].replace({1: 'NODE_1 to NODE_2',
-                                     2: 'NODE_2 to NODE_1'},
-                                    inplace=True)
-    # Assign directions of trade flows
-
-    df = df.pivot_table(index=['MONTH', 'HOUR', 'YEAR', 'TECHNOLOGY'],
-                        columns='MODE_OF_OPERATION',
-                        values='VALUE',
-                        aggfunc='sum').reset_index().fillna(0)
-    '''
 
     df['NODE_1'] = df.TECHNOLOGY.str[3:8]
     df['NODE_2'] = df.TECHNOLOGY.str[8:13]

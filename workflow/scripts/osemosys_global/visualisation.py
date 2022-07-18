@@ -195,6 +195,14 @@ def transform_ts(df):
                             )
                      }
 
+    hours_dict = {i: abs(k-j)
+                  for i, j, k
+                  in zip(list(dayparts_df['daypart']),
+                         list(dayparts_df['start_hour']),
+                         list(dayparts_df['end_hour'])
+                         )
+                  }
+
     months = list(seasons_dict)
     hours = list(range(1, 25))
 
@@ -227,24 +235,28 @@ def transform_ts(df):
                       (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
                       'DAYPART'] = daypart
 
+    df_ts_template = df_ts_template.drop_duplicates()
+
     df['SEASON'] = df['TIMESLICE'].str[0:2]
     df['DAYPART'] = df['TIMESLICE'].str[2:]
     df['YEAR'] = df['YEAR'].astype(int)
-    df.drop(['REGION', 'TIMESLICE'],
+    df.drop(['REGION', 'FUEL', 'TIMESLICE'],
             axis=1,
             inplace=True)
 
+    df = df.groupby(['LABEL', 'SEASON', 'DAYPART', 'YEAR', 'COLOR'],
+                    as_index=False)['VALUE'].sum()
     df = pd.merge(df,
                   df_ts_template,
                   how='left',
-                  on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
-    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS'].mul(3600))
+                  on=['LABEL', 'SEASON', 'DAYPART', 'YEAR', 'COLOR']).dropna()
+    df['HOUR_COUNT'] = df['DAYPART'].map(hours_dict)
+    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS']*df['HOUR_COUNT'].mul(3600))
 
     df = df.pivot_table(index=['MONTH', 'HOUR', 'YEAR'],
                         columns='LABEL',
                         values='VALUE',
-                        aggfunc='sum').reset_index().fillna(0)
-
+                        aggfunc='mean').reset_index().fillna(0)
     df['MONTH'] = pd.Categorical(df['MONTH'],
                                  categories=months,
                                  ordered=True)
@@ -400,7 +412,7 @@ def plot_generation_hourly():
     fig.update_layout(
         legend_traceorder="reversed",
         title_x=0.5,
-        yaxis_title = 'Petajoules (PJ)')
+        yaxis_title = 'Gigawatt-Hours (GWh)')
     fig['layout']['title']['font'] = dict(size=24)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     '''
