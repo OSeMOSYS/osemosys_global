@@ -46,11 +46,13 @@ def main():
             plot_generationannual(country = country)
     
     # Creates transmission maps by year      
+    '''
     years = [2050]
     for a in years:
         plot_transmission_capacity(a)
         plot_transmission_flow(a)
-
+    '''
+    
 def powerplant_filter(df, country = None):
 
     # CONFIGURATION PARAMETERS 
