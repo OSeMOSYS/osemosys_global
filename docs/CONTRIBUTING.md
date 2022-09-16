@@ -2,7 +2,7 @@
 
 Thank you for contributing to OSeMOSYS Global! The following information will help make contributing easy for everyone involved.
 
-### Table Of Contents
+## Table Of Contents
 
 [How do I ask a question?](#how-do-i-ask-a-question)
 
@@ -57,7 +57,6 @@ flowchart LR
     j3 --> |GLPK|sol(Solver)
     sol --> |otoole|db4[(Result Data)]
     db4 --> |Python Scripts| res(Result Figures)
-
 ```
 
 ### Directory Structure
@@ -129,8 +128,7 @@ you do not follow the steps below, your pull request may be denied.
 
 1. Identify an issue you want to fix
     * If the issue already exists, assign your name to the issue ticket
-    * If the issue does not exist, submit a new issue ticket following the
-    instruictions in the [issues section](#issues) and assign your name to it.
+    * If the issue does not exist, submit a new issue ticket following the instruictions in the [issues section](#issues) and assign your name to it.
     
 2. Fork the `osemosys_global` repository
 
