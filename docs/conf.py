@@ -18,6 +18,8 @@ __location__ = os.path.dirname(__file__)
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+sys.path.insert(0, os.path.abspath('../workflow/scripts/osemosys_global'))
+# print(os.path.abspath('../workflow/scripts/osemosys_global'))
 sys.path.insert(0, os.path.join(__location__, "../workflow/scripts"))
 
 # -- Run sphinx-apidoc -------------------------------------------------------
@@ -35,6 +37,7 @@ except ImportError:
 
 output_dir = os.path.join(__location__, "api")
 module_dir = os.path.join(__location__, "../workflow/scripts/osemosys_global")
+# module_dir = os.path.join(__location__, "../workflow/scripts")
 try:
     shutil.rmtree(output_dir)
 except FileNotFoundError:
@@ -73,13 +76,22 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "myst_parser",
+    "sphinx.ext.duration",
+    "sphinx.ext.autosectionlabel",
+    "sphinxcontrib.mermaid"
 ]
+
+# myst_enable_extensions=[]
+myst_heading_anchors = 3
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -89,7 +101,9 @@ master_doc = "index"
 
 # General information about the project.
 project = "osemosys_global"
-copyright = "2022, trevorb1"
+copyright = "2022, osemosys"
+# copyright = f"{datetime.datetime.today().year}, {author}"
+
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -121,7 +135,7 @@ release = version
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".venv"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".venv", "api"]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 # default_role = None
@@ -154,14 +168,14 @@ todo_emit_warnings = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "alabaster"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    "sidebar_width": "300px",
-    "page_width": "1200px"
+    # "sidebar_width": "300px",
+    # "page_width": "1200px"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -230,7 +244,7 @@ html_static_path = ["_static"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "osemosys_global-doc"
+htmlhelp_basename = "osemosys-global-doc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -247,7 +261,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "user_guide.tex", "osemosys_global Documentation", "trevorb1", "manual")
+    ("index", "user_guide.tex", "osemosys_global Documentation", "osemosys", "manual")
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

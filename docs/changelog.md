@@ -1,5 +1,3 @@
-(changes)=
+# Changelog
 
-```{eval-rst}
-.. include:: ../CHANGELOG.md
-```
+## Version 0.4

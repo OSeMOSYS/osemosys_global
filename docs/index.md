@@ -1,20 +1,56 @@
-# osemosys_global
+# OSeMOSYS Global
 
-Welcome to the documentation of **osemosys_global**! 
+## Welcome to the documentation of **OSeMOSYS Global**! 
 
-## Contents
+![OSeMOSYS Global](_static/osemosys-global.png "OSeMOSYS Global")
 
-```{toctree}
-:maxdepth: 2
-
-Overview <readme>
-Contributions & Help <contributing>
-License <license>
-Authors <authors>
-Changelog <changelog>
-Module Reference <api/modules>
+```{include} ../README.md
 ```
 
+## Contents
+```{toctree}
+:maxdepth: 1
+
+installation
+examples
+contributing
+license
+authors
+changelog
+citing
+```
+
+<!---
+```{toctree}
+---
+caption: Site Overview
+maxdepth: 1
+---
+[Overview](#osemosys-global)
+[Installation](installation)
+[Examples](examples)
+[Contributing](contributing)
+[License](license)
+[Citing](citing)
+```
+
+```{toctree}
+:maxdepth: 1
+
+installation
+examples
+contributing
+license
+citing
+
+[Overview](#osemosys-global)
+[Installation](/docs/installation.md)
+[Examples](/docs/examples.md)
+[Contributing](/docs/contributing.md)
+[License](/docs/license.md)
+[Citing](/docs/citing.md)
+```
+-->
 ## Indices and tables
 
 - {ref}`genindex`

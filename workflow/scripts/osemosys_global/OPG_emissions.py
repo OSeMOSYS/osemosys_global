@@ -3,7 +3,7 @@
 import logging
 import pandas as pd
 from pathlib import Path
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
 
 
 # Logging formatting 
@@ -120,11 +120,7 @@ def get_ear(emission):
 
     Returns:
         df: Dataframe describing emission activity ratio. Dataframe headers 
-            shown below 
-
-            REGION | TECHNOLOGY | EMISSION | MODE_OF_OPERATION | YEAR | VALUE
-            ----------------------------------------------------------|-----
-               x   |      x     |    x     |        x          |  x   |  x
+            are REGION, TECHNOLOGY, EMISSION, MODE_OF_OPERATION, YEAR, VALUE
     """
 
     # CONFIGURATION PARAMETERS
@@ -171,12 +167,8 @@ def get_emission_penalty(emission, penalty):
         penalty: emission penalty in M$/MT
 
     Returns: 
-        df: Dataframe describing emission penalty. Dataframe headers shown 
-            below
-
-            REGION | EMISSION | YEAR | VALUE
-            ---------------------------------
-               x   |    x     |  x   |   x
+        df: Dataframe describing emission penalty. Dataframe headers are REGION, 
+            EMISSION, YEAR, VALUE
     """
 
     # CONFIGURATION PARAMETERS

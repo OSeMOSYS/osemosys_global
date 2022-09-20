@@ -1,5 +1,3 @@
-(license)=
-
 # License
 
 ```{eval-rst}

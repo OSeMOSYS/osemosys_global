@@ -3,8 +3,8 @@ import itertools
 import os
 import sys
 import yaml
-from OPG_configuration import ConfigFile, ConfigPaths
-from visualisation import transform_ts, powerplant_filter
+from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.visualisation import transform_ts, powerplant_filter
 pd.set_option('mode.chained_assignment', None)
 
 

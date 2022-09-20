@@ -3,14 +3,15 @@ import requests
 import os
 import yaml
 import pandas as pd
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
 
 # LOGGING
 import logging
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
 def main():
-    '''Creates capacity limits on renewable technologies.'''
+    """Creates capacity limits on renewable technologies.
+    """
     
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()

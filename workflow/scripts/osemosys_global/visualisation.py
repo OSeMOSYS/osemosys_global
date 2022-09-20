@@ -9,7 +9,7 @@ import itertools
 import os
 import sys
 import yaml
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from mpl_toolkits.basemap import Basemap

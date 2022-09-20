@@ -8,7 +8,7 @@ import itertools
 import os
 import sys
 import yaml
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
 
 pd.set_option('mode.chained_assignment', None)
 

@@ -1,5 +1,7 @@
-(authors)=
+# Contributors
 
-```{eval-rst}
-.. include:: ../AUTHORS.md
-```
+Abhishek Shivakumar
+Taco Niet 
+Will Usher
+Maarten Brinkerink
+Trevor Barnes
