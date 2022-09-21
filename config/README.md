@@ -19,26 +19,3 @@ This configuration file contains all parameters that the user can edit. The tabl
 | `solver` | LP Solver to use | `cbc`, `gurobi`, `cplex` |
 | `user_defined_capacity` | Modelled capacity additions |  |
 
-## Modelled Technologies 
-
-Below is the list of available modelled technologies. 
-
-| Technology                 | Code |
-|----------------------------|------|
-| Biomass                    | BIO  |
-| Combined Cycle Natural Gas | CCG  |
-| Coal                       | COA  |
-| Cogeneration               | COG  |
-| Concentrated Solar Power   | CSP  |
-| Geothermal                 | GEO  |
-| Hydroelectric              | HYD  |
-| Open Cycle Natural Gas     | OCG  |
-| Oil                        | OIL  |
-| Other                      | OTH  |
-| Petroleum                  | PET  |
-| Solar Photovoltaic         | SPV  |
-| Nuclear                    | URN  |
-| Wave                       | WAV  |
-| Waste                      | WAS  |
-| Offshore Wind              | WOF  |
-| Onshore Wind               | WON  |

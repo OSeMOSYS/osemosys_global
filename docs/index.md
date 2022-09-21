@@ -1,6 +1,4 @@
-# OSeMOSYS Global
-
-## Welcome to the documentation of **OSeMOSYS Global**! 
+# Welcome to the documentation of **OSeMOSYS Global**! 
 
 ![OSeMOSYS Global](_static/osemosys-global.png "OSeMOSYS Global")
 
@@ -12,10 +10,10 @@
 :maxdepth: 1
 
 installation
-examples
+getting-started
 contributing
+naming-conventions
 license
-authors
 changelog
 citing
 ```
@@ -51,11 +49,14 @@ citing
 [Citing](/docs/citing.md)
 ```
 -->
+
+<!---
 ## Indices and tables
 
 - {ref}`genindex`
 - {ref}`modindex`
 - {ref}`search`
+-->
 
 [autodoc]: https://www.sphinx-doc.org/en/master/ext/autodoc.html
 [classical style]: https://www.sphinx-doc.org/en/master/domains.html#info-field-lists

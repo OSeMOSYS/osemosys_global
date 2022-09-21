@@ -3,12 +3,9 @@
 Welcome to **OSeMOSYS Global's** contributor's guide! The following information will help make contributing easy for everyone involved.
 
 This document focuses on getting any potential contributor familiarized
-with the development processes, but [other kinds of contributions](https://opensource.guide/how-to-contribute) are alsoappreciated.
-
-If you are new to using [git](https://git-scm.com) or have never collaborated 
-in a project previously,
-please have a look at [contribution-guide.org](https://www.contribution-guide.org/). Other resources are also
-listed in the excellent [guide created by FreeCodeCamp](https://github.com/FreeCodeCamp/how-to-contribute-to-open-source). 
+with the development processes, but [other kinds of contributions](https://opensource.guide/how-to-contribute) 
+are alsoappreciated. If you are new to using [git](https://git-scm.com) or have never 
+collaborated in a project previously, please have a look at [contribution-guide.org](https://www.contribution-guide.org/). Other resources are also listed in the excellent [guide created by FreeCodeCamp](https://github.com/FreeCodeCamp/how-to-contribute-to-open-source). 
 
 Please notice, all users and contributors are expected to be **open, considerate, reasonable, and respectful**. When in doubt, [Python Software Foundation's Code of Conduct](https://www.python.org/psf/conduct/) is a good reference in terms of behavior
 guidelines.
@@ -49,9 +46,7 @@ you encounter a bug, please don't ignore it!
 You can help improve OSeMOSYS Global docs by making them more readable and coherent, or
 by adding missing information and correcting mistakes.
 
-OSeMOSYS Global's documentation uses [Sphinx](https://www.sphinx-doc.org/en/master/) as its main documentation compiler.
-This means that the docs are kept in the same repository as the project code, and
-that any documentation update is done in the same way was a code contribution. We use Markdown 
+OSeMOSYS Global's documentation uses [Sphinx](https://www.sphinx-doc.org/en/master/) as its main documentation compiler. This means that the docs are kept in the same repository as the project code, and that any documentation update is done in the same way was a code contribution. We use Markdown 
 language with [MyST](https://myst-parser.readthedocs.io/en/latest/syntax/syntax.html) extensions
 
     :::{tip}
@@ -81,7 +76,7 @@ and use Python's built-in web server for a preview in your web browser
     python3 -m http.server --directory 'docs/_build/html'
     ```
 
-## Code Contributions
+## Project Structure
 
 OSeMOSYS Global follows utilizes [Snakemake](https://snakemake.readthedocs.io/en/stable/)
 to manage its configurable workflow. Before contributing, please review the
@@ -95,25 +90,11 @@ represent a folder of CSVs that the user can filter through for themselves. A
 full diagram of the workflow, showing the dependencies of each python script,
 can be found [here](https://github.com/OSeMOSYS/osemosys_global/blob/master/docs/dag.pdf).
 
-```mermaid
-flowchart LR
-    db1[(Raw Data)] --> j1(fa:fa-circle)
-    config(Configuration File)--> j1
-    j1 --> |Python Scripts| db2[(World Data)]
-    db2 --> j2(fa:fa-circle)
-    j2 --> |Python Scripts| db3[(Scenario Data)]
-    config(Configuration File)-->j2
-    db3 --> |otoole| df(Data File)
-    df --> j3(fa:fa-circle)
-    os(OSeMOSYS) --> j3
-    j3 --> |GLPK|sol(Solver)
-    sol --> |otoole|db4[(Result Data)]
-    db4 --> |Python Scripts| res(Result Figures)
-```
+![Flowchart](_static/flowchart.jpg "Flowchart")
 
 ### Directory Structure
 
-The structure of the directory follows the recommended [snakemake directory structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
+The directory structure of OSeMOSYS Global follows the recommended [snakemake directory structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
 The figure below highlights how structure and where contributors can look for
 information.
 
@@ -121,6 +102,7 @@ information.
 osemosys_global
 ├── config                        # User configurable setup files
 │   ├── config.yaml               
+├── docs                          # Files for Documentation 
 ├── resources                     # Raw Data and OSeMOSYS File 
 ├── resutls                       # Will appear after running 
 │   ├── data                      # World Data
@@ -138,23 +120,30 @@ osemosys_global
 │   ├── snakefile                 # callable snakefile                   
 ```
 
+## Code Contributions
+
+The following steps will walk through how to submit code changes. 
+
 ### Submit an Issue
+
 Before you work on any non-trivial code contribution it's best to first create
-a report in the [issue tracker](https://github.com/OSeMOSYS/osemosys_global/issues) to start a discussion on the subject. This often provides additional considerations and avoids unnecessary work.
+a report in the [issue tracker](https://github.com/OSeMOSYS/osemosys_global/issues) 
+to start a discussion on the subject. This often provides additional considerations 
+and avoids unnecessary work.
 
 ### Create an environment
 
 Before you start coding, we recommend creating an isolated [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) to avoid any problems with your installed Python packages.
 This can easily be done via either [virtualenv](https://virtualenv.pypa.io/en/stable/):
 
-    ```bash
+    ``` bash
     virtualenv <PATH TO VENV>
     source <PATH TO VENV>/bin/activate
     ```
 
 or [Miniconda](https://docs.conda.io/en/latest/miniconda.html):
 
-    ```bash
+    ``` bash
     conda create -n osemosys_global python=3 six virtualenv pytest pytest-cov
     conda activate osemosys_global
     ```
@@ -169,30 +158,29 @@ the repository service.
 
 3. Clone this copy to your local disk:
 
-    ```bash 
+    ``` bash 
     (base) ~/repositories$ git clone https://github.com/<github_username>/OSeMOSYS/osemosys_global.git
     cd osemosys_global
     ```
 
 4. Install the OSeMOSYS Global conda environment.
 
-    ```bash
+    ``` bash
     (base) ~/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml    
     ```
     
 5. Activate the OSeMOSYS Global conda environment
 
-    ```bash
+    ``` bash
     (base) ~/osemosys_global$ conda activate osemosys-global    
     ```
 
-6. Install OSeMOSYS Global in editable mode:
+6. Install OSeMOSYS Global in editable mode to be able to import the package under development
 
-    ```bash
+    ``` bash
     (osemosys-global) ~/osemosys_global$ pip install -U pip setuptools -e .
     ```
 
-   to be able to import the package under development in the Python REPL.
 <!---
 #. Install [pre-commit](https://pre-commit.com/)
 
@@ -216,9 +204,7 @@ the autoassigned issue number from GitHub.
 
 2. Start your work on this branch. Don't forget to add [docstrings](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html) to new functions, modules and classes, especially if they are part of public APIs.
 
-3. Add yourself to the list of contributors in `AUTHORS.md`.
-
-4. When you’re done editing:
+3. When you’re done editing:
 
     ```bash
     (osemosys-global) ~/osemosys_global$ git add <MODIFIED FILES>
@@ -247,7 +233,7 @@ the autoassigned issue number from GitHub.
       to look for recurring communication patterns.
 -->
 
-5. Please check that your changes don't break any unit tests with::
+4. Please check that your changes don't break any unit tests with::
 
     ```bash
     tox
@@ -304,7 +290,7 @@ package:
     ```bash
     tox --version
     ```
-**or** 
+    **or** 
 
     ```bash
     which tox

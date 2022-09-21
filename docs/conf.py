@@ -7,6 +7,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from cgitb import html
 import os
 import sys
 import shutil
@@ -78,10 +79,12 @@ extensions = [
     "myst_parser",
     "sphinx.ext.duration",
     "sphinx.ext.autosectionlabel",
-    "sphinxcontrib.mermaid"
+    "sphinxcontrib.mermaid",
 ]
 
-# myst_enable_extensions=[]
+myst_enable_extensions=[
+    "colon_fence",
+]
 myst_heading_anchors = 3
 
 # Add any paths that contain templates here, relative to this directory.
@@ -100,7 +103,7 @@ source_suffix = {
 master_doc = "index"
 
 # General information about the project.
-project = "osemosys_global"
+project = "OSeMOSYS Global"
 copyright = "2022, osemosys"
 # copyright = f"{datetime.datetime.today().year}, {author}"
 
@@ -168,14 +171,23 @@ todo_emit_warnings = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "furo"
+# html_theme = "furo"
+html_theme = "sphinx_book_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
+html_logo = "_static/logo.svg"
+html_favicon = "_static/logo.svg"
+html_title = ""
 html_theme_options = {
-    # "sidebar_width": "300px",
-    # "page_width": "1200px"
+    "home_page_in_toc": True,
+    "github_url": "https://github.com/OSeMOSYS/osemosys_global",
+    "repository_url": "https://github.com/OSeMOSYS/osemosys_global",
+    "repository_branch": "master",
+    "path_to_docs": "docs",
+    "use_repository_button": True,
+    "use_edit_page_button": True,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
