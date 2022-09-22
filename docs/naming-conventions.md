@@ -1,6 +1,16 @@
 # Naming Conventions
 
-This page describes in detial the naming conventios used. This is a helpful resource for when modifying the configuration file
+This page describes the detials of the naming conventios used in OSeMOSYS Global. This is a helpful resource for when modifying the configuration file
+
+## Reference Energy System
+
+The schematic below shows a sample of the energy flow in OSeMOSYS Global. This is based on the node for British Columbia, Canada, however, all other nodes follow a similar structure.
+
+:::{note}
+This schematic a sample only. It does not show all technologies/commodities for clarity. 
+:::
+
+![RES](_static/res.jpg "RES")
 
 ## Power Technology Codes 
 

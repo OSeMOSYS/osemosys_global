@@ -1,7 +1,3 @@
-## config.yaml
-
-This configuration file contains all parameters that the user can edit. The table below describes the available parameters and their limits. 
-
 | Parameter  | Description | Limits |
 |------------|-------------|--------|
 | `scenario` | Scenario name |     |
@@ -13,7 +9,7 @@ This configuration file contains all parameters that the user can edit. The tabl
 | `seasons` | Months included in each season | Include all values between 1-12 |
 | `geographic_scope` | Countries to include in scenario | Three letter codes using [this source](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) |
 | `crossborderTrade` | Enable trading of resources between all countries in scenario | True or False |
-| `emission_penalty`   | Global carbon tax in Million Dollars per MegaTonne | Number greater than or equal to zero |
+| `emission_penalty` | Global carbon tax in Million Dollars per MegaTonne | Number greater than or equal to zero |
 | `no_invest_technologies` | Technologies that can not be invested in | Technology codes from list below |
 | `results_by_country` | Plot results by country in addition to system level results | True or False |
 | `solver` | LP Solver to use | `cbc`, `gurobi`, `cplex` |

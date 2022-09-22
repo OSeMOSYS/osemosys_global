@@ -19,10 +19,8 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - 'IND'
-  - 'NPL'
-  - 'BGD'
-  - 'BTN'
+  - 'USA'
+  - 'CAN'
 crossborderTrade: True
 
 # Emission Parameters 
