@@ -79,7 +79,7 @@ extensions = [
     "myst_parser",
     "sphinx.ext.duration",
     "sphinx.ext.autosectionlabel",
-    "sphinxcontrib.mermaid",
+    # "sphinxcontrib.mermaid",
 ]
 
 myst_enable_extensions=[
