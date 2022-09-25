@@ -1,8 +1,8 @@
 # Scenario Name 
-scenario: 'osemosys_global'
+scenario: 'BBIN_Interconnector'
 
 # Temporal Parameters 
-startYear: 2015
+startYear: 2020
 endYear: 2050
 daytype: False
 dayparts:
@@ -15,16 +15,15 @@ seasons:
   S2: [3, 4, 5]
   S3: [6, 7, 8]
   S4: [9, 10, 11]
-timeshift: 0 # value between -11 and 12
+timeshift: 5 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - 'USA'
-  - 'CAN'
+    - 'IND'
 crossborderTrade: True
 
 # Emission Parameters 
-emission_penalty: 50 # M$/MT CO2
+emission_penalty: 20 # M$/MT CO2
 
 # Investment Parameters 
 no_invest_technologies: 
@@ -37,9 +36,8 @@ no_invest_technologies:
 results_by_country: True
 
 # solver parameters
-solver: 'cbc' # cbc, cplex, gurobi
+solver: 'cplex' # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, first_year,]
-  # ie. TRNINDEANPLXX: [10, 2017]
 

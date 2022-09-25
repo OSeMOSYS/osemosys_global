@@ -1,30 +1,43 @@
-# Contributing to OSeMOSYS Global
+# Contributing
 
-Welcome to **OSeMOSYS Global's** contributor's guide! The following information will help make contributing easy for everyone involved.
+Welcome to **OSeMOSYS Global's** contributor's guide! The following information 
+will help make contributing easy for everyone involved.
 
-This document focuses on getting any potential contributor familiarized
-with the development processes, but [other kinds of contributions](https://opensource.guide/how-to-contribute) 
-are alsoappreciated. If you are new to using [git](https://git-scm.com) or have never 
-collaborated in a project previously, please have a look at [contribution-guide.org](https://www.contribution-guide.org/). Other resources are also listed in the excellent [guide created by FreeCodeCamp](https://github.com/FreeCodeCamp/how-to-contribute-to-open-source). 
-
-Please notice, all users and contributors are expected to be **open, considerate, reasonable, and respectful**. When in doubt, [Python Software Foundation's Code of Conduct](https://www.python.org/psf/conduct/) is a good reference in terms of behavior
-guidelines.
+This document focuses on getting any potential contributor familiarized with 
+the development processes, but 
+[other kinds of contributions](https://opensource.guide/how-to-contribute) 
+are alsoappreciated. If you are new to using [git](https://git-scm.com) or 
+have never collaborated in a project previously, please have a look at 
+[contribution-guide.org](https://www.contribution-guide.org/). Other resources 
+are also listed in the excellent 
+[guide created by FreeCodeCamp](https://github.com/FreeCodeCamp/how-to-contribute-to-open-source). 
+Please notice, all users and contributors are expected to be **open, 
+considerate, reasonable, and respectful**. When in doubt, 
+[Python Software Foundation's Code of Conduct](https://www.python.org/psf/conduct/) 
+is a good reference in terms of behavior guidelines.
 
 Thank you for contributing to OSeMOSYS Global! 
 
 ## Questions and Discussions
 
 If you have general questions or comments on the project, plese submit them
-to our [community discussion board](https://github.com/OSeMOSYS/osemosys_global/discussions). Maintainers and community collaborators will respond in the thread to ensure communication stays open and available for future reference. Please review our Code of Conduct document for further questions regarding communication standards.
+to our 
+[community discussion board](https://github.com/OSeMOSYS/osemosys_global/discussions). 
+Maintainers and community collaborators will respond in the thread to ensure 
+communication stays open and available for future reference. Please review our 
+Code of Conduct document for further questions regarding communication standards.
 
 ## Issue Reports
 
-If you experience bugs or general issues with OSeMOSYS Global, please have a look
-on the [issue tracker](https://github.com/OSeMOSYS/osemosys_global/issues). If you don't see anything useful there, please feel free to [file an issue report](https://github.com/OSeMOSYS/osemosys_global/issues/new/choose).
+If you experience bugs or general issues with OSeMOSYS Global, please have a 
+lookon the [issue tracker](https://github.com/OSeMOSYS/osemosys_global/issues). 
+If you don't see anything useful there, please feel free to 
+[file an issue report](https://github.com/OSeMOSYS/osemosys_global/issues/new/choose).
 
 :::{tip}
 Please don't forget to include the closed issues in your search.
-Sometimes a solution was already reported, and the problem is considered **solved**.
+Sometimes a solution was already reported, and the problem is considered 
+**solved**.
 :::
 
 New issue reports should include information about your programming environment
@@ -50,23 +63,31 @@ you encounter a bug, **please don't ignore it**!
 
 ## Documentation Improvments 
 
-You can help improve OSeMOSYS Global docs by making them more readable and coherent, or
-by adding missing information and correcting mistakes.
+You can help improve OSeMOSYS Global docs by making them more readable and 
+coherent, or by adding missing information and correcting mistakes.
 
-OSeMOSYS Global's documentation uses [Sphinx](https://www.sphinx-doc.org/en/master/) as its main documentation compiler. This means that the docs are kept in the same repository as the project code, and that any documentation update is done in the same way was a code contribution. We use Markdown 
-language with [MyST](https://myst-parser.readthedocs.io/en/latest/syntax/syntax.html) extensions
+OSeMOSYS Global's documentation uses 
+[Sphinx](https://www.sphinx-doc.org/en/master/) as its main documentation 
+compiler. This means that the docs are kept in the same repository as the 
+project code, and that any documentation update is done in the same way was a 
+code contribution. We use Markdown language with 
+[MyST](https://myst-parser.readthedocs.io/en/latest/syntax/syntax.html) 
+extensions
 
 :::{tip}
-Please notice that the [GitHub web interface](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files) provides a quick way of
-propose changes in OSeMOSYS Global's files. While this mechanism can
-be tricky for normal code contributions, it works perfectly fine for
-contributing to the docs, and can be quite handy.
+Please notice that the 
+[GitHub web interface](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files) 
+provides a quick way of propose changes in OSeMOSYS Global's files. While this 
+mechanism can be tricky for normal code contributions, it works perfectly fine 
+for contributing to the docs, and can be quite handy.
 
-If you are interested in trying this method out, please navigate to
-the `docs/` folder, find which file you would like to propose changes and 
-click in the little pencil icon at the top, to open [GitHub's code editor](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files). Once you finish editing the file, please write a message in the form at the bottom of the page describing
-which changes have you made and what are the motivations behind them and
-submit your proposal.
+If you are interested in trying this method out, please navigate to the `docs/` 
+folder, find which file you would like to propose changes and click in the 
+little pencil icon at the top, to open 
+[GitHub's code editor](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files). 
+Once you finish editing the file, please write a message in the form at the 
+bottom of the page describing which changes have you made and what are the 
+motivations behind them and submit your proposal.
 :::
 
 When working on documentation changes in your local machine, you can
@@ -85,23 +106,28 @@ python3 -m http.server --directory 'docs/_build/html'
 
 ## Project Structure
 
-OSeMOSYS Global follows utilizes [Snakemake](https://snakemake.readthedocs.io/en/stable/)
+OSeMOSYS Global follows uses [Snakemake](https://snakemake.readthedocs.io/en/stable/)
 to manage its configurable workflow. Before contributing, please review the
-summary of the workflow and directory structure shown below.
+summary of the workflow and directory structure below.
 
 ### Workflow Logic
 
-Below is a simplified diagram highlighting the main componenets of the
-workflow. Each of the processed database objects (World, Scenario, and Results)
-represent a folder of CSVs that the user can filter through for themselves. A
-full diagram of the workflow, showing the dependencies of each python script,
-can be found [here](https://github.com/OSeMOSYS/osemosys_global/blob/master/docs/dag.pdf).
+The high-level overview of the OSeMOSYS Global’s Snakemake workflow is shown 
+below. The user starts by inputting parameters into the configuration file 
+and running the workflow, which will execute all steps shown automatically. 
+To start, Python scripts process the raw data into formatted scenario data. 
+The Python package otoole is then used to create an OSeMOSYS compatible data 
+file, which is combined with the OSeMOSYS model file to create a solver 
+agnostic linear programming file. The model is solved and the results are 
+processed and visualized. While this is an automated process, all files are 
+exposed to the user for exploration. 
 
 ![Flowchart](_static/flowchart.jpg "Flowchart")
 
 ### Directory Structure
 
-The directory structure of OSeMOSYS Global follows the recommended [snakemake directory structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
+The directory structure of OSeMOSYS Global follows the recommended 
+[snakemake directory structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
 The figure below highlights how structure and where contributors can look for
 information.
 
@@ -132,60 +158,63 @@ osemosys_global
 The following steps will walk through how to submit code changes. 
 
 :::{seealso}
-[Installation instructions](installation.md#installation) for OSeMOSYS Global
+Before contributing, please see our 
+[installation instructions](installation.md#installation) and working 
+[examples](getting-started.md#examples)
 :::
 
-### Submit an Issue
+### 1. Submit an Issue
 
 Before you work on any non-trivial code contribution it's best to first create
 a report in the [issue tracker](https://github.com/OSeMOSYS/osemosys_global/issues) 
 to start a discussion on the subject. This often provides additional considerations 
 and avoids unnecessary work.
 
-### Create an environment
+### 2. Install the osemosys-global Conda Environment
 
-Before you start coding, we recommend creating an isolated [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) to avoid any problems with your installed Python packages. This can easily be done via either [virtualenv](https://virtualenv.pypa.io/en/stable/):
+Before you start coding, we recommend creating an isolated 
+[virtual environment](https://realpython.com/python-virtual-environments-a-primer/) 
+to avoid any problems with your installed Python packages. This can easily be 
+done via [Miniconda](https://docs.conda.io/en/latest/miniconda.html):
 
-``` bash
-virtualenv <PATH TO VENV>
-source <PATH TO VENV>/bin/activate
-```
+:::{seealso}
+How to [install](installation.md#5-create-the-conda-environment) OSeMOSYS 
+Global's prepared conda environment
+:::
 
-or [Miniconda](https://docs.conda.io/en/latest/miniconda.html):
+1. Install the OSeMOSYS Global conda environment.
 
-``` bash
-conda create -n osemosys_global python=3 six virtualenv pytest pytest-cov
-conda activate osemosys_global
-```
+    ``` bash
+    (base) $ conda env create -f workflow/envs/osemosys-global.yaml    
+    ```
+    
+2. Activate the OSeMOSYS Global conda environment
 
-### Clone the repository
+    ``` bash
+    (base) $ conda activate osemosys-global 
 
-1. Create an user account on [GitHub](https://github.com/) if you do not already have one.
+    (osemosys-global) $   
+    ```
 
-2. Fork the project [repository](https://github.com/OSeMOSYS/osemosys_global) click on the
-**Fork** button near the top of the page. This creates a copy of the code under your account on 
-the repository service. 
+### 3. Clone the repository
+
+1. Create an user account on [GitHub](https://github.com/) if you do not 
+already have one.
+
+2. Fork the project [repository](https://github.com/OSeMOSYS/osemosys_global) 
+by clicking on the **Fork** button near the top of the page. This creates a 
+copy of the code under your account on the repository service. 
 
 3. Clone this copy to your local disk:
 
     ``` bash 
-    (base) ~/repositories$ git clone https://github.com/<github_username>/OSeMOSYS/osemosys_global.git
+    (osemosys-global ) ~/repositories$ git clone https://github.com/<github_username>/OSeMOSYS/osemosys_global.git
+
     cd osemosys_global
     ```
 
-4. Install the OSeMOSYS Global conda environment.
-
-    ``` bash
-    (base) ~/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml    
-    ```
-    
-5. Activate the OSeMOSYS Global conda environment
-
-    ``` bash
-    (base) ~/osemosys_global$ conda activate osemosys-global    
-    ```
-
-6. Install OSeMOSYS Global in editable mode to be able to import the package under development
+4. Install OSeMOSYS Global in editable mode to be able to import the package 
+under development
 
     ``` bash
     (osemosys-global) ~/osemosys_global$ pip install -U pip setuptools -e .
@@ -201,7 +230,7 @@ the repository service.
    developer to check the code being written.
 -->
 
-### Implement your changes
+### 4. Implement your changes
 
 1. Create a new branch with a name in the form of `issue-###` where `###` is
 the autoassigned issue number from GitHub.
@@ -210,15 +239,19 @@ the autoassigned issue number from GitHub.
     (osemosys-global) ~/osemosys_global$ git checkout -b issue-###
     ```
 
-   and start making changes. Never work on the main branch!
+   and start making changes. **Never work on the main branch!**
 
-2. Start your work on this branch. Don't forget to add [docstrings](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html) to new functions, modules and classes, especially if they are part of public APIs.
+2. Start your work on this branch. Don't forget to add 
+[docstrings](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html) 
+to new functions, modules and classes, especially if they are part of public APIs.
 
 3. When you’re done editing:
 
     ```bash
     (osemosys-global) ~/osemosys_global$ git add <MODIFIED FILES>
+
     (osemosys-global) ~/osemosys_global$ git commit -m 'descripitve commit message'
+
     (osemosys-global) ~/osemosys_global$ git push
     ```
 
@@ -243,6 +276,7 @@ the autoassigned issue number from GitHub.
       to look for recurring communication patterns.
 -->
 
+<!-- 
 4. Please check that your changes don't break any unit tests with::
 
     ```bash
@@ -251,38 +285,50 @@ the autoassigned issue number from GitHub.
 
    (after having installed [tox](https://tox.wiki/en/stable/) with `pip install tox` or `pipx`).
 
-   You can also use [tox](https://tox.wiki/en/stable/) to run several other pre-configured tasks in the repository. Try `tox -av` to see a list of the available checks.
+   You can also use [tox](https://tox.wiki/en/stable/) to run several other pre-configured tasks in the repository. Try `tox -av` to see a list of the available checks. 
+-->
 
-### Submit your contribution
+### 5. Submit your contribution
 
-1. If everything works fine, push your local branch to [GitHub](https://github.com/OSeMOSYS/osemosys_global) with:
+1. If everything works fine, push your local branch to 
+[GitHub](https://github.com/OSeMOSYS/osemosys_global) with:
 
     ```bash
     git push -u origin my-feature
     ```
 
-2. Go to the web page of your fork and click [Create a Pull Request](https://github.com/OSeMOSYS/osemosys_global/pulls) to send your changes for review.
+2. Go to the web page of your fork and click 
+[Create a Pull Request](https://github.com/OSeMOSYS/osemosys_global/pulls) to 
+send your changes for review.
 
     :::{tip}
-    Find more detailed information in [creating a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request). You might also want to open the PR as a draft first and mark it as ready for review after the feedbacks from the continuous integration (CI) system or any required fixes.
+    Find more detailed information in 
+    [creating a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request). 
+    You might also want to open the PR as a draft first and mark it as ready 
+    for review after the feedbacks from the continuous integration (CI) system 
+    or any required fixes.
     :::
 
-### Troubleshooting Build
+### 6. Troubleshooting Build
 
 The following tips can be used when facing problems to build or test the
 package:
 
-1. Make sure to fetch all the tags from the upstream [repository](https://github.com/OSeMOSYS/osemosys_global). The command `git describe --abbrev=0 --tags` should return the version you
-   are expecting. If you are trying to run CI scripts in a fork repository,
-   make sure to push all the tags.
+1. Make sure to fetch all the tags from the upstream 
+[repository](https://github.com/OSeMOSYS/osemosys_global). The command 
+`git describe --abbrev=0 --tags` should return the version you are expecting. 
+If you are trying to run CI scripts in a fork repository,make sure to push all 
+the tags.
    
    You can also try to remove all the egg files or the complete egg folder, i.e.,
    `.eggs`, as well as the `*.egg-info` folders in the `workflow/scripts`` folder or
    potentially in the root of your project.
 
-2. Sometimes [tox](https://tox.wiki/en/stable/) misses out when new dependencies are added, especially to `setup.cfg` and `docs/requirements.txt`. If you find any problems with
-   missing dependencies when running a command with `tox`, try to recreate the
-   `tox` environment using the `-r` flag. For example, instead of::
+2. Sometimes [tox](https://tox.wiki/en/stable/) misses out when new 
+dependencies are added, especially to `setup.cfg` and `docs/requirements.txt`. 
+If you find any problems with missing dependencies when running a command with 
+`tox`, try to recreate the `tox` environment using the `-r` flag. For example, 
+instead of:
 
     ```bash
     tox -e docs
@@ -294,21 +340,22 @@ package:
     tox -r -e docs
     ```
 
-3. Make sure to have a reliable `tox` installation that uses the correct
-   Python version (e.g., 3.7+). When in doubt you can run::
+3. Make sure to have a reliable `tox` installation that uses the correct 
+Python version (e.g., 3.7+). When in doubt you can run::
 
     ```bash
     tox --version
     ```
-    **or** 
+    or
 
     ```bash
     which tox
     ```
 
    If you have trouble and are seeing weird errors upon running `tox`, you can
-   also try to create a dedicated [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) with a `tox` binary
-   freshly installed. For example::
+   also try to create a dedicated 
+   [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) 
+   with a `tox` binaryfreshly installed. For example::
 
     ```bash
     virtualenv .venv
@@ -322,11 +369,11 @@ package:
    running `tox -- -k <NAME OF THE FALLING TEST> --pdb`).
    You can also setup breakpoints manually instead of using the `--pdb` option.
 
-### Styleguide
+### 7. Styleguide
 
-All submitted code follows [Black](https://github.com/psf/black) formatting guidelines. 
-In general, we follow the open-source standards outlined by Google in their 
-Python [syleguide](https://google.github.io/styleguide/pyguide.html).
+All submitted code follows [Black](https://github.com/psf/black) formatting 
+guidelines. In general, we follow the open-source standards outlined by 
+Google in their Python [syleguide](https://google.github.io/styleguide/pyguide.html).
 
 <!---
 ## Maintainer tasks

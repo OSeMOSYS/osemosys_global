@@ -82,11 +82,25 @@ extensions = [
     # "sphinxcontrib.mermaid",
 ]
 
-myst_enable_extensions=[
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
+    "deflist",
+    "fieldlist",
+    "html_admonition",
+    "html_image",
     "colon_fence",
-    "deflist"
+    "smartquotes",
+    "replacements",
+    # "linkify",
+    # "strikethrough",
+    "substitution",
+    "tasklist",
 ]
-myst_heading_anchors = 3
+myst_number_code_blocks = ["typescript"]
+myst_heading_anchors = 2
+myst_footnote_transition = True
+myst_dmath_double_inline = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
