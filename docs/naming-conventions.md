@@ -7,7 +7,7 @@ or interpreting the results.
 ## Reference Energy System
 
 The schematic below shows a high level overview of the reference energy system 
-(RES). A full RES example for a single node can be found [here](#full-res-example)
+(RES). A full RES example for a single node can be found [here](#full-example)
 
 :::{seealso}
 OSeMOSYS' 
