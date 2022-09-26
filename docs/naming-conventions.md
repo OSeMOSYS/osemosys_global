@@ -205,7 +205,7 @@ Example transmisison technologies are given below.
 ### Trading Technology Codes
 
 :::{seealso}
-Out description of how resource trading functions in OSeMOSYS Global
+Our description of how resource trading functions in OSeMOSYS Global
 :::
 
 Trading technologies are responsible for trading electricity. While physical 
@@ -229,9 +229,18 @@ transmission level fuel, and end use fuel.
 
 #### Raw Fuel Codes
 
-Raw fules in OSeMOSYS Global can be three, six, or nine characters long.
+Raw fules in OSeMOSYS Global can be three, six, or eight characters long.
 Depending on the fuels purpose, the country and/or region may or may not need 
-to be tracked. 
+to be tracked. The different raw fuel codes are summarized below
+
+| Character Example   | Location | Length    | Description |
+|---------------------|----------|-----------|-------------|
+| X X X ( _ _ _ _ _ ) | (01-03)  | 3 / 6 / 8 | Commodity Code |
+| _ _ _ X X X ( _ _ ) | (04-06)  | 6 / 8     | Country code or `INT` for International* |
+| _ _ _ _ _ _ X X     | (07-08)  | 8         | Regional node code |
+
+(*) See trading technologies for more information
+
 
 
 <!-- 
