@@ -7,7 +7,17 @@ or interpreting the results.
 ## Reference Energy System
 
 The schematic below shows a high level overview of the reference energy system 
-(RES). A full RES example for a single node can be found [here](#full-example)
+(RES). OSeMOSYS models are built through connecting commodities (ie. fules) and 
+energy conversion technologies. In OSeMOSYS Global, each technology and 
+commidity has a unique identifier based on it purpose (mining, transmission, 
+ect..), its type (hydropower, solar power, ect...), and/or its location 
+(country and regional node.) 
+
+![Simple-RES](_static/simple-res.jpg "Simple RES")
+
+:::{seealso}
+A full RES example for a single node can be found [here](#full-example)
+:::
 
 :::{seealso}
 OSeMOSYS' 
@@ -17,8 +27,7 @@ on Reference Energy Systems
 
 ## OSeMOSYS Global Structure
 
-OSeMOSYS models are built through connecting commodities (ie. fules) and 
-energy conversion technologies. This page will walk through how OSeMOSYS 
+. This page will walk through how OSeMOSYS 
 Global connects and names each technology and commodity. 
 
 ### Spatial Codes
@@ -101,7 +110,7 @@ and Open Cycle Natural Gas both operating on the commodity GAS.
 | Natural Gas                | GAS  |
 | Coal                       | COA  |
 | Geothermal                 | GEO  |
-| Hydroelectric              | HYD  |
+| Hydro                      | HYD  |
 | Oil                        | OIL  |
 | Other                      | OTH  |
 | Petroleum                  | PET  |
@@ -202,7 +211,7 @@ Example transmisison technologies are given below.
 | PWRTRNINDNE |   |
 | PWRTRNUSACA |   |
 
-### Trading Technology Codes
+#### Trading Technology Codes
 
 :::{seealso}
 Our description of how resource trading functions in OSeMOSYS Global
@@ -224,7 +233,7 @@ nodes transmission electricity. The table below summarises the codes.
 ### Commodity Codes 
 
 Commodities (or fuel) carry energy and flow into and out of technologies in OSeMOSYS. 
-There are three classifications of commodities in OSeMOSYS Global, raw fuel, 
+There are three classifications of commodities in OSeMOSYS Global, primary fuel, 
 transmission level fuel, and end use fuel. 
 
 #### Raw Fuel Codes
@@ -235,48 +244,114 @@ to be tracked. The different raw fuel codes are summarized below
 
 | Character Example   | Location | Length    | Description |
 |---------------------|----------|-----------|-------------|
-| X X X ( _ _ _ _ _ ) | (01-03)  | 3 / 6 / 8 | Commodity Code |
+| X X X ( _ _ _ _ _ ) | (01-03)  | 3 / 6 / 8 | Commodity code |
 | _ _ _ X X X ( _ _ ) | (04-06)  | 6 / 8     | Country code or `INT` for International* |
 | _ _ _ _ _ _ X X     | (07-08)  | 8         | Regional node code |
 
 (*) See trading technologies for more information
 
+Examples of primary fuels are given below
 
+| Code     | Description |
+|----------|-------------|
+| GAS      |   |
+| URNINT   |   |
+| URNCAN   |   |
+| WNDCANBC |   |
 
-<!-- 
-### Fossil fuels and uranium:
+#### Transmission Fuel Codes
 
-x x x _ _ _ : First 3 characters (01-03) represent **fuel**
+Transmission level fuel will carry energy from the primary power generation
+technologies to the transmission technologies. All transmission level fuels
+follow the same 10 character naming convention. 
 
-_ _ _ x x x : Last 3 characters (04-06) represent source; 
-**country code** for **domestic** or '**INT**' for '**international**'. 
+| Character Example   | Location | Length  | Description |
+|---------------------|----------|---------|-------------|
+| E L C _ _ _ _ _ _ _ | (01-03)  | 10      | Electricity |
+| _ _ _ X X X _ _ _ _ | (04-06)  | 10      | Country code |
+| _ _ _ _ _ _ X X _ _ | (07-08)  | 10      | Regional node code |
+| _ _ _ _ _ _ _ _ 0 1 | (09-10)  | 10      | Transmission Level |
 
-### Other fuels, including renewables: 8 characters 
+Examples of transmission fuels are given below
 
-^^^ _ _ _ _ _ : First 3  characters (01-03) represent **fuel**
+| Code       | Description |
+|------------|-------------|
+| ELCCANBC01 |   |
+| ELCINDNE01 |   |
 
-_ _ _ ^^^ _ _ _ : Next 3 characters (04-06) represent **country code**
+#### End Use Fuel Codes
 
-_ _ _ ^^^ _ _ _ : Last 2 characters (07-08) represent **node**
+End use fuel will carry energy from the transmssion technology to demands or 
+to trading technologies. All end use fules follow the same 10 character naming 
+convention. 
 
-### Electricity:
-### Electricity: 10 characters
-^^^ _ _ _ _ _ _ _ : First 3 characters (01-03) are '**ELC**'
+| Character Example   | Location | Length  | Description |
+|---------------------|----------|---------|-------------|
+| E L C _ _ _ _ _ _ _ | (01-03)  | 10      | Electricity |
+| _ _ _ X X X _ _ _ _ | (04-06)  | 10      | Country code |
+| _ _ _ _ _ _ X X _ _ | (07-08)  | 10      | Regional node code |
+| _ _ _ _ _ _ _ _ 0 2 | (09-10)  | 10      | End Use |
 
-_ _ _ ^^^ _ _ _ _ : Next 3 characters (04-06) represent the **country code**
+Examples of transmission fuels are given below
 
-_ _ _ _ _ _ ^^ _ _ : Next 2 characters (07-08) represent the **node** 
+| Code       | Description |
+|------------|-------------|
+| ELCCANBC02 |   |
+| ELCINDNE02 |   |
 
-_ _ _ _ _ _ _ _ ^^: Last 2 characters (09-10) represent the **level**; 
-'**01**' for the secondary level (from powerplants to transmission) and '**02**' for the tertiary level (from transmission to distribution)
+## Commodity Trading 
 
-### Import and export
+This section will provide further detial on how commodity trading functions in 
+OSeMOSYS Global. 
 
-### Transmission and distribution -->
+### Primary Fuel Trading
+
+Two primary fuel types exist in OSeMOSYS Global; fule that can and can not 
+be traded. Primary fuel that can not be traded may be due to it being a natural 
+resource (such as wind and solar) or due to geographic restrictions (such as 
+hydro). Fuel that can be traded include physical goods (such as coal and 
+uranium). The table below breaks down which fuels fall into which categories.
+
+| Commodity                  | Tradable |
+|----------------------------|----------|
+| Biomass                    | No       |
+| Natural Gas                | Yes      |
+| Coal                       | Yes      |
+| Geothermal                 | No       |
+| Hydro                      | No       |
+| Oil                        | Yes      |
+| Other                      | Yes      |
+| Petroleum                  | Yes      |
+| Solar                      | No       |
+| Nuclear                    | Yes      |
+| Wave                       | No       |
+| Waste                      | No       |
+| Offshore Wind              | No       |
+| Onshore Wind               | No       |
+
+Fuel which can **not** be traded is mined by nodal mining technologies and 
+flows directly into its repective nodal power generator. For example, wind and 
+solar resources. Fuel which can be traded can flow into an interational 
+trading technology, or any nodal power generation technology within the country. 
+A small example of these options are shown below for British Columbia, Canada 
+and the North West, USA for the fuels solar, onshore wind, and coal. 
+
+![InternationalTrading](_static/international-trading.jpg "International Trade")
+
+### End Use Fuel Trading
+
+Much like with primary fules, end use fuels can also be traded. However, end
+use fuel can only be traded to adjacent nodes, rather then on the international
+market and regions abroad. End use fuel trading is managed through desgnated 
+electrical trading technologies. An example of how end use trading works is 
+shown below for British Columbia, Canada, and two of its adjacent regions, the 
+North West, USA and Albera / North West Territories, Canada. 
+
+![ElectricityTrading](_static/electricity-trade.jpg "Electricity Trade")
 
 ## Full Example
 
-The schematic below shows the reference energy system for the node of 
+The schematic below shows the full reference energy system for the node of 
 British Columbia, Canada. All nodes follow the similar structure. 
 
 ![RES](_static/res.jpg "RES")

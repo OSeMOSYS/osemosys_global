@@ -19,7 +19,7 @@ timeshift: 5 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-    - 'IND'
+    - 'CAN'
 crossborderTrade: True
 
 # Emission Parameters 
