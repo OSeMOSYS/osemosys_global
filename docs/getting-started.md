@@ -15,10 +15,10 @@ OSeMOSYS Global is an open-source, open-data model generator for creating
 global electricity system models. This includes creating interconnected models
 for both the entire globe and for any geographically diverse subset of the 
 globe. To manage this data processing we use the workflow management tool, 
-[Snakemake](https://snakemake.readthedocs.io/en/stable/), to create a 
-configurable workflow. A high level overview of OSeMOSYS Global's workflow is 
-shown below. The green boxes highlight where the user interfaces with the model, 
-while the blue boxes highlight automated actions that run behind the scenes.
+[Snakemake](https://snakemake.readthedocs.io/en/stable/). A high level overview 
+of OSeMOSYS Global's workflow is shown below. The green boxes highlight where 
+the user interfaces with the model, while the blue boxes highlight automated 
+actions that run behind the scenes.
 
 ![Flowchart-high-level](_static/flowchart_high_level.png "Flowchart")
 
@@ -26,7 +26,7 @@ The main components of the directory the user will interface with are
 highlighted below. This directory structure follows the recommended 
 [snakemake structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
 A full overview of the project directory is available in our 
-[contribution document](contributing.md#directory-structure).
+[contributing guidelines](contributing.md#directory-structure).
 
 ``` bash
 osemosys_global
@@ -43,8 +43,8 @@ osemosys_global
 
 OSeMOSYS Global is a configurable model generator, allowing for full user 
 flexibility in determining the time slice structure and geographic scope of 
-the model and datasets. These configuration options are stored in a 
-(conveniently named)
+the model and datasets. These configuration options are stored in the 
+(conveniently named!)
 [configuration file](https://github.com/OSeMOSYS/osemosys_global/tree/master/config). 
 An overview of the configuration file options are shown below:
 
@@ -52,8 +52,8 @@ An overview of the configuration file options are shown below:
 ```
 
 :::{seealso}
-Our [naming conventions](./naming-conventions.md) document for full detials on 
-model nomenclature
+Our [model structure](./model-structure.md) document for full details on 
+technology and commodity names
 :::
 
 ## Examples
@@ -62,7 +62,9 @@ Below are some simple examples you can follow to understand how OSeMOSYS Global
 works. 
 
 :::{caution}
-Before running any examples, ensure you first follow our [installation instructions](installation.md#installation) and perform these two steps.
+Before running any examples, ensure you first follow our 
+[installation instructions](installation.md#installation) and perform the 
+following two steps.
 
 1. Navigate to the root OSeMOSYS Global directory in the command line 
 
@@ -81,19 +83,19 @@ Before running any examples, ensure you first follow our [installation instructi
     ```
 :::
 
-### Example 1
-
-**Goal**: Run the workflow with default settings. This will produce a model 
-of India from 2015 to 2050 with 8 timeslices per year, and solve it using CBC.
-
 :::{warning}
 If you installed CPLEX or Gurobi instead of CBC, you must first change this in 
 the configuration file at `config/config.yaml`
 :::
 
+### Example 1
+
+**Goal**: Run the workflow with default settings. This will produce a model 
+of India from 2015 to 2050 with 8 time slices per year, and solve it using CBC.
+
 1. Run the command `snakemake -c`. The time to build and solve the model will
-vary depending on your computer, but in general, from start to finish the 
-workflow will finish within minutes for this example.
+vary depending on your computer, but in general, this example will finish 
+within minutes .
 
     ```bash
     (osemosys-global) ~/osemosys_global$ snakemake -c
@@ -105,7 +107,7 @@ workflow will finish within minutes for this example.
     specify the number of cores. For example, the command `snakemake -c2` will
     run the workflow using 2 cores. See 
     [snakemake's documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html#useful-command-line-arguments) 
-    for more information on this.   
+    for more information.   
     :::
 
 2. Navigate to the newly created `results/` folder. All available automatically 
@@ -149,7 +151,7 @@ generated results are summarized below.
     | `TransmissionCapacityXXXX.jpg` | Transmission capacity plot for last year of model |
     | `TransmissionFlowXXXX.jpg` | Transmission flow plot for last year of model |
 
-3. View sytem level capacity and generation results. 
+3. View system level capacity and generation results. 
 
     :::{caution}
     These results are used to showcase the capabilities of OSeMOSYS Global. The
@@ -160,8 +162,15 @@ generated results are summarized below.
     ![Example-1.1](_static/example_1.1.png "Example-1.1")
     ![Example-1.2](_static/example_1.2.png "Example-1.2")
 
-4. View Demand Projections Sample Results for Asia in the file 
-`results/figs/Demand projection Asia.jpg`. Grey Dots Represent Historical Country Level Values for Countries in Asia and the Coloured Dots Show Projected Values.
+    :::{tip}
+    These plots are interactive! Howver over the bars to view values, or 
+    double click on a power plant in the legend to single it out. 
+    :::
+
+4. View demand projections results for Asia in the file 
+`results/figs/Demand projection Asia.jpg`. Grey dots represent historical 
+country level values for countries in Asia and the coloured dots show projected 
+values.
 
     ![Example-1.3](_static/example_1.3.png "Example-1.3")
 
@@ -172,22 +181,20 @@ of the model.
 
 The goal of this scenario will be to change the geographic scope to add 
 Bangladesh, Bhutan, and Nepal to the model. Moreover, we will change the model
-horizon to be from 2020-2040 and increase the number of timeslices per year 
-from 8 to 18. Finally, we will ensure crossborder trade is allowed, set the 
+horizon to be from 2020-2040 and increase the number of time slices per year 
+from 8 to 18. Finally, we will ensure cross border trade is allowed, set the 
 emission penalty to $50/T, and create country level result plots.
 
-:::{tip}
-All changes described below occur in the `config/config.yaml` file
-:::
+1. Navigate to and open the file `config/config.yaml`
 
-1. Change the scenario name to BBIN (**B**angladesh, **B**hutan, **I**ndia, 
+2. Change the scenario name to BBIN (**B**angladesh, **B**hutan, **I**ndia, 
 and **N**epal)
 
     ```yaml
     scenario: 'BBIN'
     ```
 
-2. Change the geographic scope to include the mentioned countries.
+3. Change the geographic scope to include the mentioned countries.
 
     ```yaml
     geographic_scope:
@@ -197,15 +204,15 @@ and **N**epal)
     - 'NPL'
     ```
 
-3. Change the model horizon to be from 2020 to 2040. Both numbers are inclusive.
+4. Change the model horizon to be from 2020 to 2040. Both numbers are inclusive.
 
     ```yaml
     startYear: 2020
     endYear: 2040
     ```
 
-4. Change the number of day parts to represent three even 8 hour segments per 
-day. Note that the start number is inclusive, while the end number is exclusive.
+5. Change the number of day parts to represent three even 8 hour segments per 
+day. The start number is inclusive, while the end number is exclusive.
 
     ```yaml
     dayparts:
@@ -214,7 +221,7 @@ day. Note that the start number is inclusive, while the end number is exclusive.
     D3: [16, 24]
     ```
 
-5. Change the number of seasons to represent 6 equally spaced days. Both numbers
+6. Change the number of seasons to represent 6 equally spaced days. Both numbers
 are inclusive.  
 
     ```yaml
@@ -227,14 +234,12 @@ are inclusive.
     S6: [11, 12]
     ```
 
-    :::{note}
+    :::{tip}
     A timeslice strucutre of 6 seasons and 3 dayparts will result in a model 
     with 18 timeslices per year; 6 representative days each with 3 timeslices. 
-    :::
 
-    :::{seealso}
-    The [OSeMOSYS documentation](https://osemosys.readthedocs.io/en/latest/index.html)
-    has more information on the OSeMOSYS timeslice parameters.  
+    See the [OSeMOSYS documentation](https://osemosys.readthedocs.io/en/latest/index.html)
+    has more information on the OSeMOSYS timeslice parameters. 
     :::
 
 6. Ensure the `crossborderTrade` parameter is set to `True`
@@ -243,7 +248,7 @@ are inclusive.
     crossborderTrade: True
     ```
 
-7. Change the emission penalty to 50 $/T
+7. Change the emission penalty to `50` $/T
 
     ```yaml
     emission_penalty: 50 
@@ -262,11 +267,6 @@ are inclusive.
     :::
 
 9. Navigate to the `results/` folder to view results from this model run.
-
-    :::{tip}
-    If you don't change clean the model results, the previous scenario 
-    results are saved as long as you change the scenario name. 
-    :::
 
     Notice how under `figures/`, there is now a folder for each country. By 
     setting the `crossborderTrade` parameter to be true, we tell the 
@@ -305,6 +305,11 @@ are inclusive.
     └── ...
     ```
 
+    :::{note}
+    If you don't change clean the model results, the previous scenario 
+    results are saved as long as you change the scenario name. 
+    :::
+
 10. View system level 2040 hourly generation results by viewing the file
 `results/BBIN/figures/GenerationHourly.html`
 
@@ -318,11 +323,6 @@ are inclusive.
 
 3. View system level metrics for this model run by looking at the file 
 `results/BBIN/result_summaries/Metrics.csv`
-
-    :::{caution}
-    These results are used to showcase the capabilities of OSeMOSYS Global. The
-    actual energy supply mix results may need further analysis.
-    :::
 
     | Metric              | Unit                      | Value |
     |---------------------|---------------------------|-------|
@@ -338,7 +338,7 @@ are inclusive.
 **Goal**: Rerun the BBIN example with new interconnectors.
 
 The goal of this scenario will be to rerun the BBIN scenario 
-([example 2](#example-2)), excpet we will tell the model to install three new
+([example 2](#example-2)), except we will tell the model to install three new
 electricity interconnectors. In 2025 we will install a 3GW interconnector 
 between India and Nepal. Then in 2030 we will install a 1GW and 750MW
 interconnector between India and Bhutan and India and Bangladesh respectively. 
@@ -361,8 +361,8 @@ interconnector between India and Bhutan and India and Bangladesh respectively.
     :::{note}
     The last two letters in the region (ie. `NO`, `NE`, and `EA` for India, or
     `XX` for Nepal, Bhutan and Bangladesh) represent the node in each region. 
-    See our [naming conventions](naming-conventions.md#naming-conventions) 
-    for more information on this. 
+    See our [model structure](./model-structure.md#spatial-codes) 
+    document for more information on this. 
     :::
 
 3. View the trade capacity plot in 2040 by looking at the file 
@@ -381,7 +381,7 @@ interconnector between India and Bhutan and India and Bangladesh respectively.
 **Goal**: Run a World Example
 
 The goal of this scenario is to run a World scenario from 2015 to 2050 with
-8 timeslices, graphing results at a system level only
+8 time slices, solve it using CPLEX, and graphing results at a system level only
 
 1. Change the scenario name
 
@@ -420,19 +420,25 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
       S4: [9, 10, 11]
     ```
 
-5. Remove the timeshift to set to UTC time. 
+5. Remove the time shift to set to UTC time. 
 
     ```yaml
-        timeshift: 0
+    timeshift: 0
     ```
 
-5. Set the results to only graph at a system level
+6. Set the results to only graph at a system level
 
     ```yaml
     results_by_country: False
     ```
 
-5. Run the command `snakemake -c` 
+7. Set the solver to `CPLEX`
+
+    ```yaml
+    solver: 'cplex'
+    ```
+
+8. Run the command `snakemake -c` 
 
     :::{warning}
     This scenario will take multiple hours to run using a commercial solver 
@@ -443,12 +449,12 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
     (osemosys-global) ~/osemosys_global$ snakemake -c
     ```
 
-6. View system level results in the `results/WORLD/figures` folder
+8. View system level results in the `results/WORLD/figures` folder
 
 ## Feedback
 
-If you are experienceing issues running any of the examples, please submit a [new issue](https://github.com/OSeMOSYS/osemosys_global/issues/new/choose) on the GitHub. 
-
-:::{seealso}
-Our GitHub [discussion fourm](https://github.com/OSeMOSYS/osemosys_global/discussions) is a great place to ask general OSeMOSYS Global questions. OSeMOSYS' [Google Group](https://groups.google.com/g/osemosys) is a good place to ask questions about the OSeMOSYS framework.   
-:::
+If you are experiencing issues running any of the examples, please submit a 
+[new issue](https://github.com/OSeMOSYS/osemosys_global/issues/new/choose). 
+Our GitHub 
+[discussion forum](https://github.com/OSeMOSYS/osemosys_global/discussions) is 
+also a great place to ask general OSeMOSYS Global questions.

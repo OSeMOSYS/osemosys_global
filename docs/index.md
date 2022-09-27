@@ -12,7 +12,7 @@
 installation
 getting-started
 contributing
-naming-conventions
+model-structure
 license
 changelog
 citing

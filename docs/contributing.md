@@ -6,7 +6,7 @@ will help make contributing easy for everyone involved.
 This document focuses on getting any potential contributor familiarized with 
 the development processes, but 
 [other kinds of contributions](https://opensource.guide/how-to-contribute) 
-are alsoappreciated. If you are new to using [git](https://git-scm.com) or 
+are also appreciated. If you are new to using [git](https://git-scm.com) or 
 have never collaborated in a project previously, please have a look at 
 [contribution-guide.org](https://www.contribution-guide.org/). Other resources 
 are also listed in the excellent 
@@ -20,7 +20,7 @@ Thank you for contributing to OSeMOSYS Global!
 
 ## Questions and Discussions
 
-If you have general questions or comments on the project, plese submit them
+If you have general questions or comments on the project, please submit them
 to our 
 [community discussion board](https://github.com/OSeMOSYS/osemosys_global/discussions). 
 Maintainers and community collaborators will respond in the thread to ensure 
@@ -30,12 +30,12 @@ Code of Conduct document for further questions regarding communication standards
 ## Issue Reports
 
 If you experience bugs or general issues with OSeMOSYS Global, please have a 
-lookon the [issue tracker](https://github.com/OSeMOSYS/osemosys_global/issues). 
+look on the [issue tracker](https://github.com/OSeMOSYS/osemosys_global/issues). 
 If you don't see anything useful there, please feel free to 
 [file an issue report](https://github.com/OSeMOSYS/osemosys_global/issues/new/choose).
 
 :::{tip}
-Please don't forget to include the closed issues in your search.
+Don't forget to include the closed issues in your search.
 Sometimes a solution was already reported, and the problem is considered 
 **solved**.
 :::
@@ -44,7 +44,7 @@ New issue reports should include information about your programming environment
 (e.g., operating system, Python version) and steps to reproduce the problem.
 Please try also to simplify the reproduction steps to a very minimal example
 that still illustrates the problem you are facing. By removing other factors,
-you help us to identify the root cause of the issue. There are three templates 
+you help us to identify the root cause of the issue. There are four templates 
 set up to help with this process: 
 
 Bug Report
@@ -54,14 +54,17 @@ Data
 : Issues relating to missing or incorrect data
 
 Documentation
-: Issues relating to missing/incorrect/old documentation
+: Issues relating to documentation
+
+Feature request
+: Ideas to help us improve the project 
 
 :::{note}
 As with any project, OSeMOSYS Global is continually evolving and has bugs. If
 you encounter a bug, **please don't ignore it**! 
 :::
 
-## Documentation Improvments 
+## Documentation Improvements 
 
 You can help improve OSeMOSYS Global docs by making them more readable and 
 coherent, or by adding missing information and correcting mistakes.
@@ -113,12 +116,12 @@ summary of the workflow and directory structure below.
 ### Workflow Logic
 
 The high-level overview of the OSeMOSYS Global’s Snakemake workflow is shown 
-below. The user starts by inputting parameters into the configuration file 
+below. The user starts by inputting parameters into a configuration file 
 and running the workflow, which will execute all steps shown automatically. 
 To start, Python scripts process the raw data into formatted scenario data. 
-The Python package otoole is then used to create an OSeMOSYS compatible data 
+The Python package `otoole` is then used to create an OSeMOSYS compatible data 
 file, which is combined with the OSeMOSYS model file to create a solver 
-agnostic linear programming file. The model is solved and the results are 
+independent linear programming file. The model is solved and the results are 
 processed and visualized. While this is an automated process, all files are 
 exposed to the user for exploration. 
 
@@ -128,7 +131,7 @@ exposed to the user for exploration.
 
 The directory structure of OSeMOSYS Global follows the recommended 
 [snakemake directory structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
-The figure below highlights how structure and where contributors can look for
+The figure below highlights the structure and where contributors can look for
 information.
 
 ``` bash
@@ -210,15 +213,17 @@ copy of the code under your account on the repository service.
     ``` bash 
     (osemosys-global ) ~/repositories$ git clone https://github.com/<github_username>/OSeMOSYS/osemosys_global.git
 
-    cd osemosys_global
+    (osemosys-global ) ~/repositories$ cd osemosys_global
+
+    (osemosys-global ) ~/osemosys_global$
     ```
 
-4. Install OSeMOSYS Global in editable mode to be able to import the package 
+<!-- 4. Install OSeMOSYS Global in editable mode to be able to import the package 
 under development
 
     ``` bash
     (osemosys-global) ~/osemosys_global$ pip install -U pip setuptools -e .
-    ```
+    ``` -->
 
 <!---
 #. Install [pre-commit](https://pre-commit.com/)
@@ -233,7 +238,7 @@ under development
 ### 4. Implement your changes
 
 1. Create a new branch with a name in the form of `issue-###` where `###` is
-the autoassigned issue number from GitHub.
+the auto assigned issue number from GitHub.
 
     ```bash
     (osemosys-global) ~/osemosys_global$ git checkout -b issue-###
@@ -321,8 +326,8 @@ If you are trying to run CI scripts in a fork repository,make sure to push all
 the tags.
    
    You can also try to remove all the egg files or the complete egg folder, i.e.,
-   `.eggs`, as well as the `*.egg-info` folders in the `workflow/scripts`` folder or
-   potentially in the root of your project.
+   `.eggs`, as well as the `*.egg-info` folders in the `workflow/scripts` folder 
+   or potentially in the root of your project.
 
 2. Sometimes [tox](https://tox.wiki/en/stable/) misses out when new 
 dependencies are added, especially to `setup.cfg` and `docs/requirements.txt`. 
@@ -355,7 +360,7 @@ Python version (e.g., 3.7+). When in doubt you can run::
    If you have trouble and are seeing weird errors upon running `tox`, you can
    also try to create a dedicated 
    [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) 
-   with a `tox` binaryfreshly installed. For example::
+   with a `tox` binary freshly installed. For example::
 
     ```bash
     virtualenv .venv
@@ -369,7 +374,7 @@ Python version (e.g., 3.7+). When in doubt you can run::
    running `tox -- -k <NAME OF THE FALLING TEST> --pdb`).
    You can also setup breakpoints manually instead of using the `--pdb` option.
 
-### 7. Styleguide
+### 7. Style Guide
 
 All submitted code follows [Black](https://github.com/psf/black) formatting 
 guidelines. In general, we follow the open-source standards outlined by 
