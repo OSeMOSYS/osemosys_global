@@ -23,7 +23,6 @@ getting-started
 contributing
 model-structure
 license
-AUTHORS
 changelog
 citing
 ```
