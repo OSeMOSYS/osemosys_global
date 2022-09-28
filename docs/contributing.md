@@ -314,6 +314,8 @@ send your changes for review.
     or any required fixes.
     :::
 
+3. Add yourself to the list of contributors in ``AUTHORS.md``.
+
 ### 6. Troubleshooting Build
 
 The following tips can be used when facing problems to build or test the

@@ -1,8 +1,8 @@
 # Scenario Name 
-scenario: 'BBIN_Interconnector'
+scenario: 'India'
 
 # Temporal Parameters 
-startYear: 2020
+startYear: 2015
 endYear: 2050
 daytype: False
 dayparts:
@@ -19,7 +19,7 @@ timeshift: 5 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-    - 'CAN'
+    - 'IND'
 crossborderTrade: True
 
 # Emission Parameters 
@@ -36,7 +36,7 @@ no_invest_technologies:
 results_by_country: True
 
 # solver parameters
-solver: 'cplex' # cbc, cplex, gurobi
+solver: 'cbc' # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, first_year,]

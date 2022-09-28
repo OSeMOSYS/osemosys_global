@@ -2,8 +2,17 @@
 
 ![OSeMOSYS Global](_static/osemosys-global.png "OSeMOSYS Global")
 
-```{include} ../README.md
-```
+<!-- ```{include} ../README.md
+``` -->
+
+OSeMOSYS Global is an open-source, open-data model generator for creating
+global energy system models. It can be used to create inter-connected energy
+systems models for both the entire globe and for any geographically diverse
+subset of the globe. Compared to other existing global models, OSeMOSYS Global
+creates a full energy system representation, allows for full user flexibility
+in determining the modelling detail and geographic scope, and is built using
+the fully open-source [OSeMOSYS](https://osemosys.readthedocs.io/en/latest/)
+energy system model.
 
 ## Contents
 ```{toctree}
@@ -14,41 +23,10 @@ getting-started
 contributing
 model-structure
 license
+AUTHORS
 changelog
 citing
 ```
-
-<!---
-```{toctree}
----
-caption: Site Overview
-maxdepth: 1
----
-[Overview](#osemosys-global)
-[Installation](installation)
-[Examples](examples)
-[Contributing](contributing)
-[License](license)
-[Citing](citing)
-```
-
-```{toctree}
-:maxdepth: 1
-
-installation
-examples
-contributing
-license
-citing
-
-[Overview](#osemosys-global)
-[Installation](/docs/installation.md)
-[Examples](/docs/examples.md)
-[Contributing](/docs/contributing.md)
-[License](/docs/license.md)
-[Citing](/docs/citing.md)
-```
--->
 
 <!---
 ## Indices and tables
