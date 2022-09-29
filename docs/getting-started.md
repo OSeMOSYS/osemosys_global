@@ -20,7 +20,7 @@ of OSeMOSYS Global's workflow is shown below. The green boxes highlight where
 the user interfaces with the model, while the blue boxes highlight automated 
 actions that run behind the scenes.
 
-![Flowchart-high-level](_static/flowchart_high_level.png "Flowchart")
+![Flowchart-high-level](_static/flowchart-high-level.jpg "Flowchart")
 
 The main components of the directory the user will interface with are
 highlighted below. This directory structure follows the recommended 
