@@ -54,7 +54,7 @@ rule make_dag:
 
 # cleaning rules
 
-rule clean_all:
+rule clean:
     message:
         'Reseting to defaults...'
     shell:
