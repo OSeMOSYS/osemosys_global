@@ -1,6 +1,6 @@
 # OSeMOSYS Global
 
-[OSeMOSYS Global](https://osemosys-global.readthedocs.io/en/latest/) is an 
+[OSeMOSYS Global](https://www.nature.com/articles/s41597-022-01737-0) is an 
 open-source, open-data model generator for creating
 global energy system models. It can be used to create inter-connected energy
 systems models for both the entire globe and for any geographically diverse
