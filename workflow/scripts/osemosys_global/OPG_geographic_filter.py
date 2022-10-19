@@ -8,7 +8,7 @@ import os
 import yaml
 import shutil
 from pathlib import Path
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 

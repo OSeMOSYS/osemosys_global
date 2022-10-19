@@ -3,7 +3,7 @@ import requests
 import os
 import yaml
 import pandas as pd
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from OPG_configuration import ConfigFile, ConfigPaths
 
 # LOGGING
 import logging
