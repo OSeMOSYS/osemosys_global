@@ -17,7 +17,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import urllib
 import os
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
