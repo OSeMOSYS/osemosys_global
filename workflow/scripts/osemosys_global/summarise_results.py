@@ -520,6 +520,8 @@ def trade_flows():
     df_ts_template['YEAR'] = df_ts_template['YEAR'].astype(int)
 
     for daypart in dayparts_dict:
+        if df_ts_template.empty: # single node region 
+            df_ts_template['DAYPART'] = None
         if dayparts_dict[daypart][0] > dayparts_dict[daypart][1]: # loops over 24hrs
             df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) |
                           (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),

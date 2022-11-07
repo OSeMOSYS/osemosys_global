@@ -1,85 +1,7 @@
 import os
-
-# required files  
-
+import shutil
 configfile: 'config/config.yaml'
-
-# model and scenario output files 
-
-osemosys_files = os.listdir('resources/simplicity/data')
-osemosys_files.remove('default_values.csv') #taken form /resources
-
-demand_figures = [
-    'South America',
-    'Oceania',
-    'North America',
-    'Europe',
-    'Asia',
-    'Africa'
-]
-
-# output script files
-
-power_plant_files = [
-    'CapitalCost.csv',
-    'FixedCost.csv',
-    'CapacityToActivityUnit.csv',
-    'OperationalLife.csv',
-    'TotalAnnualMaxCapacityInvestment.csv',
-    'TotalAnnualMinCapacityInvestment.csv',
-    'TotalTechnologyModelPeriodActivityUpperLimit.csv',
-    'FUEL.csv',
-    'InputActivityRatio.csv',
-    'OutputActivityRatio.csv',
-    'MODE_OF_OPERATION.csv',
-    'REGION.csv',
-    'ResidualCapacity.csv',
-    'TECHNOLOGY.csv',
-    'YEAR.csv'
-    ]
-
-timeslice_files = [
-    'CapacityFactor.csv',
-    'TIMESLICE.csv',
-    'SpecifiedDemandProfile.csv',
-    'YearSplit.csv'
-    ]
-
-variable_cost_files = [
-    'VariableCost.csv'
-    ]
-
-demand_files = [
-    'SpecifiedAnnualDemand.csv'
-    ]
-
-emission_files = [
-    'EmissionActivityRatio.csv',
-    'EmissionsPenalty.csv',
-    'EMISSION.csv'
-]
-
-max_capacity_files = [
-    'TotalAnnualMaxCapacity.csv'
-]
-
-user_capacity_files = [
-    'TotalAnnualMinCapacityInvestment.csv',
-    'TotalAnnualMaxCapacityInvestment.csv'
-]
-
-check_files = os.listdir('resources/simplicity/data')
-generated_files = [
-    power_plant_files, 
-    timeslice_files, 
-    variable_cost_files, 
-    demand_files, 
-    emission_files, 
-    max_capacity_files]
-for file_list in generated_files:
-    [check_files.remove(csv) for csv in file_list]
-
-# rules
+include: 'data_files.smk'
 
 rule make_data_dir:
     output: directory('results/data')
@@ -101,11 +23,11 @@ rule powerplant:
         end_year = config['endYear'],
         invest_techs = config['no_invest_technologies']
     output:
-        csv_files = expand('results/data/{output_file}', output_file = power_plant_files)
+        csv_files = expand('results/data/{output_file}', output_file = POWER_PLANT_FILES)
     conda:
         '../envs/data_processing.yaml'
     log:
-        log = 'results/data/logs/powerplant.log'
+        'results/data/logs/powerplant.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_powerplant_data.py 2> {log}'
 
@@ -126,11 +48,11 @@ rule timeslice:
         daypart = config['dayparts'],
         seasons = config['seasons'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file=timeslice_files),
+        csv_files = expand('results/data/{output_file}', output_file=TIMESLICE_FILES),
     conda:
         '../envs/data_processing.yaml'
     log:
-        log = 'results/data/logs/timeslice.log'    
+        'results/data/logs/timeslice.log'    
     shell:
         'python workflow/scripts/osemosys_global/OPG_TS_data.py 2> {log}'
 
@@ -144,11 +66,11 @@ rule variable_costs:
         start_year = config['startYear'],
         end_year = config['endYear'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file=variable_cost_files),
+        csv_files = expand('results/data/{output_file}', output_file=VARIABLE_COST_FILES),
     conda:
         '../envs/data_processing.yaml'
     log:
-        log = 'results/data/logs/variable_costs.log'
+        'results/data/logs/variable_costs.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_variablecosts.py 2> {log}'
 
@@ -166,12 +88,12 @@ rule demand_projections:
         start_year = config['startYear'],
         end_year = config['endYear'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file = demand_files),
-        figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
+        csv_files = expand('results/data/{output_file}', output_file = DEMAND_FILES),
+        figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = DEMAND_FIGURES),
     conda:
         '../envs/data_processing.yaml'
     log:
-        log = 'results/data/logs/demand_projections.log'
+        'results/data/logs/demand_projections.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_demand_projection.py 2> {log}'
 
@@ -186,11 +108,11 @@ rule emissions:
         end_year = config['endYear'],
         emission = config['emission_penalty']
     output: 
-        csv_files = expand('results/data/{output_file}', output_file = emission_files),
+        csv_files = expand('results/data/{output_file}', output_file = EMISSION_FILES),
     conda:
         '../envs/data_processing.yaml'
     log:
-        log = 'results/data/../logs/emissions.log'
+        'results/data/../logs/emissions.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_emissions.py 2> {log}'
 
@@ -204,32 +126,38 @@ rule max_capacity:
         start_year = config['startYear'],
         end_year = config['endYear'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file = max_capacity_files),
+        csv_files = expand('results/data/{output_file}', output_file = MAX_CAPACITY_FILES),
     conda:
         '../envs/data_processing.yaml'
     log:
-        log = 'results/data/logs/max_capacity.log'
+        'results/data/logs/max_capacity.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_max_capacity.py 2> {log}'
+
+rule copy_default_values:
+    message:
+        'Copying user defined default values...'
+    input:
+        'resources/data/default_values.csv'
+    output:
+        'results/data/default_values.csv'
+    run:
+        shutil.copyfile(input[0], output[0])
 
 rule file_check:
     message:
         'Generating missing files...'
     input:
-        rules.powerplant.output.csv_files,
-        rules.timeslice.output.csv_files,
-        rules.variable_costs.output.csv_files,
-        rules.demand_projections.output.csv_files,
-        rules.emissions.output.csv_files,
-        rules.max_capacity.output.csv_files,
-        'resources/data/default_values.csv'
+        csv_files = expand('results/data/{output_file}', output_file = GENERATED_FILES),
+    params:
+        config = 'resources/config.yaml'
     output: 
-        expand('results/data/{check_file}', check_file = check_files),
+        expand('results/data/{check_file}', check_file = CHECK_FILES),
     conda:
         '../envs/data_processing.yaml'
     log: 
-        log = 'results/data/logs/file_check.log'
+        'results/data/logs/file_check.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_file_check.py 2> {log}'
+        'python workflow/scripts/osemosys_global/OPG_file_check.py {params.config} 2> {log}'
 
 

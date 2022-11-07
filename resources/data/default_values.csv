@@ -15,6 +15,7 @@ DaysInDayType,7
 DaySplit,0.00137
 DepreciationMethod,1
 DiscountRate,0.05
+DiscountRateIdv,0.05
 DiscountRateStorage,0.05
 EmissionActivityRatio,0
 EmissionsPenalty,0

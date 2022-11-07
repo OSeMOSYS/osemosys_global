@@ -1,0 +1,5 @@
+resultfile,filename,REGION,TECHNOLOGY,FUEL,EMISSION,YEAR
+TotalDiscountedCost,DiscountedCost,"GLOBAL",,,,
+NewCapacity,NewCapacityBio,"GLOBAL","PWRBIONPLXX01",,,
+NewCapacity,NewCapacityWind,"GLOBAL","PWRWONNPLXX01",,,
+AnnualEmissions,Emissions,"GLOBAL",,,"CO2",

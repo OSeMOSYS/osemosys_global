@@ -1,52 +1,28 @@
+"""Rules for processing OSeMOSYS Solutions"""
+
 import os
-
-# REQUIRED 
-
 configfile: 'config/config.yaml'
 
-# OUTPUT FILES 
-
-result_files = [
-    'AccumulatedNewCapacity.csv',
-    'AnnualEmissions.csv',
-    'AnnualFixedOperatingCost.csv',
-    'AnnualTechnologyEmission.csv',
-    'AnnualTechnologyEmissionByMode.csv',
-    'AnnualVariableOperatingCost.csv',
-    'CapitalInvestment.csv',
-    'Demand.csv',
-    'DiscountedTechnologyEmissionsPenalty.csv',
-    'NewCapacity.csv',
-    'ProductionByTechnology.csv',
-    'ProductionByTechnologyAnnual.csv',
-    'RateOfActivity.csv',
-    'RateOfProductionByTechnology.csv',
-    'RateOfProductionByTechnologyByMode.csv',
-    'RateOfUseByTechnology.csv',
-    'RateOfUseByTechnologyByMode.csv',
-    'TotalAnnualTechnologyActivityByMode.csv',
-    'TotalCapacityAnnual.csv',
-    'TotalTechnologyAnnualActivity.csv',
-    'TotalTechnologyModelPeriodActivity.csv',
-    'UseByTechnology.csv'
-]
-
-result_figures = [
-    'TotalCapacityAnnual', 
-    'GenerationAnnual',
-]
-
-result_summaries = [
-    'Metrics'
-]
-
-# imput functions
+# input functions
 
 def solver_file_type(wildcards):
     if config['solver'] == 'cplex':
         return 'results/{scenario}/{scenario}_sort.sol'
     else: 
         return 'results/{scenario}/{scenario}.sol'
+
+# constants 
+
+RESULT_FIGURES = [
+    'TotalCapacityAnnual', 
+    'GenerationAnnual',
+]
+
+RESULT_SUMMARIES = [
+    'Metrics'
+]
+
+OUTPUT_FILES = pd.read_csv('resources/otoole_files.csv')['outputs'].dropna().to_list()
 
 # rules
 
@@ -56,8 +32,11 @@ rule otoole_results:
     input:
         solution_file = solver_file_type,
         pre_process_file = 'results/{scenario}/PreProcessed_{scenario}.txt'
+    params: 
+        datapackage = 'results/{scenario}/datapackage.json',
+        config = 'results/{scenario}/config.yaml',
     output:
-        expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
+        expand('results/{{scenario}}/results/{result_file}.csv', result_file = OUTPUT_FILES),
     conda:
         '../envs/otoole.yaml'
     log:
@@ -67,15 +46,15 @@ rule otoole_results:
         otoole results {config[solver]} csv \
         {input.solution_file} results/{wildcards.scenario}/results \
         --input_datafile {input.pre_process_file} \
-        --input_datapackage results/{wildcards.scenario}/datapackage.json \
-        2> {log} 
+        --input_datapackage {params.datapackage} \
+        {params.config} 2> {log} 
         '''
 
 rule visualisation:
     message:
         'Generating result figures...'
     input:
-        csv_files = expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
+        csv_files = expand('results/{{scenario}}/results/{result_file}.csv', result_file = OUTPUT_FILES),
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -84,7 +63,7 @@ rule visualisation:
         by_country = config['results_by_country'],
         geographic_scope = config['geographic_scope'],
     output:
-        expand('results/{{scenario}}/figures/{result_figure}.html', result_figure = result_figures)
+        expand('results/{{scenario}}/figures/{result_figure}.html', result_figure = RESULT_FIGURES)
     conda:
         '../envs/data_processing.yaml'
     log:
@@ -96,7 +75,7 @@ rule summarise_results:
     message:
         'Generating summary of results...'
     input:
-        csv_files = expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
+        csv_files = expand('results/{{scenario}}/results/{result_file}.csv', result_file = OUTPUT_FILES),
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -104,7 +83,7 @@ rule summarise_results:
         seasons = config['seasons'],
     output:
         expand('results/{{scenario}}/result_summaries/{result_summary}.csv', 
-            result_summary = result_summaries),
+            result_summary = RESULT_SUMMARIES),
     conda:
         '../envs/data_processing.yaml'
     log:

@@ -3,29 +3,35 @@
 
 import pandas as pd
 import os
-import shutil
+import sys
 from OPG_configuration import ConfigPaths
-import logging 
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+from otoole.utils import _read_file
+from pathlib import Path
 
+def main(user_config):
+    config_paths = ConfigPaths()
+    output_data_dir = config_paths.output_data_dir
 
-# CONFIGURATION PARAMETERS
-config_paths = ConfigPaths()
-input_data_dir = config_paths.input_data_dir
-output_data_dir = config_paths.output_data_dir
-simplicity_data = config_paths.simplicity_data
+    for param, param_data in user_config.items():
+        csv = f'{param}.csv'
+        if csv in os.listdir(output_data_dir):
+            continue
+        if param_data['type'] == 'param':
+            columns = param_data['indices']
+            columns.append('VALUE')
+            df = pd.DataFrame(columns=columns)
+            df.to_csv(Path(output_data_dir, csv), index=False)
+        if param_data['type'] == 'set':
+            df = pd.DataFrame(columns=['VALUE'])
+            df.to_csv(Path(output_data_dir, csv), index=False)
 
-# File Check logic
+if __name__ == "__main__":
 
-shutil.copy(os.path.join(input_data_dir, 'default_values.csv'),
-            os.path.join(output_data_dir, 'default_values.csv'))
-for each_csv in os.listdir(simplicity_data):
-    # Default values csv already copied from resources/
-    if each_csv == "default_values.csv":
-        continue
-    if each_csv not in os.listdir(output_data_dir): 
-        csv_df_in = pd.read_csv(os.path.join(simplicity_data, each_csv))
-        csv_df_out = pd.DataFrame(columns = list(csv_df_in.columns))
-        csv_df_out.to_csv(os.path.join(output_data_dir, each_csv), index = None)
-    
-logging.info('File Check Completed')
+    if len(sys.argv) != 2:
+        print("Usage: python OPG_file_check.py <user_config>")
+    else:
+        _, ending = os.path.splitext(sys.argv[1])
+        with open(sys.argv[1], "r") as f:
+            user_config = _read_file(f, ending)
+
+        main(user_config)

@@ -1,28 +1,40 @@
 import os
+import sys
 from snakemake.utils import min_version
 min_version("6.0")
-
-# configuration
-
 configfile: 'config/config.yaml'
-
-# helper files
+localrules: all, clean
 
 include: 'rules/preprocess.smk'
 include: 'rules/model.smk'
 include: 'rules/postprocess.smk'
+include: 'rules/sensitivity.smk'
+
+wildcard_constraints:
+    result_file="[^(objective)][a-zA-Z_\-]+",
+    # scenario="[a-zA-Z]d+",
+    scenario="[A-Za-z]+",
+    model_run="\d+"
 
 # handlers 
         
 onsuccess:
     print('Workflow finished successfully!')
-
-    # Will fix this in next update so that preprocessing steps dont always need to be rerun
+    # Delete unfiltered results 
     [f.unlink() for f in Path('results', 'data').glob("*") if f.is_file()] 
 
 onerror:
     print('An error occurred, please submit issue to '
         'https://github.com/OSeMOSYS/osemosys_global/issues')
+
+args = sys.argv
+try:
+    config_path = args[args.index("--configfile") + 1]
+except ValueError:
+    config_path = 'config/config.yaml'
+
+# if config['sensitivity_analysis']['morris']:
+#     shell("python resources/esom_gsa/workflow/scripts/check_inputs.py {}".format(config_path))
 
 # file creation check 
 
@@ -31,39 +43,36 @@ if not os.path.isdir(Path('results', 'data')):
 
 # target rules
 
-rule all:
-    message:
-        'All rules executed successfully...' 
-    input:
-        expand('results/{scenario}/result_summaries/{result_summary}.csv', 
-            scenario=config['scenario'], result_summary=result_summaries), 
-        expand('results/{scenario}/figures/{result_figure}.html', 
-            scenario=config['scenario'], result_figure = result_figures)
+if config['sensitivity_analysis']['morris']:
+    rule all:
+        message:
+            'Running Pipeline...' 
+        input:
+            expand('results/{scenario}/result_summaries/{result_summary}.csv', scenario=config['scenario'], result_summary=RESULT_SUMMARIES), 
+            expand('results/{scenario}/figures/{result_figure}.html', scenario=config['scenario'], result_figure = RESULT_FIGURES),
+            expand("results/{scenario}/SA/objective_results.{extension}", scenario=config['scenario'], extension=['csv', 'png']),
+            expand("results/{scenario}/SA/user_results/{result_file}.{extension}", scenario=config['scenario'], extension=['csv', 'png'], result_file=SA_RESULT_FILES),
+            expand("results/{scenario}/SA/modelruns/model_{model_run}/results/{x}.csv", x=OUTPUT_FILES, model_run=MODELRUNS, scenario=config['scenario']),
+            expand("results/{scenario}/SA/user_results/{result_file}_heatmap.png", scenario=config['scenario'], result_file=SA_RESULT_FILES),
+else: 
+    rule all:
+        message:
+            'Running Pipeline...' 
+        input:
+            expand('results/{scenario}/result_summaries/{result_summary}.csv', scenario=config['scenario'], result_summary=RESULT_SUMMARIES), 
+            expand('results/{scenario}/figures/{result_figure}.html', scenario=config['scenario'], result_figure = RESULT_FIGURES),
 
-rule data_file:
-    message: 
-        'Scenario data file created successfully!'
-    input:
-        expand('results/{scenario}/{scenario}.txt', scenario=config['scenario'])
+
+# helper rules 
 
 rule make_dag:
     message:
-        'dag created successfully and saved as docs/dag.pdf'
+        'reated successfully and saved as dag.pdf'
     shell:
-        'snakemake --dag all | dot -Tpdf > docs/dag.pdf'
-
-# cleaning rules
+        'snakemake --dag all | dot -Tpdf > dag.pdf'
 
 rule clean:
     message:
-        'Reseting to defaults...'
+        'Cleaning all files...'
     shell:
         'rm -rf results/*'
-
-rule clean_data:
-    shell:
-        'rm -rf results/data/*'
-
-rule clean_figures:
-    shell:
-        'rm -rf results/figs/*'

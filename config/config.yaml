@@ -3,7 +3,7 @@ scenario: 'India'
 
 # Temporal Parameters 
 startYear: 2015
-endYear: 2050
+endYear: 2030
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
@@ -19,7 +19,7 @@ timeshift: 5 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-    - 'IND'
+    - 'NPL'
 crossborderTrade: True
 
 # Emission Parameters 
@@ -41,3 +41,11 @@ solver: 'cbc' # cbc, cplex, gurobi
 user_defined_capacity:
   # technology: [capacity, first_year,]
 
+# perform sensitivity analysis
+sensitivity_analysis:
+  morris: True # Triggers SA to run on geographic filter
+  replicates: 2
+  parameters: config/sensitivity_analysis/parameters.csv
+  results: config/sensitivity_analysis/results.csv
+  zip: Flase # Set as true for large models 
+  filetype: csv # 'csv' or 'parquet' or 'feather'
