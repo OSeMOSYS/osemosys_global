@@ -1232,15 +1232,15 @@ def create_sets(x, df, output_dir):
     """Creates a formatted otoole set csv 
     
     Arguments: 
-    x = Name of set given by otoole as a string
-    df = dataframe in extract set information from 
-    output_dir = directory to write file to
+        x = Name of set given by otoole as a string
+        df = dataframe in extract set information from 
+        output_dir = directory to write file to
     
     Returns: 
-    None. Writes out csv file  
+        None. Writes out csv file  
     
     Example:
-    create_sets('TECHNOLOGY', df_oar_final, output_dir)
+        create_sets('TECHNOLOGY', df_oar_final, output_dir)
     """
     set_elements = list(df[x].unique()) + list(df[x].unique())
     set_elements = list(set(set_elements))
@@ -1253,22 +1253,23 @@ def create_sets(x, df, output_dir):
                                  )
 
 def duplicatePlexosTechs(df_in, techs):
-    """Creates new technologies to replace PLEXOS technolgoies based on 
-    historical parameter values. New technologies will end in '01'
+    """Creates new technologies to replace PLEXOS technolgoies.
+    
+    New technologies will end in '01', while historical ones end in '00'
     
     Arguments: 
-    df_in = dataframe in otoole and og formatting with a TECHNOLOGY column
-    techs = List of technology triads to duplicate [CCG, HYD, ...]
+        df_in = dataframe in otoole and og formatting with a TECHNOLOGY column
+        techs = List of technology triads to duplicate [CCG, HYD, ...]
     
     Returns: 
-    df_out = dataframe with same columns as df_in. All tech names that include
-    techs values will be returned with updated naming. Remaining technologies 
-    are deleted 
+        df_out = dataframe with same columns as df_in. All tech names that include
+        techs values will be returned with updated naming. Remaining technologies 
+        are deleted 
     
     Example:
-    df_out = duplicatePlexosTechs(df_in, ['CCG', 'OCG'])
-    df_in['TECHNOLOGY'] = [PWRCCGAFGXX01, PWROCGAFGXX01, PWRHYDAFGXX01]
-    df_out['TECHNOLOGY'] = [PWRCCGAFGXX02, PWROCGAFGXX02]
+        df_out = duplicatePlexosTechs(df_in, ['CCG', 'OCG'])
+        df_in['TECHNOLOGY'] = [PWRCCGAFGXX01, PWROCGAFGXX01, PWRHYDAFGXX01]
+        df_out['TECHNOLOGY'] = [PWRCCGAFGXX02, PWROCGAFGXX02]
     """
     df_out = df_in.copy()
     df_out = df_out.loc[df_out['TECHNOLOGY'].str[3:6].isin(techs)]
@@ -1277,24 +1278,26 @@ def duplicatePlexosTechs(df_in, techs):
     return df_out
 
 def createPwrTechs(df_in, techs):
-    """Adds a 'TECHNOLOGY' column to a dataframe with formatted power 
+    """Formats power generation technology name
+    
+    Adds a 'TECHNOLOGY' column to a dataframe with formatted power 
     generation technology (PWR) names. Names are formatted so the suffix 
     for plants in the 'techs' argument list will have 00, while everything 
     else will have an 01 suffix
 
     Arguments: 
-    df_in = dataframe with a 'tech_codes' and 'node_codes' column
-    tList = List of technology triads to have 00 suffix [CCG, HYD, ...]
+        df_in = dataframe with a 'tech_codes' and 'node_codes' column
+        tList = List of technology triads to have 00 suffix [CCG, HYD, ...]
     
     Returns: 
-    df_out = same dataframe as df_in, except with a 'TECHNOLOGY' column added 
-    to the end 
+        df_out = same dataframe as df_in, except with a 'TECHNOLOGY' column added 
+        to the end 
     
     Example:
-    df_out = createPwrTechs(df_in, ['CCG', 'OCG'])
-    df_in['tech_code'] = ('CCG', SPV, 'OCG', 'HYD')
-    df_in['node_code'] = ('AGOXX', AGOXX, 'INDNP', 'INDNP')
-    df_out['TECHNOLOGY'] = [PWRCCGAFGXX00, PWRSPVAFGXX01, PWROCGINDNP00, PWRHYDINDNP01]
+        df_in['tech_code'] = ('CCG', SPV, 'OCG', 'HYD')
+        df_in['node_code'] = ('AGOXX', AGOXX, 'INDNP', 'INDNP')
+        df_out = createPwrTechs(df_in, ['CCG', 'OCG'])
+        df_out['TECHNOLOGY'] = [PWRCCGAFGXX00, PWRSPVAFGXX01, PWROCGINDNP00, PWRHYDINDNP01]
     """
     df_out = df_in.copy()
     for t in techs:
@@ -1310,19 +1313,18 @@ def createPwrTechs(df_in, techs):
 
 def newIar(df_in, tech):
     """Replaces the input activity ratio value with a hardcoded value 
-    defined in this function
 
     Arguments: 
-    df = dataframe with a 'TECHNOLOGY' and 'VALUE' column
-    tech = technology to replace iar for (CCG, HYD, SPV...)
+        df = dataframe with a 'TECHNOLOGY' and 'VALUE' column
+        tech = technology to replace iar for (CCG, HYD, SPV...)
     
     Returns: 
-    df_out = same dataframe as df_in with a new values in 'VALUE'
+        df_out = same dataframe as df_in with a new values in 'VALUE'
     
     Example:
-    df_out = newIar(df_in, 'CCG')
-    df_out['TECHNOLOGY'] = [PWRCCGINDNP01, PWRCCGINDNW01]
-    df_out['VALUE'] = [2, 2]
+        df_out = newIar(df_in, 'CCG')
+        df_out['TECHNOLOGY'] = [PWRCCGINDNP01, PWRCCGINDNW01]
+        df_out['VALUE'] = [2, 2]
     """
 
     df_out = df_in.loc[df_in['TECHNOLOGY'].str[3:6] == tech]
@@ -1400,26 +1402,26 @@ def format_transmission_name(df):
     '''Formats PLEXOS transmission names into OSeMOSYS Global names.
 
     Args:
-        df: Pandas DataFrame with columns 'From' and 'To' describing the 
+        :param df: Pandas DataFrame with columns 'From' and 'To' describing the 
                transmission from and to contries. ie. 
-
-              From   |   To   | Losses
-            ---------------------------
-             AF-COD  | AF-COG | 0.001
-             EU-AUT  | EU-SVK | 0.004
-             AS-LBN  | AS-SYR | 0.006
     
-    Retruns: 
-        df: Same as df_in, except the 'From' and 'To' columns are replaced 
+    Returns: 
+        :param df: Same as df_in, except the 'From' and 'To' columns are replaced 
             with a single 'TECHNOLOGY' column holding OSeMOSYS Global 
             naming conventions 
 
-             Losses |   TECHNOLOGY
-            ------------------------
-             0.001  | TRNCODXXCOGXX
-             0.004  | TRNAUTXXSVKXX
-             0.006  | TRNLBNXXSYRXX
-    '''
+    Example:
+        df = pd.DataFrame(
+            [[AF-COD, AF-COG, 0.001],
+            [EU-AUT, EU-SVK, 0.004],
+            [AS-LBN, AS-SYR, 0.006]], 
+            columns = ['From', 'To', 'Losses']
+        )
+        pd.DataFrame(
+            [[0.001,TRNCODXXCOGXX],
+            [0.004,TRNAUTXXSVKXX],
+            [0.006,TRNLBNXXSYRXX]] 
+            columns = ['Losses','TECHNOLOGY'])'''
 
     # If from column has length 6 then it's the last three chars plus XX
     df.loc[df["From"].str.len() == 6, "From"] = (df["From"].str[3:6] + "XX")
@@ -1444,6 +1446,17 @@ def format_transmission_name(df):
     return df
 
 def user_defined_capacity(region, years, output_data_dir, tech_capacity):
+    """To add description
+
+    Args:
+        region:
+        years:
+        output_data_dir:
+        tech_capacity:
+
+    Returns
+        None
+    """
     techCapacity = []
     
     if not tech_capacity is None:

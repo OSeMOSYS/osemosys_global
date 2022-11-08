@@ -1,10 +1,6 @@
-## config.yaml
-
-This configuration file contains all parameters that the user can edit. The table below describes the available parameters and their limits. 
-
 | Parameter  | Description | Limits |
 |------------|-------------|--------|
-| `scenario` | Scenario name |     |
+| `scenario` | Scenario name | No spaces in string |
 | `startYear` | Start year of model | 2015 |
 | `endYear`| End year of model | 2100 |
 | `dayType`| To be implemented  |   |
@@ -13,32 +9,9 @@ This configuration file contains all parameters that the user can edit. The tabl
 | `seasons` | Months included in each season | Include all values between 1-12 |
 | `geographic_scope` | Countries to include in scenario | Three letter codes using [this source](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) |
 | `crossborderTrade` | Enable trading of resources between all countries in scenario | True or False |
-| `emission_penalty`   | Global carbon tax in Million Dollars per MegaTonne | Number greater than or equal to zero |
-| `no_invest_technologies` | Technologies that can not be invested in | Technology codes from list below |
+| `emission_penalty` | Global carbon tax in Million Dollars per MegaTonne | Number greater than or equal to zero |
+| `no_invest_technologies` | Technologies that can not be invested in | Technology codes following naming coventions |
 | `results_by_country` | Plot results by country in addition to system level results | True or False |
-| `solver` | LP Solver to use | `cbc`, `gurobi`, `cplex` |
+| `solver` | Solver to use | `cbc`, `gurobi`, `cplex` |
 | `user_defined_capacity` | Modelled capacity additions |  |
 
-## Modelled Technologies 
-
-Below is the list of available modelled technologies. 
-
-| Technology                 | Code |
-|----------------------------|------|
-| Biomass                    | BIO  |
-| Combined Cycle Natural Gas | CCG  |
-| Coal                       | COA  |
-| Cogeneration               | COG  |
-| Concentrated Solar Power   | CSP  |
-| Geothermal                 | GEO  |
-| Hydroelectric              | HYD  |
-| Open Cycle Natural Gas     | OCG  |
-| Oil                        | OIL  |
-| Other                      | OTH  |
-| Petroleum                  | PET  |
-| Solar Photovoltaic         | SPV  |
-| Nuclear                    | URN  |
-| Wave                       | WAV  |
-| Waste                      | WAS  |
-| Offshore Wind              | WOF  |
-| Onshore Wind               | WON  |

@@ -10,7 +10,8 @@ import logging
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
 def main():
-    '''Creates capacity limits on renewable technologies.'''
+    """Creates capacity limits on renewable technologies.
+    """
     
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()
