@@ -36,6 +36,7 @@ def main():
 
     region_name = config.region_name
     tech_capacity = config.get('user_defined_capacity')
+    custom_nodes = config.get('custom_nodes')
 
     # Create output directory 
     if not os.path.exists(output_data_dir):
@@ -86,6 +87,13 @@ def main():
     df_weo_regions = pd.read_csv(os.path.join(input_data_dir,
                                               "weo_region_mapping.csv")
                                  )
+    
+    df_custom_res_cap = pd.read_csv(os.path.join(input_data_dir,
+                                                 "custom_nodes",
+                                                 "residual_capacity.csv")
+                                 )
+    
+    print(df_custom_res_cap)
 
     emissions = []
 
@@ -230,6 +238,7 @@ def main():
     # ### Add naming convention
     tech_code_dict = dict(zip(list(df_tech_code['tech']),
                               list(df_tech_code['code'])))
+    tech_list = list(df_tech_code['code'])
     df_gen_2['tech_code'] = df_gen_2['technology'].map(tech_code_dict)
 
     df_gen_2.loc[df_gen_2['node'].str.len() <= 6, 
@@ -339,6 +348,8 @@ def main():
 
     # Reorder columns
     df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
+
+    custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
 
     # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
     df_res_cap.to_csv(os.path.join(output_data_dir, 
@@ -1507,6 +1518,43 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         df_min_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMinCapacityInvestment.csv"),
                             index=None)
+
+def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
+    '''Add custom nodes to the model for each relevant input parameter data csv.
+
+    Args:
+        df : Pandas DataFrame with columns 'From' and 'To' describing the 
+                transmission from and to contries. ie. 
+    
+    Returns: 
+        df_out : 
+
+    '''
+    df_param = pd.DataFrame(list(itertools.product(custom_nodes,
+                                                   tech_list,
+                                                   years)
+                                  ),
+                             columns = ['CUSTOM_NODE',
+                                        'FUEL_TYPE',
+                                        'YEAR']
+                             )
+    df_param['REGION'] = region
+    df_param = pd.merge(df_param,
+                        df_custom,
+                        how='outer',
+                        on=['CUSTOM_NODE',
+                            'FUEL_TYPE'])
+    df_param.dropna(inplace=True)
+    df_param = df_param.loc[df_param['YEAR'] >= df_param['START_YEAR']]
+    df_param = df_param.loc[df_param['YEAR'] <= df_param['END_YEAR']]
+    df_param['VALUE'] = df_param['CAPACITY'].div(1000)
+    df_param['REGION'] = region
+    df_param['TECHNOLOGY'] = ('PWR' +
+                              df_param['FUEL_TYPE'] + 
+                              df_param['CUSTOM_NODE'] +
+                              '01') 
+    df_param = df_param[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    print(df_param)
             
 
 if __name__ == "__main__":
