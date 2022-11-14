@@ -19,6 +19,7 @@ config = ConfigFile('config')
 
 scenario_name = config.get('scenario')
 geographic_scope = config.get('geographic_scope')
+remove_nodes = config.get('nodes_to_remove')
 
 output_data_dir = config_paths.output_data_dir
 scenario_dir = config_paths.scenario_dir
@@ -53,6 +54,10 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
                     ~(df['TECHNOLOGY'].str[8:11].isin(geographic_scope)))
                     )]
 
+                df = df.loc[~(df['TECHNOLOGY'].str[3:8].isin(remove_nodes) | 
+                            df['TECHNOLOGY'].str[6:11].isin(remove_nodes) | 
+                            df['TECHNOLOGY'].str[8:13].isin(remove_nodes))]
+
             if 'FUEL' in df.columns:
                 df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
                             df['FUEL'].str[6:9].isin(geographic_scope) |
@@ -72,6 +77,10 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
                     (~(df['VALUE'].str[3:6].isin(geographic_scope)) |
                     ~(df['VALUE'].str[8:11].isin(geographic_scope)))
                     )]
+
+                df = df.loc[~(df['VALUE'].str[3:8].isin(remove_nodes) | 
+                            df['VALUE'].str[6:11].isin(remove_nodes) | 
+                            df['VALUE'].str[8:13].isin(remove_nodes))]
         
     df.to_csv(os.path.join(os.path.join(scenario_data_dir, each_csv.name)), index = None)
 
