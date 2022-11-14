@@ -93,7 +93,6 @@ def main():
                                                  "residual_capacity.csv")
                                  )
     
-    print(df_custom_res_cap)
 
     emissions = []
 
@@ -349,7 +348,8 @@ def main():
     # Reorder columns
     df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
 
-    custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
+    df_res_cap_custom, custom_techs = custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
+    df_res_cap = df_res_cap.append(df_res_cap_custom)
 
     # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
     df_res_cap.to_csv(os.path.join(output_data_dir, 
@@ -1215,8 +1215,8 @@ def main():
                                         index = None)
 
     # ## Create sets for TECHNOLOGIES, FUELS
-    create_sets('TECHNOLOGY', df_oar_final, output_data_dir)
-    create_sets('FUEL', df_oar_final, output_data_dir)                             
+    create_sets('TECHNOLOGY', df_oar_final, output_data_dir, custom_techs)
+    create_sets('FUEL', df_oar_final, output_data_dir, [])                             
 
     # ## Create set for YEAR, REGION, MODE_OF_OPERATION
 
@@ -1239,7 +1239,7 @@ def main():
     user_defined_capacity(region_name, years, output_data_dir, tech_capacity)
 
 
-def create_sets(x, df, output_dir):
+def create_sets(x, df, output_dir, custom_node_elements):
     """Creates a formatted otoole set csv 
     
     Arguments: 
@@ -1253,7 +1253,7 @@ def create_sets(x, df, output_dir):
     Example:
         create_sets('TECHNOLOGY', df_oar_final, output_dir)
     """
-    set_elements = list(df[x].unique()) + list(df[x].unique())
+    set_elements = list(df[x].unique()) + list(df[x].unique()) + list(custom_node_elements)
     set_elements = list(set(set_elements))
     set_elements.sort()
     set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
@@ -1544,17 +1544,19 @@ def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
                         how='outer',
                         on=['CUSTOM_NODE',
                             'FUEL_TYPE'])
+    df_param['TECHNOLOGY'] = ('PWR' +
+                              df_param['FUEL_TYPE'] + 
+                              df_param['CUSTOM_NODE'] +
+                              '01')
+    technologies = df_param['TECHNOLOGY'].unique()
     df_param.dropna(inplace=True)
     df_param = df_param.loc[df_param['YEAR'] >= df_param['START_YEAR']]
     df_param = df_param.loc[df_param['YEAR'] <= df_param['END_YEAR']]
     df_param['VALUE'] = df_param['CAPACITY'].div(1000)
     df_param['REGION'] = region
-    df_param['TECHNOLOGY'] = ('PWR' +
-                              df_param['FUEL_TYPE'] + 
-                              df_param['CUSTOM_NODE'] +
-                              '01') 
     df_param = df_param[['REGION','TECHNOLOGY','YEAR','VALUE']]
-    print(df_param)
+
+    return df_param, technologies
             
 
 if __name__ == "__main__":
