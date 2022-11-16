@@ -36,7 +36,7 @@ def main():
 
     region_name = config.region_name
     tech_capacity = config.get('user_defined_capacity')
-    custom_nodes = config.get('custom_nodes')
+    custom_nodes = config.get('nodes_to_add')
 
     # Create output directory 
     if not os.path.exists(output_data_dir):
@@ -183,7 +183,8 @@ def main():
     df_gen_agg_node.drop('Sto', axis=1, inplace=True) # Drop 'Sto' technology. Only for USA.
 
     # Add extra nodes which exist in 2050 but are not in the 2015 data
-    node_list = list(df_gen_agg_node['node'].unique())
+    node_list = list(df_gen_agg_node['node'].unique()) + custom_nodes
+    print(node_list)
     nodes_extra_df = pd.DataFrame(columns=['node'])
     nodes_extra_list = ['AF-SOM',
                         'AF-TCD',
@@ -565,7 +566,7 @@ def main():
     # ### Add input and output activity ratios
 
     # Create master table for activity ratios 
-    node_list = list(df_gen_2['node_code'].unique())
+    node_list = list(df_gen_2['node_code'].unique()) + custom_nodes
 
     # Add extra nodes which are not present in 2015 but will be by 2050
     for each_node in nodes_extra_list:
