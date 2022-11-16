@@ -184,7 +184,6 @@ def main():
 
     # Add extra nodes which exist in 2050 but are not in the 2015 data
     node_list = list(df_gen_agg_node['node'].unique()) + custom_nodes
-    print(node_list)
     nodes_extra_df = pd.DataFrame(columns=['node'])
     nodes_extra_list = ['AF-SOM',
                         'AF-TCD',
