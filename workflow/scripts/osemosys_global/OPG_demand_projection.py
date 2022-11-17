@@ -7,6 +7,7 @@ import pandas as pd
 import world_bank_data as wb
 import numpy as np
 import matplotlib.pyplot as plt
+import itertools
 import urllib
 import os
 from sklearn.linear_model import LinearRegression
@@ -22,10 +23,14 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 config_paths = ConfigPaths()
 config = ConfigFile('config')
 
+custom_nodes = config.get('nodes_to_add')
+
 input_dir = config_paths.input_dir
 input_data_dir = config_paths.input_data_dir
 output_dir = config_paths.output_dir
 output_data_dir = config_paths.output_data_dir
+
+region_name = config.region_name
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 
@@ -646,6 +651,34 @@ with open(os.path.join(output_data_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
         if len(x) == 9:
             FUEL = 'ELC' + x[3:6] + x[7:9] + '02'
         for year in range(model_start_year,model_end_year+1):
-            f.write('GLOBAL,' + str(FUEL) + ',' + str(year) + ',' + str(Node_Demand_SSP_projected_Incl_Losses.at[x, year]*(0.0036)) + '\n')
+            f.write(region_name + ',' + str(FUEL) + ',' + str(year) + ',' + str(Node_Demand_SSP_projected_Incl_Losses.at[x, year]*(0.0036)) + '\n')
 
+years = list(range(model_start_year, model_end_year + 1))
+df_demands = pd.DataFrame(list(itertools.product(custom_nodes,
+                                                 years)),
+                          columns = ['CUSTOM_NODE',
+                                     'YEAR']
+                          )
+df_demands['REGION'] = region_name
+df_demands['FUEL'] = ('ELC' +
+                      df_demands['CUSTOM_NODE'] + 
+                      '02')
+df_custom_demands = pd.read_csv(os.path.join(input_data_dir,
+                                             "custom_nodes",
+                                             "specified_annual_demand.csv")
+                                 )
+df_demands = pd.merge(df_demands,
+                      df_custom_demands,
+                      how='left',
+                      on=['CUSTOM_NODE','YEAR'])
+df_demands = df_demands[['REGION','FUEL','YEAR','VALUE']]
+df_sp_annual_demand = pd.read_csv(os.path.join(output_data_dir, 
+                                               'SpecifiedAnnualDemand.csv'))
+df_demands = pd.concat([df_demands,
+                        df_sp_annual_demand],
+                        ignore_index=True)
+df_demands['VALUE'] = df_demands['VALUE'].round(2)                        
+df_demands.to_csv(os.path.join(output_data_dir, 
+                               "SpecifiedAnnualDemand.csv"),
+                  index=None)
 logging.info('Demand Projections Completed')
