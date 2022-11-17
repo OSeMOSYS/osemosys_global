@@ -33,6 +33,9 @@ input_data_dir = config_paths.input_data_dir
 output_dir = config_paths.output_dir
 output_data_dir = config_paths.output_data_dir
 
+region_name = config.region_name
+custom_nodes = config.get('nodes_to_add')
+
 # helper functions
 
 def apply_timeshift(x, timeshift):
@@ -180,7 +183,7 @@ if not os.path.exists(output_data_dir):
 # In[6]:
 
 
-demand_nodes = [x for x in demand_df.columns if x != 'Datetime']
+demand_nodes = [x for x in demand_df.columns if x != 'Datetime'] + custom_nodes
 
 # Convert datetime to year, month, day, and hour
 demand_df['Datetime'] = pd.to_datetime(demand_df['Datetime'])
@@ -188,6 +191,14 @@ demand_df['Year'] = demand_df['Datetime'].dt.strftime('%Y').astype(int)
 demand_df['Month'] = demand_df['Datetime'].dt.strftime('%m').astype(int)
 demand_df['Day'] = demand_df['Datetime'].dt.strftime('%d').astype(int)
 demand_df['Hour'] = demand_df['Datetime'].dt.strftime('%H').astype(int)
+
+custom_sp_demand_profile = pd.read_csv(os.path.join(input_data_dir,
+                                       "custom_nodes",
+                                       "specified_demand_profile.csv"))
+demand_df = pd.merge(demand_df,
+                     custom_sp_demand_profile,
+                     how='left',
+                     on=['Month','Day','Hour'])
 
 # Create column for weekday/weekend
 demand_df['Day-of-week'] = demand_df['Datetime'].dt.dayofweek
@@ -319,7 +330,12 @@ sp_demand_df = sp_demand_df.loc[~(sp_demand_df['node'].
 
 # Rename COMMODITY based on naming convention. 
 # Add 'XX' for countries without multiple nodes
-sp_demand_df.loc[sp_demand_df['node'].str.len() <= 6, 
+sp_demand_df.loc[sp_demand_df['node'].str.len() == 5, 
+                 'FUEL'] = ('ELC' + 
+                            sp_demand_df['node'] +
+                            '02')
+
+sp_demand_df.loc[sp_demand_df['node'].str.len() == 6, 
                  'FUEL'] = ('ELC' + 
                                  sp_demand_df['node'].
                                  str.split('-').
@@ -365,6 +381,7 @@ total_demand_df_final['VALUE'] = total_demand_df_final['VALUE'].mul(3.6*1e-6)
 #total_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedAnnualDemand.csv'), index=None)
 
 # Generate SpecifiedDemandProfile.csv file 
+sp_demand_df_final['VALUE'] = sp_demand_df_final['VALUE'].round(2)
 sp_demand_df_final = sp_demand_df_final[['REGION',
                                          'FUEL',
                                          'TIMESLICE',
