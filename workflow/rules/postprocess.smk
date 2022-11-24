@@ -55,7 +55,7 @@ rule otoole_results:
         'Generating result csv files...'
     input:
         solution_file = solver_file_type,
-        pre_process_file = 'results/{scenario}/PreProcessed_{scenario}.txt'
+        pre_process_file = 'results/{scenario}/{scenario}.txt'
     output:
         expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
     conda:
@@ -67,7 +67,6 @@ rule otoole_results:
         otoole results {config[solver]} csv \
         {input.solution_file} results/{wildcards.scenario}/results \
         --input_datafile {input.pre_process_file} \
-        --input_datapackage results/{wildcards.scenario}/datapackage.json \
         2> {log} 
         '''
 
