@@ -183,7 +183,10 @@ def main():
     df_gen_agg_node.drop('Sto', axis=1, inplace=True) # Drop 'Sto' technology. Only for USA.
 
     # Add extra nodes which exist in 2050 but are not in the 2015 data
-    node_list = list(df_gen_agg_node['node'].unique()) + custom_nodes
+    if custom_nodes:
+        node_list = list(df_gen_agg_node['node'].unique()) + custom_nodes
+    else:
+        node_list = list(df_gen_agg_node['node'].unique())
     nodes_extra_df = pd.DataFrame(columns=['node'])
     nodes_extra_list = ['AF-SOM',
                         'AF-TCD',
@@ -348,8 +351,9 @@ def main():
     # Reorder columns
     df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
 
-    df_res_cap_custom, custom_techs = custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
-    df_res_cap = df_res_cap.append(df_res_cap_custom)
+    if custom_nodes:
+        df_res_cap_custom, custom_techs = custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
+        df_res_cap = df_res_cap.append(df_res_cap_custom)
 
     # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
     df_res_cap.to_csv(os.path.join(output_data_dir, 
@@ -565,8 +569,10 @@ def main():
     # ### Add input and output activity ratios
 
     # Create master table for activity ratios 
-    node_list = list(df_gen_2['node_code'].unique()) + custom_nodes
-
+    if custom_nodes:
+        node_list = list(df_gen_2['node_code'].unique()) + custom_nodes
+    else:
+        node_list = list(df_gen_2['node_code'].unique())
     # Add extra nodes which are not present in 2015 but will be by 2050
     for each_node in nodes_extra_list:
         if len(each_node) <= 6:
@@ -1215,7 +1221,10 @@ def main():
                                         index = None)
 
     # ## Create sets for TECHNOLOGIES, FUELS
-    create_sets('TECHNOLOGY', df_oar_final, output_data_dir, custom_techs)
+    if custom_nodes:
+        create_sets('TECHNOLOGY', df_oar_final, output_data_dir, custom_techs)
+    else:
+        create_sets('TECHNOLOGY', df_oar_final, output_data_dir, [])
     create_sets('FUEL', df_oar_final, output_data_dir, [])                             
 
     # ## Create set for YEAR, REGION, MODE_OF_OPERATION

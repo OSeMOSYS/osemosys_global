@@ -182,9 +182,10 @@ if not os.path.exists(output_data_dir):
 
 # In[6]:
 
-
-demand_nodes = [x for x in demand_df.columns if x != 'Datetime'] + custom_nodes
-
+if custom_nodes:
+    demand_nodes = [x for x in demand_df.columns if x != 'Datetime'] + custom_nodes
+else:
+    demand_nodes = [x for x in demand_df.columns if x != 'Datetime']
 # Convert datetime to year, month, day, and hour
 demand_df['Datetime'] = pd.to_datetime(demand_df['Datetime'])
 demand_df['Year'] = demand_df['Datetime'].dt.strftime('%Y').astype(int)

@@ -654,31 +654,32 @@ with open(os.path.join(output_data_dir, 'SpecifiedAnnualDemand.csv'),'w') as f:
             f.write(region_name + ',' + str(FUEL) + ',' + str(year) + ',' + str(Node_Demand_SSP_projected_Incl_Losses.at[x, year]*(0.0036)) + '\n')
 
 years = list(range(model_start_year, model_end_year + 1))
-df_demands = pd.DataFrame(list(itertools.product(custom_nodes,
-                                                 years)),
-                          columns = ['CUSTOM_NODE',
-                                     'YEAR']
-                          )
-df_demands['REGION'] = region_name
-df_demands['FUEL'] = ('ELC' +
-                      df_demands['CUSTOM_NODE'] + 
-                      '02')
-df_custom_demands = pd.read_csv(os.path.join(input_data_dir,
-                                             "custom_nodes",
-                                             "specified_annual_demand.csv")
+if custom_nodes:
+    df_demands = pd.DataFrame(list(itertools.product(custom_nodes,
+                                                    years)),
+                            columns = ['CUSTOM_NODE',
+                                        'YEAR']
+                            )
+    df_demands['REGION'] = region_name
+    df_demands['FUEL'] = ('ELC' +
+                        df_demands['CUSTOM_NODE'] + 
+                        '02')
+    df_custom_demands = pd.read_csv(os.path.join(input_data_dir,
+                                                 "custom_nodes",
+                                                 "specified_annual_demand.csv")
                                  )
-df_demands = pd.merge(df_demands,
-                      df_custom_demands,
-                      how='left',
-                      on=['CUSTOM_NODE','YEAR'])
-df_demands = df_demands[['REGION','FUEL','YEAR','VALUE']]
-df_sp_annual_demand = pd.read_csv(os.path.join(output_data_dir, 
-                                               'SpecifiedAnnualDemand.csv'))
-df_demands = pd.concat([df_demands,
-                        df_sp_annual_demand],
-                        ignore_index=True)
-df_demands['VALUE'] = df_demands['VALUE'].round(2)                        
-df_demands.to_csv(os.path.join(output_data_dir, 
-                               "SpecifiedAnnualDemand.csv"),
-                  index=None)
+    df_demands = pd.merge(df_demands,
+                          df_custom_demands,
+                          how='left',
+                          on=['CUSTOM_NODE','YEAR'])
+    df_demands = df_demands[['REGION','FUEL','YEAR','VALUE']]
+    df_sp_annual_demand = pd.read_csv(os.path.join(output_data_dir, 
+                                                   'SpecifiedAnnualDemand.csv'))
+    df_demands = pd.concat([df_demands,
+                            df_sp_annual_demand],
+                            ignore_index=True)
+    df_demands['VALUE'] = df_demands['VALUE'].round(2)                        
+    df_demands.to_csv(os.path.join(output_data_dir, 
+                                   "SpecifiedAnnualDemand.csv"),
+                      index=None)
 logging.info('Demand Projections Completed')
