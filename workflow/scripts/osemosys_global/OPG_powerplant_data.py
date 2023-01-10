@@ -1573,6 +1573,10 @@ def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
     df_param['VALUE'] = df_param['CAPACITY'].div(1000)
     df_param['REGION'] = region
     df_param = df_param[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    df_param = df_param.groupby(['REGION',
+                                 'TECHNOLOGY',
+                                 'YEAR'],
+                                 as_index=False)['VALUE'].sum()
 
     return df_param, technologies
             
