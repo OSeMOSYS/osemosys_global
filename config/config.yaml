@@ -47,13 +47,13 @@ nodes_to_add:
  # specified in the 'geographic scope' 
  # and XX is a 2-letter sub-regional node code. 
  # E.g. - 'IDNSM' for a sub-regional node in Sumatra, Indonesia.
-  - 'IDNSM'
-  - 'IDNJW'
-  - 'IDNKA'
-  - 'IDNNU'
-  - 'IDNSL'
-  - 'IDNML'
-  - 'IDNPP'
+ # - 'IDNSM'
+ # - 'IDNJW'
+ # - 'IDNNU'
+ # - 'IDNKA'
+ # - 'IDNSL'
+ # - 'IDNML'
+ # - 'IDNPP'
 
 nodes_to_remove:
-  - 'IDNXX'
+ # - 'IDNXX'
