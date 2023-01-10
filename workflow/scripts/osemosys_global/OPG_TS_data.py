@@ -32,6 +32,13 @@ input_dir = config_paths.input_dir
 input_data_dir = config_paths.input_data_dir
 output_dir = config_paths.output_dir
 output_data_dir = config_paths.output_data_dir
+custom_nodes_dir = config_paths.custom_nodes_dir
+
+# Check for custom nodes directory
+try:
+    os.makedirs(custom_nodes_dir)
+except FileExistsError:
+    pass
 
 region_name = config.region_name
 custom_nodes = config.get('nodes_to_add')
@@ -193,13 +200,14 @@ demand_df['Month'] = demand_df['Datetime'].dt.strftime('%m').astype(int)
 demand_df['Day'] = demand_df['Datetime'].dt.strftime('%d').astype(int)
 demand_df['Hour'] = demand_df['Datetime'].dt.strftime('%H').astype(int)
 
-custom_sp_demand_profile = pd.read_csv(os.path.join(input_data_dir,
-                                       "custom_nodes",
-                                       "specified_demand_profile.csv"))
-demand_df = pd.merge(demand_df,
-                     custom_sp_demand_profile,
-                     how='left',
-                     on=['Month','Day','Hour'])
+if custom_nodes:
+    custom_sp_demand_profile = pd.read_csv(os.path.join(input_data_dir,
+                                           "custom_nodes",
+                                           "specified_demand_profile.csv"))
+    demand_df = pd.merge(demand_df,
+                         custom_sp_demand_profile,
+                         how='left',
+                         on=['Month','Day','Hour'])
 
 # Create column for weekday/weekend
 demand_df['Day-of-week'] = demand_df['Datetime'].dt.dayofweek

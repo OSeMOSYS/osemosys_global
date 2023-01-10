@@ -29,6 +29,14 @@ def main():
     input_data_dir = config_paths.input_data_dir
     output_data_dir = config_paths.output_data_dir
 
+    custom_nodes_dir = config_paths.custom_nodes_dir
+
+    # Check for custom nodes directory
+    try:
+        os.makedirs(custom_nodes_dir)
+    except FileExistsError:
+        pass
+
     cross_border_trade = config.get('crossborderTrade')
     model_start_year = config.get('startYear')
     model_end_year = config.get('endYear')
@@ -88,9 +96,10 @@ def main():
                                               "weo_region_mapping.csv")
                                  )
     
-    df_custom_res_cap = pd.read_csv(os.path.join(input_data_dir,
-                                                 "custom_nodes",
-                                                 "residual_capacity.csv")
+    if custom_nodes:
+        df_custom_res_cap = pd.read_csv(os.path.join(input_data_dir,
+                                                     "custom_nodes",
+                                                     "residual_capacity.csv")
                                  )
     
 
