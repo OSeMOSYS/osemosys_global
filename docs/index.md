@@ -22,6 +22,7 @@ installation
 getting-started
 contributing
 model-structure
+modifications
 license
 changelog
 citing

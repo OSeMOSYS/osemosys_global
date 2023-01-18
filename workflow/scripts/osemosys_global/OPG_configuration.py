@@ -59,6 +59,8 @@ class ConfigPaths:
         self.simplicity = Path(self.input_dir, 'simplicity')
         self.simplicity_data = Path(self.input_dir, 'simplicity/data')
 
+        self.custom_nodes_dir = Path(self.input_dir, 'data/custom_nodes')
+
     def get_scenario_name(self):
         config = ConfigFile('config')
         return config.get('scenario') 

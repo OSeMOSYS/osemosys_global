@@ -29,6 +29,14 @@ def main():
     input_data_dir = config_paths.input_data_dir
     output_data_dir = config_paths.output_data_dir
 
+    custom_nodes_dir = config_paths.custom_nodes_dir
+
+    # Check for custom nodes directory
+    try:
+        os.makedirs(custom_nodes_dir)
+    except FileExistsError:
+        pass
+
     cross_border_trade = config.get('crossborderTrade')
     model_start_year = config.get('startYear')
     model_end_year = config.get('endYear')
@@ -36,6 +44,7 @@ def main():
 
     region_name = config.region_name
     tech_capacity = config.get('user_defined_capacity')
+    custom_nodes = config.get('nodes_to_add')
 
     # Create output directory 
     if not os.path.exists(output_data_dir):
@@ -86,6 +95,13 @@ def main():
     df_weo_regions = pd.read_csv(os.path.join(input_data_dir,
                                               "weo_region_mapping.csv")
                                  )
+    
+    if custom_nodes:
+        df_custom_res_cap = pd.read_csv(os.path.join(input_data_dir,
+                                                     "custom_nodes",
+                                                     "residual_capacity.csv")
+                                 )
+    
 
     emissions = []
 
@@ -176,7 +192,10 @@ def main():
     df_gen_agg_node.drop('Sto', axis=1, inplace=True) # Drop 'Sto' technology. Only for USA.
 
     # Add extra nodes which exist in 2050 but are not in the 2015 data
-    node_list = list(df_gen_agg_node['node'].unique())
+    if custom_nodes:
+        node_list = list(df_gen_agg_node['node'].unique()) + custom_nodes
+    else:
+        node_list = list(df_gen_agg_node['node'].unique())
     nodes_extra_df = pd.DataFrame(columns=['node'])
     nodes_extra_list = ['AF-SOM',
                         'AF-TCD',
@@ -230,6 +249,7 @@ def main():
     # ### Add naming convention
     tech_code_dict = dict(zip(list(df_tech_code['tech']),
                               list(df_tech_code['code'])))
+    tech_list = list(df_tech_code['code'])
     df_gen_2['tech_code'] = df_gen_2['technology'].map(tech_code_dict)
 
     df_gen_2.loc[df_gen_2['node'].str.len() <= 6, 
@@ -339,6 +359,10 @@ def main():
 
     # Reorder columns
     df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
+
+    if custom_nodes:
+        df_res_cap_custom, custom_techs = custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
+        df_res_cap = df_res_cap.append(df_res_cap_custom)
 
     # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
     df_res_cap.to_csv(os.path.join(output_data_dir, 
@@ -554,8 +578,10 @@ def main():
     # ### Add input and output activity ratios
 
     # Create master table for activity ratios 
-    node_list = list(df_gen_2['node_code'].unique())
-
+    if custom_nodes:
+        node_list = list(df_gen_2['node_code'].unique()) + custom_nodes
+    else:
+        node_list = list(df_gen_2['node_code'].unique())
     # Add extra nodes which are not present in 2015 but will be by 2050
     for each_node in nodes_extra_list:
         if len(each_node) <= 6:
@@ -1204,8 +1230,11 @@ def main():
                                         index = None)
 
     # ## Create sets for TECHNOLOGIES, FUELS
-    create_sets('TECHNOLOGY', df_oar_final, output_data_dir)
-    create_sets('FUEL', df_oar_final, output_data_dir)                             
+    if custom_nodes:
+        create_sets('TECHNOLOGY', df_oar_final, output_data_dir, custom_techs)
+    else:
+        create_sets('TECHNOLOGY', df_oar_final, output_data_dir, [])
+    create_sets('FUEL', df_oar_final, output_data_dir, [])                             
 
     # ## Create set for YEAR, REGION, MODE_OF_OPERATION
 
@@ -1228,7 +1257,7 @@ def main():
     user_defined_capacity(region_name, years, output_data_dir, tech_capacity)
 
 
-def create_sets(x, df, output_dir):
+def create_sets(x, df, output_dir, custom_node_elements):
     """Creates a formatted otoole set csv 
     
     Arguments: 
@@ -1242,7 +1271,7 @@ def create_sets(x, df, output_dir):
     Example:
         create_sets('TECHNOLOGY', df_oar_final, output_dir)
     """
-    set_elements = list(df[x].unique()) + list(df[x].unique())
+    set_elements = list(df[x].unique()) + list(df[x].unique()) + list(custom_node_elements)
     set_elements = list(set(set_elements))
     set_elements.sort()
     set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
@@ -1507,6 +1536,49 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         df_min_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMinCapacityInvestment.csv"),
                             index=None)
+
+def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
+    '''Add custom nodes to the model for each relevant input parameter data csv.
+
+    Args:
+        df : Pandas DataFrame with columns 'From' and 'To' describing the 
+                transmission from and to contries. ie. 
+    
+    Returns: 
+        df_out : 
+
+    '''
+    df_param = pd.DataFrame(list(itertools.product(custom_nodes,
+                                                   tech_list,
+                                                   years)
+                                  ),
+                             columns = ['CUSTOM_NODE',
+                                        'FUEL_TYPE',
+                                        'YEAR']
+                             )
+    df_param['REGION'] = region
+    df_param = pd.merge(df_param,
+                        df_custom,
+                        how='outer',
+                        on=['CUSTOM_NODE',
+                            'FUEL_TYPE'])
+    df_param['TECHNOLOGY'] = ('PWR' +
+                              df_param['FUEL_TYPE'] + 
+                              df_param['CUSTOM_NODE'] +
+                              '01')
+    technologies = df_param['TECHNOLOGY'].unique()
+    df_param.dropna(inplace=True)
+    df_param = df_param.loc[df_param['YEAR'] >= df_param['START_YEAR']]
+    df_param = df_param.loc[df_param['YEAR'] <= df_param['END_YEAR']]
+    df_param['VALUE'] = df_param['CAPACITY'].div(1000)
+    df_param['REGION'] = region
+    df_param = df_param[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    df_param = df_param.groupby(['REGION',
+                                 'TECHNOLOGY',
+                                 'YEAR'],
+                                 as_index=False)['VALUE'].sum()
+
+    return df_param, technologies
             
 
 if __name__ == "__main__":
