@@ -119,7 +119,7 @@ spv_df = pd.read_csv(os.path.join(input_data_dir,
                      encoding='latin-1')
 if custom_nodes:
     spv_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
-                                             'SPV_profiles.csv'),
+                                             'RE_profiles_SPV.csv'),
                                              encoding='latin-1')
     spv_df_custom.drop(['Datetime'],
                         axis=1,
@@ -145,7 +145,7 @@ hyd_df = pd.read_csv(os.path.join(input_data_dir,
                      encoding='latin-1')
 if custom_nodes:
     hyd_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
-                                             'HYD_profiles.csv'),
+                                             'RE_profiles_HYD.csv'),
                                              encoding='latin-1')
     hyd_df = pd.concat([hyd_df, hyd_df_custom])
 hyd_df = hyd_df.loc[hyd_df['NAME'].str.endswith('Capacity Scaler')]
@@ -183,7 +183,7 @@ won_df = pd.read_csv(os.path.join(input_data_dir,
                      encoding='latin-1')
 if custom_nodes:
     won_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
-                                             'WON_profiles.csv'),
+                                             'RE_profiles_WON.csv'),
                                              encoding='latin-1')
     won_df_custom.drop(['Datetime'],
                         axis=1,
