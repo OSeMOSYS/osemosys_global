@@ -95,8 +95,6 @@ def main():
                                   )
         cap_addition_limit.update(re_potentials_dict)
 
-    print(cap_addition_limit)
-
     # GET RESIDUAL CAPACITY VALUES 
 
     df_res_cap_raw = pd.read_csv(os.path.join(output_data_dir, 'ResidualCapacity.csv'))
