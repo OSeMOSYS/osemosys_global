@@ -117,6 +117,15 @@ csp_df.name = 'CSP'
 spv_df = pd.read_csv(os.path.join(input_data_dir,
                                   'SolarPV 2015.csv'),
                      encoding='latin-1')
+if custom_nodes:
+    spv_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
+                                             'SPV_profiles.csv'),
+                                             encoding='latin-1')
+    spv_df_custom.drop(['Datetime'],
+                        axis=1,
+                        inplace=True)
+    spv_df = pd.concat([spv_df, spv_df_custom], axis=1)
+
 spv_df.name = 'SPV'
 
 nodes = ['-'.join(x.split('-')[1:])
@@ -134,6 +143,11 @@ node_region_dict = dict(zip(nodes,
 hyd_df = pd.read_csv(os.path.join(input_data_dir,
                                   'Hydro_Monthly_Profiles (15 year average).csv'),
                      encoding='latin-1')
+if custom_nodes:
+    hyd_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
+                                             'HYD_profiles.csv'),
+                                             encoding='latin-1')
+    hyd_df = pd.concat([hyd_df, hyd_df_custom])
 hyd_df = hyd_df.loc[hyd_df['NAME'].str.endswith('Capacity Scaler')]
 hyd_df['NAME'] = (hyd_df['NAME']
                   .str.split('_')
@@ -167,6 +181,14 @@ hyd_df_processed.name = 'HYD'
 won_df = pd.read_csv(os.path.join(input_data_dir,
                                   'Won 2015.csv'),
                      encoding='latin-1')
+if custom_nodes:
+    won_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
+                                             'WON_profiles.csv'),
+                                             encoding='latin-1')
+    won_df_custom.drop(['Datetime'],
+                        axis=1,
+                        inplace=True)
+    won_df = pd.concat([won_df, won_df_custom], axis=1)
 won_df.name = 'WON'
 
 wof_df = pd.read_csv(os.path.join(input_data_dir,
