@@ -19,8 +19,10 @@ def main():
 
     input_dir = config_paths.input_dir
     output_data_dir = config_paths.output_data_dir
+    custom_nodes_dir = config_paths.custom_nodes_dir
     region = config.region_name
     years = config.get_years()
+    custom_nodes = config.get('nodes_to_add')
 
     ## Checks whether PLEXOS-World/MESSAGEix-GLOBIOM soft-link model data needs to be 
     # retrieved from the PLEXOS-World Harvard Dataverse.
@@ -47,7 +49,7 @@ def main():
                      'Wind|Onshore' : 'WON',
                      'Wind|Offshore' : 'WOF'}
 
-    # GET CAPAPCITY LIMITS FROM PLEXOS WORLD 
+    # GET CAPACITY LIMITS FROM PLEXOS WORLD 
     # This is capacity ADDITION limits, not total max capacity limits 
 
     df_reslimit_units = df_reslimit.loc[(df_reslimit['child_object'].str.contains('|'.join(dict_reslimit.keys()))) & 
@@ -78,6 +80,22 @@ def main():
 
     df_reslimit_final['TECHNOLOGY'] = 'PWR' + df_reslimit_final['powerplant'] + df_reslimit_final['node_code'] + '01'
     cap_addition_limit = df_reslimit_final.set_index('TECHNOLOGY').to_dict()['VALUE']
+
+    if custom_nodes:
+        df_re_potentials_custom = pd.read_csv(os.path.join(custom_nodes_dir,
+                                              'RE_potentials.csv')
+                                              )
+        df_re_potentials_custom['TECHNOLOGY'] = ('PWR' + 
+                                                 df_re_potentials_custom['FUEL_TYPE'] + 
+                                                 df_re_potentials_custom['CUSTOM_NODE'] + 
+                                                 '01')
+        re_potentials_dict = dict(zip(list(df_re_potentials_custom['TECHNOLOGY']),
+                                      list(df_re_potentials_custom['CAPACITY'])
+                                      )
+                                  )
+        cap_addition_limit.update(re_potentials_dict)
+
+    print(cap_addition_limit)
 
     # GET RESIDUAL CAPACITY VALUES 
 
