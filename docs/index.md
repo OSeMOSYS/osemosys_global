@@ -1,11 +1,13 @@
-FEO-ESMOD-OSeMOSYS Documentation
+FEO Global (OSeMOSYS)
 ================================
 
 ## Contents
 ```{toctree}
 :maxdepth: 2
 
-indonesia
+1_indonesia
+2_vietnam
+3_china
 ```
 
 <!---

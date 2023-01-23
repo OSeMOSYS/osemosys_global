@@ -199,7 +199,7 @@ html_theme = "sphinx_book_theme"
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_logo = "_static/tz_logo.svg"
-html_favicon = "_static/tz_logo.svg"
+html_favicon = "_static/tz_logo_small.svg"
 html_title = ""
 html_theme_options = {
     "home_page_in_toc": True,

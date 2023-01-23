@@ -1,7 +1,7 @@
-# Indonesia country model
+# China
 
-The first application of FEO is the development of an electricity systems model 
-for Indonesia.  
+The third application of FEO is the development of an electricity systems model 
+for China.  
 
 ## Model scope
 
