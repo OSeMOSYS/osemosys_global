@@ -5,7 +5,7 @@ with global coverage. It uses [OSeMOSYS Global](https://www.nature.com/articles/
 a starting point and can be used to create inter-connected energy
 systems models for both the entire globe and for any geographically diverse
 subset of the globe. It is built using the fully open-source 
-[OSeMOSYS](https://osemosys.readthedocs.io/en/latest/) energy system modelling tool.
+[OSeMOSYS](https://osemosys.readthedocs.io/en/latest/) energy system modelling tool.!
 
 ### Useful Links
 
