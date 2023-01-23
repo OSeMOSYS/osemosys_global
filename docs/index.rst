@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Energy System Modelling documentation for Future Energy Outlook
-===============================================================
+FEO-ESMOD-OSeMOSYS Documentation
+================================
 
 .. toctree::
    :maxdepth: 2
