@@ -279,3 +279,56 @@ html_static_path = ["_static"]
 # Output file base name for HTML help builder.
 htmlhelp_basename = "feo-esmod_osemosys-doc"
 
+# -- Options for LaTeX output ------------------------------------------------
+
+latex_elements = {
+    # The paper size ("letterpaper" or "a4paper").
+    "papersize": "a4paper",
+    # The font size ("10pt", "11pt" or "12pt").
+    "pointsize": "11pt",
+    # Additional stuff for the LaTeX preamble.
+    # "preamble": "",
+}
+
+# Grouping the document tree into LaTeX files. List of tuples
+# (source start file, target name, title, author, documentclass [howto/manual]).
+latex_documents = [
+    ("index", "user_guide.tex", "FEO Global Documentation", "TransitionZero", "manual")
+]
+
+# The name of an image file (relative to this directory) to place at the top of
+# the title page.
+# latex_logo = ""
+
+# For "manual" documents, if this is true, then toplevel headings are parts,
+# not chapters.
+# latex_use_parts = False
+
+# If true, show page references after internal links.
+# latex_show_pagerefs = False
+
+# If true, show URL addresses after external links.
+# latex_show_urls = False
+
+# Documents to append as an appendix to all manuals.
+# latex_appendices = []
+
+# If false, no module index is generated.
+# latex_domain_indices = True
+
+# -- External mapping --------------------------------------------------------
+python_version = ".".join(map(str, sys.version_info[0:2]))
+intersphinx_mapping = {
+    "sphinx": ("https://www.sphinx-doc.org/en/master", None),
+    "python": ("https://docs.python.org/" + python_version, None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "sklearn": ("https://scikit-learn.org/stable", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "setuptools": ("https://setuptools.pypa.io/en/stable/", None),
+    "pyscaffold": ("https://pyscaffold.org/en/stable", None),
+}
+
+print(f"loading configurations for {project} {version} ...", file=sys.stderr)
+
