@@ -194,13 +194,12 @@ todo_emit_warnings = True
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 #html_theme = "furo"
 html_theme = "sphinx_book_theme"
-#html_theme = "alabaster"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_logo = "_static/logo.svg"
-#html_favicon = "_static/logo.svg"
+html_logo = "_static/tz_logo.svg"
+html_favicon = "_static/tz_logo.svg"
 html_title = ""
 html_theme_options = {
     "home_page_in_toc": True,

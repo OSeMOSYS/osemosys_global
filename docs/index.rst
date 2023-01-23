@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to feo-esmod-osemosys's documentation!
-==============================================
+Energy System Modelling documentation for Future Energy Outlook
+===============================================================
 
 .. toctree::
    :maxdepth: 2
@@ -12,8 +12,8 @@ Welcome to feo-esmod-osemosys's documentation!
 
 
 
-Indices and tables
-==================
+Contents
+========
 
 * :ref:`genindex`
 * :ref:`modindex`
