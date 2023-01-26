@@ -213,7 +213,7 @@ def apply_build_rates(region, years, output_data_dir, max_build):
             max_build_temp['MAX_BUILD'] = tech_params[1]
             max_build_df = pd.concat([max_build_df, max_build_temp],
                                      ignore_index=True)
-        
+
         # Create a list of powerplant technologies
         tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
         pwr_tech_list = [x for x in list(tech_set['VALUE'])
@@ -256,11 +256,12 @@ def apply_build_rates(region, years, output_data_dir, max_build):
                               right=max_build_df,
                               on=['TYPE', 'YEAR'],
                               how='left')
+        df_max_cap.loc[df_max_cap['METHOD'].isin(['ABS']),
+                                  'VALUE'] = df_max_cap['MAX_BUILD']
         df_max_cap.dropna(inplace=True)
         df_max_cap.loc[df_max_cap['METHOD'].isin(['PCT']),
                                   'VALUE'] = df_max_cap['VALUE']*df_max_cap['MAX_BUILD']/100
-        df_max_cap.loc[df_max_cap['METHOD'].isin(['ABS']),
-                                  'VALUE'] = df_max_cap['MAX_BUILD']
+
         df_max_cap = df_max_cap[['REGION',
                                  'TECHNOLOGY',
                                  'YEAR',
