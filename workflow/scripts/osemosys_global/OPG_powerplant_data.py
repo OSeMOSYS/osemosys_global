@@ -107,7 +107,7 @@ def main():
 
     # Technologies that will have 00 and 01 suffixes to represent PLEXOS 
     # historical values and future values 
-    duplicate_techs = ['CCG', 'OCG']
+    duplicate_techs = ['CCG', 'OCG', 'COA']
 
     # Create main generator table
     gen_cols_1 = ["child_class", "child_object", "property", "value"]
