@@ -1196,7 +1196,7 @@ def main():
 
     # Create totalAnnualMaxCapacityInvestment data 
 
-    # Do not alllow capacity investment for all PWRxxxxxxxx00 technolgoies 
+    # Do not allow capacity investment for all PWRxxxxxxxx00 technolgoies 
     max_cap_invest_techs = list(set(
         df_iar_final.loc[df_iar_final['TECHNOLOGY'].str.endswith('00')]['TECHNOLOGY'].tolist()))
     max_cap_invest_data = []
@@ -1415,11 +1415,11 @@ def get_transmission_costs():
     # Raw given in dollars -> model units in million dollars
     df = df.rename(columns={'Annual FO&M (3.5% of CAPEX) ($2010 in $000)':'O&M'})
     df = df.rename(columns={'Build Cost ($2010 in $000)':'CAPEX'})
-    df['O&M'] = df['O&M'].astype(float) / 1000000
-    df['CAPEX'] = df['CAPEX'].astype(float) / 1000000
+    df['O&M'] = df['O&M'].astype(float) / 1000
+    df['CAPEX'] = df['CAPEX'].astype(float) / 1000
     df = df.round({'O&M': 3, 'CAPEX': 3, })
 
-    # Spereate out fixed and capex and return values 
+    # Separate out fixed and capex and return values 
     df_capex = df.drop(['O&M'], axis=1)
     df_capex = df_capex.rename(columns={'CAPEX':'VALUE'})
     df_fix = df.drop(['CAPEX'], axis=1)
@@ -1475,13 +1475,16 @@ def format_transmission_name(df):
     return df
 
 def user_defined_capacity(region, years, output_data_dir, tech_capacity):
-    """To add description
+    """User-defined capacities are used when a specific technology must be 
+    invested, for a given year and capacity. This is applied hrough the 
+    parameter 'TotalAnnualMinCapacityInvestment'. 
 
     Args:
-        region:
-        years:
-        output_data_dir:
-        tech_capacity:
+        region: From config file (e.g. 'GLOBAL')
+        years: From config file (e.g. [2020, 2021, ... 2050])
+        output_data_dir: Output directory set in config file
+        tech_capacity: User-defined capacity in config file 
+                       (e.g. TRNAGOXXCODXX: [5, 2030])
 
     Returns
         None

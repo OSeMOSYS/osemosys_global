@@ -4,6 +4,7 @@ import os
 import yaml
 import pandas as pd
 from OPG_configuration import ConfigFile, ConfigPaths
+import itertools
 
 # LOGGING
 import logging
@@ -23,6 +24,7 @@ def main():
     region = config.region_name
     years = config.get_years()
     custom_nodes = config.get('nodes_to_add')
+    max_build = config.get('powerplant_build_rates')
 
     ## Checks whether PLEXOS-World/MESSAGEix-GLOBIOM soft-link model data needs to be 
     # retrieved from the PLEXOS-World Harvard Dataverse.
@@ -133,6 +135,9 @@ def main():
     ])
     df_max_capacity.to_csv(os.path.join(
         output_data_dir, "TotalAnnualMaxCapacity.csv"), index = None)
+    
+    apply_build_rates(region, years, output_data_dir, max_build)
+
 
 def get_max_value_per_technology(df):
     '''Gets the max value for each unique technology in a dataframe. 
@@ -168,6 +173,105 @@ def get_max_value_per_technology(df):
     # setup dataframe to return
     df_out = pd.DataFrame(out_data, columns=list(df))
     return df_out
+
+def apply_build_rates(region, years, output_data_dir, max_build):
+    """To add description
+
+    Args:
+        region:
+        years:
+        output_data_dir:
+        max_build:
+
+    Returns
+        None
+    """
+    max_build_list = []
+    
+    if not max_build is None:
+        
+        max_build_df = pd.DataFrame(columns=['TYPE', 
+                                             'METHOD', 
+                                             'MAX_BUILD',
+                                             'YEAR'])
+        for tech, tech_params in max_build.items():
+            '''
+            max_build_list.append([tech,            # TECHNOLOGY_TYPE
+                                   tech_params[0],  # METHOD: 'PCT'/'ABS'
+                                   tech_params[1],  # VALUE
+                                   tech_params[2],  # START_YEAR
+                                   tech_params[3]]) # END_YEAR
+            '''
+            max_build_temp = pd.DataFrame(columns=['TYPE', 
+                                                   'METHOD', 
+                                                   'MAX_BUILD',
+                                                   'YEAR'])
+            max_build_temp['YEAR'] = list(range(tech_params[2],
+                                                tech_params[3]))
+            max_build_temp['TYPE'] = tech
+            max_build_temp['METHOD'] = tech_params[0]
+            max_build_temp['MAX_BUILD'] = tech_params[1]
+            max_build_df = pd.concat([max_build_df, max_build_temp],
+                                     ignore_index=True)
+        
+        # Create a list of powerplant technologies
+        tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
+        pwr_tech_list = [x for x in list(tech_set['VALUE'])
+                         if x.startswith('PWR')
+                         ]
+        
+        # Create scaffold dataframe with all powerplant technologies for all years
+        df_techs = pd.DataFrame(list(itertools.product(pwr_tech_list,
+                                                       years)
+                                     ),
+                                columns = ['TECHNOLOGY', 
+                                           'YEAR']
+                                )
+        
+        # Filter out technologies for which a max. capacity investment has already
+        # been set
+        df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
+                                                  'TotalAnnualMaxCapacityInvestment.csv'))
+        max_cap_inv_techs = list(df_max_cap_inv['TECHNOLOGY'].unique())
+        df_techs = df_techs[~(df_techs['TECHNOLOGY'].isin(max_cap_inv_techs))]
+        
+        # Create dataframe of max capacity by technology
+        if os.path.isfile(os.path.join(output_data_dir,
+                                       'TotalAnnualMaxCapacity.csv')):
+            df_max_cap = pd.read_csv(os.path.join(output_data_dir,
+                                                  'TotalAnnualMaxCapacity.csv'))
+            df_max_cap = df_max_cap.loc[df_max_cap['TECHNOLOGY'].str.startswith('PWR')]
+        else:
+            df_max_cap = pd.DataFrame(columns=['REGION',
+                                               'TECHNOLOGY',
+                                               'YEAR',
+                                               'VALUE'])
+        df_max_cap = pd.merge(left=df_techs, 
+                              right=df_max_cap,
+                              on=['TECHNOLOGY', 'YEAR'],
+                              how='left')
+        df_max_cap['REGION'] = region
+        df_max_cap['TYPE'] = df_max_cap['TECHNOLOGY'].str[3:6]
+        df_max_cap = pd.merge(left=df_max_cap, 
+                              right=max_build_df,
+                              on=['TYPE', 'YEAR'],
+                              how='left')
+        df_max_cap.dropna(inplace=True)
+        df_max_cap.loc[df_max_cap['METHOD'].isin(['PCT']),
+                                  'VALUE'] = df_max_cap['VALUE']*df_max_cap['MAX_BUILD']/100
+        df_max_cap.loc[df_max_cap['METHOD'].isin(['ABS']),
+                                  'VALUE'] = df_max_cap['MAX_BUILD']
+        df_max_cap = df_max_cap[['REGION',
+                                 'TECHNOLOGY',
+                                 'YEAR',
+                                 'VALUE']]
+        df_max_cap = pd.concat([df_max_cap_inv,
+                                df_max_cap],
+                                ignore_index=True)
+        df_max_cap.to_csv(os.path.join(output_data_dir, 
+                                       "TotalAnnualMaxCapacityInvestment.csv"),
+                                       index = None)
+
 
 if __name__ == '__main__':
     main()
