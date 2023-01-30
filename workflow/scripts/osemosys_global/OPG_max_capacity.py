@@ -213,13 +213,14 @@ def apply_build_rates(region, years, output_data_dir, max_build):
             max_build_temp['MAX_BUILD'] = tech_params[1]
             max_build_df = pd.concat([max_build_df, max_build_temp],
                                      ignore_index=True)
+            max_build_df['TYPE'] = max_build_df['TYPE'].str[0:3]
 
         # Create a list of powerplant technologies
         tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
         pwr_tech_list = [x for x in list(tech_set['VALUE'])
                          if x.startswith('PWR')
                          ]
-        
+
         # Create scaffold dataframe with all powerplant technologies for all years
         df_techs = pd.DataFrame(list(itertools.product(pwr_tech_list,
                                                        years)
@@ -227,7 +228,7 @@ def apply_build_rates(region, years, output_data_dir, max_build):
                                 columns = ['TECHNOLOGY', 
                                            'YEAR']
                                 )
-        
+
         # Filter out technologies for which a max. capacity investment has already
         # been set
         df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
@@ -256,6 +257,9 @@ def apply_build_rates(region, years, output_data_dir, max_build):
                               right=max_build_df,
                               on=['TYPE', 'YEAR'],
                               how='left')
+        df_max_cap.to_csv(os.path.join(output_data_dir, 
+                                       "TotalAnnualMaxCapacityInvestment_test.csv"),
+                                       index = None)
         df_max_cap.loc[df_max_cap['METHOD'].isin(['ABS']),
                                   'VALUE'] = df_max_cap['MAX_BUILD']
         df_max_cap.dropna(inplace=True)
