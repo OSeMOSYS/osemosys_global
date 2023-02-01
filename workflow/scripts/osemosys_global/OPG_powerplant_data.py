@@ -1253,7 +1253,7 @@ def main():
     regions_df.to_csv(os.path.join(output_data_dir, 
                                    "REGION.csv"),
                       index = None)
-    
+
     user_defined_capacity(region_name, years, output_data_dir, tech_capacity)
 
 
@@ -1504,8 +1504,9 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
 
         for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
             if each_tech not in list(tech_set['VALUE']):
-                tech_capacity_df = tech_capacity_df.loc[~(tech_capacity_df['TECHNOLOGY'].isin([each_tech]))]
-        
+        #        tech_capacity_df = tech_capacity_df.loc[~(tech_capacity_df['TECHNOLOGY'].isin([each_tech]))]
+                tech_set = tech_set.append(pd.DataFrame({'VALUE':[each_tech]}))
+
         df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
                                                 'TotalAnnualMinCapacityInvestment.csv'))
         df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
@@ -1522,9 +1523,9 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
                 else:
                     value = 0
                 max_cap_techs.append([row['REGION'],
-                                    row['TECHNOLOGY'],
-                                    each_year,
-                                    value])
+                                      row['TECHNOLOGY'],
+                                      each_year,
+                                      value])
         max_cap_techs_df = pd.DataFrame(max_cap_techs,
                                         columns=['REGION',
                                                 'TECHNOLOGY',
@@ -1539,6 +1540,103 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         df_min_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMinCapacityInvestment.csv"),
                             index=None)
+        tech_set.to_csv(os.path.join(output_data_dir,
+                                     "TECHNOLOGY.csv"),
+                        index=None)
+        
+        # Add IAR and OAR for custom technologies
+        df_iar = pd.read_csv(os.path.join(output_data_dir,
+                                                  'InputActivityRatio.csv'))
+        df_oar = pd.read_csv(os.path.join(output_data_dir,
+                                                  'OutputActivityRatio.csv'))
+        tech_list = list(tech_capacity_df['TECHNOLOGY'].unique())
+        df_iar_custom = pd.DataFrame(list(itertools.product(tech_list,
+                                                        [1, 2],
+                                                        years)
+                                      ),
+                                 columns = ['TECHNOLOGY',
+                                            'MODE_OF_OPERATION',
+                                            'YEAR']
+                                 )
+        df_oar_custom = pd.DataFrame(list(itertools.product(tech_list,
+                                                        [1, 2],
+                                                        years)
+                                      ),
+                                 columns = ['TECHNOLOGY',
+                                            'MODE_OF_OPERATION',
+                                            'YEAR']
+                                 )
+        # IAR in modes 1 and 2 are primary electricity commodity ('ELC*01') in 
+        # node_from and node_to, respectively. 
+        # OAR is the inverse of the above
+        df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,
+                                        'FUEL'] = ('ELC' + 
+                                                   df_iar_custom['TECHNOLOGY'].str[3:8] + 
+                                                   '01')
+        df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,
+                                        'FUEL'] = ('ELC' + 
+                                                   df_iar_custom['TECHNOLOGY'].str[8:13] + 
+                                                   '01')
+        df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,
+                                        'FUEL'] = ('ELC' + 
+                                                   df_iar_custom['TECHNOLOGY'].str[3:8] + 
+                                                   '02')
+        df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,
+                                        'FUEL'] = ('ELC' + 
+                                                   df_iar_custom['TECHNOLOGY'].str[8:13] + 
+                                                   '02')
+        df_iar_custom['VALUE'] = 1
+        df_oar_custom['VALUE'] = 0.9
+        df_iar_custom['REGION'] = region
+        df_oar_custom['REGION'] = region
+
+        df_iar_custom = df_iar_custom[['REGION', 
+                                       'TECHNOLOGY',
+                                       'FUEL', 
+                                       'MODE_OF_OPERATION',
+                                       'YEAR', 
+                                       'VALUE',]]
+        df_oar_custom = df_oar_custom[['REGION', 
+                                       'TECHNOLOGY',
+                                       'FUEL', 
+                                       'MODE_OF_OPERATION',
+                                       'YEAR', 
+                                       'VALUE',]]
+        
+        df_iar = pd.concat([df_iar, df_iar_custom])
+        df_oar = pd.concat([df_oar, df_oar_custom])
+        df_iar.to_csv(os.path.join(output_data_dir,
+                                   'InputActivityRatio.csv'),
+                      index=None)
+        df_oar.to_csv(os.path.join(output_data_dir,
+                                   'OutputActivityRatio.csv'),
+                      index=None)
+        # Add new fuels to FUEL set, if not already present
+        fuel_set = pd.read_csv(os.path.join(output_data_dir, 'FUEL.csv'))
+        fuel_list = []
+        fuel_list = list(df_iar_custom['FUEL'].unique()) + list(df_oar_custom['FUEL'].unique())
+        fuel_list = list(set(fuel_list))
+        for each_fuel in fuel_list:
+            if each_fuel not in list(fuel_set['VALUE']):
+                fuel_set = fuel_set.append(pd.DataFrame({'VALUE':[each_fuel]}))
+
+        fuel_set.to_csv(os.path.join(output_data_dir,
+                                     "FUEL.csv"),
+                        index=None)
+
+        op_life = pd.read_csv(os.path.join(output_data_dir,
+                                           'OperationalLife.csv'))
+        op_life_custom = pd.DataFrame({'TECHNOLOGY': tech_list})
+
+        op_life_custom.loc[op_life_custom['TECHNOLOGY'].str.contains('TRN'),
+                           'VALUE'] = 60
+        op_life_custom['REGION'] = region
+        op_life = pd.concat([op_life, op_life_custom])
+        op_life.to_csv(os.path.join(output_data_dir,
+                                    'OperationalLife.csv'),
+                       index=None)
+        # Add CapacityToActivityUnit for custom technologies
+        # Add CapitalCost for custom technologies
 
 def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
     '''Add custom nodes to the model for each relevant input parameter data csv.
