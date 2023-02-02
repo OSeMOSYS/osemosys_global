@@ -50,7 +50,7 @@ nodes_to_add:
 In the folder `resources/data/custom_nodes`, add any residual capacity to the 
 `residual_capacity.csv`. The data must be formatted as show. The 
 fuel type must be one of the existing fuels in the model (see 
-[here](./model-structure.md#commodity-acronyms)) and the capacity is given in GW.
+[here](./model-structure.md#acronyms)) and the capacity is given in `GW`.
 
 | FUEL_TYPE | CUSTOM_NODE | START_YEAR | END_YEAR | CAPACITY |
 |-----------|-------------|------------|----------|----------|
