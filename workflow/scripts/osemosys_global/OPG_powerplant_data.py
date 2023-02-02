@@ -361,7 +361,11 @@ def main():
     df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
 
     if custom_nodes:
-        df_res_cap_custom, custom_techs = custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
+        df_res_cap_custom, custom_techs = custom_nodes_csv(custom_nodes, 
+                                                           df_custom_res_cap, 
+                                                           region_name, 
+                                                           years, 
+                                                           tech_list)
         df_res_cap = df_res_cap.append(df_res_cap_custom)
 
     # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
@@ -1490,11 +1494,13 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         None
     """
     techCapacity = []
+    tech_capacity_dict = {}
     
     if not tech_capacity is None:
 
         for tech, tech_params in tech_capacity.items():
             techCapacity.append([tech, tech_params[0], tech_params[1]])
+            tech_capacity_dict[tech] = tech_params[2]
         tech_capacity_df = pd.DataFrame(techCapacity,
                                         columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
         tech_capacity_df['REGION'] = region
@@ -1521,7 +1527,10 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
                 if row['YEAR'] == each_year:
                     value = row['VALUE']
                 else:
-                    value = 0
+                    if tech_capacity_dict[row['TECHNOLOGY']] in ['open']:
+                        value = np.nan
+                    elif tech_capacity_dict[row['TECHNOLOGY']] in ['fixed']:
+                        value = 0
                 max_cap_techs.append([row['REGION'],
                                       row['TECHNOLOGY'],
                                       each_year,
@@ -1531,6 +1540,7 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
                                                 'TECHNOLOGY',
                                                 'YEAR',
                                                 'VALUE'])
+        max_cap_techs_df.dropna(inplace=True)
         df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
         df_max_cap_inv.drop_duplicates(inplace=True)
 
@@ -1631,11 +1641,31 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         op_life_custom.loc[op_life_custom['TECHNOLOGY'].str.contains('TRN'),
                            'VALUE'] = 60
         op_life_custom['REGION'] = region
+        op_life_custom = op_life_custom[['REGION',
+                                         'TECHNOLOGY',
+                                         'VALUE']]
+
         op_life = pd.concat([op_life, op_life_custom])
         op_life.to_csv(os.path.join(output_data_dir,
                                     'OperationalLife.csv'),
                        index=None)
         # Add CapacityToActivityUnit for custom technologies
+        cap_act = pd.read_csv(os.path.join(output_data_dir,
+                                           'CapacityToActivityUnit.csv'))
+        cap_act_custom = pd.DataFrame({'TECHNOLOGY': tech_list})
+        cap_act_custom.loc[cap_act_custom['TECHNOLOGY'].str.contains('TRN'),
+                           'VALUE'] = 31.536
+        cap_act_custom.loc[cap_act_custom['TECHNOLOGY'].str.contains('PWR'),
+                           'VALUE'] = 31.536
+        cap_act_custom['REGION'] = region
+        cap_act_custom = cap_act_custom[['REGION',
+                                         'TECHNOLOGY',
+                                         'VALUE']]
+        cap_act = pd.concat([cap_act, cap_act_custom])
+        cap_act.to_csv(os.path.join(output_data_dir,
+                                    'CapacityToActivityUnit.csv'),
+                       index=None)
+        
         # Add CapitalCost for custom technologies
 
 def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
@@ -1669,6 +1699,7 @@ def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
                               '01')
     technologies = df_param['TECHNOLOGY'].unique()
     df_param.dropna(inplace=True)
+    df_param.drop_duplicates(inplace=True)
     df_param = df_param.loc[df_param['YEAR'] >= df_param['START_YEAR']]
     df_param = df_param.loc[df_param['YEAR'] <= df_param['END_YEAR']]
     df_param['VALUE'] = df_param['CAPACITY'].div(1000)
