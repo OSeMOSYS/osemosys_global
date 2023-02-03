@@ -6,11 +6,14 @@ import yaml
 from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.getcwd(),
+                         '.env')) 
 
 def main():
 
-    U = "abhishek0208@gmail.com"
-    P = "uh&75gz6s@57p9G7"
+    U = os.environ.get('username')
+    P = os.environ.get('password')    
 
     AUTH_URL = "https://auth.feo.transitionzero.org"
     URL = "https://power-legacy.feo.transitionzero.org"
@@ -22,23 +25,26 @@ def main():
     print(r.status_code)
     print(r.text)
 
+    # Load config file 
     config_paths = ConfigPaths()
     config = ConfigFile('config')
     input_data_dir = config_paths.input_data_dir
     custom_nodes_dir = config_paths.custom_nodes_dir
 
+    # Convert country and admin_1 codes to OSeMOSYS Global format (i.e. XXXYY)
+    # where XXX is the country code and YY is the admin_1 code
     geographic_scope = config.get('geographic_scope')
     
     df_geo_scope = pd.read_csv(os.path.join(input_data_dir,
                                             "iso_codes.csv"))
     iso3_to_iso2 = dict(zip(list(df_geo_scope['alpha-3']),
-                              list(df_geo_scope['alpha-2'])))
+                            list(df_geo_scope['alpha-2'])))
     iso2_to_iso3 = dict(zip(list(df_geo_scope['alpha-2']),
-                              list(df_geo_scope['alpha-3'])))
+                            list(df_geo_scope['alpha-3'])))
         
     geographic_scope_iso2 = [iso3_to_iso2.get(c, c) 
                              for c in geographic_scope]
-
+    # Load files from power data API
     if r.status_code==200:
         token = json.loads(r.text)['access_token']
         headers = {"Authorization": f"Bearer {token}"}
@@ -46,7 +52,7 @@ def main():
         df = pd.DataFrame()
         next_page = 0
         while next_page != None:
-            params = {'admin_0':geographic_scope_iso2, # UPDATES THIS TO GENERALISED VARIABLE
+            params = {'admin_0':geographic_scope_iso2,
                       'page':next_page,
                       'limit':100}
 
@@ -64,12 +70,18 @@ def main():
 
         # 
         df = df.dropna(subset=['admin_1'])
-        
+        df = df.dropna(subset=['id'])
+        df.to_csv('residual_capacity_check.csv',
+                  index=None)
         # Set start_year for each power plant. If not available, set to '0'
         df['START_YEAR'] = df['operation_start'].str.split('-', 
                                                         expand=True)[0]
         df['START_YEAR'].fillna(0, inplace=True)
-        
+        df_technologies = df['technologies'].apply(pd.Series)
+        df = pd.concat([df, df_technologies['prime_mover']], axis=1)
+        df.loc[df['prime_mover'].isin(['cc_gt']),
+                  'primary_fuel'] = 'Gas-CCGT'
+        df = df[~(df['primary_fuel'].isin(['waste_heat']))]
         # Re-order columns
         df = df[['admin_1',
                 'primary_fuel',
@@ -94,18 +106,13 @@ def main():
 
 
         df_op_life = pd.read_csv(os.path.join(input_data_dir,
-                                                "operational_life.csv"))
+                                              "operational_life.csv"))
         op_life_dict = dict(zip(list(df_op_life['tech']),
                                 list(df_op_life['years'])))
         df['op_life'] = df['FUEL_TYPE'].map(op_life_dict)
         df['END_YEAR'] = df['START_YEAR'].astype(int) + df['op_life'].astype(int)
-        #df.loc[df['END_YEAR']]
-        
-        print(df,
-              df['admin_1'].unique(), '\n',
-              len(df['admin_1'].unique()), '\n',
-              df['primary_fuel'].unique(), '\n',
-              df['FUEL_TYPE'].unique(),)
+        df.loc[df['START_YEAR'].astype(int) == 0,
+               'END_YEAR'] = 2030
         
         try:
             os.makedirs(custom_nodes_dir)

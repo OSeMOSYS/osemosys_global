@@ -1589,11 +1589,11 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
                                                    '01')
         df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,
                                         'FUEL'] = ('ELC' + 
-                                                   df_iar_custom['TECHNOLOGY'].str[3:8] + 
+                                                   df_oar_custom['TECHNOLOGY'].str[8:13] + 
                                                    '02')
         df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,
                                         'FUEL'] = ('ELC' + 
-                                                   df_iar_custom['TECHNOLOGY'].str[8:13] + 
+                                                   df_oar_custom['TECHNOLOGY'].str[3:8] + 
                                                    '02')
         df_iar_custom['VALUE'] = 1
         df_oar_custom['VALUE'] = 0.9
