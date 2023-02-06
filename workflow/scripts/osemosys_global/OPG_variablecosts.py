@@ -120,12 +120,12 @@ df_prices['MINOTH'] = df_prices['MINOIL']  # Other petroleum products are simila
 df_prices['MINPET'] = df_prices['MINOIL']  # Petroleum products are similar to oil
 
 # And add in international prices that are 15% higher than the regular ones:
-df_prices['INTCOA'] = df_prices['MINCOA'] * 0.15
-df_prices['INTOIL'] = df_prices['MINOIL'] * 0.15
-df_prices['INTGAS'] = df_prices['MINGAS'] * 0.15
-df_prices['INTCOG'] = df_prices['MINCOG'] * 0.15
-df_prices['INTOTH'] = df_prices['MINOTH'] * 0.15
-df_prices['INTPET'] = df_prices['MINPET'] * 0.15
+df_prices['INTCOA'] = df_prices['MINCOA'] * 1.15
+df_prices['INTOIL'] = df_prices['MINOIL'] * 1.15
+df_prices['INTGAS'] = df_prices['MINGAS'] * 1.15
+df_prices['INTCOG'] = df_prices['MINCOG'] * 1.15
+df_prices['INTOTH'] = df_prices['MINOTH'] * 1.15
+df_prices['INTPET'] = df_prices['MINPET'] * 1.15
 
 df_prices = df_prices.reindex(years)
 

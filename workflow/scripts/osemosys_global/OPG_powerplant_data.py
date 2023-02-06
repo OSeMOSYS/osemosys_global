@@ -4,6 +4,8 @@
 # OSeMOSYS-PLEXOS global model: Powerplant data
 
 # Import modules
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 from datetime import datetime
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -1667,6 +1669,26 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
                        index=None)
         
         # Add CapitalCost for custom technologies
+        cap_cost = pd.read_csv(os.path.join(output_data_dir,
+                                            'CapitalCost.csv'))
+        tech_list = list(tech_capacity_df['TECHNOLOGY'].unique())
+        cap_cost_trn = pd.DataFrame(list(itertools.product(tech_list,
+                                                           years)),
+                                    columns = ['TECHNOLOGY',
+                                               'YEAR'])
+        cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('TRN'),
+                         'VALUE'] = 1100
+        cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('PWRTRN'),
+                         'VALUE'] = 800
+        cap_cost_trn['REGION'] = region
+        cap_cost_trn = cap_cost_trn[['REGION',
+                                     'TECHNOLOGY',
+                                     'YEAR',
+                                     'VALUE']]
+        cap_cost = pd.concat([cap_cost, cap_cost_trn])
+        cap_cost.to_csv(os.path.join(output_data_dir,
+                                     'CapitalCost.csv'),
+                        index=None)
 
 def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
     '''Add custom nodes to the model for each relevant input parameter data csv.
