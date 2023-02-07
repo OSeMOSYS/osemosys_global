@@ -5,16 +5,27 @@ for Indonesia.
 
 ## Model scope
 
+### Spatial resolution
+
+### Temporal resolution
+
+### Model horizon
 
 ## Key assumptions
 
 
 ## Data 
+### Technology costs
+### Renewable Energy Profiles
+### Renewable Energy Potentials
+### Energy demand projections
 
+### Fuel Prices
 
+### Electricity interconnectors
 ## Scenarios 
 
-### Business-as-usual (BAU)
+### Current policies
 
 ### Least-cost
 
