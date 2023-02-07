@@ -17,6 +17,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import urllib
 import os
+import time
 from OPG_configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -33,6 +34,10 @@ input_data_dir = config_paths.input_data_dir
 output_dir = config_paths.output_dir
 output_data_dir = config_paths.output_data_dir
 custom_nodes_dir = config_paths.custom_nodes_dir
+geographic_scope = config.get('geographic_scope')
+seasons = config.get('seasons')
+daytype = config.get('daytype')
+dayparts = config.get('dayparts')
 
 # Check for custom nodes directory
 try:
@@ -520,16 +525,145 @@ capfac_all_df.to_csv(os.path.join(output_data_dir,
                                   'CapacityFactor.csv'),
                      index=None)
 
-
-# ## Create csv for TIMESLICE 
-
-# In[13]:
-
-
+# ## Create csv for TIMESLICE
 time_slice_list = list(demand_df['TIMESLICE'].unique())
 time_slice_df = pd.DataFrame(time_slice_list, columns = ['VALUE'])
 time_slice_df.to_csv(os.path.join(output_data_dir, 
                                   'TIMESLICE.csv'),
                      index=None)
+
+'''
+def add_storage(region_name, 
+                years, 
+                output_data_dir, 
+                demand_nodes, 
+                time_slice_list,
+                seasons,
+                daytype,
+                dayparts):
+                
+            '''
+
+demand_nodes = list(set(list(sp_demand_df_final['FUEL'].str[3:8])))
+
+# Create SET STORAGE
+storage_set = [('BAT' + x +'01') for x in demand_nodes 
+                if x[:3] in geographic_scope]
+df_storage_set = pd.DataFrame(storage_set,
+                              columns=['VALUE'])
+df_storage_set.to_csv(os.path.join(output_data_dir,
+                                    'STORAGE.csv'),
+                        index=None)
+# Add storage technologies to SET TECHNOLOGY
+storage_techs = [('PWRBAT' + x +'01') for x in demand_nodes 
+                if x[:3] in geographic_scope]
+df_storage_techs = pd.DataFrame(storage_techs,
+                                columns=['VALUE'])
+
+wait_time = 0
+while not os.path.exists(os.path.join(output_data_dir, 'TECHNOLOGY.csv')):
+    time.sleep(5)
+    wait_time += 1
+    if wait_time > 20 : break
+
+set_techonology = pd.read_csv(os.path.join(output_data_dir,
+                                           'TECHNOLOGY.csv'))
+set_technology = pd.concat([set_techonology, df_storage_techs])
+set_technology.to_csv(os.path.join(output_data_dir,
+                                    'TECHNOLOGY.csv'),
+                        index=None)
+
+# Create TechnologyToStorage and TechnologyFromStorage
+
+df_tech_storage = pd.DataFrame(columns=['REGION',
+                                        'TECHNOLOGY',
+                                        'STORAGE',
+                                        'MODE_OF_OPERATION'])
+
+for each_node in [x for x in demand_nodes if x[:3] in geographic_scope]:
+    df_ts_temp = pd.DataFrame(list(itertools.product([region_name],
+                                                        ['PWRBAT' + each_node +'01'],
+                                                        ['BAT' + each_node +'01'],
+                                                        [1,2])
+                                    ),
+                                columns=['REGION',
+                                        'TECHNOLOGY',
+                                        'STORAGE',
+                                        'MODE_OF_OPERATION']
+                                )
+    df_tech_storage = pd.concat([df_tech_storage, df_ts_temp])
+
+df_ttos = df_tech_storage.copy()
+df_tfroms = df_tech_storage.copy()
+
+
+# TechnologyToStorage
+
+df_ttos.loc[df_ttos['MODE_OF_OPERATION'] == 1,
+            'VALUE'] = 1.0
+df_ttos.loc[df_ttos['MODE_OF_OPERATION'] == 2,
+            'VALUE'] = 0.0
+df_ttos['VALUE'] = df_ttos['VALUE'].astype(float)
+df_ttos.to_csv(os.path.join(output_data_dir,
+                            'TechnologyToStorage.csv'),
+               index=None)
+
+# TechnologyFromStorage
+
+df_tfroms.loc[df_tfroms['MODE_OF_OPERATION'] == 1,
+                'VALUE'] = 0.0
+df_tfroms.loc[df_tfroms['MODE_OF_OPERATION'] == 2,
+                'VALUE'] = 1.0
+df_tfroms['VALUE'] = df_tfroms['VALUE'].astype(float)
+df_tfroms.to_csv(os.path.join(output_data_dir,
+                                'TechnologyFromStorage.csv'),
+                 index=None)
+    
+# Create Conversionls, Conversionld, and Conversionlh
+
+# Conversionls
+df_ls = pd.DataFrame(list(itertools.product(time_slice_list,
+                                            list(range(1,len(seasons)+1))
+                                            )
+                            ),
+                        columns=['TIMESLICE',
+                                'SEASON']
+                        )
+df_ls.loc[df_ls['TIMESLICE'].str[1:2].astype(int) == df_ls['SEASON'],
+            'VALUE'] = 1
+df_ls.fillna(0, inplace=True)
+df_ls.to_csv(os.path.join(output_data_dir,
+                            'Conversionls.csv'),
+             index=None)
+
+# Conversionld
+df_ld = pd.DataFrame(list(itertools.product(time_slice_list,
+                                            [1]
+                                            )
+                            ),
+                        columns=['TIMESLICE',
+                                'DAYTYPE']
+                        )
+df_ld['VALUE'] = 1
+df_ld.fillna(0, inplace=True)
+df_ld.to_csv(os.path.join(output_data_dir,
+                            'Conversionld.csv'),
+             index=None)
+
+# Conversionlh
+df_lh = pd.DataFrame(list(itertools.product(time_slice_list,
+                                            list(range(1,len(dayparts)+1))
+                                                    )
+                            ),
+                        columns=['TIMESLICE',
+                                'DAILYTIMEBRACKET']
+                        )
+df_lh.loc[df_lh['TIMESLICE'].str[3:].astype(int) == df_lh['DAILYTIMEBRACKET'],
+            'VALUE'] = 1
+df_lh.fillna(0, inplace=True)
+df_lh.to_csv(os.path.join(output_data_dir,
+                            'Conversionlh.csv'),
+             index=None)
+
 
 logging.info('Time Slicing Completed')

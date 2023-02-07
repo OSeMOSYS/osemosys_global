@@ -182,7 +182,7 @@ df_trn_varcosts = df_trn_varcosts.explode('YEAR')
 
 # Hardcode in transmission variable cost parameter following PLEXOS of $4/MWh
 # $4/MWh * 1Wh/3600J * 1000000000 MJ/1PJ * 1M$/$1000000 
-trn_varcost = 4 / 3.6
+trn_varcost = 4 / 3600
 
 df_trn_varcosts['VALUE'] = round(trn_varcost, 4)
 

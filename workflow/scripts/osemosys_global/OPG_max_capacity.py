@@ -257,9 +257,6 @@ def apply_build_rates(region, years, output_data_dir, max_build):
                               right=max_build_df,
                               on=['TYPE', 'YEAR'],
                               how='left')
-        df_max_cap.to_csv(os.path.join(output_data_dir, 
-                                       "TotalAnnualMaxCapacityInvestment_test.csv"),
-                                       index = None)
         df_max_cap.loc[df_max_cap['METHOD'].isin(['ABS']),
                                   'VALUE'] = df_max_cap['MAX_BUILD']
         df_max_cap.dropna(inplace=True)

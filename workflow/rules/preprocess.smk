@@ -42,7 +42,13 @@ timeslice_files = [
     'CapacityFactor.csv',
     'TIMESLICE.csv',
     'SpecifiedDemandProfile.csv',
-    'YearSplit.csv'
+    'YearSplit.csv',
+    'STORAGE.csv',
+    'TechnologyToStorage.csv',
+    'TechnologyFromStorage.csv',
+    'Conversionls.csv',
+    'Conversionld.csv',
+    'Conversionlh.csv'
     ]
 
 variable_cost_files = [

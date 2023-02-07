@@ -47,6 +47,8 @@ set DAYTYPE;
 set DAILYTIMEBRACKET;
 set FLEXIBLEDEMANDTYPE;
 set STORAGE;
+# set STORAGEINTRAYEAR
+# set STORAGEINTRADAY
 set MODEperTECHNOLOGY{TECHNOLOGY} within MODE_OF_OPERATION;
 set MODExTECHNOLOGYperFUELout{FUEL} within MODE_OF_OPERATION cross TECHNOLOGY;
 set MODExTECHNOLOGYperFUELin{FUEL} within MODE_OF_OPERATION cross TECHNOLOGY;
@@ -253,15 +255,15 @@ var StorageLevelDayTypeStart{r in REGION, s in STORAGE, ls in SEASON, ld in DAYT
 var StorageLevelDayTypeFinish{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, y in YEAR} >=0;
 #var RateOfStorageCharge{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR};
 #var RateOfStorageDischarge{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR};
-#var NetChargeWithinYear{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR};
-#var NetChargeWithinDay{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR};
-#var StorageLowerLimit{r in REGION, s in STORAGE, y in YEAR}>=0;
-#var StorageUpperLimit{r in REGION, s in STORAGE, y in YEAR} >=0;
-#var AccumulatedNewStorageCapacity{r in REGION, s in STORAGE, y in YEAR} >=0;
-#var CapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR} >=0;
-#var DiscountedCapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR} >=0;
-#var DiscountedSalvageValueStorage{r in REGION, s in STORAGE, y in YEAR} >=0;
-#var TotalDiscountedStorageCost{r in REGION, s in STORAGE, y in YEAR} >=0;
+var NetChargeWithinYear{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR};
+var NetChargeWithinDay{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR};
+var StorageLowerLimit{r in REGION, s in STORAGE, y in YEAR}>=0;
+var StorageUpperLimit{r in REGION, s in STORAGE, y in YEAR} >=0;
+var AccumulatedNewStorageCapacity{r in REGION, s in STORAGE, y in YEAR} >=0;
+var CapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR} >=0;
+var DiscountedCapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR} >=0;
+var DiscountedSalvageValueStorage{r in REGION, s in STORAGE, y in YEAR} >=0;
+var TotalDiscountedStorageCost{r in REGION, s in STORAGE, y in YEAR} >=0;
 #
 #########                    Capacity Variables                         #############
 #
@@ -340,14 +342,14 @@ var ModelPeriodEmissions{r in REGION, e in EMISSION}>= 0;
 #
 
 minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR} 
-    (((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} 
+    ((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} 
         NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + 
         sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} 
             RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y]) / DiscountFactorMid[r,y] + 
             CapitalCost[r,t,y] * NewCapacity[r,t,y] * CapitalRecoveryFactor[r,t] * PvAnnuity[r,t] / DiscountFactor[r,y] + 
             DiscountedTechnologyEmissionsPenalty[r,t,y] - DiscountedSalvageValue[r,t,y]) + 
-            sum{s in STORAGE} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] / DiscountFactor[r,y] - 
-            CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] / DiscountFactor[r,y]));
+            sum{r in REGION, s in STORAGE, y in YEAR} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] / DiscountFactor[r,y] - 
+            DiscountedSalvageValueStorage[r,s,y]);
 
 #
 #####################
@@ -409,16 +411,16 @@ s.t. EBb4_EnergyBalanceEachYear4{r in REGION, f in FUEL, y in YEAR}: sum{(m,t) i
 #s.t. S2_RateOfStorageDischarge{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR}: sum{t in TECHNOLOGY, m in MODEperTECHNOLOGY[t], l in TIMESLICE:TechnologyFromStorage[r,t,s,m]>0} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m] * Conversionls[l,ls] * Conversionld[l,ld] * Conversionlh[l,lh] = RateOfStorageDischarge[r,s,ls,ld,lh,y];
 #s.t. S3_NetChargeWithinYear{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR}: sum{l in TIMESLICE:Conversionls[l,ls]>0&&Conversionld[l,ld]>0&&Conversionlh[l,lh]>0}  (sum{t in TECHNOLOGY, m in MODEperTECHNOLOGY[t]:TechnologyToStorage[r,t,s,m]>0} (RateOfActivity[r,l,t,m,y] * TechnologyToStorage[r,t,s,m] * Conversionls[l,ls] * Conversionld[l,ld] * Conversionlh[l,lh]) - (sum{t in TECHNOLOGY, m in MODEperTECHNOLOGY[t]:TechnologyFromStorage[r,t,s,m]>0} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m] * Conversionls[l,ls] * Conversionld[l,ld] * Conversionlh[l,lh])) * YearSplit[l,y] * Conversionls[l,ls] * Conversionld[l,ld] * Conversionlh[l,lh] = NetChargeWithinYear[r,s,ls,ld,lh,y];
 #s.t. S4_NetChargeWithinDay{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, y in YEAR}: ((sum{t in TECHNOLOGY, m in MODEperTECHNOLOGY[t], l in TIMESLICE:TechnologyToStorage[r,t,s,m]>0} RateOfActivity[r,l,t,m,y] * TechnologyToStorage[r,t,s,m] * Conversionls[l,ls] * Conversionld[l,ld] * Conversionlh[l,lh]) - (sum{t in TECHNOLOGY, m in MODEperTECHNOLOGY[t], l in TIMESLICE:TechnologyFromStorage[r,t,s,m]>0} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m] * Conversionls[l,ls] * Conversionld[l,ld] * Conversionlh[l,lh])) * DaySplit[lh,y] = NetChargeWithinDay[r,s,ls,ld,lh,y];
-s.t. S5_and_S6_StorageLevelYearStart{r in REGION, s in STORAGE, y in YEAR}:
-    if y = min{yy in YEAR} min(yy)
-    then StorageLevelStart[r,s]
-    else StorageLevelYearStart[r,s,y-1] + sum{ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, l in TIMESLICEofSDB[ls,ld,lh]} (sum{(m,t) in MODExTECHNOLOGYperSTORAGEto[s]} (RateOfActivity[r,l,t,m,y-1] * TechnologyToStorage[r,t,s,m]) - (sum{(m,t) in MODExTECHNOLOGYperSTORAGEfrom[s]} RateOfActivity[r,l,t,m,y-1] * TechnologyFromStorage[r,t,s,m])) * YearSplit[l,y-1]
-    = StorageLevelYearStart[r,s,y];
-s.t. S7_and_S8_StorageLevelYearFinish{r in REGION, s in STORAGE, y in YEAR}:
-    if y < max{yy in YEAR} max(yy)
-    then StorageLevelYearStart[r,s,y+1]
-    else StorageLevelYearStart[r,s,y] + sum{ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, l in TIMESLICEofSDB[ls,ld,lh]}  (sum{(m,t) in MODExTECHNOLOGYperSTORAGEto[s]} (RateOfActivity[r,l,t,m,y] * TechnologyToStorage[r,t,s,m]) - (sum{(m,t) in MODExTECHNOLOGYperSTORAGEfrom[s]} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m])) * YearSplit[l,y]
-    = StorageLevelYearFinish[r,s,y];
+# s.t. S5_and_S6_StorageLevelYearStart{r in REGION, s in STORAGE, y in YEAR}:
+#     if y = min{yy in YEAR} min(yy)
+#     then StorageLevelStart[r,s]
+#     else StorageLevelYearStart[r,s,y-1] + sum{ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, l in TIMESLICEofSDB[ls,ld,lh]} (sum{(m,t) in MODExTECHNOLOGYperSTORAGEto[s]} (RateOfActivity[r,l,t,m,y-1] * TechnologyToStorage[r,t,s,m]) - (sum{(m,t) in MODExTECHNOLOGYperSTORAGEfrom[s]} RateOfActivity[r,l,t,m,y-1] * TechnologyFromStorage[r,t,s,m])) * YearSplit[l,y-1]
+#     = StorageLevelYearStart[r,s,y];
+# s.t. S7_and_S8_StorageLevelYearFinish{r in REGION, s in STORAGE, y in YEAR}:
+#     if y < max{yy in YEAR} max(yy)
+#     then StorageLevelYearStart[r,s,y+1]
+#     else StorageLevelYearStart[r,s,y] + sum{ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET, l in TIMESLICEofSDB[ls,ld,lh]}  (sum{(m,t) in MODExTECHNOLOGYperSTORAGEto[s]} (RateOfActivity[r,l,t,m,y] * TechnologyToStorage[r,t,s,m]) - (sum{(m,t) in MODExTECHNOLOGYperSTORAGEfrom[s]} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m])) * YearSplit[l,y]
+#     = StorageLevelYearFinish[r,s,y];
 s.t. S9_and_S10_StorageLevelSeasonStart{r in REGION, s in STORAGE, ls in SEASON, y in YEAR}:
     if ls = min{lsls in SEASON} min(lsls)
     then StorageLevelYearStart[r,s,y]
@@ -429,13 +431,17 @@ s.t. S11_and_S12_StorageLevelDayTypeStart{r in REGION, s in STORAGE, ls in SEASO
     then StorageLevelSeasonStart[r,s,ls,y]
     else StorageLevelDayTypeStart[r,s,ls,ld-1,y] + sum{lh in DAILYTIMEBRACKET} (((sum{(m,t) in MODExTECHNOLOGYperSTORAGEto[s], l in TIMESLICEofSDB[ls,ld-1,lh]} RateOfActivity[r,l,t,m,y] * TechnologyToStorage[r,t,s,m]) - (sum{(m,t) in MODExTECHNOLOGYperSTORAGEfrom[s], l in TIMESLICEofSDB[ls,ld-1,lh]} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m])) * DaySplit[lh,y]) * DaysInDayType[ls,ld-1,y]
     = StorageLevelDayTypeStart[r,s,ls,ld,y];
-s.t. S13_and_S14_and_S15_StorageLevelDayTypeFinish{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, y in YEAR}:
-    if ls = max{lsls in SEASON} max(lsls) && ld = max{ldld in DAYTYPE} max(ldld)
-    then StorageLevelYearFinish[r,s,y]
-    else if ld = max{ldld in DAYTYPE} max(ldld)
-    then StorageLevelSeasonStart[r,s,ls+1,y]
-    else StorageLevelDayTypeFinish[r,s,ls,ld+1,y] - sum{lh in DAILYTIMEBRACKET} (((sum{(m,t) in MODExTECHNOLOGYperSTORAGEto[s], l in TIMESLICEofSDB[ls,ld+1,lh]} RateOfActivity[r,l,t,m,y] * TechnologyToStorage[r,t,s,m]) - (sum{(m,t) in MODExTECHNOLOGYperSTORAGEfrom[s], l in TIMESLICEofSDB[ls,ld+1,lh]} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m])) * DaySplit[lh,y]) * DaysInDayType[ls,ld+1,y]
-    = StorageLevelDayTypeFinish[r,s,ls,ld,y];
+# s.t. S13_and_S14_and_S15_StorageLevelDayTypeFinish{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, y in YEAR}:
+#     if ls = max{lsls in SEASON} max(lsls) && ld = max{ldld in DAYTYPE} max(ldld)
+#     then StorageLevelYearFinish[r,s,y]
+#     else if ld = max{ldld in DAYTYPE} max(ldld)
+#     then StorageLevelSeasonStart[r,s,ls+1,y]
+#     else StorageLevelDayTypeFinish[r,s,ls,ld+1,y] - sum{lh in DAILYTIMEBRACKET} (((sum{(m,t) in MODExTECHNOLOGYperSTORAGEto[s], l in TIMESLICEofSDB[ls,ld+1,lh]} RateOfActivity[r,l,t,m,y] * TechnologyToStorage[r,t,s,m]) - (sum{(m,t) in MODExTECHNOLOGYperSTORAGEfrom[s], l in TIMESLICEofSDB[ls,ld+1,lh]} RateOfActivity[r,l,t,m,y] * TechnologyFromStorage[r,t,s,m])) * DaySplit[lh,y]) * DaysInDayType[ls,ld+1,y]
+#     = StorageLevelDayTypeFinish[r,s,ls,ld,y];
+s.t. S30_StorageLevelYearStart2{r in REGION, s in STORAGE, y in YEAR,l in TIMESLICE}:	StorageLevelYearStart[r,s,y]  = 0.5*AccumulatedNewStorageCapacity[r,s,y];
+s.t. S39_StorageIntraday{r in REGION, s in STORAGE, ls in SEASON, ld in DAYTYPE, y in YEAR}: sum{lh in DAILYTIMEBRACKET} (NetChargeWithinDay[r,s,ls,ld,lh,y])=0;
+s.t. S39_StorageIntrayear{r in REGION, s in STORAGE, y in YEAR}: sum{ls in SEASON, ld in DAYTYPE, lh in DAILYTIMEBRACKET} (NetChargeWithinYear[r,s,ls,ld,lh,y])=0;
+
 #
 ##########                Storage Constraints                                #############
 #
@@ -455,15 +461,15 @@ s.t. SC6_MaxDischargeConstraint{r in REGION, s in STORAGE, ls in SEASON, ld in D
 #########                Storage Investments                                #############
 #
 s.t. SI6_SalvageValueStorageAtEndOfPeriod1{r in REGION, s in STORAGE, y in YEAR: (y+OperationalLifeStorage[r,s]-1) <= (max{yy in YEAR} max(yy))}: 0 = SalvageValueStorage[r,s,y];
-#s.t. SI7_SalvageValueStorageAtEndOfPeriod2{r in REGION, s in STORAGE, y in YEAR: (DepreciationMethod[r]=1 && (y+OperationalLifeStorage[r,s]-1) > (max{yy in YEAR} max(yy)) && DiscountRateStorage[r,s]=0) || (DepreciationMethod[r]=2 && (y+OperationalLifeStorage[r,s]-1) > (max{yy in YEAR} max(yy)))}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]*(1-(max{yy in YEAR} max(yy) - y+1)/OperationalLifeStorage[r,s]) = SalvageValueStorage[r,s,y];
-#s.t. SI8_SalvageValueStorageAtEndOfPeriod3{r in REGION, s in STORAGE, y in YEAR: DepreciationMethod[r]=1 && (y+OperationalLifeStorage[r,s]-1) > (max{yy in YEAR} max(yy)) && DiscountRateStorage[r,s]>0}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]*(1-(((1+DiscountRateStorage[r,s])^(max{yy in YEAR} max(yy) - y+1)-1)/((1+DiscountRateStorage[r,s])^OperationalLifeStorage[r,s]-1))) = SalvageValueStorage[r,s,y];
-#s.t. SI1_StorageUpperLimit{r in REGION, s in STORAGE, y in YEAR}: sum{yy in YEAR: y-yy < OperationalLifeStorage[r,s] && y-yy>=0} NewStorageCapacity[r,s,yy]+ResidualStorageCapacity[r,s,y] = StorageUpperLimit[r,s,y];
-#s.t. SI2_StorageLowerLimit{r in REGION, s in STORAGE, y in YEAR}: MinStorageCharge[r,s,y]*(sum{yy in YEAR: y-yy < OperationalLifeStorage[r,s] && y-yy>=0} NewStorageCapacity[r,s,yy]+ResidualStorageCapacity[r,s,y]) = StorageLowerLimit[r,s,y];
-#s.t. SI3_TotalNewStorage{r in REGION, s in STORAGE, y in YEAR}: sum{yy in YEAR: y-yy < OperationalLifeStorage[r,s] && y-yy>=0} NewStorageCapacity[r,s,yy]=AccumulatedNewStorageCapacity[r,s,y];
-#s.t. SI4_UndiscountedCapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] = CapitalInvestmentStorage[r,s,y];
-#s.t. SI5_DiscountingCapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactorStorage[r,s,y] = DiscountedCapitalInvestmentStorage[r,s,y];
-#s.t. SI9_SalvageValueStorageDiscountedToStartYear{r in REGION, s in STORAGE, y in YEAR}: SalvageValueStorage[r,s,y]/((1+DiscountRate[r])^(max{yy in YEAR} max(yy)-min{yy in YEAR} min(yy)+1)) = DiscountedSalvageValueStorage[r,s,y];
-#s.t. SI10_TotalDiscountedCostByStorage{r in REGION, s in STORAGE, y in YEAR}: (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactorStorage[r,s,y]-CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactorStorage[r,s,y]) = TotalDiscountedStorageCost[r,s,y];
+s.t. SI7_SalvageValueStorageAtEndOfPeriod2{r in REGION, s in STORAGE, y in YEAR: (DepreciationMethod[r]=1 && (y+OperationalLifeStorage[r,s]-1) > (max{yy in YEAR} max(yy)) && DiscountRateStorage[r,s]=0) || (DepreciationMethod[r]=2 && (y+OperationalLifeStorage[r,s]-1) > (max{yy in YEAR} max(yy)))}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]*(1-(max{yy in YEAR} max(yy) - y+1)/OperationalLifeStorage[r,s]) = SalvageValueStorage[r,s,y];
+s.t. SI8_SalvageValueStorageAtEndOfPeriod3{r in REGION, s in STORAGE, y in YEAR: DepreciationMethod[r]=1 && (y+OperationalLifeStorage[r,s]-1) > (max{yy in YEAR} max(yy)) && DiscountRateStorage[r,s]>0}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]*(1-(((1+DiscountRateStorage[r,s])^(max{yy in YEAR} max(yy) - y+1)-1)/((1+DiscountRateStorage[r,s])^OperationalLifeStorage[r,s]-1))) = SalvageValueStorage[r,s,y];
+s.t. SI1_StorageUpperLimit{r in REGION, s in STORAGE, y in YEAR}: sum{yy in YEAR: y-yy < OperationalLifeStorage[r,s] && y-yy>=0} NewStorageCapacity[r,s,yy]+ResidualStorageCapacity[r,s,y] = StorageUpperLimit[r,s,y];
+s.t. SI2_StorageLowerLimit{r in REGION, s in STORAGE, y in YEAR}: MinStorageCharge[r,s,y]*(sum{yy in YEAR: y-yy < OperationalLifeStorage[r,s] && y-yy>=0} NewStorageCapacity[r,s,yy]+ResidualStorageCapacity[r,s,y]) = StorageLowerLimit[r,s,y];
+s.t. SI3_TotalNewStorage{r in REGION, s in STORAGE, y in YEAR}: sum{yy in YEAR: y-yy < OperationalLifeStorage[r,s] && y-yy>=0} NewStorageCapacity[r,s,yy]=AccumulatedNewStorageCapacity[r,s,y];
+s.t. SI4_UndiscountedCapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] = CapitalInvestmentStorage[r,s,y];
+s.t. SI5_DiscountingCapitalInvestmentStorage{r in REGION, s in STORAGE, y in YEAR}: CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactorStorage[r,s,y] = DiscountedCapitalInvestmentStorage[r,s,y];
+s.t. SI9_SalvageValueStorageDiscountedToStartYear{r in REGION, s in STORAGE, y in YEAR}: SalvageValueStorage[r,s,y]/((1+DiscountRate[r])^(max{yy in YEAR} max(yy)-min{yy in YEAR} min(yy)+1)) = DiscountedSalvageValueStorage[r,s,y];
+s.t. SI10_TotalDiscountedCostByStorage{r in REGION, s in STORAGE, y in YEAR}: (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactorStorage[r,s,y]-CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactorStorage[r,s,y]) = TotalDiscountedStorageCost[r,s,y];
 #
 #########               Capital Costs                              #############
 #
