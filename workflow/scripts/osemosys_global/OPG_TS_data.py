@@ -573,6 +573,57 @@ set_technology.to_csv(os.path.join(output_data_dir,
                                     'TECHNOLOGY.csv'),
                         index=None)
 
+# Add InputActivityRatio and OutputActivityRatio
+# InputActivityRatio
+df_storage_iar = pd.DataFrame(list(itertools.product([region_name],
+                                                     storage_techs,
+                                                     years,
+                                                     [1])),
+                              columns=['REGION',
+                                       'TECHNOLOGY',
+                                       'YEAR',
+                                       'MODE_OF_OPERATION']
+                              )
+df_storage_iar['VALUE'] = 1
+df_storage_iar['FUEL'] = 'ELC' + df_storage_iar['TECHNOLOGY'].str[6:11] + '01'
+df_storage_iar = df_storage_iar[['REGION',
+                                 'TECHNOLOGY',
+                                 'FUEL',
+                                 'MODE_OF_OPERATION',
+                                 'YEAR',
+                                 'VALUE']]
+df_iar = pd.read_csv(os.path.join(output_data_dir,
+                                  'InputActivityRatio.csv'))
+df_iar = pd.concat([df_iar, df_storage_iar])
+df_iar.to_csv(os.path.join(output_data_dir,
+                           'InputActivityRatio.csv'),
+              index=None)
+
+# OutputActivityRatio
+df_storage_oar = pd.DataFrame(list(itertools.product([region_name],
+                                                     storage_techs,
+                                                     years,
+                                                     [2])),
+                              columns=['REGION',
+                                       'TECHNOLOGY',
+                                       'YEAR',
+                                       'MODE_OF_OPERATION']
+                              )
+df_storage_oar['VALUE'] = 1
+df_storage_oar['FUEL'] = 'ELC' + df_storage_oar['TECHNOLOGY'].str[6:11] + '01'
+df_storage_oar = df_storage_oar[['REGION',
+                                 'TECHNOLOGY',
+                                 'FUEL',
+                                 'MODE_OF_OPERATION',
+                                 'YEAR',
+                                 'VALUE']]
+df_oar = pd.read_csv(os.path.join(output_data_dir,
+                                  'OutputActivityRatio.csv'))
+df_oar = pd.concat([df_oar, df_storage_oar])
+df_oar.to_csv(os.path.join(output_data_dir,
+                           'OutputActivityRatio.csv'),
+              index=None)
+
 # Create TechnologyToStorage and TechnologyFromStorage
 
 df_tech_storage = pd.DataFrame(columns=['REGION',
@@ -636,6 +687,12 @@ df_ls.to_csv(os.path.join(output_data_dir,
                             'Conversionls.csv'),
              index=None)
 
+df_season_set = pd.DataFrame(list(range(1,len(seasons)+1)),
+                             columns=['VALUE'])
+df_season_set.to_csv(os.path.join(output_data_dir,
+                                  'SEASON.csv'),
+                       index=None)
+
 # Conversionld
 df_ld = pd.DataFrame(list(itertools.product(time_slice_list,
                                             [1]
@@ -649,6 +706,11 @@ df_ld.fillna(0, inplace=True)
 df_ld.to_csv(os.path.join(output_data_dir,
                             'Conversionld.csv'),
              index=None)
+df_daytype_set = pd.DataFrame([1],
+                              columns=['VALUE'])
+df_daytype_set.to_csv(os.path.join(output_data_dir,
+                                   'DAYTYPE.csv'),
+                       index=None)
 
 # Conversionlh
 df_lh = pd.DataFrame(list(itertools.product(time_slice_list,
@@ -664,6 +726,10 @@ df_lh.fillna(0, inplace=True)
 df_lh.to_csv(os.path.join(output_data_dir,
                             'Conversionlh.csv'),
              index=None)
-
+df_dayparts_set = pd.DataFrame(list(range(1,len(dayparts)+1)),
+                               columns=['VALUE'])
+df_dayparts_set.to_csv(os.path.join(output_data_dir,
+                                    'DAILYTIMEBRACKET.csv'),
+                       index=None)
 
 logging.info('Time Slicing Completed')
