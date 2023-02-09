@@ -12,6 +12,10 @@ include: 'rules/preprocess.smk'
 include: 'rules/model.smk'
 include: 'rules/postprocess.smk'
 
+# constants 
+
+OTOOLE_FILES = os.listdir('resources/simplicity/data')
+
 # handlers 
         
 onsuccess:
@@ -40,11 +44,11 @@ rule all:
         expand('results/{scenario}/figures/{result_figure}.html', 
             scenario=config['scenario'], result_figure = result_figures)
 
-rule data_file:
-    message: 
-        'Scenario data file created successfully!'
+rule generate_input_data:
+    message:
+        "Generating input CSV data..."
     input:
-        expand('results/{scenario}/{scenario}.txt', scenario=config['scenario'])
+        csv_files = expand('results/{scenario}/data/{csv}', scenario=config['scenario'], csv=OTOOLE_FILES),
 
 rule make_dag:
     message:
