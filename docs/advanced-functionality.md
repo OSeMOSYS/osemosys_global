@@ -25,7 +25,7 @@ snakemake generate_input_data -c
 
 At this point, there will be a folder called `results/<scenario>/data/` that 
 holds all template data for the scenario. Find the csv file `SpecifiedAnnualDemand.csv`
-and chnage the values in the `VALUE` column. This can be done for any parameter, 
+and change the values in the `VALUE` column. This can be done for any parameter, 
 not just SpecifiedAnnualDemand. 
 
 :::{warning}
