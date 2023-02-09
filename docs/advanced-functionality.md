@@ -3,7 +3,7 @@
 OSeMOSYS Global exposes numerous ways to customize the model. This page describes what 
 these customizations are and how to execute them.
 
-<!-- ## User Defined Data 
+## User Defined Data 
 
 A user may want to use the existing structure of OSeMOSYS Global, but sub in 
 their own data. This may be open-data that is different from OSeMOSYS Global's 
@@ -135,4 +135,4 @@ Then run the workflow as normal from the root directory
 
 ```bash
 snakemake -c
-``` -->
+```
