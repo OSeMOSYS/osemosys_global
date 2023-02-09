@@ -1,19 +1,53 @@
-# Model Modifications
+# Advanced Functionality 
 
 OSeMOSYS Global exposes numerous ways to customize the model. This page describes what 
 these customizations are and how to execute them.
 
+<!-- ## User Defined Data 
+
+A user may want to use the existing structure of OSeMOSYS Global, but sub in 
+their own data. This may be open-data that is different from OSeMOSYS Global's 
+compiled data, or proprietary data. This can eaisly be done. 
+
+In this example, we show how to change the `SpecifiedAnnualDemand` data of a 
+model generated using OSeMOSYS Global
+
+### 1. Generate Template Data 
+
+Instead of running the full workflow, we will only run the workflow up to 
+the generation of the input CSV files through the command: 
+
+```bash
+snakemake generate_input_data -c
+```
+
+### 2. Modify Parameter Data 
+
+At this point, there will be a folder called `results/<scenario>/data/` that 
+holds all template data for the scenario. Find the csv file `SpecifiedAnnualDemand.csv`
+and chnage the values in the `VALUE` column. This can be done for any parameter, 
+not just SpecifiedAnnualDemand. 
+
+:::{warning}
+While any parameter can be updated, do NOT change the set definitions. Sets
+are identified by being named in files with all capitals (ie. REGION.csv). 
+:::
+
+### 3. Run the Remainder of the Workflow 
+
+Restart the workflow, which will build and solve the model, through the command: 
+
+```bash
+snakemake -c
+```
+
 ## Custom Nodes 
 
 A user may wish to introduce custom nodes to improve the spatial resolution of 
-a particular region or country. 
+a particular region or country. In this example, we show how to break the 
+single node country of Indonesia into seven seperate nodes.  
 
-### Example 
- 
-In this example, we show how to break the single node country of Indonesia 
-into seven seperate nodes.  
-
-#### Remove the Existing Node
+### 1. Remove the Existing Node
 
 In the configuration file, remove the existing Indonesia node
 (`INDXX`), through the `nodes_to_remove` parameter
@@ -23,7 +57,7 @@ nodes_to_remove:
   - 'IDNXX'
 ```
 
-#### Add New Nodes
+### 2. Add New Nodes
 
 In the configuration file, add the names of the new nodes you
 wish to add. In this case we will add the nodes `IDNSM`, `IDNJW`, `IDNNU`, 
@@ -45,7 +79,7 @@ nodes_to_add:
   - 'IDNPP'
 ```
 
-#### Add Residual Capacity 
+### 3. Add Residual Capacity 
 
 In the folder `resources/data/custom_nodes`, add any residual capacity to the 
 `residual_capacity.csv`. The data must be formatted as show. The 
@@ -56,7 +90,7 @@ fuel type must be one of the existing fuels in the model (see
 |-----------|-------------|------------|----------|----------|
 | COA       | IDNJW       | 2010       | 2040     | 5000     |
 
-#### Add Specified Annual Demand
+### 4. Add Specified Annual Demand
 
 In the folder `resources/data/custom_nodes`, add the annual demand for each 
 node to the `specified_annual_demand.csv`. The data must be formatted as 
@@ -68,7 +102,7 @@ shown, with the demand given in PJ.
 | IDNSM       | 2021 | 333.22 |
 | IDNSM       | 2022 | 346.53 |
 
-#### Add Specified Demand Profile 
+### 5. Add Specified Demand Profile 
 
 In the folder `resources/data/custom_nodes`, add the demand profile for each 
 node to the `specified_demand_profile.csv`. The data must be formatted as shown.
@@ -87,7 +121,7 @@ will then be aggregated according to the timeslice definition and replicated
 for each year. 
 :::
 
-#### Run the model 
+### 6. Run the model 
 
 Check that the country with custom nodes is listed under the geographic scope
 in the configuration file 
@@ -101,4 +135,4 @@ Then run the workflow as normal from the root directory
 
 ```bash
 snakemake -c
-```
+``` -->
