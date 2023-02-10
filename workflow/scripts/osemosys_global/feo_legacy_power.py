@@ -71,8 +71,8 @@ def main():
         # 
         df = df.dropna(subset=['admin_1'])
         df = df.dropna(subset=['id'])
-        df.to_csv('residual_capacity_check.csv',
-                  index=None)
+        #df.to_csv('residual_capacity_check.csv',
+        #          index=None)
         # Set start_year for each power plant. If not available, set to '0'
         df['START_YEAR'] = df['operation_start'].str.split('-', 
                                                         expand=True)[0]
