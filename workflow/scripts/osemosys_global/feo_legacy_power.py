@@ -66,7 +66,7 @@ def main():
             df = pd.concat([df, df_temp])
         
         # Keep only 'operating' plants
-        df = df[df['operating_status'] == 'operating']
+        #df = df[df['operating_status'] == 'operating']
 
         # 
         df = df.dropna(subset=['admin_1'])

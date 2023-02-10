@@ -16,6 +16,7 @@ _TECH_TO_FUEL = {
     'COG':'Lignite Coal',
     'OCG':'Natural Gas',
     'CCG':'Natural Gas',
+    'GAS':'Natural Gas',
     'PET':'Motor Gasoline',
     'OIL':'Crude Oil',
     'OTH':'Natural Gas'
@@ -133,8 +134,9 @@ def get_ear(emission):
 
     # GET INFO FROM INPUT ACTIVITY RATIO
 
-    df_iar = pd.read_csv(Path(output_data_dir, 'InputActivityRatio.csv'))
-    df = df_iar.drop(['FUEL', 'VALUE'], axis=1)
+    df_oar = pd.read_csv(Path(output_data_dir, 'OutputActivityRatio.csv'))
+    df = df_oar.drop(['FUEL', 'VALUE'], axis=1)
+    df = df[df['TECHNOLOGY'].str.startswith('MIN')]
 
     # ADD IN EMISSION COLUMN
 
@@ -142,9 +144,12 @@ def get_ear(emission):
     
     # ADD MAPPING OF TECHNOLOGY TO EMISSION ACTIVITY RATIO
 
-    techs = pd.Series(df['TECHNOLOGY'].str[3:6])
-    fules = techs.map(_TECH_TO_FUEL)
-    df['VALUE'] = fules.map(co2_factors)
+    df['TECH_CODE'] = df['TECHNOLOGY'].str[3:6]
+    df['FUEL_NAME'] = df['TECH_CODE'].map(_TECH_TO_FUEL)
+    df['VALUE'] = df['FUEL_NAME'].map(co2_factors)
+    #techs = pd.Series(df['TECHNOLOGY'].str[3:6])
+    #fuels = techs.map(_TECH_TO_FUEL)
+    #df['VALUE'] = fuels.map(co2_factors)
     df['VALUE'] = df['VALUE'].fillna(0)
     df = df[[
         'REGION', 

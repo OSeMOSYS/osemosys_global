@@ -1367,6 +1367,8 @@ def newIar(df_in, tech):
         iar = 0.5
     elif tech == 'OCG':
         iar = 0.35
+    elif tech == 'COA':
+        iar = 0.33
     else: 
         logging.warning(f'Default IAR used for new {tech} power plants')
         iar = 1
@@ -1577,7 +1579,7 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
                                  columns = ['TECHNOLOGY',
                                             'MODE_OF_OPERATION',
                                             'YEAR']
-                                 )
+                                 )  
         # IAR in modes 1 and 2 are primary electricity commodity ('ELC*01') in 
         # node_from and node_to, respectively. 
         # OAR is the inverse of the above

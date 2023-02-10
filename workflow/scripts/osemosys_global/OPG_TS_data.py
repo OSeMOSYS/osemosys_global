@@ -592,12 +592,19 @@ df_storage_iar = df_storage_iar[['REGION',
                                  'MODE_OF_OPERATION',
                                  'YEAR',
                                  'VALUE']]
+
+wait_time = 0
+while not os.path.exists(os.path.join(output_data_dir, 'InputActivityRatio.csv')):
+    time.sleep(5)
+    wait_time += 1
+    if wait_time > 20 : break
 df_iar = pd.read_csv(os.path.join(output_data_dir,
                                   'InputActivityRatio.csv'))
 df_iar = pd.concat([df_iar, df_storage_iar])
 df_iar.to_csv(os.path.join(output_data_dir,
                            'InputActivityRatio.csv'),
               index=None)
+time.sleep(10)
 
 # OutputActivityRatio
 df_storage_oar = pd.DataFrame(list(itertools.product([region_name],
@@ -617,12 +624,19 @@ df_storage_oar = df_storage_oar[['REGION',
                                  'MODE_OF_OPERATION',
                                  'YEAR',
                                  'VALUE']]
+
+wait_time = 0
+while not os.path.exists(os.path.join(output_data_dir, 'OutputActivityRatio.csv')):
+    time.sleep(5)
+    wait_time += 1
+    if wait_time > 20 : break
 df_oar = pd.read_csv(os.path.join(output_data_dir,
                                   'OutputActivityRatio.csv'))
 df_oar = pd.concat([df_oar, df_storage_oar])
 df_oar.to_csv(os.path.join(output_data_dir,
                            'OutputActivityRatio.csv'),
               index=None)
+time.sleep(10)
 
 # Create TechnologyToStorage and TechnologyFromStorage
 
