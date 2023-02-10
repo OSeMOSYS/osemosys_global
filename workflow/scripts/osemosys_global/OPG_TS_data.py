@@ -5,8 +5,6 @@
 
 # ### Import modules
 
-# In[1]:
-
 
 import pandas as pd
 import datetime
@@ -38,6 +36,7 @@ geographic_scope = config.get('geographic_scope')
 seasons = config.get('seasons')
 daytype = config.get('daytype')
 dayparts = config.get('dayparts')
+reserve_margin = config.get('reserve_margin')
 
 # Check for custom nodes directory
 try:
@@ -110,10 +109,7 @@ model_start_year = config.get('startYear')
 model_end_year = config.get('endYear')
 years = list(range(model_start_year, model_end_year+1))
 
-
-# In[4]:
-
-
+# Read renewable profile files
 csp_df = pd.read_csv(os.path.join(input_data_dir,
                                   'CSP 2015.csv'),
                      encoding='latin-1')
@@ -204,17 +200,12 @@ wof_df.name = 'WOF'
 
 # ### Create 'output' directory if it doesn't exist
 
-# In[5]:
-
-
 import os
 if not os.path.exists(output_data_dir):
     os.makedirs(output_data_dir)
 
 
 # ### Create columns for year, month, day, hour, and day type
-
-# In[6]:
 
 if custom_nodes:
     demand_nodes = [x for x in demand_df.columns if x != 'Datetime'] + custom_nodes
@@ -244,9 +235,6 @@ demand_df.loc[demand_df['Day-of-week'] != 'WD', 'Day-of-week'] = 'WE'
 
 # ### Create dictionaries for 'seasons' and 'dayparts'
 
-# In[7]:
-
-
 seasons_dict = dict(zip(list(seasons_df['month']),
                         list(seasons_df['season'])
                        )
@@ -262,9 +250,6 @@ dayparts_dict = {i: [j, k]
 
 
 # ### Create columns with 'seasons' and 'dayparts'
-
-# In[8]:
-
 
 demand_df['Season'] = demand_df['Month']
 demand_df['Season'].replace(seasons_dict, inplace=True)
@@ -283,9 +268,6 @@ for daypart in dayparts_dict:
 
 # ### Create column for timeslice with and without day-type
 
-# In[9]:
-
-
 if daytype_included:
     demand_df['TIMESLICE'] = (demand_df['Season'] +
                               demand_df['Day-of-week'] +
@@ -296,9 +278,6 @@ else:
 
 
 # ### Calculate YearSplit
-
-# In[10]:
-
 
 yearsplit = (demand_df['TIMESLICE'].
              value_counts(normalize = True).
@@ -320,9 +299,6 @@ yearsplit_final.to_csv(os.path.join(output_data_dir,
 
 
 # ### Calculate SpecifiedAnnualDemand and SpecifiedDemandProfile
-
-# In[11]:
-
 
 sp_demand_df = demand_df[[x 
                           for x in demand_df.columns 
@@ -746,4 +722,128 @@ df_dayparts_set.to_csv(os.path.join(output_data_dir,
                                     'DAILYTIMEBRACKET.csv'),
                        index=None)
 
+# Daysplit
+
+daysplit = {}
+for dp, hr in dayparts_raw.items():
+    daysplit[int(dp[1:])] = (hr[1] - hr[0])/8760
+
+df_daysplit = pd.DataFrame(itertools.product(list(range(1,len(dayparts)+1)),
+                                             years),
+                           columns=['DAILYTIMEBRACKET',
+                                    'YEAR'])
+df_daysplit['VALUE'] = df_daysplit['DAILYTIMEBRACKET'].map(daysplit)
+df_daysplit = df_daysplit[['DAILYTIMEBRACKET',
+                           'YEAR',
+                           'VALUE']]
+df_daysplit.to_csv(os.path.join(output_data_dir,
+                                'DaySplit.csv'),
+                   index=None)
+
+# CapitalCostStorage
+storage_set = [('BAT' + x +'01') for x in demand_nodes 
+                if x[:3] in geographic_scope]
+df_cap_cost_storage = pd.DataFrame(list(itertools.product(storage_set,
+                                                          years)
+                                        ),
+                                   columns=['STORAGE',
+                                            'YEAR']
+                                   )
+df_cap_cost_storage['STORAGE_TYPE'] = df_cap_cost_storage['STORAGE'].str[:3]
+storage_costs = pd.read_csv(os.path.join(input_data_dir,
+                                         'storage_costs.csv'))
+
+storage_costs_df = pd.DataFrame(list(itertools.product(storage_costs['STORAGE_TYPE'].unique(),
+                                                       list(range(storage_costs['YEAR'].min(),
+                                                                  storage_costs['YEAR'].max()+1)))
+                                        ),
+                                   columns=['STORAGE_TYPE',
+                                            'YEAR']
+                                   )
+storage_costs_df = storage_costs_df.merge(storage_costs,
+                                          how='left',
+                                          on=['STORAGE_TYPE', 'YEAR'])
+storage_costs_df = storage_costs_df.interpolate()
+df_cap_cost_storage = df_cap_cost_storage.merge(storage_costs_df,
+                                                how='left',
+                                                on=['STORAGE_TYPE', 'YEAR'])
+df_cap_cost_storage['VALUE'] = df_cap_cost_storage['VALUE'].mul(1e6/3600)
+df_cap_cost_storage['REGION'] = region_name
+df_cap_cost_storage = df_cap_cost_storage[['REGION',
+                                           'STORAGE',
+                                           'YEAR',
+                                           'VALUE']]
+df_cap_cost_storage.to_csv(os.path.join(output_data_dir,
+                                        'CapitalCostStorage.csv'),
+                           index=None)
+
+# CapacityToActivityUnit for Storage
+
+
+# ReserveMargin
+    
+df_rm = pd.DataFrame(years,
+                     columns=['YEAR'])
+for rm, rm_params in reserve_margin.items():
+    df_rm.loc[df_rm['YEAR'].between(rm_params[1], rm_params[2]),
+                'VALUE'] = (1 + rm_params[0]/100)
+
+df_rm = df_rm.interpolate()    
+df_rm['REGION'] = region_name
+df_rm = df_rm[['REGION',
+               'YEAR',
+               'VALUE']]
+df_rm.to_csv(os.path.join(output_data_dir,
+                            'ReserveMargin.csv'),
+             index=None)
+
+# ReserveMarginTagTechnology
+df_rmtt = pd.read_csv(os.path.join(output_data_dir,
+                                    'TECHNOLOGY.csv'))
+reserve_margin_techs = ['COA',
+                        'COG',
+                        'OCG',
+                        'CCG',
+                        'PET',
+                        'URN',
+                        'OIL',
+                        'OTH',
+                        'BIO',
+                        'HYD',
+                        'GEO'
+                        ]
+rm_techs = [x for x in df_rmtt['VALUE'].unique()
+            if x.startswith('PWR')
+            if x[3:6] in reserve_margin_techs]      
+df_rmtt = pd.DataFrame(list(itertools.product([region_name],
+                                              rm_techs,
+                                              years,
+                                              [1])),
+                       columns=['REGION',
+                                'TECHNOLOGY',
+                                'YEAR',
+                                'VALUE']
+                       )                  
+df_rmtt.to_csv(os.path.join(output_data_dir,
+                            'ReserveMarginTagTechnology.csv'),
+               index=None)
+
+# ReserveMarginTagFuel
+df_rmtf = pd.read_csv(os.path.join(output_data_dir,
+                                   'FUEL.csv'))
+rm_fuels = [x for x in df_rmtf['VALUE'].unique()
+            if x.startswith('ELC')
+            if x.endswith('01')]
+df_rmtf = pd.DataFrame(list(itertools.product([region_name],
+                                              rm_fuels,
+                                              years,
+                                              [1])),
+                       columns=['REGION',
+                                'FUEL',
+                                'YEAR',
+                                'VALUE']
+                       )    
+df_rmtf.to_csv(os.path.join(output_data_dir,
+                            'ReserveMarginTagFuel.csv'),
+               index=None)
 logging.info('Time Slicing Completed')

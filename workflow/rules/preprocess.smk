@@ -51,7 +51,9 @@ timeslice_files = [
     'Conversionlh.csv',
     'SEASON.csv',
     'DAYTYPE.csv',
-    'DAILYTIMEBRACKET.csv'
+    'DAILYTIMEBRACKET.csv',
+    'CapitalCostStorage.csv',
+    'DaySplit.csv'
     ]
 
 variable_cost_files = [
