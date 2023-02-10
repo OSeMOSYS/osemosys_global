@@ -76,6 +76,14 @@ osemosys\_global.OPG\_variablecosts module
    :undoc-members:
    :show-inheritance:
 
+osemosys\_global.feo\_legacy\_power module
+------------------------------------------
+
+.. automodule:: osemosys_global.feo_legacy_power
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 osemosys\_global.plot\_input\_data module
 -----------------------------------------
 
