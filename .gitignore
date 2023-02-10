@@ -138,3 +138,6 @@ resources/.DS_Store
 resources/data/.DS_Store
 workflow/.DS_Store
 workflow/scripts/.DS_Store
+
+# Environment credentials
+.env
