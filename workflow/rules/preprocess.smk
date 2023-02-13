@@ -53,7 +53,10 @@ timeslice_files = [
     'DAYTYPE.csv',
     'DAILYTIMEBRACKET.csv',
     'CapitalCostStorage.csv',
-    'DaySplit.csv'
+    'DaySplit.csv',
+    'ReserveMargin.csv',
+    'ReserveMarginTagTechnology.csv',
+    'ReserveMarginTagFuel.csv'
     ]
 
 variable_cost_files = [

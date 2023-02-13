@@ -1,6 +1,7 @@
 import requests, json
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
+import numpy as np
 import os
 import yaml
 from OPG_configuration import ConfigFile, ConfigPaths
@@ -77,6 +78,8 @@ def main():
         df['START_YEAR'] = df['operation_start'].str.split('-', 
                                                         expand=True)[0]
         df['START_YEAR'].fillna(0, inplace=True)
+        df['START_YEAR'] = df['START_YEAR'].astype(int)
+        df.fillna(value=np.nan, inplace=True)
         df_technologies = df['technologies'].apply(pd.Series)
         df = pd.concat([df, df_technologies['prime_mover']], axis=1)
         df.loc[df['prime_mover'].isin(['cc_gt']),
@@ -110,6 +113,23 @@ def main():
         op_life_dict = dict(zip(list(df_op_life['tech']),
                                 list(df_op_life['years'])))
         df['op_life'] = df['FUEL_TYPE'].map(op_life_dict)
+        
+        st_yr_fuel_avg = {}
+        for each_fuel in df['FUEL_TYPE'].unique():
+            st_yr_fuel_avg[each_fuel] = df.loc[(df['FUEL_TYPE'].isin([each_fuel])) &
+                                                   (df['START_YEAR'] != 0),
+                                                   'START_YEAR'].mean().astype(int)
+            
+            df.loc[(df['FUEL_TYPE'].isin([each_fuel])) &
+                   (~df['FUEL_TYPE'].isin(['SPV', 'WON'])) &
+                   (df['START_YEAR'] == 0),
+                   'START_YEAR'] = st_yr_fuel_avg[each_fuel]
+            
+            df.loc[(df['FUEL_TYPE'].isin([each_fuel])) &
+                   (df['FUEL_TYPE'].isin(['SPV', 'WON'])) &
+                   (df['START_YEAR'] == 0),
+                   'START_YEAR'] = 2020
+        
         df['END_YEAR'] = df['START_YEAR'].astype(int) + df['op_life'].astype(int)
         df.loc[df['START_YEAR'].astype(int) == 0,
                'END_YEAR'] = 2030
