@@ -70,7 +70,8 @@ demand_files = [
 emission_files = [
     'EmissionActivityRatio.csv',
     'EmissionsPenalty.csv',
-    'EMISSION.csv'
+    'EMISSION.csv',
+    'AnnualEmissionLimit.csv'
 ]
 
 max_capacity_files = [

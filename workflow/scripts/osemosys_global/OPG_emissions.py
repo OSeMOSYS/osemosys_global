@@ -39,25 +39,41 @@ def main():
     
     output_data_dir = config_paths.output_data_dir
     emission_penalty = config.get('emission_penalty') # M$/MT
-
+    emission_limit = config.get('emission_limit') # MT of CO2-eq.
+    start_year = config.get('startYear')
+    end_year = config.get('endYear')
+    region = config.region_name
+    
     # ASSIGN EMISSION ACTIVITY RATIOS
 
     df_ear = get_ear(_EMISSION)
-    df_ear.to_csv(Path(output_data_dir, 'EmissionActivityRatio.csv'), index=False)
+    df_ear.to_csv(Path(output_data_dir, 'EmissionActivityRatio.csv'), 
+                  index=False)
     logging.info('Successfully generated emission activity ratio')
 
     # ASSIGN EMISSION PENALTY 
 
     df_emission_penalty = get_emission_penalty(_EMISSION, emission_penalty)
-    df_emission_penalty.to_csv(Path(output_data_dir, 'EmissionsPenalty.csv'), index=False)
+    df_emission_penalty.to_csv(Path(output_data_dir, 'EmissionsPenalty.csv'), 
+                               index=False)
     logging.info('Successfully generated emission penalty')
 
     # ASSIGN EMISSION 
 
     df_emission = pd.DataFrame([_EMISSION], columns=['VALUE'])
-    df_emission.to_csv(Path(output_data_dir, 'EMISSION.csv'), index=False)
+    df_emission.to_csv(Path(output_data_dir, 'EMISSION.csv'), 
+                       index=False)
     logging.info('Successfully generated emission set')
-
+    
+    # ADD EMISSION LIMITS
+    df_emission_limits = add_emission_limits(_EMISSION, 
+                                             emission_limit,
+                                             start_year, 
+                                             end_year,
+                                             region)
+    df_emission_limits.to_csv(Path(output_data_dir, 'AnnualEmissionLimit.csv'), 
+                              index=False)
+    logging.info('Successfully generated annual emissions limit')
 
 def get_co2_emission_factors():
     """Gets co2 emission factors for diferent fuels. 
@@ -188,6 +204,43 @@ def get_emission_penalty(emission, penalty):
     for year in range(start_year, end_year+1):
         data.append([region, emission, year, penalty])
     df = pd.DataFrame(data, columns=['REGION','EMISSION','YEAR','VALUE'])
+    return df
+
+
+def add_emission_limits(emission, 
+                        emission_limit, 
+                        start_year, 
+                        end_year, 
+                        region):
+    
+    el_years = {}
+    years = list(range(start_year, 
+                       end_year+1))
+    for el, el_params in emission_limit.items():
+        el_years[el_params[0]] = el_params[1]
+
+    if len(el_years) > 1:
+        el_years_max =  max(el_years)
+    else:
+        el_years_max = int(end_year) 
+
+    df = pd.DataFrame(list(range(min(el_years),
+                                 el_years_max + 1)),
+                      columns=['YEAR'])
+    df.sort_values(by=['YEAR'],
+                   inplace=True)
+    df['VALUE'] = df['YEAR'].map(el_years)
+    df['VALUE'].interpolate(inplace=True)
+    df['VALUE'] = df['VALUE'].round(0)
+    df = df[df['YEAR'].isin(years)]
+    
+    df['EMISSION'] = emission
+    df['REGION'] = region
+    
+    df = df[['REGION',
+             'EMISSION',
+             'YEAR',
+             'VALUE']]
     return df
 
 if __name__ == '__main__':
