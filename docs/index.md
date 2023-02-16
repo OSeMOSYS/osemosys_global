@@ -3,11 +3,10 @@ FEO Global (OSeMOSYS)
 
 ## Contents
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 3
 
 1_indonesia
-2_vietnam
-3_china
+1_indonesia_alt
 ```
 
 <!---

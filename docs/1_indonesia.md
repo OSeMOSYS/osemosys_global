@@ -69,6 +69,7 @@ weighting of present and future costs and benefits. A low social DR weights the 
 - GEO: Volcanostratigraphy of Batukuwung-Parakasak Geothermal
 Area, Serang Regency, West Java. 
 - SPV, WON, HYD: Beyond 443 GW
+- HYD: https://www.hydropower.org/blog/indonesia-promotes-hydropower-to-create-the-demand-for-industrial-development#:~:text=The%20biggest%20hydropower%20potential%20is,Tenggara%2DMaluku%20is%201.1%20GW.
 
 | Renewable source  | Potential | Source    |
 |-------------------|-----------|-----------|
@@ -117,6 +118,9 @@ And the future power plants included are:
 
 ## Results
 
+
+ .. raw:: html
+    :file: figures/TotalCapacityAnnual.html
 
 ## Planned improvements
 
