@@ -6,40 +6,58 @@ for Indonesia.
 ## Model scope
 
 ### Spatial resolution
-The model represents 34 provinces of Indonesia, across 7 regions:
- - Sumatra
- - Java
- - Kalimantan
- - Nusa Tenggara
- - Sulawesi
- - Maluku
- - Papua
-
+The model represents 34 provinces of Indonesia across 7 regions, as shown in the map below:
+ - Sumatra [10 provinces]
+ - Java [6 provinces]
+ - Kalimantan [5 provinces]
+ - Nusa Tenggara [3 provinces]
+ - Sulawesi [6 provinces]
+ - Maluku [2 provinces]
+ - Papua [2 provinces]
 
 ![IDN-Provinces](figures/Indonesia_provinces_english.png "IDN-Provinces")
 
 ### Temporal resolution
+Each year is divided into 6 'Seasons' [S1-S6]: 
+Each 'Season' is further divided into 12 'Daily Time Brackets' 
+Together, there are 72 representative 'timeslices' in the model. The temporal resolution is the same for the entire model period. 
+
 
 ### Model horizon
+Base year - 2021 \
+End year - 2050
 
 ## Key assumptions
 
-- Discount rates
+### Discount rates
+The model includes two types of discount rates (DR): 'social' and 'financial'. 
+The social DR is applied across the entire model and represents the relative 
+weighting of present and future costs and benefits. A low social DR weights the present and the future more similarly than a high DR. The financial DR is technology-specific and represents the weighted average cost of capital (WACC) for a given technology (e.g. power plant). The model assumes a value of **10%** for both the social and financial discount rates. The latter is based on the [IEA's Cost of Capital Observatory](https://www.iea.org/data-and-statistics/data-tools/cost-of-capital-observatory)
+
+### Reserve Margin
+
 - Reserve margin 60% -> 35%
 - 
 
-## Data 
+## Data
 ### Technology costs
 
 - Capital costs (USD<sub>2020</sub>/kW, except for *Battery storage* which is in USD <sub>2020</sub>/kWh)
 
 | Technology          | 2020    | 2030    | 2040    | 2050    | Source  |
 |---------------------|---------|---------|---------|---------|---------|
-| Battery storage	          |         |         |         |         | [NREL](https://www.nrel.gov/docs/fy21osti/79236.pdf, 'NREL')  |
-| RE Share            |         |         |         |         |         |
-| Total System Cost	  |         |         |         |         |         |
-| Cost of electricity |         |         |         |         |         |
-| Fossil fuel share   |         |         |         |         |         |
+| Battery storage	  |         |         |         |         | [NREL](https://www.nrel.gov/docs/fy21osti/79236.pdf, 'NREL')  |
+| Coal                |         |         |         |         |         |
+| Gas - CCGT            |         |         |         |         |         |
+| Gas - OCGT            |         |         |         |         |         |
+| Hydropower          |         |         |         |         |         |
+| Biomass             |         |         |         |         |         |
+| Solar photovoltaic |         |         |         |         |         |
+| Wind - Onshore          |         |         |         |         |         |
+| Wind- Offshore          |         |         |         |         |         |
+| CSP          |         |         |         |         |         |
+| Geothermal          |         |         |         |         |         |
+| Diesel          |         |         |         |         |         |
 
 
 ### Renewable Energy Profiles
@@ -58,6 +76,7 @@ Area, Serang Regency, West Java.
 | Wind - Onshore    |           |           |
 | Hydropower        |           |           |
 | Geothermal        |           |           |
+| Biomass           |           |           |
 
 ### Energy demand projections
 
