@@ -6,7 +6,6 @@ FEO Global (OSeMOSYS)
 :maxdepth: 3
 
 1_indonesia
-1_indonesia_alt
 ```
 
 <!---
