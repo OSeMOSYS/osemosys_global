@@ -32,7 +32,8 @@ resolution is the same for the entire model period.
 
 Model horizon
 .............
-Base year - 2021 \
+Base year - 2021
+
 End year - 2050
 
 Key assumptions
@@ -133,8 +134,25 @@ Net-zero
 Results
 -------
 
- .. raw:: html
-    :file: figures/TotalCapacityAnnual.html
+
+Capacity expansion
+..................
+
+.. raw:: html
+   :file: figures/TotalCapacityAnnual_BAU.html
+
+Annual electricity generation mix
+.................................
+
+.. raw:: html
+   :file: figures/GenerationAnnual_BAU.html
+
+Hourly electricity generation mix
+.................................
+
+.. raw:: html
+   :file: figures/GenerationHourly_BAU.html
+
 
 Planned improvements
 --------------------
