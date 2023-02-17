@@ -1,21 +1,21 @@
 import pandas as pd
 pd.set_option('mode.chained_assignment', None)
-import plotly as py
 import plotly.express as px
-import plotly.graph_objects as go
-import plotly.io as pio
 import matplotlib.pyplot as plt
-import itertools
 import os
-import sys
-import yaml
 from OPG_configuration import ConfigFile, ConfigPaths
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from mpl_toolkits.basemap import Basemap
+from visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
+from typing import Dict
+from otoole.read_strategies import ReadCsv
+from pathlib import Path
+from visualisation.utils import get_color_codes
+
 
 def main():
-    '''Creates system level and country level graphs. '''
+    """Creates system level and country level graphs."""
 
     config_paths = ConfigPaths()
     config = ConfigFile('config')
@@ -28,10 +28,13 @@ def main():
     except FileExistsError:
         pass
     
+    input_data = read_results(config_paths.scenario_data_dir)
+    result_data = read_results(config_paths.scenario_results_dir)
+    
     # Get system level results 
-    plot_totalcapacity(country = None)
-    plot_generationannual(country = None)
-    plot_generation_hourly()
+    plot_total_capacity(result_data, scenario_figs_dir, country=None)
+    plot_generation_annual(result_data, scenario_figs_dir, country=None)
+    plot_generation_hourly(input_data, result_data, scenario_figs_dir, country=None)
 
     # If producing by country results, check for folder structure 
     if results_by_country:
@@ -42,8 +45,8 @@ def main():
             except FileExistsError:
                 pass
     
-            plot_totalcapacity(country = country)
-            plot_generationannual(country = country)
+            plot_total_capacity(result_data, scenario_figs_dir, country=country)
+            plot_generation_annual(result_data, scenario_figs_dir, country=country)
     
     # Creates transmission maps by year      
     '''
@@ -52,248 +55,20 @@ def main():
         plot_transmission_capacity(a)
         plot_transmission_flow(a)
     '''
+
+def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None):
+    """Plots total capacity chart 
+        
+    Arguments:
+        save_dir: str 
+            Directory to save file 
+        country: str 
+            If a country provided, plot at a country level, else plot at a 
+            system level
+    """
     
-def powerplant_filter(df, country = None):
-
-    # CONFIGURATION PARAMETERS 
-    config_paths = ConfigPaths()
-    input_data_dir = config_paths.input_data_dir
-    name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
-                                                'color_codes.csv'
-                                                ),
-                                   encoding='latin-1')
-
-    # Get colour mapping dictionary
-    color_dict = dict([(n, c) for n, c
-                   in zip(name_colour_codes.tech_id,
-                          name_colour_codes.colour)])
-
-    filtered_df = df[~df.TECHNOLOGY.str.contains('TRN')]
-    filtered_df = filtered_df.loc[filtered_df.TECHNOLOGY.str[0:3] == 'PWR']
-    filtered_df['TYPE'] = filtered_df.TECHNOLOGY.str[3:6]
-    filtered_df['COUNTRY'] = filtered_df.TECHNOLOGY.str[6:9]
-
-    if country:
-        filtered_df = filtered_df.loc[filtered_df['COUNTRY'] == country]
-        filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
-    else:
-        filtered_df['LABEL'] = filtered_df['TYPE']
-    
-    filtered_df['COLOR'] = filtered_df['TYPE'].map(color_dict)
-    filtered_df.drop(['TECHNOLOGY', 'TYPE', 'COUNTRY'],
-            axis=1,
-            inplace=True)
-    return filtered_df
-
-def transform_ts(df):
-
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    config = ConfigFile('config')
-    scenario_data_dir = config_paths.scenario_data_dir
-    input_data_dir = config_paths.input_data_dir
-    # years = range(config.get('startYear'), config.get('endYear') + 1)
-
-    # GET TECHS TO PLOT
-
-    df_gen = pd.read_csv(os.path.join(scenario_data_dir,
-                                      'TECHNOLOGY.csv'))
-    generation = list(df_gen.VALUE.unique())
-
-    # GET TIMESLICE DEFENITION 
-    '''
-    seasons_months_days = pd.read_csv(os.path.join(input_data_dir,
-                                               'ts_seasons.csv'
-                                               ),
-                                  encoding='latin-1')
-    seasons_dict = dict([(m, s) for m, s
-                         in zip(seasons_months_days.month_name,
-                                seasons_months_days.season)])
-    days_dict = dict([(m, d) for m, d
-                      in zip(seasons_months_days.month_name,
-                             seasons_months_days.days)])
-    months = list(seasons_dict)
-    hours = list(range(1, 25))
-
-    dayparts_hours = pd.read_csv(os.path.join(input_data_dir,
-                                              'ts_dayparts.csv'
-                                              ),
-                                 encoding='latin-1')
-    dayparts_dict = dict(zip(dayparts_hours.daypart,
-                             zip(dayparts_hours.start_hour,
-                                 dayparts_hours.end_hour))
-                         )
-    '''
-
-    seasons_raw = config.get('seasons')
-    seasonsData = []
-
-    for s, months in seasons_raw.items():
-        for month in months:
-            seasonsData.append([month, s]) 
-    seasons_df = pd.DataFrame(seasonsData, 
-                              columns=['month', 'season'])
-    seasons_df = seasons_df.sort_values(by=['month']).reset_index(drop=True)
-    dayparts_raw = config.get('dayparts')
-    daypartData = []
-    for dp, hr in dayparts_raw.items():
-        daypartData.append([dp, hr[0], hr[1]])
-    dayparts_df = pd.DataFrame(daypartData,
-                               columns=['daypart', 'start_hour', 'end_hour'])
-    timeshift = config.get('timeshift')
-    dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
-    dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
-
-    month_names = {1: 'Jan',
-                   2: 'Feb',
-                   3: 'Mar',
-                   4: 'Apr',
-                   5: 'May',
-                   6: 'Jun',
-                   7: 'Jul',
-                   8: 'Aug',
-                   9: 'Sep',
-                   10: 'Oct',
-                   11: 'Nov',
-                   12: 'Dec',
-                   }
-
-    days_per_month = {'Jan': 31,
-                      'Feb': 28,
-                      'Mar': 31,
-                      'Apr': 30,
-                      'May': 31,
-                      'Jun': 30,
-                      'Jul': 31,
-                      'Aug': 31,
-                      'Sep': 30,
-                      'Oct': 31,
-                      'Nov': 30,
-                      'Dec': 31,
-                      }
-
-    seasons_df['month_name'] = seasons_df['month'].map(month_names)
-    seasons_df['days'] = seasons_df['month_name'].map(days_per_month)
-    seasons_df_grouped = seasons_df.groupby(['season'],
-                                            as_index=False)['days'].sum()
-    days_dict = dict(zip(list(seasons_df_grouped['season']),
-                         list(seasons_df_grouped['days'])
-                         )
-                     )
-    seasons_df['days'] = seasons_df['season'].map(days_dict)
-
-    years = config.get_years()
-
-    seasons_dict = dict(zip(list(seasons_df['month']),
-                            list(seasons_df['season'])
-                            )
-                        )
-
-    dayparts_dict = {i: [j, k]
-                     for i, j, k
-                     in zip(list(dayparts_df['daypart']),
-                            list(dayparts_df['start_hour']),
-                            list(dayparts_df['end_hour'])
-                            )
-                     }
-
-    hours_dict = {i: abs(k-j)
-                  for i, j, k
-                  in zip(list(dayparts_df['daypart']),
-                         list(dayparts_df['start_hour']),
-                         list(dayparts_df['end_hour'])
-                         )
-                  }
-
-    months = list(seasons_dict)
-    hours = list(range(1, 25))
-
-    # APPLY TRANSFORMATION
-
-    df_ts_template = pd.DataFrame(list(itertools.product(generation,
-                                                         months,
-                                                         hours,
-                                                         years)
-                                       ),
-                                  columns=['TECHNOLOGY',
-                                           'MONTH',
-                                           'HOUR',
-                                           'YEAR']
-                                  )
-
-    df_ts_template = df_ts_template.sort_values(by=['TECHNOLOGY', 'YEAR'])
-    df_ts_template['SEASON'] = df_ts_template['MONTH'].map(seasons_dict)
-    df_ts_template['DAYS'] = df_ts_template['SEASON'].map(days_dict)
-    df_ts_template['YEAR'] = df_ts_template['YEAR'].astype(int)
-    df_ts_template = powerplant_filter(df_ts_template)
-
-    for daypart in dayparts_dict:
-        if dayparts_dict[daypart][0] > dayparts_dict[daypart][1]: # loops over 24hrs
-            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) |
-                          (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
-                          'DAYPART'] = daypart
-        else:
-            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) &
-                      (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
-                      'DAYPART'] = daypart
-
-    df_ts_template = df_ts_template.drop_duplicates()
-
-    df['SEASON'] = df['TIMESLICE'].str[0:2]
-    df['DAYPART'] = df['TIMESLICE'].str[2:]
-    df['YEAR'] = df['YEAR'].astype(int)
-    df.drop(['REGION', 'FUEL', 'TIMESLICE'],
-            axis=1,
-            inplace=True)
-
-    df = df.groupby(['LABEL', 'SEASON', 'DAYPART', 'YEAR', 'COLOR'],
-                    as_index=False)['VALUE'].sum()
-    df = pd.merge(df,
-                  df_ts_template,
-                  how='left',
-                  on=['LABEL', 'SEASON', 'DAYPART', 'YEAR', 'COLOR']).dropna()
-    df['HOUR_COUNT'] = df['DAYPART'].map(hours_dict)
-    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS']*df['HOUR_COUNT'].mul(3600))
-
-    df = df.pivot_table(index=['MONTH', 'HOUR', 'YEAR'],
-                        columns='LABEL',
-                        values='VALUE',
-                        aggfunc='mean').reset_index().fillna(0)
-    df['MONTH'] = pd.Categorical(df['MONTH'],
-                                 categories=months,
-                                 ordered=True)
-    df = df.sort_values(by=['MONTH', 'HOUR'])
-
-    '''
-    tech_names = dict([(c, n) for c, n
-                   in zip(name_colour_codes.tech_id,
-                          name_colour_codes.tech_name)])
-
-    df = df.rename(columns = tech_names)
-    '''
-    return df
-
-
-def plot_totalcapacity(country = None):
-
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    scenario_figs_dir = config_paths.scenario_figs_dir
-    scenario_results_dir = config_paths.scenario_results_dir
-
-    # GET RESULTS
-
-    df = pd.read_csv(os.path.join(scenario_results_dir,
-                                  'TotalCapacityAnnual.csv'
-                                  )
-                     )
-
-    df = powerplant_filter(df, country)
-
-    plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
-    df.VALUE = df.VALUE.astype('float64')
-    df = df.groupby(['LABEL', 'YEAR'],
-                    as_index=False)['VALUE'].sum()
+    df = get_total_capacity_data(data, country=country)
+    plot_colors = get_color_codes()
 
     if not country: # System level titles
         graph_title = 'Total System Capacity'
@@ -312,7 +87,7 @@ def plot_totalcapacity(country = None):
                          'VALUE': 'Gigawatts (GW)',
                          'LABEL': legend_title},
                  title=graph_title)
-    # fig.update_xaxes(type='category')
+    
     fig.update_layout(
         font_family="Arial",
         font_size=14,
@@ -322,30 +97,25 @@ def plot_totalcapacity(country = None):
     fig.update_traces(marker_line_width=0, opacity=0.8)
 
     if country:
-        fig_file = os.path.join(scenario_figs_dir, country, 'TotalCapacityAnnual.html')
+        fig_file = os.path.join(save_dir, country, 'TotalCapacityAnnual.html')
     else:
-        fig_file = os.path.join(scenario_figs_dir, 'TotalCapacityAnnual.html')
+        fig_file = os.path.join(save_dir, 'TotalCapacityAnnual.html')
 
     return fig.write_html(fig_file)
 
-def plot_generationannual(country=None):
+def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None):
+    """Plots total annual generation
+        
+    Arguments:
+        save_dir: str 
+            Directory to save file 
+        country: str 
+            If a country provided, plot at a country level, else plot at a 
+            system level
+    """
 
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    scenario_figs_dir = config_paths.scenario_figs_dir
-    scenario_results_dir = config_paths.scenario_results_dir
-
-    df = pd.read_csv(os.path.join(scenario_results_dir,
-                                  'ProductionByTechnologyAnnual.csv'
-                                  )
-                     )
-
-    df = powerplant_filter(df, country)
-
-    plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
-    df.VALUE = df.VALUE.astype('float64')
-    df = df.groupby(['LABEL', 'YEAR'],
-                    as_index=False)['VALUE'].sum()
+    df = get_generation_annual_data(data, country=None)
+    plot_colors = get_color_codes()
 
     if not country: # System level titles
         graph_title = 'Total System Generation'
@@ -374,28 +144,26 @@ def plot_generationannual(country=None):
                       opacity=0.8)
 
     if country:
-        fig_file = os.path.join(scenario_figs_dir, country, 'GenerationAnnual.html')
+        fig_file = os.path.join(save_dir, country, 'GenerationAnnual.html')
     else:
-        fig_file = os.path.join(scenario_figs_dir, 'GenerationAnnual.html')
+        fig_file = os.path.join(save_dir, 'GenerationAnnual.html')
 
     return fig.write_html(fig_file)
 
 
-def plot_generation_hourly():
+def plot_generation_hourly(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str, country:str = None):
+    """Plots total annual generation
+        
+    Arguments:
+        save_dir: str 
+            Directory to save file 
+        country: str 
+            If a country provided, plot at a country level, else plot at a 
+            system level
+    """
 
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    scenario_figs_dir = config_paths.scenario_figs_dir
-    scenario_results_dir = config_paths.scenario_results_dir
-
-    df = pd.read_csv(os.path.join(scenario_results_dir,
-                                  'ProductionByTechnology.csv'
-                                  )
-                     )
-    df = powerplant_filter(df, country=False)
-    plot_colors = pd.Series(df['COLOR'].values, index=df['LABEL']).to_dict()
-    df.VALUE = df.VALUE.astype('float64')
-    df = transform_ts(df)
+    df = get_generation_ts_data(input_data, result_data, country=country)
+    plot_colors = get_color_codes()
 
     fig = px.area(df,
                   x='HOUR',
@@ -427,10 +195,12 @@ def plot_generation_hourly():
         fig['layout']['xaxis']['title']['text']=''
         fig['layout']['xaxis7']['title']['text']='Hours'
     '''
-    return fig.write_html(os.path.join(scenario_figs_dir,
-                                       'GenerationHourly.html'
-                                       )
-                          )
+    if country:
+        fig_file = os.path.join(save_dir, country, 'GenerationHourly.html')
+    else:
+        fig_file = os.path.join(save_dir, 'GenerationHourly.html')
+    return fig.write_html(fig_file)
+    
 
 def midpoint(x1, y1, x2, y2):
     return ((x1 + x2)/2, (y1 + y2)/2)
@@ -597,20 +367,16 @@ def plot_transmission_flow(year):
                          ), dpi = 500, bbox_inches = 'tight'
             )
 
-def apply_timeshift(x, timeshift):
-    '''Applies timeshift to organize dayparts.
+def read_results(dirpath: str) -> Dict[str,pd.DataFrame]:
+    """Reads in result CSVs
     
-    Args:
-        x = Value between 0-24
-        timeshift = value offset from UTC (-11 -> +12)'''
-
-    x += timeshift
-    if x > 23:
-        return x - 24
-    elif x < 0:
-        return x + 24
-    else:
-        return x
+    Replace with ReadCSV in otoole v1.0
+    """
+    data = {}
+    files = [Path(x) for x in Path(dirpath).iterdir()]
+    for f in files:
+        data[f.stem] = pd.read_csv(f)
+    return data
 
 if __name__ == '__main__':
     main()

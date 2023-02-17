@@ -41,14 +41,12 @@ class ConfigPaths:
     py_file_dir = Path(__file__).resolve().parent # folder of this module 
     
     def __init__(self):
-        # USER CALLABLE PATHS
         self.input_dir = Path(self.py_file_dir, '../../../', self.input_dir_name)
         self.input_data_dir = Path(self.input_dir, 'data')
 
         self.output_dir = Path(self.py_file_dir, '../../../', self.output_dir_name)
         self.output_data_dir = Path(self.output_dir, 'data')
 
-        #self.scenario_name = self.get_scenario_name(self)
         self.scenario_dir = Path(self.output_dir, self.get_scenario_name())
         self.scenario_data_dir = Path(self.scenario_dir, 'data')
         self.scenario_figs_dir = Path(self.scenario_dir, 'figures')
