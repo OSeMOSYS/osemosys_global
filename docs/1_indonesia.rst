@@ -1,31 +1,53 @@
 Indonesia
 =========
 
-The first application of FEO is the development of an electricity systems model 
-for Indonesia. 
+The first application of FEO Global is the development of an openly available 
+electricity systems model for Indonesia. This model is used to explore 
+transition pathways to a net-zero electricity system. As with all energy system 
+models, the inputs include a range of datasets and assumptions (e.g. technolgy 
+cost projections, discount rates). All of these inputs are described here in 
+order to allow for the model to be reviewed, re-run, and re-purposed.
 
 Model scope
 -----------
+The model aims to represent the electricity system of Indonesia as accurately as
+possible, subject to constraints on data and computation time. The main aspects 
+that improve the accuracy of the model's repersentation of Indonesia's 
+electricity system are the spatial and temporal resolution.
 
 Spatial resolution
 ..................
 
 The model represents 34 provinces of Indonesia across 7 regions, 
-as shown in the map below:
-- Sumatra [10 provinces]
-- Java [6 provinces]
-- Kalimantan [5 provinces]
-- Nusa Tenggara [3 provinces]
-- Sulawesi [6 provinces]
-- Maluku [2 provinces]
-- Papua [2 provinces]
+as shown in the table and map below:
+
+.. csv-table:: 
+   :file: tables/provinces.csv
+   :widths: 50, 50, 50, 50
+   :header-rows: 1
+   :align: center
 
 .. image:: figures/Indonesia_provinces_english.png
+
 
 Temporal resolution
 ...................
 Each year is divided into 6 'Seasons' [S1-S6]: 
-Each 'Season' is further divided into 12 'Daily Time Brackets' 
+
+.. csv-table:: 
+   :file: tables/seasons_summary.csv
+   :widths: 50, 50
+   :header-rows: 1
+   :align: center
+
+Each 'Season' is further divided into 12 'Daily Time Brackets':
+
+.. csv-table:: 
+   :file: tables/dailytimebrackets_summary.csv
+   :widths: 50, 50
+   :header-rows: 1
+   :align: center
+
 Together, there are 72 representative 'timeslices' in the model. The temporal 
 resolution is the same for the entire model period. 
 
@@ -67,13 +89,18 @@ Technology costs
 
 `NREL <https://www.nrel.gov/docs/fy21osti/79236.pdf>`_ 
 
-.. raw:: html
-   :file: figures/TotalCapacityAnnual.html
-
-.. csv-table:: Technology cost projections
-   :file: tables/technology_costs.csv
+.. csv-table:: Technology cost projections (Capital)
+   :file: tables/technology_costs_capital.csv
    :widths: 75, 50, 50, 50, 50, 50
    :header-rows: 1
+   :align: center
+
+.. csv-table:: Technology cost projections (Fixed)
+   :file: tables/technology_costs_fixed.csv
+   :widths: 75, 50, 50, 50, 50, 50
+   :header-rows: 1
+   :align: center
+
 
 Renewable Energy Profiles
 .........................
@@ -89,8 +116,9 @@ Renewable Energy Potentials
 
 .. csv-table:: Renewable energy potential
    :file: tables/re_potentials_summary.csv
-   :widths: 75, 50, 50
+   :widths: 75, 50, 50, 50, 50, 50
    :header-rows: 1
+   :align: center
 
 Energy demand projections
 .........................
@@ -125,15 +153,18 @@ The policies included are:
 
 And the future power plants included are:
 
+
 Least-cost
 ..........
+
 
 Net-zero
 ........
 
+
+
 Results
 -------
-
 
 Capacity expansion
 ..................
@@ -157,8 +188,25 @@ Hourly electricity generation mix
 Planned improvements
 --------------------
 
-- Interconnector expansion plans
-- Fossil fuel price projections
-- Plant-specific efficiencies
-- Hydropower capacity factor by plant / node
-- Technology-specific discount rates
+* Interconnector expansion plans
+* Fossil fuel price projections
+* Plant-specific efficiencies
+* Hydropower capacity factor by plant / node
+* Technology-specific discount rates
+
+Model code, data, and workflow
+------------------------------
+
+The entire workflow of FEO Global is available under an open license 
+at `transition-zero/feo-esmod-osemosys`. 
+In addition, it uses only publicly available data and open source solver (CBC). 
+
+
+References
+----------
+
+* IEA 
+* IRENA
+* RUPTL 2021-2030
+* Beyond 443 GW
+* LTS-LCCP (Indonesia submission to UNFCCC)
