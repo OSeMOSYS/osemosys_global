@@ -112,10 +112,16 @@ obtained from `renewables.ninja`_. Data for 2020 was used.
 
 Renewable Energy Potentials
 ...........................
-- GEO: Volcanostratigraphy of Batukuwung-Parakasak Geothermal \
-  Area, Serang Regency, West Java. 
-- SPV, WON, HYD: Beyond 443 GW
-- HYD: https://www.hydropower.org/blog/indonesia-promotes-hydropower-to-create-the-demand-for-industrial-development#:~:text=The%20biggest%20hydropower%20potential%20is,Tenggara%2DMaluku%20is%201.1%20GW.
+
+Data on renewable energy potentials by province was obtained from multiple 
+sources:
+
+- Geothermal: `'Volcanostratigraphy of Batukuwung-Parakasak Geothermal \
+  Area, Serang Regency, West Java', U. Sumotarto, 2019 <geo_potential_>`_ 
+- Solar PV: `'Beyond 443 GW - Indonesia's Infinite Renewable Energy Potentials', IESR, 2021 <beyond443gw_>`_
+- Wind: `'Beyond 443 GW - Indonesia's Infinite Renewable Energy Potentials', IESR, 2021 <beyond443gw_>`_
+- Biomass: `'Beyond 443 GW - Indonesia's Infinite Renewable Energy Potentials', IESR, 2021 <beyond443gw_>`_
+- Hydropower: `International Hydropower Association, 2019 <hyd_potential_>`_
 
 
 .. csv-table:: Renewable energy potential
@@ -241,3 +247,5 @@ References
 .. _ruptl_2021-2030: https://web.pln.co.id/statics/uploads/2021/10/ruptl-2021-2030.pdf
 .. _beyond443gw: https://iesr.or.id/en/pustaka/beyond-443-gw-indonesias-infinite-renewable-energy-potentials
 .. _lts-lccr: https://unfccc.int/sites/default/files/resource/Indonesia_LTS-LCCR_2021.pdf
+.. _geo_potential: https://iopscience.iop.org/article/10.1088/1742-6596/1363/1/012048
+.. _hyd_potential: https://www.hydropower.org/blog/indonesia-promotes-hydropower-to-create-the-demand-for-industrial-development#:~:text=The%20biggest%20hydropower%20potential%20is,Tenggara%2DMaluku%20is%201.1%20GW.
