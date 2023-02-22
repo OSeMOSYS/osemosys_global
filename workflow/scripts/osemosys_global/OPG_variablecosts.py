@@ -119,6 +119,9 @@ df_prices['MINCOG'] = df_prices['MINGAS']  # Cogen is powered by gas
 df_prices['MINOTH'] = df_prices['MINOIL']  # Other petroleum products are similar to oil
 df_prices['MINPET'] = df_prices['MINOIL']  # Petroleum products are similar to oil
 
+# Add price for URN. 40 $2020/lb -> 0.0226 m$2020/PJ (3900 GJ/kg)
+df_prices['MINURN'] = 22.6
+
 # And add in international prices that are 15% higher than the regular ones:
 df_prices['INTCOA'] = df_prices['MINCOA'] * 1.15
 df_prices['INTOIL'] = df_prices['MINOIL'] * 1.15
@@ -126,6 +129,7 @@ df_prices['INTGAS'] = df_prices['MINGAS'] * 1.15
 df_prices['INTCOG'] = df_prices['MINCOG'] * 1.15
 df_prices['INTOTH'] = df_prices['MINOTH'] * 1.15
 df_prices['INTPET'] = df_prices['MINPET'] * 1.15
+df_prices['INTURN'] = df_prices['MINURN'] * 1.15
 
 df_prices = df_prices.reindex(years)
 
@@ -196,7 +200,7 @@ df_varcosts_final = df_varcost[['REGION',
                        'MODE_OF_OPERATION',
                        'YEAR', 
                        'VALUE']]
-
+df_varcosts_final['VALUE'] = df_varcosts_final['VALUE'].round(2)
 df_varcosts_final.to_csv(os.path.join(output_data_dir,'VariableCost.csv'), mode='w', header=True, index = None)
 
 logging.info('Variable Costs Completed')

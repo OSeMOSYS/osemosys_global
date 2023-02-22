@@ -326,7 +326,8 @@ def plot_totalcapacity(country = None):
     else:
         fig_file = os.path.join(scenario_figs_dir, 'TotalCapacityAnnual.html')
 
-    return fig.write_html(fig_file)
+    return fig.write_html(fig_file, 
+                          config={'displayModeBar': False})
 
 def plot_generationannual(country=None):
 
@@ -378,7 +379,8 @@ def plot_generationannual(country=None):
     else:
         fig_file = os.path.join(scenario_figs_dir, 'GenerationAnnual.html')
 
-    return fig.write_html(fig_file)
+    return fig.write_html(fig_file, 
+                          config={'displayModeBar': False})
 
 
 def plot_generation_hourly():
@@ -427,9 +429,13 @@ def plot_generation_hourly():
         fig['layout']['xaxis']['title']['text']=''
         fig['layout']['xaxis7']['title']['text']='Hours'
     '''
+    
+    fig['layout']['yaxis'].update(autorange = True)
+
     return fig.write_html(os.path.join(scenario_figs_dir,
                                        'GenerationHourly.html'
-                                       )
+                                       ), 
+                          config={'displayModeBar': False}
                           )
 
 def midpoint(x1, y1, x2, y2):

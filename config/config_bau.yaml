@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: 'Indonesia_NZ'
+scenario: 'Indonesia_BAU'
 
 # Temporal Parameters 
 startYear: 2021
@@ -13,10 +13,8 @@ dayparts:
   D4: [18, 24]
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3]
-  S2: [4, 5, 6]
-  S3: [7, 8, 9]
-  S4: [10, 11, 12]
+  S1: [1, 2, 3, 4, 5, 6]
+  S2: [7, 8, 9, 10, 11, 12]
 timeshift: 8 # value between -11 and 12
   
 # Spatial Parameters 
@@ -31,7 +29,7 @@ emission_penalty: 2.1 # M$/MT CO2
 no_invest_technologies: 
   - 'CSP'
   - 'WAV'
-#  - 'URN'
+  - 'URN'
   - 'WOF'
   - 'OTH'
   - 'WAS'
@@ -58,7 +56,7 @@ user_defined_capacity:
   TRNIDNJAIDNSB: [0.544, 2021, 'open']
   TRNIDNSSIDNBE: [0.5, 2021, 'open']
   TRNIDNSSIDNLA: [1.5, 2021, 'open']
-  TRNIDNBTIDNSS: [3, 2021, 'open']
+  TRNIDNBTIDNSS: [3, 2021, 'fixed']
   TRNIDNKBIDNKT: [0.1, 2021, 'open']
   TRNIDNKTIDNKS: [0.1, 2021, 'open']
   TRNIDNKSIDNKI: [0.1, 2021, 'open']
@@ -132,21 +130,20 @@ powerplant_build_rates:
  # of the associated TECHNOLOGY can increase. It is applied from the START_YEAR 
  # to the END_YEAR.
  SPV1: ['ABS', 0, 2020, 2025]
- SPV2: ['PCT', 5, 2025, 2035]
- #SPV3: ['PCT', 10, 2035, 2051]
+ SPV2: ['PCT', 0.25, 2025, 2035]
+ SPV3: ['PCT', 1, 2035, 2051]
  WON1: ['ABS', 0, 2020, 2025]
- WON2: ['PCT', 5, 2025, 2051]
+ WON2: ['PCT', 1, 2025, 2051]
  COA1: ['ABS', 0, 2020, 2024]
  CCG1: ['ABS', 0, 2020, 2024]
- GEO1: ['ABS', 0, 2020, 2024]
- GEO2: ['PCT', 5, 2024, 2051]
+ GEO1: ['ABS', 0, 2020, 2025]
+ GEO2: ['PCT', 5, 2025, 2051]
  BAT1: ['ABS', 0, 2020, 2025]
- BAT2: ['ABS', 1, 2025, 2035]
- BAT3: ['ABS', 5, 2035, 2051]
+ BAT2: ['ABS', 0.25, 2025, 2035]
+ BAT3: ['ABS', 1, 2035, 2051]
  BIO1: ['ABS', 0, 2020, 2025]
- BIO2: ['PCT', 5, 2025, 2051]
- URN1: ['ABS', 0, 2020, 2039]
- URN2: ['ABS', 5, 2039, 2051]
+ BIO2: ['PCT', 0.25, 2025, 2035]
+ BIO3: ['PCT', 1, 2035, 2051]
  HYD1: ['ABS', 0, 2020, 2025]
  HYD2: ['PCT', 5, 2025, 2051]
 
@@ -154,13 +151,11 @@ reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
  RM1: [60, 2020, 2029]
- RM2: [35, 2030, 2039]
- RM3: [15, 2040, 2050]
+ RM2: [35, 2030, 2050]
 
 emission_limit:
 # EMISSION_LIMIT: [VALUE, YEAR]
 # where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is the 
 # when that constraint must be adhered to. All years between multiple emission 
 # constraints will be interpolated.
- EL1: [2049, 1000]
- EL2: [2050, 0]
+

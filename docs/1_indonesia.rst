@@ -4,7 +4,7 @@ Indonesia
 The first application of FEO Global is the development of an openly available 
 electricity systems model for Indonesia. This model is used to explore 
 transition pathways to a net-zero electricity system. As with all energy system 
-models, the inputs include a range of datasets and assumptions (e.g. technolgy 
+models, the inputs include a range of datasets and assumptions (e.g. technology 
 cost projections, discount rates). All of these inputs are described here in 
 order to allow for the model to be reviewed, re-run, and re-purposed.
 
@@ -12,16 +12,16 @@ Model scope
 -----------
 The model aims to represent the electricity system of Indonesia as accurately as
 possible, subject to constraints on data and computation time. The main aspects 
-that improve the accuracy of the model's repersentation of Indonesia's 
-electricity system are the spatial and temporal resolution.
+that improve the accuracy of the model's representation of Indonesia's 
+electricity system are its spatial and temporal resolution.
 
 Spatial resolution
 ..................
 
-The model represents 34 provinces of Indonesia across 7 regions, 
-as shown in the table and map below:
+The model represents all 34 provinces of Indonesia across 7 regions - shown in 
+the table and map below - as individual nodes. 
 
-.. csv-table:: 
+.. csv-table:: Provinces of Indonesia
    :file: tables/provinces.csv
    :widths: 50, 50, 50, 50
    :header-rows: 1
@@ -34,7 +34,7 @@ Temporal resolution
 ...................
 Each year is divided into 6 'Seasons' [S1-S6]: 
 
-.. csv-table:: 
+.. csv-table:: Teporal resolution - Seasons
    :file: tables/seasons_summary.csv
    :widths: 50, 50
    :header-rows: 1
@@ -42,7 +42,7 @@ Each year is divided into 6 'Seasons' [S1-S6]:
 
 Each 'Season' is further divided into 12 'Daily Time Brackets':
 
-.. csv-table:: 
+.. csv-table:: Temporal resolution - daily time brackets
    :file: tables/dailytimebrackets_summary.csv
    :widths: 50, 50
    :header-rows: 1
@@ -104,7 +104,11 @@ Technology costs
 
 Renewable Energy Profiles
 .........................
-- renewables.ninja
+
+Hourly renewable energy profiles for wind (onshore and offshore) and solar PV were 
+obtained from `renewables.ninja`_. Data for 2020 was used.
+
+.. _renewables.ninja: https://www.renewables.ninja/
 
 Renewable Energy Potentials
 ...........................
@@ -120,9 +124,21 @@ Renewable Energy Potentials
    :header-rows: 1
    :align: center
 
-Energy demand projections
-.........................
-- Own calculations
+Electricity demand projections
+..............................
+
+Electricity demands for all 34 provinces, current and projected, are inputs to 
+the model. Electricity demand by province for 2021 is obtained from the 
+`RUPTL 2021-2030 <ruptl_2021-2030_>`_. The methodology used to project these 
+demands between 2021-2050 is detailed here_ and summarised below.
+
+.. csv-table:: Electricity demand projections (GWh)
+   :file: tables/demand_projections.csv
+   :widths: 75, 75, 50, 50, 50, 50, 50
+   :header-rows: 1
+   :align: center
+
+.. _here: https://docs.google.com/spreadsheets/d/1P9va-0Nhl3Tfr68iV4I5B9J3yA1qSakN/edit?usp=sharing&ouid=100957394761881350527&rtpof=true&sd=true
 
 Fuel Prices
 ...........
@@ -148,19 +164,24 @@ Current policies
 ................
 
 This scenario includes all implemented policies related to the expansion of 
-Indonesia's electricity system as well as power plants under construction. 
+Indonesia's electricity system as well as committed power plants. 
 The policies included are: 
 
-And the future power plants included are:
+And the power plants included are:
 
 
 Least-cost
 ..........
 
+This represents an 'unconstrained' development of the electricity system. It 
+does not include any emission or renewable energy targets. Planned powerplants 
+are provided as 'options' to invest in but are not forced into the model. 
 
 Net-zero
 ........
 
+This scenario includes an explicit target of reaching net-zero emissions by 
+2050, with peak emissions in 2040.
 
 
 Results
@@ -188,25 +209,35 @@ Hourly electricity generation mix
 Planned improvements
 --------------------
 
-* Interconnector expansion plans
-* Fossil fuel price projections
 * Plant-specific efficiencies
 * Hydropower capacity factor by plant / node
 * Technology-specific discount rates
+* Multiple weather years
+* Province-specific demand profiles
+* 
 
 Model code, data, and workflow
 ------------------------------
 
-The entire workflow of FEO Global is available under an open license 
-at `transition-zero/feo-esmod-osemosys`. 
-In addition, it uses only publicly available data and open source solver (CBC). 
+The entire workflow of FEO Global is available on GitHub under an open license 
+(AGPL v3.0) at `transition-zero/feo-esmod-osemosys <feo_repo_>`_. 
+In addition, it uses only publicly available data and an open source solver 
+(CBC). 
 
+.. _feo_repo: https://github.com/transition-zero/feo-esmod-osemosys
 
 References
 ----------
 
-* IEA 
-* IRENA
-* RUPTL 2021-2030
-* Beyond 443 GW
-* LTS-LCCP (Indonesia submission to UNFCCC)
+* `'An Energy Sector Roadmap to Net Zero Emissions in Indonesia', IEA, 2022 <iea_nze>`_
+* `'Indonesia Energy Transition Outlook', IRENA, 2022 <irena_nze_>`_
+* `'RUPTL 2021-2030', PLN, 2021 <ruptl_2021-2030_>`_
+* `'Beyond 443 GW - Indonesia's Infinite Renewable Energy Potentials', IESR, 2021 <beyond443gw_>`_
+* `'Indonesia Long-Term Strategy for Low Carbon and Climate Resilience 2050' <lts-lccr_>`_  
+
+
+.. _irena_nze: https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2022/Oct/IRENA_Indonesia_energy_transition_outlook_2022.pdf?rev=b122956e990f485994b9e9d7075f696c
+.. _iea_nze: https://iea.blob.core.windows.net/assets/b496b141-8c3b-47fc-adb2-90740eb0b3b8/AnEnergySectorRoadmaptoNetZeroEmissionsinIndonesia.pdf
+.. _ruptl_2021-2030: https://web.pln.co.id/statics/uploads/2021/10/ruptl-2021-2030.pdf
+.. _beyond443gw: https://iesr.or.id/en/pustaka/beyond-443-gw-indonesias-infinite-renewable-energy-potentials
+.. _lts-lccr: https://unfccc.int/sites/default/files/resource/Indonesia_LTS-LCCR_2021.pdf

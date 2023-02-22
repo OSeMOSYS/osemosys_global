@@ -277,6 +277,9 @@ def main():
 
     # Change IAR for CSP value taken from PLEXOS to 1.0
     df_eff.loc[df_eff['tech_code']=='CSP', 'efficiency'] = 1
+    
+    # Change IAR for URN value taken from PLEXOS to 2.2 (45%)
+    df_eff.loc[df_eff['tech_code']=='URN', 'efficiency'] = 0.45
 
     # Average efficiency by node and technology
     df_eff_node = df_eff.groupby(['tech_code',

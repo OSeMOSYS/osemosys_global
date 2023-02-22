@@ -270,6 +270,7 @@ def apply_build_rates(region, years, output_data_dir, max_build):
         df_max_cap = pd.concat([df_max_cap_inv,
                                 df_max_cap],
                                 ignore_index=True)
+        df_max_cap['VALUE'] = df_max_cap['VALUE'].astype(float).round(3)
         df_max_cap.to_csv(os.path.join(output_data_dir, 
                                        "TotalAnnualMaxCapacityInvestment.csv"),
                                        index = None)

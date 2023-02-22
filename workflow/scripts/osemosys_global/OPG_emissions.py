@@ -216,31 +216,37 @@ def add_emission_limits(emission,
     el_years = {}
     years = list(range(start_year, 
                        end_year+1))
-    for el, el_params in emission_limit.items():
-        el_years[el_params[0]] = el_params[1]
+    if not emission_limit is None:
+        for el, el_params in emission_limit.items():
+            el_years[el_params[0]] = el_params[1]
 
-    if len(el_years) > 1:
-        el_years_max =  max(el_years)
+        if len(el_years) > 1:
+            el_years_max =  max(el_years)
+        else:
+            el_years_max = int(end_year) 
+
+        df = pd.DataFrame(list(range(min(el_years),
+                                    el_years_max + 1)),
+                        columns=['YEAR'])
+        df.sort_values(by=['YEAR'],
+                    inplace=True)
+        df['VALUE'] = df['YEAR'].map(el_years)
+        df['VALUE'].interpolate(inplace=True)
+        df['VALUE'] = df['VALUE'].round(0)
+        df = df[df['YEAR'].isin(years)]
+        
+        df['EMISSION'] = emission
+        df['REGION'] = region
+    
+        df = df[['REGION',
+                'EMISSION',
+                'YEAR',
+                'VALUE']]
     else:
-        el_years_max = int(end_year) 
-
-    df = pd.DataFrame(list(range(min(el_years),
-                                 el_years_max + 1)),
-                      columns=['YEAR'])
-    df.sort_values(by=['YEAR'],
-                   inplace=True)
-    df['VALUE'] = df['YEAR'].map(el_years)
-    df['VALUE'].interpolate(inplace=True)
-    df['VALUE'] = df['VALUE'].round(0)
-    df = df[df['YEAR'].isin(years)]
-    
-    df['EMISSION'] = emission
-    df['REGION'] = region
-    
-    df = df[['REGION',
-             'EMISSION',
-             'YEAR',
-             'VALUE']]
+        df = pd.DataFrame(columns=['REGION',
+                                   'EMISSION',
+                                   'YEAR',
+                                   'VALUE'])
     return df
 
 if __name__ == '__main__':

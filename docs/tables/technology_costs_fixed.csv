@@ -1,3 +1,18 @@
 Technology,Unit,2020,2030,2040,2050
-Battery storage (4-hr Li-ion),USD\ :sub:`2020`\/kWh,350,350,350,350
-Solar photovoltaic,USD\ :sub:`2020`\/kW,1000,1000,1000,1000
+BIO,USD\ :sub:`2020`\/kW,,,,
+CCG,USD\ :sub:`2020`\/kW,,,,
+COA,USD\ :sub:`2020`\/kW,,,,
+COG,USD\ :sub:`2020`\/kW,,,,
+CSP,USD\ :sub:`2020`\/kW,,,,
+GEO,USD\ :sub:`2020`\/kW,,,,
+HYD,USD\ :sub:`2020`\/kW,,,,
+OCG,USD\ :sub:`2020`\/kW,,,,
+OIL,USD\ :sub:`2020`\/kW,,,,
+OTH,USD\ :sub:`2020`\/kW,,,,
+PET,USD\ :sub:`2020`\/kW,,,,
+SPV,USD\ :sub:`2020`\/kW,,,,
+URN,USD\ :sub:`2020`\/kW,,,,
+WAS,USD\ :sub:`2020`\/kW,,,,
+WAV,USD\ :sub:`2020`\/kW,,,,
+WOF,USD\ :sub:`2020`\/kW,,,,
+WON,USD\ :sub:`2020`\/kW,,,,
