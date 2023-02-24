@@ -1,5 +1,15 @@
-FEO Global (OSeMOSYS)
-================================
+# FEO Global (OSeMOSYS)
+
+'Future Energy Outlook' (FEO) is an open source electricity system model generator
+with global coverage. It uses [OSeMOSYS Global](https://www.nature.com/articles/s41597-022-01737-0) as 
+a starting point and can be used to create inter-connected energy
+systems models for both the entire globe and for any geographically diverse
+subset of the globe. It is built using the fully open-source 
+[OSeMOSYS](https://osemosys.readthedocs.io/en/latest/) energy system modelling tool.!
+
+
+![Geographic scope](./figures/osemosys-global.png "Geographic scope")
+
 
 ## Contents
 ```{toctree}

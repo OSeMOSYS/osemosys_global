@@ -54,9 +54,10 @@ resolution is the same for the entire model period.
 
 Model horizon
 .............
-Base year - 2021
 
-End year - 2050
+**Base year** - 2021
+
+**End year** - 2050
 
 Key assumptions
 ---------------
@@ -78,8 +79,7 @@ on the `IEA Cost of Capital Observatory <iea_wacc_>`_
 Reserve Margin
 ..............
 
-- Reserve margin 60% -> 35%
-- 
+The Reserve margin decreases from the current level of 60% to 35% by 2030.
 
 Data
 ----
@@ -87,7 +87,12 @@ Data
 Technology costs
 ................
 
-`NREL <https://www.nrel.gov/docs/fy21osti/79236.pdf>`_ 
+Battery costs from `NREL <https://www.nrel.gov/docs/fy21osti/79236.pdf>`_ 
+All other costs from `OSeMOSYS Global <osemosys_global_>`_ and 
+`PLEXOS World <plexos_world_>`_.
+
+.. _plexos_world: https://dataverse.harvard.edu/dataverse/PLEXOS-World
+.. _osemosys_global: https://www.nature.com/articles/s41597-022-01737-0 
 
 .. csv-table:: Technology cost projections (Capital)
    :file: tables/technology_costs_capital.csv
@@ -95,18 +100,11 @@ Technology costs
    :header-rows: 1
    :align: center
 
-.. csv-table:: Technology cost projections (Fixed)
-   :file: tables/technology_costs_fixed.csv
-   :widths: 75, 50, 50, 50, 50, 50
-   :header-rows: 1
-   :align: center
-
-
 Renewable Energy Profiles
 .........................
 
-Hourly renewable energy profiles for wind (onshore and offshore) and solar PV were 
-obtained from `renewables.ninja`_. Data for 2020 was used.
+Hourly renewable energy profiles for wind (onshore and offshore) and solar PV 
+in each province were obtained from `renewables.ninja`_. Data for 2020 was used.
 
 .. _renewables.ninja: https://www.renewables.ninja/
 
@@ -154,9 +152,6 @@ Fuel Prices
    :widths: 75, 75, 50, 50, 50, 50
    :header-rows: 1
 
-Electricity interconnectors
-...........................
-
 
 Scenarios
 ---------
@@ -166,15 +161,11 @@ The model was used to explore three scenarios: *Current Policies [CP]*,
 pathways for the expansion of Indonesia's electricity system. Each scenario 
 consists of a set of assumptions and constraints, as detailed below:
 
-Current policies
-................
+Current policies (TBC)
+......................
 
 This scenario includes all implemented policies related to the expansion of 
 Indonesia's electricity system as well as committed power plants. 
-The policies included are: 
-
-And the power plants included are:
-
 
 Least-cost
 ..........
@@ -196,21 +187,41 @@ Results
 Capacity expansion
 ..................
 
+**BAU**
+
 .. raw:: html
    :file: figures/TotalCapacityAnnual_BAU.html
+
+**Net-zero**
+
+.. raw:: html
+   :file: figures/TotalCapacityAnnual_NZ.html
 
 Annual electricity generation mix
 .................................
 
+**BAU**
+
 .. raw:: html
    :file: figures/GenerationAnnual_BAU.html
+
+**Net-zero**
+
+.. raw:: html
+   :file: figures/GenerationAnnual_NZ.html
 
 Hourly electricity generation mix
 .................................
 
+**BAU**
+
 .. raw:: html
    :file: figures/GenerationHourly_BAU.html
 
+**Net-zero**
+
+.. raw:: html
+   :file: figures/GenerationHourly_NZ.html
 
 Planned improvements
 --------------------
@@ -220,7 +231,6 @@ Planned improvements
 * Technology-specific discount rates
 * Multiple weather years
 * Province-specific demand profiles
-* 
 
 Model code, data, and workflow
 ------------------------------
