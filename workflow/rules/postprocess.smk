@@ -13,7 +13,7 @@ result_files = [
     'AnnualTechnologyEmission.csv',
     'AnnualTechnologyEmissionByMode.csv',
     'AnnualVariableOperatingCost.csv',
-    'CapitalInvestment.csv',
+    # 'CapitalInvestment.csv',
     'Demand.csv',
     'DiscountedTechnologyEmissionsPenalty.csv',
     'NewCapacity.csv',
@@ -55,7 +55,8 @@ rule otoole_results:
         'Generating result csv files...'
     input:
         solution_file = solver_file_type,
-        pre_process_file = 'results/{scenario}/{scenario}.txt'
+        pre_process_file = 'results/{scenario}/{scenario}.txt',
+        otoole_config = 'results/{scenario}/otoole.yaml',
     output:
         expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
     conda:
@@ -66,7 +67,7 @@ rule otoole_results:
         '''
         otoole results {config[solver]} csv \
         {input.solution_file} results/{wildcards.scenario}/results \
-        --input_datafile {input.pre_process_file} \
+        {input.otoole_config} --input_datafile {input.pre_process_file} \
         2> {log} 
         '''
 

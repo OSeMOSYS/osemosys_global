@@ -24,4 +24,4 @@ dependencies:
  - pip:
       - world-bank-data
       - sklearn
-      - otoole>=0.11.0
+      - otoole>=1.0.0
