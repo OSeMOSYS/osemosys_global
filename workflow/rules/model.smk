@@ -20,8 +20,6 @@ rule geographic_filter:
     output:
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
         datapackage = 'results/{scenario}/datapackage.json'
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/geographicFilter.log'
     shell:
@@ -35,8 +33,6 @@ rule otoole_convert:
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
     output:
         data_file = 'results/{scenario}/{scenario}.txt'
-    conda:
-        '../envs/otoole.yaml'
     log:
         log = 'results/{scenario}/logs/otoole_convert.log'
     shell:
@@ -49,8 +45,6 @@ rule preprocess_data_file:
         data_file = 'results/{scenario}/{scenario}.txt'
     output:
         data_file = 'results/{scenario}/PreProcessed_{scenario}.txt'
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/preprocess_data_file.log'
     shell:
