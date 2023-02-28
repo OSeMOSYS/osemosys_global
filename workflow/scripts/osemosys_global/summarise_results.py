@@ -3,9 +3,10 @@ import itertools
 import os
 from pathlib import Path
 from typing import Dict
-from OPG_configuration import ConfigFile, ConfigPaths
-from visualisation.utils import transform_ts, powerplant_filter
-from visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
+from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.visualisation.utils import transform_ts, powerplant_filter
+from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
+from osemosys_global.utils import apply_timeshift
 pd.set_option('mode.chained_assignment', None)
 
 
@@ -492,21 +493,6 @@ def trade_flows(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.Dat
                                    'VALUE']
                          )
     return df.to_csv(os.path.join(save_dir,'TradeFlows.csv'),index=None)
-
-def apply_timeshift(x, timeshift):
-    '''Applies timeshift to organize dayparts.
-    
-    Args:
-        x = Value between 0-24
-        timeshift = value offset from UTC (-11 -> +12)'''
-
-    x += timeshift
-    if x > 23:
-        return x - 24
-    elif x < 0:
-        return x + 24
-    else:
-        return x
 
 def read_data(dirpath: str) -> Dict[str,pd.DataFrame]:
     """Reads in result CSVs

@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: 'Indonesia'
+scenario: 'india'
 
 # Temporal Parameters 
 startYear: 2020
@@ -19,7 +19,8 @@ timeshift: 5 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-    - 'IDN'
+    - 'NPL'
+    - 'IND'
 crossborderTrade: True
 
 # Emission Parameters 

@@ -3,9 +3,11 @@
 import pandas as pd
 import os 
 from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
-from typing import Dict
+from typing import Dict, List
 import itertools
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
+from osemosys_global.utils import apply_timeshift, filter_transmission_techs
+from osemosys_global.OPG_powerplant_data import format_transmission_name
 
 def get_color_codes() -> Dict:
     """Get color naming dictionary.
@@ -25,44 +27,6 @@ def get_color_codes() -> Dict:
                    in zip(name_colour_codes.tech_id,
                           name_colour_codes.colour)])
     return color_dict
-
-def get_regions(
-    data: dict[str, pd.DataFrame],
-    countries_only: bool = False,
-) -> list:
-    """Gets all region codes
-    
-    Arguments:
-        data: dict[str, pd.DataFrame]
-            Input datastore 
-        countries_only: bool
-            Get only country if true, else get 5 letter region code
-    
-    Returns
-        List of country/region codes
-    """
-    region_data = region_filter(data["TECHNOLOGY"])
-    if countries_only:
-        return list(set([x[0:3] for x in region_data]))
-    else:
-        return region_data
-    
-def region_filter(df:pd.DataFrame) -> list:
-    """Filters out unique region codes from TECHNOLOGY codes.
-    
-    Arguments
-        df:pd.DataFrame
-            Dataframe with a TECHNOLOGY columns
-    
-    Returns
-        list
-            All regions emcompased in the TECHNOLOGY column 
-    """
-    techs = df.loc[
-        (df["VALUE"].str.startswith("PWR")) &
-        ~(df["VALUE"].str.startswith("PWRTRN"))]
-    regions = techs["VALUE"].str[-7:-2]
-    return regions.drop_duplicates().to_list()
 
 def powerplant_filter(df: pd.DataFrame, country:str = None) -> pd.DataFrame:
     """Filters dataframe by powerplant generator (PWR)
@@ -221,60 +185,112 @@ def transform_ts(data:dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
     df = df.sort_values(by=['MONTH', 'HOUR'])
 
     return df
-
-def extract_codes_from_fuel(df: pd.DataFrame) -> pd.DataFrame:
-    """Parses fuel codes into seperate columns
+    
+def load_node_data_demand_center(cost_line_expansion_xlsx: str) -> pd.DataFrame:
+    """Gets node names with lats and lons at demand center
     
     Arguments:
-        df: pd.DataFrame
-            Dataframe with a FUEL column
-    
-    Returns:
-        pd.DataFrame 
-            Dataframe with FUEL code parsed into seperate columns
+        cost_line_expansion_xlsx: str
+            Path to 'Costs Line expansion.xlsx' file  
+            
+    Returns: 
+        Dataframe with nodes and lats and lons
     """
     
-    def sort_columns_fuel(df: pd.DataFrame) -> pd.DataFrame:
-        for column in ("REGION", "COUNTRY", "REGION_CODE", "FUEL"):
-            data = df.pop(column)
-            df.insert(0, column, data)
-        return df
-    
-    if "FUEL" not in df.columns:
-        return df
-
-    end_use = df.loc[df["FUEL"].str[-2:]=="02"]
-    if not end_use.empty:
-        end_use = end_use.drop(columns=["REGION"])
-        end_use["F"] = end_use["FUEL"].str[0:3]
-        end_use["REGION_CODE"] = end_use["FUEL"].str[3:8]
-        end_use["COUNTRY"] = end_use["FUEL"].str[3:6]
-        end_use["REGION"] = end_use["FUEL"].str[6:8]
-        end_use = end_use.drop(columns=["FUEL"])
-        end_use = end_use.rename(columns={"F":"FUEL"})
-        end_use = sort_columns_fuel(end_use)
-    else:
-        end_use = end_use.drop(columns=["REGION", "TECHNOLOGY"])
-        columns = list(df)
-        columns.insert(0, "REGION")
-        columns.insert(0, "COUNTRY")
-        columns.insert(0, "REGION_CODE")
-        columns.insert(0, "FUEL")
-        end_use = pd.DataFrame(columns=columns)
+    def parse_name(x: str) -> str:
+        parts = x.split("-")
+        if len(parts) > 2:
+            return f"{parts[1]}{parts[2]}"
+        else:
+            return f"{parts[1]}XX"
         
-    return end_use
+    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Centerpoints')
+    df = pd.DataFrame()
+    
+    df["NODE"] = raw["Node"].map(lambda x: parse_name(x))
+    df["LATITUDE"] = raw["Latitude"]
+    df["LONGITUDE"] = raw["Longitude"]
+    
+    # drop extra brazil codes 
+    df = df.loc[
+        (df["NODE"] != "BRAJ1") &
+        (df["NODE"] != "BRAJ2") &
+        (df["NODE"] != "BRAJ3")].reset_index(drop=True)
+    
+    return df
 
-def apply_timeshift(x, timeshift):
-    """Applies timeshift to organize dayparts.
+def load_node_data_centroid(plexos_world_softlink_xlsx: str) -> pd.DataFrame:
+    """Gets node names with lats and lons at centroid
     
     Arguments:
-        x = Value between 0-24
-        timeshift = value offset from UTC (-11 -> +12)"""
+        plexos_world_softlink_xlsx: str
+            Path to 'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx' file  
+            
+    Returns: 
+        Dataframe with nodes and lats and lons
+    """
+    
+    def parse_name(x: str) -> str:
+        parts = x.split("-")
+        if len(parts) > 2:
+            return f"{parts[1]}{parts[2]}"
+        else:
+            return f"{parts[1]}XX"
+        
+    raw = pd.read_excel(plexos_world_softlink_xlsx, sheet_name='Attributes')
+    temp = raw.loc[raw["class"] == "Node"]
 
-    x += timeshift
-    if x > 23:
-        return x - 24
-    elif x < 0:
-        return x + 24
-    else:
-        return x
+    temp = temp.loc[
+        (temp["name"] != "SA-BRA-J1") &
+        (temp["name"] != "SA-BRA-J2") &
+        (temp["name"] != "SA-BRA-J3")]
+    
+    temp["NODE"] = temp["name"].map(lambda x: parse_name(x))
+    
+    df_lats = temp.loc[temp["attribute"] == "Latitude"]
+    df_lons = temp.loc[temp["attribute"] == "Longitude"]
+    
+    lats = dict(zip(df_lats["NODE"], df_lats["value"]))
+    lons = dict(zip(df_lons["NODE"], df_lons["value"]))
+    
+    return pd.DataFrame(
+        [[x, lats[x], lons[x]] for x in temp["NODE"].unique().tolist()],
+        columns=["NODE", "LATITUDE", "LONGITUDE"])
+
+def load_line_data(cost_line_expansion_xlsx: str) -> pd.DataFrame:
+    """Gets line names with to/from nodes
+    
+    Arguments:
+        cost_line_expansion_xlsx: str
+            Path to 'Costs Line expansion.xlsx' file  
+    
+    Returns:
+        pd.DataFrame     
+    """
+    def parse_transmission_codes(techs: List[str]) -> pd.DataFrame:
+        """Parses transmission techs to add start/end info"""
+        
+        parsed_data = []
+        for tech in techs:
+            parsed_data.append([
+                tech,
+                tech[3:8],
+                tech[8:]
+            ])
+        return pd.DataFrame(parsed_data, columns=["TECHNOLOGY", "FROM", "TO"])
+    
+    # get all transmission lines
+    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Interface')
+    trn = raw.dropna(subset=["From"])
+    trn = format_transmission_name(trn)
+    
+    # drop extra brazil codes 
+    trn = trn.loc[
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ1") &
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ2") &
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ3") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ1") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ2") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ3")].reset_index(drop=True)
+    
+    return parse_transmission_codes(trn["TECHNOLOGY"].to_list())

@@ -3,15 +3,14 @@ pd.set_option('mode.chained_assignment', None)
 import plotly.express as px
 import matplotlib.pyplot as plt
 import os
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from mpl_toolkits.basemap import Basemap
-from visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
+from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
 from typing import Dict
-from otoole.read_strategies import ReadCsv
-from pathlib import Path
-from visualisation.utils import get_color_codes
+from osemosys_global.utils import read_csv
+from osemosys_global.visualisation.utils import get_color_codes
 
 
 def main():
@@ -28,8 +27,8 @@ def main():
     except FileExistsError:
         pass
     
-    input_data = read_results(config_paths.scenario_data_dir)
-    result_data = read_results(config_paths.scenario_results_dir)
+    input_data = read_csv(config_paths.scenario_data_dir)
+    result_data = read_csv(config_paths.scenario_results_dir)
     
     # Get system level results 
     plot_total_capacity(result_data, scenario_figs_dir, country=None)
@@ -151,7 +150,12 @@ def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:
     return fig.write_html(fig_file)
 
 
-def plot_generation_hourly(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str, country:str = None):
+def plot_generation_hourly(
+    input_data: Dict[str,pd.DataFrame], 
+    result_data: Dict[str,pd.DataFrame], 
+    save_dir: str, 
+    country:str = None
+):
     """Plots total annual generation
         
     Arguments:
@@ -366,17 +370,6 @@ def plot_transmission_flow(year):
                          f'TransmissionFlow{year}.jpg'
                          ), dpi = 500, bbox_inches = 'tight'
             )
-
-def read_results(dirpath: str) -> Dict[str,pd.DataFrame]:
-    """Reads in result CSVs
-    
-    Replace with ReadCSV in otoole v1.0
-    """
-    data = {}
-    files = [Path(x) for x in Path(dirpath).iterdir()]
-    for f in files:
-        data[f.stem] = pd.read_csv(f)
-    return data
 
 if __name__ == '__main__':
     main()
