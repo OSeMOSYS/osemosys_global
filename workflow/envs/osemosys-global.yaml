@@ -9,19 +9,17 @@ dependencies:
  - pip
 
  - pandas
- - numpy
  - urllib3
  - matplotlib
  - seaborn
- - PyYAML
  - xlsxwriter
  - openpyxl
  - plotly
  - snakemake-minimal
  - basemap
  - pytest
+ - scikit-learn
 
  - pip:
       - world-bank-data
-      - sklearn
-      - otoole>=0.11.0
+      - otoole==0.11.0
