@@ -1,4 +1,4 @@
-name: osemosys-global-test
+name: osemosys-global
 
 channels:
  - bioconda
@@ -9,7 +9,6 @@ dependencies:
  - pip
 
  - pandas
- - numpy
  - urllib3
  - matplotlib
  - seaborn
