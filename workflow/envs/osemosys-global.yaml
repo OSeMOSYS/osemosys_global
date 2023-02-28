@@ -1,4 +1,4 @@
-name: osemosys-global
+name: osemosys-global-test
 
 channels:
  - bioconda
@@ -20,8 +20,8 @@ dependencies:
  - snakemake-minimal
  - basemap
  - pytest
+ - scikit-learn
 
  - pip:
       - world-bank-data
-      - sklearn
-      - otoole>=0.11.0
+      - otoole==0.11.0
