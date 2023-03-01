@@ -54,8 +54,7 @@ class ConfigPaths:
         self.scenario_result_summaries_dir = Path(self.scenario_dir,
                                                   'result_summaries')
 
-        self.simplicity = Path(self.input_dir, 'simplicity')
-        self.simplicity_data = Path(self.input_dir, 'simplicity/data')
+        self.otoole = Path(self.input_dir, 'otoole')
 
         self.custom_nodes_dir = Path(self.input_dir, 'data/custom_nodes')
 

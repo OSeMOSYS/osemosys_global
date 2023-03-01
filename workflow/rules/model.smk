@@ -1,4 +1,5 @@
 import os
+import shutil
 
 # REQUIRED 
 
@@ -6,7 +7,7 @@ configfile: 'config/config.yaml'
 
 # OUTPUT FILES 
 
-osemosys_files = os.listdir('resources/simplicity/data')
+osemosys_files = os.listdir('resources/otoole/data')
 
 # RULES
 
@@ -19,28 +20,45 @@ rule geographic_filter:
         geographic_scope = config['geographic_scope']
     output:
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
-        datapackage = 'results/{scenario}/datapackage.json'
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/geographicFilter.log'
     shell:
         'python workflow/scripts/osemosys_global/OPG_geographic_filter.py 2> {log}'
 
+rule copy_og_config:
+    message:
+        'Copying OSeMOSYS Global Configuration File'
+    input:
+        config='config/config.yaml'
+    output:
+        config='results/{scenario}/og.yaml'
+    run:
+        shutil.copyfile(input.config, output.config)
+
+rule copy_otoole_confg:
+    message:
+        'Copying otoole configuration file...'
+    input:
+        config='resources/otoole/config.yaml'
+    output:
+        config='results/{scenario}/otoole.yaml'
+    run:
+        shutil.copyfile(input.config, output.config)
+
 rule otoole_convert:
     message:
         'Creating data file...'
+    params:
+        csv_dir = 'results/{scenario}/data/'
     input:
-        datapackage = 'results/{scenario}/datapackage.json',
+        otoole_config = 'results/{scenario}/otoole.yaml',
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
     output:
         data_file = 'results/{scenario}/{scenario}.txt'
-    conda:
-        '../envs/otoole.yaml'
     log:
         log = 'results/{scenario}/logs/otoole_convert.log'
     shell:
-        'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
+        'otoole convert csv datafile {params.csv_dir} {output} {input.otoole_config} 2> {log}'
 
 rule preprocess_data_file:
     message:
@@ -49,8 +67,6 @@ rule preprocess_data_file:
         data_file = 'results/{scenario}/{scenario}.txt'
     output:
         data_file = 'results/{scenario}/PreProcessed_{scenario}.txt'
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/preprocess_data_file.log'
     shell:
@@ -117,33 +133,3 @@ rule sort_cplex:
         log = 'results/{scenario}/logs/sort_cplex.log'
     shell: 
         'sort {input.transform} > {output.sort} 2> {log}'
-
-
-
-# The script on the OSeMOSYS GitHub to convert CPLEX results into CBC results wasnt working
-# for me. It is supposed to be splitting the line to find what each varaible is, but 
-# the parsing doesnt seem to be working correctly...  
-
-# I replaced the transform_cplex rule below with the uncommented one which uses the script 
-# found at https://osemosys.readthedocs.io/en/latest/manual/Advanced%20functionalities.html
-
-"""
-rule transform_cplex:
-    message:
-        'Transforming cplex results...'
-    input:
-        solution = 'results/{scenario}/{scenario}.sol'
-    output: 
-        transformed = 'results/{scenario}/{scenario}_transformed.sol'
-    params: 
-        python_file = 'resources/OSeMOSYS_GNU_MathProg/scripts/convert_cplex_to_cbc.py',
-        start_year = config['startYear'],
-        end_year = config['endYear'],
-    log:
-        log = 'results/{scenario}/logs/transform_cplex.log'
-    shell: 
-        '''
-        python {params.python_file} --start_year {params.start_year} --end_year {params.end_year} \
-        {input.solution} {output.transformed} 2> {log}
-        '''
-"""

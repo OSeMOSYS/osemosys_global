@@ -6,8 +6,7 @@ configfile: 'config/config.yaml'
 
 # model and scenario output files 
 
-osemosys_files = os.listdir('resources/simplicity/data')
-osemosys_files.remove('default_values.csv') #taken form /resources
+osemosys_files = os.listdir('resources/otoole/data')
 
 demand_figures = [
     'South America',
@@ -68,7 +67,7 @@ user_capacity_files = [
     'TotalAnnualMaxCapacityInvestment.csv'
 ]
 
-check_files = os.listdir('resources/simplicity/data')
+check_files = os.listdir('resources/otoole/data')
 generated_files = [
     power_plant_files, 
     timeslice_files, 
@@ -102,8 +101,6 @@ rule powerplant:
         invest_techs = config['no_invest_technologies']
     output:
         csv_files = expand('results/data/{output_file}', output_file = power_plant_files)
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/data/logs/powerplant.log'
     shell:
@@ -127,8 +124,6 @@ rule timeslice:
         seasons = config['seasons'],
     output:
         csv_files = expand('results/data/{output_file}', output_file=timeslice_files),
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/data/logs/timeslice.log'    
     shell:
@@ -145,8 +140,6 @@ rule variable_costs:
         end_year = config['endYear'],
     output:
         csv_files = expand('results/data/{output_file}', output_file=variable_cost_files),
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/data/logs/variable_costs.log'
     shell:
@@ -168,8 +161,6 @@ rule demand_projections:
     output:
         csv_files = expand('results/data/{output_file}', output_file = demand_files),
         figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/data/logs/demand_projections.log'
     shell:
@@ -187,8 +178,6 @@ rule emissions:
         emission = config['emission_penalty']
     output: 
         csv_files = expand('results/data/{output_file}', output_file = emission_files),
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/data/../logs/emissions.log'
     shell:
@@ -205,8 +194,6 @@ rule max_capacity:
         end_year = config['endYear'],
     output:
         csv_files = expand('results/data/{output_file}', output_file = max_capacity_files),
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/data/logs/max_capacity.log'
     shell:
@@ -222,11 +209,8 @@ rule file_check:
         rules.demand_projections.output.csv_files,
         rules.emissions.output.csv_files,
         rules.max_capacity.output.csv_files,
-        'resources/data/default_values.csv'
     output: 
         expand('results/data/{check_file}', check_file = check_files),
-    conda:
-        '../envs/data_processing.yaml'
     log: 
         log = 'results/data/logs/file_check.log'
     shell:
