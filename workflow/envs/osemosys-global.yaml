@@ -9,6 +9,7 @@ dependencies:
  - pip
 
  - pandas
+ - geopandas
  - urllib3
  - matplotlib
  - seaborn
@@ -21,5 +22,7 @@ dependencies:
  - scikit-learn
 
  - pip:
-      - world-bank-data
-      - otoole>=1.0.0
+  - world-bank-data
+  - otoole>=1.0.0
+  - dash
+  - osemosys_global
