@@ -14,7 +14,7 @@ include: 'rules/postprocess.smk'
 
 # constants 
 
-OTOOLE_FILES = os.listdir('resources/simplicity/data')
+OTOOLE_FILES = os.listdir('resources/otoole/data')
 
 # handlers 
         
