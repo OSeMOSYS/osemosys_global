@@ -5,13 +5,7 @@ import osemosys_global.dashboard.constants as const
 import osemosys_global.dashboard.components.ids as ids
 import pandas as pd
 from typing import Dict, List
-from osemosys_global.visualisation.utils import get_color_codes
 from osemosys_global.dashboard.utils import (
-    get_generation_techs, 
-    parse_pwr_codes, 
-    parse_fuel_codes, 
-    plot_by_region, 
-    plot_by_system, 
     get_unique_techs, 
     get_unique_fuels,
     create_dropdown_options

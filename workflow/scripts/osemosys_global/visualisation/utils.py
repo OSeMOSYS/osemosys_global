@@ -55,7 +55,7 @@ def powerplant_filter(df: pd.DataFrame, country:str = None) -> pd.DataFrame:
             inplace=True)
     return filtered_df
 
-def transform_ts(data:dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
+def transform_ts(data:Dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
     """Adds month, hour, year columns to timesliced data. 
     
     Arguments:

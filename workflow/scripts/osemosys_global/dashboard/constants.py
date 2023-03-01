@@ -13,11 +13,14 @@ _MAP_ELEMENTS_SIZE = 10
 
 # Input Data Initialization 
 _INPUT_DATA_CHOICE = "SpecifiedAnnualDemand"
-_INPUT_DATA_TECH = "BIO"
+_INPUT_DATA_TECH = "all"
 
 # Result Data Initialization 
-_RESULT_DATA_CHOICE = "AnnualTechnologyEmission"
-_RESULT_DATA_TECH = "COA"
+_RESULT_DATA_CHOICE = "ProductionByTechnologyAnnual"
+_RESULT_DATA_TECH = "all"
+
+# Transmission Data Initialization 
+_TRANSMISSION_DATA_CHOICE = "TotalCapacityAnnual"
 
 # Generator Abbreviations
 TECHS_CONFIG = {
@@ -102,49 +105,59 @@ PARAM_CONFIG = {
         "groupby":"FUEL",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
-        "ylabel":"DEMAND (PJ)"
+        "ylabel":"DEMAND (PJ)",
+        "add_default":True,
+        "default":0
     },
     "CapacityFactor":{
         "nicename":"Capacity Factor",
         "groupby":"TECHNOLOGY",
         "groupby_method":"mean",
         "xaxis":"TIMESLICE", 
-        "ylabel":""
+        "ylabel":"",
+        "add_default":False,
     },
     "CapitalCost":{
         "nicename":"Capital Costs",
         "groupby":"TECHNOLOGY",        
         "groupby_method":"mean",
         "xaxis":"YEAR", 
-        "ylabel":"COST ($M/GW)"
+        "ylabel":"COST ($M/GW)",
+        "add_default":False,
     },
     "SpecifiedDemandProfile":{
         "nicename":"Demand Profile",
         "groupby":"FUEL",
         "groupby_method":"mean",
         "xaxis":"TIMESLICE", 
-        "ylabel":""
+        "ylabel":"",
+        "add_default":True,
+        "default":0
     },
     "FixedCost":{
         "nicename":"Fixed Costs",
         "groupby":"TECHNOLOGY",        
         "groupby_method":"mean",
         "xaxis":"YEAR", 
-        "ylabel":"COOST ($M/GW)"
+        "ylabel":"COST ($M/GW)",
+        "add_default":False,
     },
     "ResidualCapacity":{
         "nicename":"Residual Capacity",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
-        "ylabel":"CAPACITY (GW)"
+        "ylabel":"CAPACITY (GW)",
+        "add_default":True,
+        "default":0
     },
     "VariableCost":{
         "nicename":"Variable Costs",
         "groupby":"TECHNOLOGY",
         "groupby_method":"mean",
         "xaxis":"YEAR", 
-        "ylabel":"COST ($M/PJ)"
+        "ylabel":"COST ($M/PJ)",
+        "add_default":False,
     },
 }
 
@@ -161,42 +174,54 @@ RESULT_CONFIG = {
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
-        "ylabel":"CO2 (MT)"
+        "ylabel":"CO2 (MT)",
+        "add_default":True,
+        "default":0
     },
     "AnnualFixedOperatingCost":{
         "nicename":"Fixed Operating Cost",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
-        "ylabel":"COST ($M)"
+        "ylabel":"COST ($M)",
+        "add_default":True,
+        "default":0
     },
     "NewCapacity":{
         "nicename":"New Capacity",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
-        "ylabel":"CAPACITY (GW)"
+        "ylabel":"CAPACITY (GW)",
+        "add_default":True,
+        "default":0
     },
     "ProductionByTechnologyAnnual":{
         "nicename":"Production (Annual)",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
-        "ylabel":"PRODUCTION (PJ)"
+        "ylabel":"PRODUCTION (PJ)",
+        "add_default":True,
+        "default":0
     },
     "ProductionByTechnology":{
         "nicename":"Production (Time Slice)",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"TIMESLICE", 
-        "ylabel":"PRODUCTION (PJ)"
+        "ylabel":"PRODUCTION (PJ)",
+        "add_default":True,
+        "default":0
     },
     "TotalCapacityAnnual":{
         "nicename":"Total Capacity",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
-        "ylabel":"CAPACITY (GW)"
+        "ylabel":"CAPACITY (GW)",
+        "add_default":True,
+        "default":0
     },
     "AnnualVariableOperatingCost":{
         "nicename":"Variable Operating Cost",
@@ -204,6 +229,39 @@ RESULT_CONFIG = {
         "groupby_method":"sum",
         "parsing_method":"MIN",
         "xaxis":"YEAR", 
-        "ylabel":"COST ($M)"
+        "ylabel":"COST ($M)",
+        "add_default":True,
+        "default":0
+    },
+}
+
+TRANSMISSION_CONFIG = {
+    "NewCapacity":{
+        "nicename":"New Capacity",
+        "xaxis":"YEAR", 
+        "ylabel":"CAPACITY (GW)",
+        "add_default":True,
+        "default":0
+    },
+    "ProductionByTechnologyAnnual":{
+        "nicename":"Total Production (Annual)",
+        "xaxis":"YEAR", 
+        "ylabel":"PRODUCTION (PJ)",
+        "add_default":True,
+        "default":0
+    },
+    "ProductionByTechnology":{
+        "nicename":"Total Production (Time Slice)",
+        "xaxis":"TIMESLICE", 
+        "ylabel":"PRODUCTION (PJ)",
+        "add_default":True,
+        "default":0
+    },
+    "TotalCapacityAnnual":{
+        "nicename":"Total Capacity",
+        "xaxis":"YEAR",
+        "ylabel":"CAPACITY (GW)",
+        "add_default":True,
+        "default":0
     },
 }

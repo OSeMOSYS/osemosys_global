@@ -19,6 +19,8 @@ import osemosys_global.dashboard.components.options_tab as options_tab
 import osemosys_global.dashboard.components.map_tab as map_tab
 import osemosys_global.dashboard.components.input_data_tab as input_data_tab
 import osemosys_global.dashboard.components.result_data_tab as result_data_tab
+import osemosys_global.dashboard.components.transmission_tab as transmission_tab
+from osemosys_global.dashboard.components.transmission_tab import plot_transmission_data
 import osemosys_global.dashboard.constants as const
 from osemosys_global.utils import read_csv
 from osemosys_global.dashboard.utils import (
@@ -28,7 +30,9 @@ from osemosys_global.dashboard.utils import (
     plot_data,
     get_unique_fuels,
     get_unique_techs,
-    create_dropdown_options
+    create_dropdown_options,
+    get_transmission_lines,
+    add_default_values
 )
 from osemosys_global.OPG_configuration import ConfigPaths
 
@@ -61,6 +65,7 @@ LINES_CENTROID = geolocate_lines(cost_line_expansion_file, NODES_CENTROID)
 ALL_REGIONS = get_regions(INPUT_DATA, countries_only=False)
 ALL_COUNTRIES = get_regions(INPUT_DATA, countries_only=True)
 ALL_YEARS = INPUT_DATA["YEAR"]["VALUE"].to_list()
+LINES = get_transmission_lines(INPUT_DATA)
 
 # create app
 app = Dash(external_stylesheets=external_stylesheets)
@@ -102,6 +107,10 @@ app.layout = html.Div(
                 dcc.Tab(
                     label="Results",
                     value=ids.TAB_OUTPUTS
+                ),
+                dcc.Tab(
+                    label="Transmission",
+                    value=ids.TAB_TRANSMISSION
                 ),
             ]
         ),
@@ -206,6 +215,19 @@ def render_tab_content(tab):
                 result_data_tab.year_slider(years=ALL_YEARS),
             ]
         )
+    elif tab == ids.TAB_TRANSMISSION:
+        style = {'width': '33%', 'display': 'inline-block'}
+        return html.Div(
+            className="result-data-container",
+            children=[
+                transmission_tab.variable_dropdown(style=style),
+                transmission_tab.line_dropdown(lines=LINES,style=style),
+                shared.plot_type_dropdown(style=style),
+                plot_transmission_data_callback(),
+                transmission_tab.year_selector(years=ALL_YEARS),
+                transmission_tab.year_slider(years=ALL_YEARS),
+            ]
+        )
 
 #############################################################################
 ## OPTIONS TAB CALLBACKS 
@@ -288,13 +310,24 @@ def plot_input_data_callback(
     """Generic function for plotting input data"""
     
     # Determine if year dependent data 
-    if const.PARAM_CONFIG[parameter]["xaxis"] == "YEAR":
+    temporal_axis = const.PARAM_CONFIG[parameter]["xaxis"]
+    if temporal_axis == "YEAR":
         years = years
     else:
         years = [year]
+        
+    # get raw data to plot
+    data = INPUT_DATA[parameter]
+    if const.PARAM_CONFIG[parameter]["add_default"]:
+        data = add_default_values(
+            df = data,
+            column = temporal_axis,
+            default_indices = INPUT_DATA[temporal_axis]["VALUE"].to_list(),
+            default_value = const.PARAM_CONFIG[parameter]["default"]
+        )
     
     return plot_data(
-        data_store=INPUT_DATA,
+        data=data,
         countries=countries,
         regions=regions,
         plot_theme=plot_theme,
@@ -368,13 +401,24 @@ def plot_result_data_callback(
     """Generic function for plotting input data"""
     
     # Determine if year dependent data 
-    if const.RESULT_CONFIG[parameter]["xaxis"] == "YEAR":
+    temporal_axis = const.RESULT_CONFIG[parameter]["xaxis"]
+    if temporal_axis == "YEAR":
         years = years
     else:
         years = [year]
-    
+
+    # get raw data to plot
+    data = RESULT_DATA[parameter]
+    if const.RESULT_CONFIG[parameter]["add_default"]:
+        data = add_default_values(
+            df = data,
+            column = temporal_axis,
+            default_indices = INPUT_DATA[temporal_axis]["VALUE"].to_list(),
+            default_value = const.RESULT_CONFIG[parameter]["default"]
+        )
+
     return plot_data(
-        data_store=RESULT_DATA,
+        data=data,
         countries=countries,
         regions=regions,
         plot_theme=plot_theme,
@@ -411,11 +455,75 @@ def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) 
     Output(ids.RESULT_YEAR_SELECTOR, "style"),
     Input(ids.RESULT_DATA_DROPDOWN, "value")
 )
-def input_slider_visibility(parameter:str):
+def result_slider_visibility(parameter:str):
     if const.RESULT_CONFIG[parameter]["xaxis"] == "YEAR":
         return {"display": "block"}, {"display": "none"}
     else:
         return {"display": "none"}, {"display": "block"}
+
+#############################################################################
+## TRANSMISSION TAB CALLBACKS 
+#############################################################################
+
+@app.callback(
+    Output(ids.TRANSMISSION_CHART, "children"),
+    inputs=dict(
+        line=Input(ids.TRANSMISSION_LINE_DROPDOWN, "value"),
+        plot_type=Input(ids.PLOT_TYPE_DROPDOWN, "value"),
+        parameter=Input(ids.TRANSMISSION_DATA_DROPDOWN, "value"),
+        years=Input(ids.TRANSMISSION_YEAR_SLIDER, "value"),
+        year=Input(ids.TRANSMISSION_YEAR_SELECTOR, "value"),
+        plot_theme=Input(ids.CACHE_PLOT_THEME_DROPDOWN, "data"),
+    )
+)
+def plot_transmission_data_callback(
+    line: str = "all",
+    plot_type: str = const._PLOT_TYPE,
+    parameter: str = "TotalCapacityAnnual", 
+    years: list[int] = ALL_YEARS, 
+    year: int = ALL_YEARS[0],
+    plot_theme: str = const._PLOT_THEME,
+) -> html.Div:
+    
+    # Determine if year dependent data 
+    temporal_axis = const.TRANSMISSION_CONFIG[parameter]["xaxis"]
+    if temporal_axis == "YEAR":
+        years = years
+    else:
+        years = [year]
+
+    # get raw data to plot
+    data = RESULT_DATA[parameter]
+    if const.RESULT_CONFIG[parameter]["add_default"]:
+        data = add_default_values(
+            df = data,
+            column = temporal_axis,
+            default_indices = INPUT_DATA[temporal_axis]["VALUE"].to_list(),
+            default_value = const.RESULT_CONFIG[parameter]["default"]
+        )
+
+    return plot_transmission_data(
+        data=data,
+        line=line,
+        years=years,
+        parameter=parameter,
+        plot_theme=plot_theme,
+        plot_type=plot_type,
+        config=const.TRANSMISSION_CONFIG,
+        div_id=ids.TRANSMISSION_CHART
+    )
+
+@app.callback(
+    Output(ids.TRANSMISSION_YEAR_SLIDER, "style"),
+    Output(ids.TRANSMISSION_YEAR_SELECTOR, "style"),
+    Input(ids.TRANSMISSION_DATA_DROPDOWN, "value")
+)
+def transmission_slider_visibility(parameter:str):
+    if const.TRANSMISSION_CONFIG[parameter]["xaxis"] == "YEAR":
+        return {"display": "block"}, {"display": "none"}
+    else:
+        return {"display": "none"}, {"display": "block"}
+
 
 if __name__ == '__main__':
     app.run(debug=True)

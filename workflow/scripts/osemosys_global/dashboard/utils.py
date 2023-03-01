@@ -3,15 +3,22 @@
 import pandas as pd
 import numpy as np
 import geopandas as gpd
+import logging
 from shapely.geometry import LineString
-from osemosys_global.visualisation.utils import load_node_data_demand_center, load_node_data_centroid, load_line_data, get_color_codes
+from osemosys_global.visualisation.utils import (
+    load_node_data_demand_center, 
+    load_node_data_centroid, 
+    load_line_data, 
+    get_color_codes
+)
 import osemosys_global.dashboard.constants as const
 from dash import html, dcc
 import plotly.express as px
 from typing import Union, List, Dict
 
+logger = logging.getLogger(__name__)
 
-def add_pts_to_line(x1: float, y1: float, x2: float, y2: float, n_points: int, name: str) -> list[str, LineString]:
+def add_pts_to_line(x1: float, y1: float, x2: float, y2: float, n_points: int, name: str) -> List[Union[str, LineString]]:
     """Generate a straight line of coordinates between two input 2D coordinates"""
     
     x_coords = np.linspace(x1, x2, n_points)
@@ -75,13 +82,13 @@ def geolocate_lines(cost_line_expansion_xlsx: str, nodes: gpd.GeoDataFrame, n_po
                 )
             )
         except KeyError:
-            print(f"Can not find {from_region} and/or {to_region} in node data")
+            logger.debug(f"Can not find {from_region} and/or {to_region} in node data")
     return gpd.GeoDataFrame(data, columns=["TECHNOLOGY", "geometry"])
 
 def get_regions(
-    input_data: dict[str, pd.DataFrame],
+    input_data: Dict[str, pd.DataFrame],
     countries_only: bool = False,
-) -> list[str]:
+) -> List[str]:
     """Gets all region codes"""
     
     def filter_region_codes(df:pd.DataFrame) -> list:
@@ -103,6 +110,16 @@ def create_dropdown_options(options: List[str]) -> List[Dict[str,str]]:
         return [{"label":const.TECHS_CONFIG[x]["nicename"], "value":x} for x in options]
     except KeyError:
         return[{"label":x, "value":x} for x in options]
+
+def get_transmission_lines(input_data: Dict[str, pd.DataFrame]) -> List[str]:
+    """Gets names of all transmission lines in the model"""
+    techs = input_data["TECHNOLOGY"]
+    lines = get_transmission_techs(techs, column="VALUE")
+    return lines["VALUE"].unique()
+
+def get_transmission_techs(df: pd.DataFrame, column:str = "TECHNOLOGY") -> pd.DataFrame:
+    """Filters out only the transmission technologies"""
+    return df.loc[df[column].str.startswith("TRN")].reset_index(drop=True)
 
 def get_generation_techs(df: pd.DataFrame, column:str = "TECHNOLOGY") -> pd.DataFrame:
     """Filters out only power generation technologies"""
@@ -271,12 +288,12 @@ def group_data(data: pd.DataFrame, groupby_columns: List[str], groupby_method: s
         return pd.DataFrame()
 
 def plot_data(
-    data_store: Dict[str, pd.DataFrame],
-    countries: list[str],
-    regions: list[str],
+    data: pd.DataFrame,
+    countries: List[str],
+    regions: List[str],
     plot_theme: str,
     geographic_scope: str,
-    years: list[int], 
+    years: List[int], 
     plot_type: str,
     parameter: str,
     tech_fuel_filter: str,
@@ -286,7 +303,6 @@ def plot_data(
     """Generic function for plotting data"""
     
     # parse input data codes 
-    data = data_store[parameter]
     if config[parameter]["groupby"] == "TECHNOLOGY":
         data = get_generation_techs(data)
         data = parse_pwr_codes(data)
@@ -372,3 +388,38 @@ def plot_data(
             )
 
     return html.Div(children=[dcc.Graph(figure=fig)], id=div_id)
+
+def add_default_values(
+    df: pd.DataFrame, 
+    column: str, 
+    default_indices: List[Union[str, int]],
+    default_value: Union[int, float],
+) -> pd.DataFrame:
+    """Adds default values to populate dataframe
+    
+    This function is useful for plotting purposes. For example, if a timeslice
+    has no production, we want to display that as zero, not as a skipped row. 
+    """
+    
+    indices = {x:df[x].unique() for x in list(df) if x not in [column, "VALUE"]}
+    indices[column] = default_indices
+    
+    # Create template default data 
+    if len(indices) > 1:
+        new_index = pd.MultiIndex.from_product(
+            list(indices.values()), names=list(indices.keys())
+        )
+    else:
+        new_index = pd.Index(
+            list(indices.values())[0], name=list(indices.keys())[0]
+        )
+    df_default = pd.DataFrame(index=new_index)
+    df_default["VALUE"] = default_value
+    df_default = df_default.reset_index()
+
+    # combine result and default value dataframe
+    df = pd.concat([df, df_default])
+    df = df.drop_duplicates(subset=[x for x in indices])
+    df = df.sort_values(by=[column])
+    
+    return df.reset_index(drop=True)
