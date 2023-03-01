@@ -1,0 +1,25 @@
+name: osemosys-global
+
+channels:
+ - bioconda
+ - conda-forge
+ 
+dependencies:
+ - python>=3.8
+ - pip
+
+ - pandas
+ - urllib3
+ - matplotlib
+ - seaborn
+ - xlsxwriter
+ - openpyxl
+ - plotly
+ - snakemake-minimal
+ - basemap
+ - pytest
+ - scikit-learn
+
+ - pip:
+      - world-bank-data
+      - otoole==0.11.0

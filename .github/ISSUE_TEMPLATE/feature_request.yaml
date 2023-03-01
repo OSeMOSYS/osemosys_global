@@ -1,0 +1,35 @@
+name: Feature request
+description: Ideas to help us improve the project
+title: "[FEATURE] <Short description>"
+labels: ["enhancement"]
+body:
+
+- type: textarea
+  attributes:
+    label: Idea
+    description: Detailed description the suggested improvement
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: Is your feature related to a bug?
+    description: Refer to a an existing bug, you can use `#bugid`
+    placeholder: "#bugid 10"
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Suggested Soltuion
+    description: Do you have an idea on how to implement the idea? 
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Additional Info
+    description: |
+      Please provide any additional information or resources that will help us implement the idea. 
+  validations:
+    required: false

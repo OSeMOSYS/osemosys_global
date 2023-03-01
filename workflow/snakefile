@@ -1,0 +1,73 @@
+import os
+from snakemake.utils import min_version
+min_version("6.0")
+
+# configuration
+
+configfile: 'config/config.yaml'
+
+# helper files
+
+include: 'rules/preprocess.smk'
+include: 'rules/model.smk'
+include: 'rules/postprocess.smk'
+
+# constants 
+
+OTOOLE_FILES = os.listdir('resources/simplicity/data')
+
+# handlers 
+        
+onsuccess:
+    print('Workflow finished successfully!')
+
+    # Will fix this in next update so that preprocessing steps dont always need to be rerun
+    [f.unlink() for f in Path('results', 'data').glob("*") if f.is_file()] 
+
+onerror:
+    print('An error occurred, please submit issue to '
+        'https://github.com/OSeMOSYS/osemosys_global/issues')
+
+# file creation check 
+
+if not os.path.isdir(Path('results', 'data')):
+    Path('results', 'data').mkdir(parents=True)
+
+# target rules
+
+rule all:
+    message:
+        'All rules executed successfully...' 
+    input:
+        expand('results/{scenario}/result_summaries/{result_summary}.csv', 
+            scenario=config['scenario'], result_summary=result_summaries), 
+        expand('results/{scenario}/figures/{result_figure}.html', 
+            scenario=config['scenario'], result_figure = result_figures)
+
+rule generate_input_data:
+    message:
+        "Generating input CSV data..."
+    input:
+        csv_files = expand('results/{scenario}/data/{csv}', scenario=config['scenario'], csv=OTOOLE_FILES),
+
+rule make_dag:
+    message:
+        'dag created successfully and saved as docs/dag.pdf'
+    shell:
+        'snakemake --dag all | dot -Tpdf > docs/dag.pdf'
+
+# cleaning rules
+
+rule clean:
+    message:
+        'Reseting to defaults...'
+    shell:
+        'rm -rf results/*'
+
+rule clean_data:
+    shell:
+        'rm -rf results/data/*'
+
+rule clean_figures:
+    shell:
+        'rm -rf results/figs/*'
