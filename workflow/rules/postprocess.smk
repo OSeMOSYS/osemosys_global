@@ -59,8 +59,6 @@ rule otoole_results:
         otoole_config = 'results/{scenario}/otoole.yaml',
     output:
         expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
-    conda:
-        '../envs/otoole.yaml'
     log:
         log = 'results/{scenario}/logs/otoole_results.log'
     shell: 
@@ -85,8 +83,6 @@ rule visualisation:
         geographic_scope = config['geographic_scope'],
     output:
         expand('results/{{scenario}}/figures/{result_figure}.html', result_figure = result_figures)
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/visualisation.log'
     shell: 
@@ -105,8 +101,6 @@ rule summarise_results:
     output:
         expand('results/{{scenario}}/result_summaries/{result_summary}.csv', 
             result_summary = result_summaries),
-    conda:
-        '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/summarise_results.log'
     shell: 
