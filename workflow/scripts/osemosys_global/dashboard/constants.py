@@ -2,7 +2,7 @@
 
 # Top level initializations
 _PLOT_THEME = "seaborn"
-_GEOGRAPHIC_SCOPE = "Country"
+_GEOGRAPHIC_SCOPE = "System"
 _PLOT_TYPE = "Area"
 
 # Map Initializaion Values
@@ -14,6 +14,10 @@ _MAP_ELEMENTS_SIZE = 10
 # Input Data Initialization 
 _INPUT_DATA_CHOICE = "SpecifiedAnnualDemand"
 _INPUT_DATA_TECH = "BIO"
+
+# Result Data Initialization 
+_RESULT_DATA_CHOICE = "AnnualTechnologyEmission"
+_RESULT_DATA_TECH = "COA"
 
 # Generator Abbreviations
 TECHS_CONFIG = {
@@ -144,4 +148,62 @@ PARAM_CONFIG = {
     },
 }
 
-RESULT_CONFIG = {}
+RESULT_CONFIG = {
+    # "TotalDiscountedCost":{
+    #     "nicename":"Discounted Cost",
+    #     "groupby":None,
+    #     "groupby_method":None,
+    #     "xaxis":"YEAR", 
+    #     "ylabel":"COST ($M)"
+    # },
+    "AnnualTechnologyEmission":{
+        "nicename":"Emissions",
+        "groupby":"TECHNOLOGY",
+        "groupby_method":"sum",
+        "xaxis":"YEAR", 
+        "ylabel":"CO2 (MT)"
+    },
+    "AnnualFixedOperatingCost":{
+        "nicename":"Fixed Operating Cost",
+        "groupby":"TECHNOLOGY",
+        "groupby_method":"sum",
+        "xaxis":"YEAR", 
+        "ylabel":"COST ($M)"
+    },
+    "NewCapacity":{
+        "nicename":"New Capacity",
+        "groupby":"TECHNOLOGY",
+        "groupby_method":"sum",
+        "xaxis":"YEAR", 
+        "ylabel":"CAPACITY (GW)"
+    },
+    "ProductionByTechnologyAnnual":{
+        "nicename":"Production (Annual)",
+        "groupby":"TECHNOLOGY",
+        "groupby_method":"sum",
+        "xaxis":"YEAR", 
+        "ylabel":"PRODUCTION (PJ)"
+    },
+    "ProductionByTechnology":{
+        "nicename":"Production (Time Slice)",
+        "groupby":"TECHNOLOGY",
+        "groupby_method":"sum",
+        "xaxis":"TIMESLICE", 
+        "ylabel":"PRODUCTION (PJ)"
+    },
+    "TotalCapacityAnnual":{
+        "nicename":"Total Capacity",
+        "groupby":"TECHNOLOGY",
+        "groupby_method":"sum",
+        "xaxis":"YEAR", 
+        "ylabel":"CAPACITY (GW)"
+    },
+    "AnnualVariableOperatingCost":{
+        "nicename":"Variable Operating Cost",
+        "groupby":"TECHNOLOGY",
+        "groupby_method":"sum",
+        "parsing_method":"MIN",
+        "xaxis":"YEAR", 
+        "ylabel":"COST ($M)"
+    },
+}

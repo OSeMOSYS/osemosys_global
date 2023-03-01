@@ -6,7 +6,7 @@ from dash import Dash, dcc, html
 from typing import Dict
 from osemosys_global.dashboard.components import ids
 import osemosys_global.dashboard.constants as const
-from osemosys_global.dashboard.utils import to_dropdown_options
+from osemosys_global.dashboard.utils import create_dropdown_options
 
 def plot_theme() -> html.Div:
     return html.Div(
@@ -47,7 +47,7 @@ def country_dropdown(countries: List[str]) -> html.Div:
             html.H3("Countries to Include"),
             dcc.Dropdown(
                 id=ids.COUNTRY_DROPDOWN,
-                options=to_dropdown_options(countries),
+                options=create_dropdown_options(countries),
                 value=countries,
                 multi=True,
                 persistence=True
@@ -66,7 +66,7 @@ def region_dropdown(regions: List[str]) -> html.Div:
             html.H3("Regions to Include"),
             dcc.Dropdown(
                 id=ids.REGION_DROPDOWN,
-                options=to_dropdown_options(regions),
+                options=create_dropdown_options(regions),
                 value=regions,
                 multi=True,
                 persistence=True

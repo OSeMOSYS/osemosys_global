@@ -14,29 +14,28 @@ PLOT_THEME_DROPDOWN = "plot-theme-dropdown"
 MAP_THEME_DROPDOWN = "map-theme-dropdown"
 INPUT_DATA_DROPDOWN = "input-data-dropdown"
 INPUT_DATA_TECH_DROPDOWN = "input-data-tech-dropdown"
+RESULT_DATA_DROPDOWN = "result-data-dropdown"
+RESULT_DATA_TECH_DROPDOWN = "result-data-tech-dropdown"
 
 # Buttons
 SELECT_ALL_COUNTRIES_BUTTON = "select_all_countries_button"
 SELECT_ALL_REGIONS_BUTTON = "select_all_regions_button"
 
 #Sliders
-YEAR_SLIDER_INPUT_DATA = "years-slider-input"
-YEAR_SELECTOR_INPUT_DATA = "year-selector-input"
-# YEAR_SLIDER_RANGE_DEMAND = "years-slider-demand"
-# YEAR_SLIDER_RANGE_COSTS = "years-slider-costs"
+INPUT_YEAR_SLIDER = "years-slider-input"
+INPUT_YEAR_SELECTOR = "year-selector-input"
+RESULT_YEAR_SLIDER = "years-slider-output"
+RESULT_YEAR_SELECTOR = "year-selector-output"
 MAP_SIZE_SLIDER = "map-size-slider"
 
 # Radio Buttons
 REGION_COUNTRY_RADIO_BUTTON = "region-country-radio-button"
-# REGION_COUNTRY_RADIO_BUTTONS_DEMAND = "region-country-radio-buttons-demand"
-# YEAR_TS_RADIO_BUTTONS = "year-ts-radio-buttons"
 NODE_TRANSMISSION_RADIO_BUTTON = "node-transmission-radio-button"
 NODE_LOCATION_RADIO_BUTTON = "node-location-radio-button"
 
-# Checklists
-
 # Graphics
 INPUT_DATA_CHART = "input-data-chart"
+RESULT_DATA_CHART = "result-data-chart"
 MAP = "map-chart"
 
 # Chaching 

@@ -12,20 +12,25 @@ from pathlib import Path
 from typing import Dict, List
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output, State
-import numpy as np
-import geopandas as gpd
-import plotly.express as px
 import i18n 
-from osemosys_global.dashboard.utils import to_dropdown_options
 from osemosys_global.dashboard.components import ids
+import osemosys_global.dashboard.components.shared as shared
+import osemosys_global.dashboard.components.options_tab as options_tab
 import osemosys_global.dashboard.components.map_tab as map_tab
 import osemosys_global.dashboard.components.input_data_tab as input_data_tab
-import osemosys_global.dashboard.components.options_tab as options_tab
+import osemosys_global.dashboard.components.result_data_tab as result_data_tab
 import osemosys_global.dashboard.constants as const
 from osemosys_global.utils import read_csv
-from osemosys_global.dashboard.utils import geolocate_nodes, geolocate_lines, get_regions, get_unique_techs, get_unique_fuels
+from osemosys_global.dashboard.utils import (
+    geolocate_nodes, 
+    geolocate_lines, 
+    get_regions,
+    plot_data,
+    get_unique_fuels,
+    get_unique_techs,
+    create_dropdown_options
+)
 from osemosys_global.OPG_configuration import ConfigPaths
-
 
 #############################################################################
 ## APP SETUP
@@ -59,13 +64,13 @@ ALL_YEARS = INPUT_DATA["YEAR"]["VALUE"].to_list()
 
 # create app
 app = Dash(external_stylesheets=external_stylesheets)
-# app.title = i18n.t("general.app_title")
 app.title = i18n.t("OSeMOSYS Global Dashboard")
-app.config['suppress_callback_exceptions'] = True
+app.config['suppress_callback_exceptions'] = True # for synching across tabs
 
 #############################################################################
 ## MAIN APP LAYOUT
 #############################################################################
+
 app.layout = html.Div(
     className="app-div",
     children=[
@@ -134,6 +139,7 @@ def store_region_country_radio_button_cache(scope, tab):
 #############################################################################
 ## TAB CALLBACKS 
 #############################################################################
+
 @app.callback(
     Output(ids.TAB_CONTENT, "children"),
     Input(ids.TAB_CONTAINER, "value"),
@@ -169,16 +175,37 @@ def render_tab_content(tab):
         return html.Div(
             className="input-data-container",
             children=[
-                input_data_tab.input_data_dropdown(style=style),
-                input_data_tab.tech_filter_dropdown(input_data=INPUT_DATA, parameter=const._INPUT_DATA_CHOICE, geographic_scope=const._GEOGRAPHIC_SCOPE, style=style),
-                input_data_tab.plot_type_dropdown(style=style),
+                input_data_tab.parameter_dropdown(style=style),
+                input_data_tab.tech_dropdown(
+                    input_data=INPUT_DATA, 
+                    parameter=const._INPUT_DATA_CHOICE, 
+                    geographic_scope=const._GEOGRAPHIC_SCOPE, 
+                    style=style
+                ),
+                shared.plot_type_dropdown(style=style),
                 plot_input_data_callback(),
                 input_data_tab.year_selector(years=ALL_YEARS),
                 input_data_tab.year_slider(years=ALL_YEARS),
             ]
         )
     elif tab == ids.TAB_OUTPUTS:
-        return html.H4("to be done")
+        style = {'width': '33%', 'display': 'inline-block'}
+        return html.Div(
+            className="result-data-container",
+            children=[
+                result_data_tab.variable_dropdown(style=style),
+                result_data_tab.tech_dropdown(
+                    input_data=RESULT_DATA, 
+                    parameter=const._RESULT_DATA_CHOICE, 
+                    geographic_scope=const._GEOGRAPHIC_SCOPE, 
+                    style=style
+                ),
+                shared.plot_type_dropdown(style=style),
+                plot_result_data_callback(),
+                result_data_tab.year_selector(years=ALL_YEARS),
+                result_data_tab.year_slider(years=ALL_YEARS),
+            ]
+        )
 
 #############################################################################
 ## OPTIONS TAB CALLBACKS 
@@ -240,8 +267,8 @@ def plot_map_callback(
         regions=Input(ids.CACHE_REGION_DROPDOWN, "data"),
         plot_theme=Input(ids.CACHE_PLOT_THEME_DROPDOWN, "data"),
         geographic_scope=Input(ids.CACHE_REGION_COUNTRY_RADIO_BUTTON, "data"),
-        years=Input(ids.YEAR_SLIDER_INPUT_DATA, "value"),
-        year=Input(ids.YEAR_SELECTOR_INPUT_DATA, "value"),
+        years=Input(ids.INPUT_YEAR_SLIDER, "value"),
+        year=Input(ids.INPUT_YEAR_SELECTOR, "value"),
         plot_type=Input(ids.PLOT_TYPE_DROPDOWN, "value"),
         parameter=Input(ids.INPUT_DATA_DROPDOWN, "value"),
         tech_fuel=Input(ids.INPUT_DATA_TECH_DROPDOWN, "value")
@@ -255,8 +282,7 @@ def plot_input_data_callback(
     years: list[int] = ALL_YEARS, 
     year: int = ALL_YEARS[0],
     plot_type: str = const._PLOT_TYPE,
-    parameter: str = const._INPUT_DATA_CHOICE,
-    # tech_fuel: str = const._INPUT_DATA_TECH,
+    parameter: str = "SpecifiedAnnualDemand",
     tech_fuel: str = "ELC",
 ) -> html.Div:
     """Generic function for plotting input data"""
@@ -267,8 +293,8 @@ def plot_input_data_callback(
     else:
         years = [year]
     
-    return input_data_tab.plot_input_data(
-        input_data=INPUT_DATA,
+    return plot_data(
+        data_store=INPUT_DATA,
         countries=countries,
         regions=regions,
         plot_theme=plot_theme,
@@ -276,7 +302,9 @@ def plot_input_data_callback(
         years=years,
         plot_type=plot_type,
         parameter=parameter,
-        tech_fuel_filter=tech_fuel
+        tech_fuel_filter=tech_fuel,
+        config=const.PARAM_CONFIG,
+        div_id=ids.INPUT_DATA_CHART
     )
     
 @app.callback(
@@ -291,7 +319,7 @@ def tech_filter_dropdown_options_callback(parameter: str, geographic_scope: str)
     else:
         options = get_unique_fuels(INPUT_DATA[parameter])
         
-    dropdown_options = input_data_tab.assign_label_values(options)
+    dropdown_options = create_dropdown_options(options)
     
     if geographic_scope == "System":
         dropdown_options.insert(0, {"label":"All", "value":"all"})
@@ -299,8 +327,8 @@ def tech_filter_dropdown_options_callback(parameter: str, geographic_scope: str)
     return dropdown_options, dropdown_options[0]["value"]
 
 @app.callback(
-    Output(ids.YEAR_SLIDER_INPUT_DATA, "style"),
-    Output(ids.YEAR_SELECTOR_INPUT_DATA, "style"),
+    Output(ids.INPUT_YEAR_SLIDER, "style"),
+    Output(ids.INPUT_YEAR_SELECTOR, "style"),
     Input(ids.INPUT_DATA_DROPDOWN, "value")
 )
 def input_slider_visibility(parameter:str):
@@ -308,7 +336,86 @@ def input_slider_visibility(parameter:str):
         return {"display": "block"}, {"display": "none"}
     else:
         return {"display": "none"}, {"display": "block"}
+
+#############################################################################
+## RESULT DATA TAB CALLBACKS 
+#############################################################################
+
+@app.callback(
+    Output(ids.RESULT_DATA_CHART, "children"),
+    inputs=dict(
+        regions=Input(ids.CACHE_REGION_DROPDOWN, "data"),
+        plot_theme=Input(ids.CACHE_PLOT_THEME_DROPDOWN, "data"),
+        geographic_scope=Input(ids.CACHE_REGION_COUNTRY_RADIO_BUTTON, "data"),
+        years=Input(ids.RESULT_YEAR_SLIDER, "value"),
+        year=Input(ids.RESULT_YEAR_SELECTOR, "value"),
+        plot_type=Input(ids.PLOT_TYPE_DROPDOWN, "value"),
+        parameter=Input(ids.RESULT_DATA_DROPDOWN, "value"),
+        tech_fuel=Input(ids.RESULT_DATA_TECH_DROPDOWN, "value")
+    )
+)
+def plot_result_data_callback(
+    countries: list[str] = ALL_COUNTRIES,
+    regions: list[str] = ALL_REGIONS,
+    plot_theme: str = const._PLOT_THEME,
+    geographic_scope: str = const._GEOGRAPHIC_SCOPE,
+    years: list[int] = ALL_YEARS, 
+    year: int = ALL_YEARS[0],
+    plot_type: str = const._PLOT_TYPE,
+    parameter: str = "AnnualTechnologyEmission",
+    tech_fuel: str = "all",
+) -> html.Div:
+    """Generic function for plotting input data"""
     
+    # Determine if year dependent data 
+    if const.RESULT_CONFIG[parameter]["xaxis"] == "YEAR":
+        years = years
+    else:
+        years = [year]
+    
+    return plot_data(
+        data_store=RESULT_DATA,
+        countries=countries,
+        regions=regions,
+        plot_theme=plot_theme,
+        geographic_scope=geographic_scope,
+        years=years,
+        plot_type=plot_type,
+        parameter=parameter,
+        tech_fuel_filter=tech_fuel,
+        config=const.RESULT_CONFIG,
+        div_id=ids.RESULT_DATA_CHART
+    )
+
+@app.callback(
+    Output(ids.RESULT_DATA_TECH_DROPDOWN, "options"),
+    Output(ids.RESULT_DATA_TECH_DROPDOWN, "value"),
+    Input(ids.RESULT_DATA_DROPDOWN, "value"),
+    Input(ids.CACHE_REGION_COUNTRY_RADIO_BUTTON, "data")
+)
+def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) -> html.Div:
+    if const.RESULT_CONFIG[variable]["groupby"] == "TECHNOLOGY":
+        options = get_unique_techs(RESULT_DATA[variable])
+    else:
+        options = get_unique_fuels(RESULT_DATA[variable])
+        
+    dropdown_options = create_dropdown_options(options)
+    
+    if geographic_scope == "System":
+        dropdown_options.insert(0, {"label":"All", "value":"all"})
+
+    return dropdown_options, dropdown_options[0]["value"]
+
+@app.callback(
+    Output(ids.RESULT_YEAR_SLIDER, "style"),
+    Output(ids.RESULT_YEAR_SELECTOR, "style"),
+    Input(ids.RESULT_DATA_DROPDOWN, "value")
+)
+def input_slider_visibility(parameter:str):
+    if const.RESULT_CONFIG[parameter]["xaxis"] == "YEAR":
+        return {"display": "block"}, {"display": "none"}
+    else:
+        return {"display": "none"}, {"display": "block"}
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -4,9 +4,12 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import LineString
-from osemosys_global.visualisation.utils import load_node_data_demand_center, load_node_data_centroid, load_line_data
+from osemosys_global.visualisation.utils import load_node_data_demand_center, load_node_data_centroid, load_line_data, get_color_codes
+import osemosys_global.dashboard.constants as const
+from dash import html, dcc
 import plotly.express as px
-from typing import Union, List
+from typing import Union, List, Dict
+
 
 def add_pts_to_line(x1: float, y1: float, x2: float, y2: float, n_points: int, name: str) -> list[str, LineString]:
     """Generate a straight line of coordinates between two input 2D coordinates"""
@@ -93,9 +96,13 @@ def get_regions(
         return list(set([x[0:3] for x in region_data]))
     else:
         return region_data
-    
-def to_dropdown_options(values: list[Union[str,int]]) -> list[dict[str,str]]:
-    return [{"label": value, "value": value} for value in values]
+
+def create_dropdown_options(options: List[str]) -> List[Dict[str,str]]:
+    """Creates label name map for dropdown"""
+    try:
+        return [{"label":const.TECHS_CONFIG[x]["nicename"], "value":x} for x in options]
+    except KeyError:
+        return[{"label":x, "value":x} for x in options]
 
 def get_generation_techs(df: pd.DataFrame, column:str = "TECHNOLOGY") -> pd.DataFrame:
     """Filters out only power generation technologies"""
@@ -220,3 +227,148 @@ def get_unique_fuels(df: pd.DataFrame) -> List[str]:
     """
     fuels = df["FUEL"]
     return fuels.str[0:3].unique()
+
+
+def filter_data(data: pd.DataFrame, region_filter_column: str, regions: List[str], years: List[int]) -> pd.DataFrame:
+    """Filter data by geography and time
+
+    Arguments:
+        data: pd.DataFrame
+            Data to filter
+        region_filter_column: str, 
+            Column to filter regions on. Must be in set ("COUNTRY", "REGION")
+        regions: List[str]
+            Regions to filter over
+        years: List[int]
+            years to filter over
+    """
+    
+    if len(years) == 1:
+        return data.loc[
+                (data[region_filter_column].isin(regions)) &
+                (data["YEAR"] == years[0])
+            ]
+    else:
+        return data.loc[
+                (data[region_filter_column].isin(regions)) &
+                (data["YEAR"].isin(range(years[0],(years[-1]+1))))
+            ]
+
+def group_data(data: pd.DataFrame, groupby_columns: List[str], groupby_method: str) -> pd.DataFrame:
+    """Aggregates data based on spatial scope
+    
+    Arguments:
+        data: pd.DataFrame
+            Data to filter
+        groupby_columns = List[str]
+            columns to group on 
+    """
+    if groupby_method == "sum":
+        return data.groupby(by=groupby_columns).sum(numeric_only=True).reset_index()
+    elif groupby_method == "mean":
+        return data.groupby(by=groupby_columns).mean(numeric_only=True).reset_index()
+    else:
+        return pd.DataFrame()
+
+def plot_data(
+    data_store: Dict[str, pd.DataFrame],
+    countries: list[str],
+    regions: list[str],
+    plot_theme: str,
+    geographic_scope: str,
+    years: list[int], 
+    plot_type: str,
+    parameter: str,
+    tech_fuel_filter: str,
+    config: Dict[str,Dict],
+    div_id: str,
+) -> html.Div:
+    """Generic function for plotting data"""
+    
+    # parse input data codes 
+    data = data_store[parameter]
+    if config[parameter]["groupby"] == "TECHNOLOGY":
+        data = get_generation_techs(data)
+        data = parse_pwr_codes(data)
+        if tech_fuel_filter != "all":
+            data = data.loc[data["CATEGORY"] == tech_fuel_filter]
+    elif config[parameter]["groupby"] == "FUEL":
+        data = parse_fuel_codes(data)
+        if tech_fuel_filter != "all":
+            data = data.loc[data["CATEGORY"] == tech_fuel_filter]
+    else: # no further processing needed
+        data = data
+
+    # determine filetering options 
+    if geographic_scope == "Country":
+        region_filter_column = "COUNTRY"
+        region_filters = countries
+        plot_color = "COUNTRY"
+        groupby_columns = ["CATEGORY", region_filter_column, config[parameter]["xaxis"]]
+    elif geographic_scope == "Region":
+        region_filter_column = "REGION_CODE"
+        region_filters = regions
+        plot_color = "REGION_CODE"
+        groupby_columns = ["CATEGORY", region_filter_column, config[parameter]["xaxis"]]
+    else: # system level
+        region_filter_column = "REGION_CODE"
+        region_filters = regions
+        if tech_fuel_filter != "all":
+            groupby_columns = ["CATEGORY", config[parameter]["xaxis"]]
+            plot_color = config[parameter]["groupby"]
+            color_map = get_color_codes()
+        else: 
+            groupby_columns = ["CATEGORY", config[parameter]["xaxis"]]
+            plot_color = "CATEGORY"
+            color_map = get_color_codes()
+        
+    groupby_method = config[parameter]["groupby_method"]
+        
+    # get regional and temporal filtered dataframe 
+    filtered_data = filter_data(
+        data = data,
+        region_filter_column = region_filter_column,
+        regions = region_filters, 
+        years = years
+    )
+
+    if filtered_data.shape[0] == 0:
+        return html.Div("No Data Selected")
+    
+    # aggregate data
+    grouped_data = group_data(data=filtered_data, groupby_columns=groupby_columns, groupby_method=groupby_method)
+    
+    # plot data
+    if geographic_scope in ["Country", "Region"]:
+        fig = plot_by_region(
+            df=grouped_data,
+            plot_type=plot_type,
+            x=config[parameter]["xaxis"],
+            y="VALUE",
+            color=plot_color,
+            plot_theme=plot_theme,
+            labels={"VALUE":config[parameter]["ylabel"]}
+        )
+    else:
+        if tech_fuel_filter != "all":
+            fig = plot_by_system(
+                df=grouped_data,
+                plot_type=plot_type,
+                x=config[parameter]["xaxis"],
+                y="VALUE",
+                plot_theme=plot_theme,
+                labels={"VALUE":config[parameter]["ylabel"]}
+            )
+        else:
+            fig = plot_by_system(
+                df=grouped_data,
+                plot_type=plot_type,
+                x=config[parameter]["xaxis"],
+                y="VALUE",
+                color=plot_color,
+                color_discrete_map=color_map,
+                plot_theme=plot_theme,
+                labels={"VALUE":config[parameter]["ylabel"]}
+            )
+
+    return html.Div(children=[dcc.Graph(figure=fig)], id=div_id)
