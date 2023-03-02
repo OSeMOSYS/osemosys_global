@@ -22,7 +22,7 @@ dependencies:
  - scikit-learn
 
  - pip:
-  - world-bank-data
-  - otoole>=1.0.0
-  - dash
-  # - osemosys_global
+   - world-bank-data
+   - otoole>=1.0.0
+   - dash
+   # - osemosys_global
