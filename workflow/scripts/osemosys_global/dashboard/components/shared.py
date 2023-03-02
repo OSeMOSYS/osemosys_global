@@ -17,7 +17,7 @@ def plot_type_dropdown(**kwargs) -> html.Div:
             html.H3("Plot Type"),
             dcc.Dropdown(
                 id=ids.PLOT_TYPE_DROPDOWN,
-                options=["Bar", "Line", "Area"],
+                options=["Bar (Stacked)", "Bar (Grouped)", "Line", "Area"],
                 value=const._PLOT_TYPE,
                 clearable=False
             )

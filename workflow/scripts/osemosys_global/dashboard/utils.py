@@ -221,8 +221,10 @@ def plot_by_region(
 ) -> Union[px.bar, px.line, px.area]:
     """Plots a chart based on geography filtered data"""
     
-    if plot_type == "Bar":
+    if plot_type == "Bar (Grouped)":
         return px.bar(df, x=x, y=y, color=color, barmode='group', template=plot_theme, **kwargs)
+    elif plot_type == "Bar (Stacked)":
+        return px.bar(df, x=x, y=y, color=color, template=plot_theme, **kwargs)
     elif plot_type == "Line":
         return px.line(df, x=x, y=y, color=color, template=plot_theme, **kwargs)
     elif plot_type == "Area":
@@ -238,8 +240,10 @@ def plot_by_system(
 ) -> Union[px.bar, px.line, px.area]:
     """Plots a chart based on system wide data"""
 
-    if plot_type == "Bar":
+    if plot_type == "Bar (Grouped)":
         return px.bar(df, x=x, y=y, barmode='group', template=plot_theme, **kwargs)
+    elif plot_type == "Bar (Stacked)":
+        return px.bar(df, x=x, y=y, template=plot_theme, **kwargs)
     elif plot_type == "Line":
         return px.line(df, x=x, y=y, template=plot_theme, **kwargs)
     elif plot_type == "Area":
