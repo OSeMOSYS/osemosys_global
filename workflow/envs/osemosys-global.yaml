@@ -25,4 +25,4 @@ dependencies:
   - world-bank-data
   - otoole>=1.0.0
   - dash
-  - osemosys_global
+  # - osemosys_global
