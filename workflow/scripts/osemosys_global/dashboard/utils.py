@@ -126,7 +126,11 @@ def get_generation_techs(df: pd.DataFrame, column:str = "TECHNOLOGY") -> pd.Data
     return df.loc[
         (df[column].str.startswith("PWR")) & 
         ~(df[column].str.startswith("PWRTRN"))].reset_index(drop=True)
-    
+
+def get_mining_techs(df: pd.DataFrame, column:str = "TECHNOLOGY") -> pd.DataFrame:
+    """Filters out only power generation technologies"""
+    return df.loc[df[column].str.startswith("MIN")].reset_index(drop=True)
+
 def parse_pwr_codes(df: pd.DataFrame) -> pd.DataFrame:
     """Strips out country/region/category tags from pwr codes"""
 
@@ -151,6 +155,31 @@ def parse_pwr_codes(df: pd.DataFrame) -> pd.DataFrame:
         columns.insert(0, "REGION_CODE")
         columns.insert(0, "COUNTRY")
         columns.insert(0, "REGION")
+        df = pd.DataFrame(columns=columns)
+    return df
+
+def parse_min_codes(df: pd.DataFrame) -> pd.DataFrame:
+    """Strips out country/category tags from min codes"""
+
+    def sort_columns(df: pd.DataFrame) -> pd.DataFrame:
+        for column in ("COUNTRY", "REGION_CODE", "CATEGORY"):
+            data = df.pop(column)
+            df.insert(0, column, data)
+        return df
+    
+    if not df.empty:
+        df = df.drop(columns=["REGION"])
+        df["CATEGORY"] = df["TECHNOLOGY"].str[3:6]
+        df["COUNTRY"] = df["TECHNOLOGY"].str[6:9]
+        df["REGION_CODE"] = df["TECHNOLOGY"].str[6:9]
+        df = df.drop(columns=["TECHNOLOGY"])
+        df = sort_columns(df)
+    else:
+        df = df.drop(columns=["REGION", "TECHNOLOGY"])
+        columns = list(df)
+        columns.insert(0, "CATEGORY")
+        columns.insert(0, "COUNTRY")
+        columns.insert(0, "REGION_CODE")
         df = pd.DataFrame(columns=columns)
     return df
 
@@ -216,7 +245,7 @@ def plot_by_system(
     elif plot_type == "Area":
         return px.area(df, x=x, y=y, template=plot_theme, **kwargs)
     
-def get_unique_techs(df: pd.DataFrame) -> List[str]:
+def get_unique_techs(df: pd.DataFrame, parse_type: str = "PWR") -> List[str]:
     """Gets unique 3 letter tech codes
     
     Arguments:
@@ -227,7 +256,10 @@ def get_unique_techs(df: pd.DataFrame) -> List[str]:
         List[str]
             Unique codes without region identifier. 
     """
-    techs = get_generation_techs(df)
+    if parse_type == "PWR":
+        techs = get_generation_techs(df)
+    elif parse_type == "MIN":
+        techs = get_mining_techs(df)
     techs["CATEGORY"] = techs["TECHNOLOGY"].str[3:6]
     return techs["CATEGORY"].unique()
 
@@ -302,12 +334,32 @@ def plot_data(
 ) -> html.Div:
     """Generic function for plotting data"""
     
+    # Mining techs need modified country labels 
+    min_flag = False
+    
     # parse input data codes 
     if config[parameter]["groupby"] == "TECHNOLOGY":
-        data = get_generation_techs(data)
-        data = parse_pwr_codes(data)
+        
+        if config[parameter]["filterby"] == "PWR":
+            data = get_generation_techs(data)
+            data = parse_pwr_codes(data)
+            
+        elif config[parameter]["filterby"] == "MIN":
+            data = get_mining_techs(data)
+            data = parse_min_codes(data)
+            min_flag = True
+            
+            # Mining not tracked at regional level 
+            if geographic_scope == "Region":
+                geographic_scope = "Country"
+                
+        else:
+            logger.debug(
+                f"filterby for {parameter} is {config[parameter]['filterby']}")
+            
         if tech_fuel_filter != "all":
             data = data.loc[data["CATEGORY"] == tech_fuel_filter]
+            
     elif config[parameter]["groupby"] == "FUEL":
         data = parse_fuel_codes(data)
         if tech_fuel_filter != "all":
@@ -339,7 +391,11 @@ def plot_data(
             color_map = get_color_codes()
         
     groupby_method = config[parameter]["groupby_method"]
-        
+    
+    if min_flag:
+        region_filters = countries
+        region_filters.append("INT")
+    
     # get regional and temporal filtered dataframe 
     filtered_data = filter_data(
         data = data,

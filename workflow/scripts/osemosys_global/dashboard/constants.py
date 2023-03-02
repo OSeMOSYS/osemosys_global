@@ -48,6 +48,10 @@ TECHS_CONFIG = {
         "nicename": "Electricity",
         "color":"gold",
     },
+    "GAS":{
+        "nicename": "Natural Gas",
+        "color":"orange",
+    },
     "GEO":{
         "nicename": "Geothermal",
         "color":"darkseagreen",
@@ -55,6 +59,10 @@ TECHS_CONFIG = {
     "HYD":{
         "nicename": "Hydroelectric",
         "color":"dodgerblue",
+    },
+    "INT":{
+        "nicename":"International",
+        "color":"darkgreen"
     },
     "OCG":{
         "nicename": "Open Cycle Natural Gas",
@@ -111,6 +119,7 @@ PARAM_CONFIG = {
     },
     "CapacityFactor":{
         "nicename":"Capacity Factor",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"mean",
         "xaxis":"TIMESLICE", 
@@ -119,6 +128,7 @@ PARAM_CONFIG = {
     },
     "CapitalCost":{
         "nicename":"Capital Costs",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",        
         "groupby_method":"mean",
         "xaxis":"YEAR", 
@@ -136,6 +146,7 @@ PARAM_CONFIG = {
     },
     "FixedCost":{
         "nicename":"Fixed Costs",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",        
         "groupby_method":"mean",
         "xaxis":"YEAR", 
@@ -144,6 +155,7 @@ PARAM_CONFIG = {
     },
     "ResidualCapacity":{
         "nicename":"Residual Capacity",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
@@ -153,6 +165,7 @@ PARAM_CONFIG = {
     },
     "VariableCost":{
         "nicename":"Variable Costs",
+        "filterby":"MIN",
         "groupby":"TECHNOLOGY",
         "groupby_method":"mean",
         "xaxis":"YEAR", 
@@ -171,6 +184,7 @@ RESULT_CONFIG = {
     # },
     "AnnualTechnologyEmission":{
         "nicename":"Emissions",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
@@ -180,6 +194,7 @@ RESULT_CONFIG = {
     },
     "AnnualFixedOperatingCost":{
         "nicename":"Fixed Operating Cost",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
@@ -189,6 +204,7 @@ RESULT_CONFIG = {
     },
     "NewCapacity":{
         "nicename":"New Capacity",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
@@ -198,6 +214,7 @@ RESULT_CONFIG = {
     },
     "ProductionByTechnologyAnnual":{
         "nicename":"Production (Annual)",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
@@ -207,6 +224,7 @@ RESULT_CONFIG = {
     },
     "ProductionByTechnology":{
         "nicename":"Production (Time Slice)",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"TIMESLICE", 
@@ -216,6 +234,7 @@ RESULT_CONFIG = {
     },
     "TotalCapacityAnnual":{
         "nicename":"Total Capacity",
+        "filterby":"PWR",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
         "xaxis":"YEAR", 
@@ -225,9 +244,9 @@ RESULT_CONFIG = {
     },
     "AnnualVariableOperatingCost":{
         "nicename":"Variable Operating Cost",
+        "filterby":"MIN",
         "groupby":"TECHNOLOGY",
         "groupby_method":"sum",
-        "parsing_method":"MIN",
         "xaxis":"YEAR", 
         "ylabel":"COST ($M)",
         "add_default":True,

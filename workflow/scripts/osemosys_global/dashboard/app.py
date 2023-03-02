@@ -348,7 +348,7 @@ def plot_input_data_callback(
 )
 def tech_filter_dropdown_options_callback(parameter: str, geographic_scope: str) -> html.Div:
     if const.PARAM_CONFIG[parameter]["groupby"] == "TECHNOLOGY":
-        options = get_unique_techs(INPUT_DATA[parameter])
+        options = get_unique_techs(INPUT_DATA[parameter], parse_type=const.PARAM_CONFIG[parameter]["filterby"])
     else:
         options = get_unique_fuels(INPUT_DATA[parameter])
         
@@ -357,7 +357,11 @@ def tech_filter_dropdown_options_callback(parameter: str, geographic_scope: str)
     if geographic_scope == "System":
         dropdown_options.insert(0, {"label":"All", "value":"all"})
 
-    return dropdown_options, dropdown_options[0]["value"]
+    try:
+        return dropdown_options, dropdown_options[0]["value"]
+    except IndexError:
+        dropdown_options.insert(0, {"label":"Error", "value":"error"})
+        return dropdown_options, dropdown_options[0]["value"]
 
 @app.callback(
     Output(ids.INPUT_YEAR_SLIDER, "style"),
@@ -439,7 +443,7 @@ def plot_result_data_callback(
 )
 def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) -> html.Div:
     if const.RESULT_CONFIG[variable]["groupby"] == "TECHNOLOGY":
-        options = get_unique_techs(RESULT_DATA[variable])
+        options = get_unique_techs(RESULT_DATA[variable], parse_type=const.RESULT_CONFIG[variable]["filterby"])
     else:
         options = get_unique_fuels(RESULT_DATA[variable])
         
@@ -447,8 +451,12 @@ def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) 
     
     if geographic_scope == "System":
         dropdown_options.insert(0, {"label":"All", "value":"all"})
-
-    return dropdown_options, dropdown_options[0]["value"]
+    
+    try:
+        return dropdown_options, dropdown_options[0]["value"]
+    except IndexError:
+        dropdown_options.insert(0, {"label":"Error", "value":"error"})
+        return dropdown_options, dropdown_options[0]["value"]
 
 @app.callback(
     Output(ids.RESULT_YEAR_SLIDER, "style"),
