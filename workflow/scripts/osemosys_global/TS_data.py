@@ -6,7 +6,7 @@ import itertools
 import seaborn as sns; sns.set()
 import urllib
 import os
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 from osemosys_global.utils import apply_timeshift
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)

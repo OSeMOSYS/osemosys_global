@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 from pkg_resources import DistributionNotFound, get_distribution
-from OPG_geographic_filter import extract_country
+# from osemosys_global.geographic_filter import extract_country
 
 try:
     # Change here if project is renamed and does not equal the package name

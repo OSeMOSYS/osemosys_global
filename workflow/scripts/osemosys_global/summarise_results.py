@@ -3,7 +3,7 @@ import itertools
 import os
 from pathlib import Path
 from typing import Dict
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 from osemosys_global.visualisation.utils import transform_ts, powerplant_filter
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift

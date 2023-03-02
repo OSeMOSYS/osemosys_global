@@ -2,12 +2,12 @@
 
 import pandas as pd
 import os 
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 from typing import Dict, List
 import itertools
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift, filter_transmission_techs
-from osemosys_global.OPG_powerplant_data import format_transmission_name
+from osemosys_global.powerplant_data import format_transmission_name
 
 def get_color_codes() -> Dict:
     """Get color naming dictionary.

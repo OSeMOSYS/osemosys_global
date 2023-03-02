@@ -1,14 +1,7 @@
 import pandas as pd
-import plotly as py
-import plotly.express as px
 import plotly.graph_objects as go
-import plotly.io as pio
-import matplotlib.pyplot as plt
-import itertools
 import os
-import sys
-import yaml
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 
 pd.set_option('mode.chained_assignment', None)
 

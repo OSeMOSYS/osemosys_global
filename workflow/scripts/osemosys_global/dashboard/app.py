@@ -34,7 +34,7 @@ from osemosys_global.dashboard.utils import (
     get_transmission_lines,
     add_default_values
 )
-from osemosys_global.OPG_configuration import ConfigPaths
+from osemosys_global.configuration import ConfigPaths
 
 #############################################################################
 ## APP SETUP

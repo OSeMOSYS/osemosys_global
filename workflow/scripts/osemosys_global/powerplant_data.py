@@ -11,7 +11,7 @@ import numpy as np
 import itertools
 import urllib
 import os
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 import os

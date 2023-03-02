@@ -3,14 +3,14 @@ pd.set_option('mode.chained_assignment', None)
 import plotly.express as px
 import matplotlib.pyplot as plt
 import os
-from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from mpl_toolkits.basemap import Basemap
-from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
 from typing import Dict
 from osemosys_global.utils import read_csv
 from osemosys_global.visualisation.utils import get_color_codes
+from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 
 
 def main():

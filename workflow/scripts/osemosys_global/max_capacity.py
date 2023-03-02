@@ -1,9 +1,8 @@
 
 import requests
 import os
-import yaml
 import pandas as pd
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 
 # LOGGING
 import logging
