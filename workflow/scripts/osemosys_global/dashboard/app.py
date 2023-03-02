@@ -250,6 +250,14 @@ def select_regions(_: int, countries : list[str],) -> list[str]:
 def select_all_countries(_: int) -> list[str]:
     return ALL_COUNTRIES
 
+# @app.callback(
+#     Output(ids.PLOT_THEME_DROPDOWN, 'value'),
+#     Input(ids.TAB_CONTAINER, "value"),
+#     State(ids.CACHE_PLOT_THEME_DROPDOWN, 'data')
+# )
+# def store_plot_theme_dropdown_cache(tab, plot_theme):
+#     return plot_theme
+
 #############################################################################
 ## MAP TAB CALLBACKS 
 #############################################################################
