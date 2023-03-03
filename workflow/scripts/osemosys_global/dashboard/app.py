@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Dict, List
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output, State
-import i18n 
 from osemosys_global.dashboard.components import ids
 import osemosys_global.dashboard.components.shared as shared
 import osemosys_global.dashboard.components.options_tab as options_tab
@@ -34,7 +33,7 @@ from osemosys_global.dashboard.utils import (
     get_transmission_lines,
     add_default_values
 )
-from osemosys_global.configuration import ConfigPaths
+from osemosys_global.configuration import ConfigPaths, ConfigFile
 
 #############################################################################
 ## APP SETUP
@@ -43,9 +42,8 @@ from osemosys_global.configuration import ConfigPaths
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 config = ConfigPaths()
-LOCALE = "en"
-i18n.set("locale",LOCALE)
-i18n.load_path.append(Path(config.py_file_dir, "dashboard", "locale"))
+config_file = ConfigFile("config")
+SCENARIO = config_file.get("scenario")
 
 # read in data
 INPUT_DATA = read_csv(config.scenario_data_dir)
@@ -69,7 +67,7 @@ LINES = get_transmission_lines(INPUT_DATA)
 
 # create app
 app = Dash(external_stylesheets=external_stylesheets)
-app.title = i18n.t("OSeMOSYS Global Dashboard")
+app.title = "OSeMOSYS Global Dashboard"
 app.config['suppress_callback_exceptions'] = True # for synching across tabs
 
 #############################################################################
@@ -87,6 +85,7 @@ app.layout = html.Div(
         
         # App header 
         html.H1(app.title),
+        html.H3(f"{SCENARIO} Scenario"),
         html.Hr(),
         dcc.Tabs(
             id=ids.TAB_CONTAINER,
