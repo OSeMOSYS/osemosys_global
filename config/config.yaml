@@ -1,0 +1,59 @@
+# Scenario Name 
+scenario: 'India'
+
+# Temporal Parameters 
+startYear: 2020
+endYear: 2050
+daytype: False
+dayparts:
+  #daypart : [start_hour (inclusive), end_hour (exclusive)]
+  D1: [0, 12]
+  D2: [12, 24]
+seasons:
+  #season : [month 1, month 2, ...] (all inclusive)
+  S1: [12, 1, 2]
+  S2: [3, 4, 5]
+  S3: [6, 7, 8]
+  S4: [9, 10, 11]
+timeshift: 5 # value between -11 and 12
+  
+# Spatial Parameters 
+geographic_scope:
+    - 'IND'
+crossborderTrade: True
+
+# Emission Parameters 
+emission_penalty: 0 # M$/MT CO2
+
+# Investment Parameters 
+no_invest_technologies: 
+  - 'GEO'
+  - 'CSP'
+  - 'WAV'
+  - 'BIO'
+  - 'URN'
+
+# Result Parameters 
+results_by_country: True
+
+# solver parameters
+solver: 'cbc' # cbc, cplex, gurobi
+
+user_defined_capacity:
+  # technology: [capacity, first_year,]
+
+nodes_to_add:
+ #- 'AAAXX' where AAA is a 3-letter country code, 
+ # specified in the 'geographic scope' 
+ # and XX is a 2-letter sub-regional node code. 
+ # E.g. - 'IDNSM' for a sub-regional node in Sumatra, Indonesia.
+ # - 'IDNSM'
+ # - 'IDNJW'
+ # - 'IDNNU'
+ # - 'IDNKA'
+ # - 'IDNSL'
+ # - 'IDNML'
+ # - 'IDNPP'
+
+nodes_to_remove:
+ # - 'IDNXX'
