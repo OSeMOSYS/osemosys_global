@@ -377,22 +377,27 @@ def plot_data(
         region_filters = countries
         plot_color = "COUNTRY"
         groupby_columns = ["CATEGORY", region_filter_column, config[parameter]["xaxis"]]
+        if tech_fuel_filter != "all":
+            groupby_columns = ["CATEGORY", region_filter_column, config[parameter]["xaxis"]]
+        else: 
+            groupby_columns = [region_filter_column, config[parameter]["xaxis"]]
     elif geographic_scope == "Region":
         region_filter_column = "REGION_CODE"
         region_filters = regions
         plot_color = "REGION_CODE"
-        groupby_columns = ["CATEGORY", region_filter_column, config[parameter]["xaxis"]]
+        if tech_fuel_filter != "all":
+            groupby_columns = ["CATEGORY", region_filter_column, config[parameter]["xaxis"]]
+        else: 
+            groupby_columns = [region_filter_column, config[parameter]["xaxis"]]
     else: # system level
         region_filter_column = "REGION_CODE"
         region_filters = regions
+        groupby_columns = ["CATEGORY", config[parameter]["xaxis"]]
+        color_map = get_color_codes()
         if tech_fuel_filter != "all":
-            groupby_columns = ["CATEGORY", config[parameter]["xaxis"]]
             plot_color = config[parameter]["groupby"]
-            color_map = get_color_codes()
         else: 
-            groupby_columns = ["CATEGORY", config[parameter]["xaxis"]]
             plot_color = "CATEGORY"
-            color_map = get_color_codes()
         
     groupby_method = config[parameter]["groupby_method"]
     

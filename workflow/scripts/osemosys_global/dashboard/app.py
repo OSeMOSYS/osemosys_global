@@ -455,9 +455,7 @@ def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) 
         options = get_unique_fuels(RESULT_DATA[variable])
         
     dropdown_options = create_dropdown_options(options)
-    
-    if geographic_scope == "System":
-        dropdown_options.insert(0, {"label":"All", "value":"all"})
+    dropdown_options.insert(0, {"label":"All", "value":"all"})
     
     try:
         return dropdown_options, dropdown_options[0]["value"]
