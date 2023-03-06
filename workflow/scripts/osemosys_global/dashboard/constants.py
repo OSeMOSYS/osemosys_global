@@ -263,14 +263,28 @@ TRANSMISSION_CONFIG = {
         "default":0
     },
     "ProductionByTechnologyAnnual":{
-        "nicename":"Total Production (Annual)",
+        "nicename":"Annual Production (Total)",
+        "xaxis":"YEAR", 
+        "ylabel":"PRODUCTION (PJ)",
+        "add_default":True,
+        "default":0
+    },
+    "ProductionByTechnologyByModeAnnual":{
+        "nicename":"Annual Production (Directional)",
         "xaxis":"YEAR", 
         "ylabel":"PRODUCTION (PJ)",
         "add_default":True,
         "default":0
     },
     "ProductionByTechnology":{
-        "nicename":"Total Production (Time Slice)",
+        "nicename":"Production (Total)",
+        "xaxis":"TIMESLICE", 
+        "ylabel":"PRODUCTION (PJ)",
+        "add_default":True,
+        "default":0
+    },
+    "ProductionByTechnologyByMode":{
+        "nicename":"Production (Directional)",
         "xaxis":"TIMESLICE", 
         "ylabel":"PRODUCTION (PJ)",
         "add_default":True,

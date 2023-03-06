@@ -488,3 +488,32 @@ def add_default_values(
     df = df.sort_values(by=[column])
     
     return df.reset_index(drop=True)
+
+def get_production_by_mode(df: pd.DataFrame, year_split: pd.DataFrame, annual: bool = False) -> pd.DataFrame:
+    """Gets production by technology by mode values
+    
+    Arguments:
+        df: pd.DataFrame
+            RateOfProductionByTechnologyByMode dataframe
+        year_split: pd.Dataframe
+            YearSplit dataframe    
+        annual: bool
+            Return ProductionByTechnologyByMode or ProductionByTechnologyByModeAnnual
+    
+    From the formulation
+    
+    r~REGION, l~TIMESLICE, t~TECHNOLOGY, f~FUEL, y~YEAR,
+    sum{m in MODE_OF_OPERATION: OutputActivityRatio[r,t,f,m,y] <> 0}
+        RateOfActivity[r,l,t,m,y] * OutputActivityRatio[r,t,f,m,y]
+        * YearSplit[l,y] ~VALUE;
+    """
+    
+    df = df.set_index(["REGION", "TIMESLICE", "TECHNOLOGY", "MODE_OF_OPERATION", "FUEL", "YEAR"])
+    year_split = year_split.set_index(["TIMESLICE","YEAR"])
+    
+    data = df.mul(year_split, fill_value=0.0)
+
+    if annual:
+        return data.groupby(by=["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "FUEL", "YEAR"]).sum().reset_index()
+    else:
+        return data.reset_index()

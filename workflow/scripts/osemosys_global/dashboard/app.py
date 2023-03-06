@@ -31,7 +31,8 @@ from osemosys_global.dashboard.utils import (
     get_unique_techs,
     create_dropdown_options,
     get_transmission_lines,
-    add_default_values
+    add_default_values,
+    get_production_by_mode
 )
 from osemosys_global.configuration import ConfigPaths, ConfigFile
 
@@ -48,6 +49,17 @@ SCENARIO = config_file.get("scenario")
 # read in data
 INPUT_DATA = read_csv(config.scenario_data_dir)
 RESULT_DATA = read_csv(config.scenario_results_dir)
+
+# add in prodution by mode values to result data 
+RESULT_DATA["ProductionByTechnologyByMode"] = get_production_by_mode(
+    RESULT_DATA["RateOfProductionByTechnologyByMode"], 
+    INPUT_DATA["YearSplit"],
+    annual=False)
+
+RESULT_DATA["ProductionByTechnologyByModeAnnual"] = get_production_by_mode(
+    RESULT_DATA["RateOfProductionByTechnologyByMode"], 
+    INPUT_DATA["YearSplit"],
+    annual=True)
 
 # get node/line geolocations
 cost_line_expansion_file = Path(config.input_data_dir, "Costs Line expansion.xlsx")
@@ -507,12 +519,12 @@ def plot_transmission_data_callback(
 
     # get raw data to plot
     data = RESULT_DATA[parameter]
-    if const.RESULT_CONFIG[parameter]["add_default"]:
+    if const.TRANSMISSION_CONFIG[parameter]["add_default"]:
         data = add_default_values(
             df = data,
             column = temporal_axis,
             default_indices = INPUT_DATA[temporal_axis]["VALUE"].to_list(),
-            default_value = const.RESULT_CONFIG[parameter]["default"]
+            default_value = const.TRANSMISSION_CONFIG[parameter]["default"]
         )
 
     return plot_transmission_data(

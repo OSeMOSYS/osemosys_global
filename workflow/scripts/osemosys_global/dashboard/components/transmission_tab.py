@@ -3,7 +3,7 @@
 from dash import html, dcc
 import osemosys_global.dashboard.components.ids as ids
 import osemosys_global.dashboard.constants as const
-from osemosys_global.dashboard.utils import get_transmission_techs, plot_by_system
+from osemosys_global.dashboard.utils import get_transmission_techs, plot_by_system, plot_by_region
 from typing import List, Dict
 import pandas as pd
 
@@ -98,10 +98,13 @@ def plot_transmission_data(
     """Generic plotting function for transmission data"""
     
     # parse input data codes 
+    # print(111111)
+    # print(data)
     data = get_transmission_techs(data)
     if line != "all":
         data = data.loc[data["TECHNOLOGY"] == line].reset_index(drop=True)
-        
+    # print(222222)
+    # print(data)
     # temporal filtering 
     if len(years) == 1:
         filtered = data.loc[data["YEAR"] == years[0]]
@@ -113,14 +116,29 @@ def plot_transmission_data(
     
     # aggregate data
     groupby_column = config[parameter]["xaxis"]
-    grouped = filtered.groupby(by=[groupby_column]).sum(numeric_only=True).reset_index()
-    fig = plot_by_system(
-        df=grouped,
-        plot_type=plot_type,
-        x=config[parameter]["xaxis"],
-        y="VALUE",
-        plot_theme=plot_theme,
-        labels={"VALUE":config[parameter]["ylabel"]}
-    )
+    
+    # if need to track directional flow 
+    if parameter in ("ProductionByTechnologyByModeAnnual", "ProductionByTechnologyByMode"):
+        grouped = filtered.groupby(by=[groupby_column, "MODE_OF_OPERATION"]).sum(numeric_only=True).reset_index()
+        grouped["FLOW"] = grouped["MODE_OF_OPERATION"].map(lambda x: "Imports" if x == 1 else "Exports")
+        fig = plot_by_region(
+            df=grouped,
+            plot_type=plot_type,
+            x=config[parameter]["xaxis"],
+            y="VALUE",
+            color="FLOW",
+            plot_theme=plot_theme,
+            labels={"VALUE":config[parameter]["ylabel"]}
+        )
+    else:
+        grouped = filtered.groupby(by=[groupby_column]).sum(numeric_only=True).reset_index()
+        fig = plot_by_system(
+            df=grouped,
+            plot_type=plot_type,
+            x=config[parameter]["xaxis"],
+            y="VALUE",
+            plot_theme=plot_theme,
+            labels={"VALUE":config[parameter]["ylabel"]}
+        )
 
     return html.Div(children=[dcc.Graph(figure=fig)], id=div_id)
