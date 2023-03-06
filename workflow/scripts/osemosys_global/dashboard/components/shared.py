@@ -4,6 +4,8 @@ from dash import Dash, dcc, html
 from typing import List
 from osemosys_global.dashboard.components import ids
 import osemosys_global.dashboard.constants as const
+import logging 
+logger = logging.getLogger(__name__)
     
 def plot_type_dropdown(**kwargs) -> html.Div:
     

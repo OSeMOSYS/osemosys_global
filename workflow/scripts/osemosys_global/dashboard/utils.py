@@ -3,7 +3,6 @@
 import pandas as pd
 import numpy as np
 import geopandas as gpd
-import logging
 from shapely.geometry import LineString
 from osemosys_global.visualisation.utils import (
     load_node_data_demand_center, 
@@ -15,7 +14,11 @@ import osemosys_global.dashboard.constants as const
 from dash import html, dcc
 import plotly.express as px
 from typing import Union, List, Dict
+import warnings
+from shapely.errors import ShapelyDeprecationWarning
+warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning) 
 
+import logging 
 logger = logging.getLogger(__name__)
 
 def add_pts_to_line(x1: float, y1: float, x2: float, y2: float, n_points: int, name: str) -> List[Union[str, LineString]]:
@@ -39,8 +42,10 @@ def geolocate_nodes(node_data_file: str, centroid: bool) -> gpd.GeoDataFrame:
     """
 
     if centroid:
+        logger.info("Geolocating nodes at centroid")
         nodes = load_node_data_centroid(node_data_file)
     else:
+        logger.info(f"Geolocating nodes at demand center")
         nodes = load_node_data_demand_center(node_data_file)
         
     return gpd.GeoDataFrame(
@@ -61,6 +66,8 @@ def geolocate_lines(cost_line_expansion_xlsx: str, nodes: gpd.GeoDataFrame, n_po
     Returns: 
         GeoDataframe with start/end nodes and lats/lons
     """
+    
+    logger.info("Geolocating lines")
     
     trn = load_line_data(cost_line_expansion_xlsx)
     
@@ -149,6 +156,7 @@ def parse_pwr_codes(df: pd.DataFrame) -> pd.DataFrame:
         df = df.drop(columns=["TECHNOLOGY"])
         df = sort_columns(df)
     else:
+        logger.info("Empty pwr codes dataframe")
         df = df.drop(columns=["REGION", "TECHNOLOGY"])
         columns = list(df)
         columns.insert(0, "CATEGORY")
@@ -175,6 +183,7 @@ def parse_min_codes(df: pd.DataFrame) -> pd.DataFrame:
         df = df.drop(columns=["TECHNOLOGY"])
         df = sort_columns(df)
     else:
+        logger.info("Empty min codes dataframe")
         df = df.drop(columns=["REGION", "TECHNOLOGY"])
         columns = list(df)
         columns.insert(0, "CATEGORY")
@@ -201,6 +210,7 @@ def parse_fuel_codes(df: pd.DataFrame) -> pd.DataFrame:
         df = df.drop(columns=["FUEL"])
         df = sort_columns(df)
     else:
+        logger.info("Empty fuel codes dataframe")
         df = df.drop(columns=["REGION", "TECHNOLOGY"])
         columns = list(df)
         columns.insert(0, "REGION")
@@ -321,6 +331,7 @@ def group_data(data: pd.DataFrame, groupby_columns: List[str], groupby_method: s
     elif groupby_method == "mean":
         return data.groupby(by=groupby_columns).mean(numeric_only=True).reset_index()
     else:
+        logger.debug(f"{groupby_method} is not valid. Returning empty dataframe")
         return pd.DataFrame()
 
 def plot_data(

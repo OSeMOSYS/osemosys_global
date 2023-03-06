@@ -7,6 +7,8 @@ from typing import Dict
 from osemosys_global.dashboard.components import ids
 import osemosys_global.dashboard.constants as const
 from osemosys_global.dashboard.utils import create_dropdown_options
+import logging 
+logger = logging.getLogger(__name__)
 
 def plot_theme() -> html.Div:
     return html.Div(

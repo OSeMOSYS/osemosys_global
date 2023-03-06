@@ -98,13 +98,9 @@ def plot_transmission_data(
     """Generic plotting function for transmission data"""
     
     # parse input data codes 
-    # print(111111)
-    # print(data)
     data = get_transmission_techs(data)
     if line != "all":
         data = data.loc[data["TECHNOLOGY"] == line].reset_index(drop=True)
-    # print(222222)
-    # print(data)
     # temporal filtering 
     if len(years) == 1:
         filtered = data.loc[data["YEAR"] == years[0]]
@@ -120,7 +116,7 @@ def plot_transmission_data(
     # if need to track directional flow 
     if parameter in ("ProductionByTechnologyByModeAnnual", "ProductionByTechnologyByMode"):
         grouped = filtered.groupby(by=[groupby_column, "MODE_OF_OPERATION"]).sum(numeric_only=True).reset_index()
-        grouped["FLOW"] = grouped["MODE_OF_OPERATION"].map(lambda x: "Imports" if x == 1 else "Exports")
+        grouped["FLOW"] = grouped["MODE_OF_OPERATION"].map(lambda x: "Exports" if x == 1 else "Imports")
         fig = plot_by_region(
             df=grouped,
             plot_type=plot_type,

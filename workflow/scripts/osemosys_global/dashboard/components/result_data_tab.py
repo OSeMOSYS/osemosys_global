@@ -10,6 +10,8 @@ from osemosys_global.dashboard.utils import (
     get_unique_fuels,
     create_dropdown_options
 )
+import logging 
+logger = logging.getLogger(__name__)
 
 def variable_dropdown(**kwargs) -> html.Div:
     """Selects model variable"""

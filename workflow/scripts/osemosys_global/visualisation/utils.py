@@ -8,6 +8,8 @@ import itertools
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift, filter_transmission_techs
 from osemosys_global.powerplant_data import format_transmission_name
+import logging 
+logger = logging.getLogger(__name__)
 
 def get_color_codes() -> Dict:
     """Get color naming dictionary.

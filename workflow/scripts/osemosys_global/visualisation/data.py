@@ -3,6 +3,8 @@
 from .utils import powerplant_filter, transform_ts
 import pandas as pd
 from typing import Dict
+import logging 
+logger = logging.getLogger(__name__)
 
 def get_total_capacity_data(data: Dict[str,pd.DataFrame], country:str =None):
     """ Gets data for plotting total capacity 

@@ -4,6 +4,8 @@ import numpy as np
 import plotly.express as px
 from osemosys_global.dashboard.components import ids
 import osemosys_global.dashboard.constants as const
+import logging 
+logger = logging.getLogger(__name__)
 
 def map_theme(**kwargs) -> html.Div:
     

@@ -36,21 +36,29 @@ from osemosys_global.dashboard.utils import (
 )
 from osemosys_global.configuration import ConfigPaths, ConfigFile
 
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.propagate = False
+
 #############################################################################
 ## APP SETUP
 #############################################################################
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
+logger.info("Reading configuration options")
 config = ConfigPaths()
 config_file = ConfigFile("config")
 SCENARIO = config_file.get("scenario")
 
 # read in data
+logger.info("Reading input and result data")
 INPUT_DATA = read_csv(config.scenario_data_dir)
 RESULT_DATA = read_csv(config.scenario_results_dir)
 
 # add in prodution by mode values to result data 
+logger.info("Adding production by mode data")
 RESULT_DATA["ProductionByTechnologyByMode"] = get_production_by_mode(
     RESULT_DATA["RateOfProductionByTechnologyByMode"], 
     INPUT_DATA["YearSplit"],
@@ -62,6 +70,7 @@ RESULT_DATA["ProductionByTechnologyByModeAnnual"] = get_production_by_mode(
     annual=True)
 
 # get node/line geolocations
+logger.info("Geolocating nodes and lines")
 cost_line_expansion_file = Path(config.input_data_dir, "Costs Line expansion.xlsx")
 softlink_file = Path(config.input_data_dir, "PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx")
 
@@ -72,12 +81,14 @@ NODES_CENTROID = geolocate_nodes(softlink_file, centroid=True)
 LINES_CENTROID = geolocate_lines(cost_line_expansion_file, NODES_CENTROID)
 
 # Shared initializtion values
+logger.info("Initializing input data")
 ALL_REGIONS = get_regions(INPUT_DATA, countries_only=False)
 ALL_COUNTRIES = get_regions(INPUT_DATA, countries_only=True)
 ALL_YEARS = INPUT_DATA["YEAR"]["VALUE"].to_list()
 LINES = get_transmission_lines(INPUT_DATA)
 
 # create app
+logger.info("Starting app")
 app = Dash(external_stylesheets=external_stylesheets)
 app.title = "OSeMOSYS Global Dashboard"
 app.config['suppress_callback_exceptions'] = True # for synching across tabs
@@ -261,13 +272,21 @@ def select_regions(_: int, countries : list[str],) -> list[str]:
 def select_all_countries(_: int) -> list[str]:
     return ALL_COUNTRIES
 
-# @app.callback(
-#     Output(ids.PLOT_THEME_DROPDOWN, 'value'),
-#     Input(ids.TAB_CONTAINER, "value"),
-#     State(ids.CACHE_PLOT_THEME_DROPDOWN, 'data')
-# )
-# def store_plot_theme_dropdown_cache(tab, plot_theme):
-#     return plot_theme
+@app.callback(
+    Output(ids.PLOT_THEME_DROPDOWN, 'value'),
+    Input(ids.TAB_CONTAINER, "value"),
+    State(ids.CACHE_PLOT_THEME_DROPDOWN, 'data')
+)
+def store_plot_theme_dropdown_cache(tab, plot_theme):
+    return plot_theme
+
+@app.callback(
+    Output(ids.REGION_COUNTRY_RADIO_BUTTON, 'value'),
+    Input(ids.TAB_CONTAINER, "value"),
+    State(ids.CACHE_REGION_COUNTRY_RADIO_BUTTON, 'data')
+)
+def store_region_radio_button_cache(tab, geographic_scope):
+    return geographic_scope
 
 #############################################################################
 ## MAP TAB CALLBACKS 
@@ -288,6 +307,8 @@ def plot_map_callback(
     map_theme: str = const._MAP_THEME,
     node_location: str = const._NODE_LOCATION,
 ) -> html.Div:
+    
+    logger.info("Map plotting callback")
     
     if node_location == "Centroid":
         nodes = NODES_CENTROID
@@ -328,6 +349,8 @@ def plot_input_data_callback(
 ) -> html.Div:
     """Generic function for plotting input data"""
     
+    logger.info("Input plot callback")
+    
     # Determine if year dependent data 
     temporal_axis = const.PARAM_CONFIG[parameter]["xaxis"]
     if temporal_axis == "YEAR":
@@ -366,6 +389,9 @@ def plot_input_data_callback(
     Input(ids.CACHE_REGION_COUNTRY_RADIO_BUTTON, "data")
 )
 def tech_filter_dropdown_options_callback(parameter: str, geographic_scope: str) -> html.Div:
+    
+    logger.info("Input technology dropdown callback")
+    
     if const.PARAM_CONFIG[parameter]["groupby"] == "TECHNOLOGY":
         options = get_unique_techs(INPUT_DATA[parameter], parse_type=const.PARAM_CONFIG[parameter]["filterby"])
     else:
@@ -388,6 +414,9 @@ def tech_filter_dropdown_options_callback(parameter: str, geographic_scope: str)
     Input(ids.INPUT_DATA_DROPDOWN, "value")
 )
 def input_slider_visibility(parameter:str):
+    
+    logger.info("Input year slider callback")
+    
     if const.PARAM_CONFIG[parameter]["xaxis"] == "YEAR":
         return {"display": "block"}, {"display": "none"}
     else:
@@ -422,6 +451,8 @@ def plot_result_data_callback(
     tech_fuel: str = "all",
 ) -> html.Div:
     """Generic function for plotting input data"""
+    
+    logger.info("Result plot callback")
     
     # Determine if year dependent data 
     temporal_axis = const.RESULT_CONFIG[parameter]["xaxis"]
@@ -461,6 +492,9 @@ def plot_result_data_callback(
     Input(ids.CACHE_REGION_COUNTRY_RADIO_BUTTON, "data")
 )
 def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) -> html.Div:
+    
+    logger.info("Result technology dropdown callback")
+    
     if const.RESULT_CONFIG[variable]["groupby"] == "TECHNOLOGY":
         options = get_unique_techs(RESULT_DATA[variable], parse_type=const.RESULT_CONFIG[variable]["filterby"])
     else:
@@ -481,6 +515,9 @@ def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) 
     Input(ids.RESULT_DATA_DROPDOWN, "value")
 )
 def result_slider_visibility(parameter:str):
+    
+    logger.info("Result year slider callback")
+    
     if const.RESULT_CONFIG[parameter]["xaxis"] == "YEAR":
         return {"display": "block"}, {"display": "none"}
     else:
@@ -509,6 +546,8 @@ def plot_transmission_data_callback(
     year: int = ALL_YEARS[0],
     plot_theme: str = const._PLOT_THEME,
 ) -> html.Div:
+    
+    logger.info("Transmission plot callback")
     
     # Determine if year dependent data 
     temporal_axis = const.TRANSMISSION_CONFIG[parameter]["xaxis"]
@@ -544,6 +583,9 @@ def plot_transmission_data_callback(
     Input(ids.TRANSMISSION_DATA_DROPDOWN, "value")
 )
 def transmission_slider_visibility(parameter:str):
+    
+    logger.info("Transmission year slider callback")
+    
     if const.TRANSMISSION_CONFIG[parameter]["xaxis"] == "YEAR":
         return {"display": "block"}, {"display": "none"}
     else:
