@@ -1,4 +1,4 @@
-name: osemosys-global
+name: osemosys-global-dashboard
 
 channels:
  - bioconda
@@ -9,18 +9,11 @@ dependencies:
  - pip
 
  - pandas
- - urllib3
- - matplotlib
- - seaborn
- - xlsxwriter
- - openpyxl
+ - geopandas
  - plotly
- - snakemake-minimal
- - basemap
  - pytest
- - scikit-learn
 
  - pip:
-   - world-bank-data
    - otoole>=1.0.0
+   - dash
    # - osemosys_global

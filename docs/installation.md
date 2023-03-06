@@ -183,7 +183,6 @@ Once installed, activate the new `osemosys-global` environment. You will now see
 
 ```bash
 (base) ~/osemosys_global$ conda activate osemosys-global
-
 (osemosys-global) ~/osemosys_global$ 
 ```
 
