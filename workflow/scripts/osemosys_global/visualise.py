@@ -48,12 +48,10 @@ def main():
             plot_generation_annual(result_data, scenario_figs_dir, country=country)
     
     # Creates transmission maps by year      
-    '''
-    years = [2050]
-    for a in years:
-        plot_transmission_capacity(a)
-        plot_transmission_flow(a)
-    '''
+    years = [config.get('endYear')]
+    for year in years:
+        plot_transmission_capacity(year)
+        plot_transmission_flow(year)
 
 def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None):
     """Plots total capacity chart 
