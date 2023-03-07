@@ -86,7 +86,7 @@ rule visualisation:
     log:
         log = 'results/{scenario}/logs/visualisation.log'
     shell: 
-        'python workflow/scripts/osemosys_global/visualisation.py 2> {log}'
+        'python workflow/scripts/osemosys_global/visualise.py 2> {log}'
 
 rule summarise_results:
     message:

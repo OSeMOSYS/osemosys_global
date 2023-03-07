@@ -4,7 +4,7 @@ CCG,Gas - Combined cycle,lightcoral
 COA,Coal,black
 COG,Cogeneration,peru
 CSP,CSP,wheat
-ELC,Electricity,yellow
+ELC,Electricity,gold
 GAS,Natural gas,orange
 GEO,Geothermal,darkseagreen
 HYD,Hydro,dodgerblue
@@ -19,3 +19,4 @@ WAS,Waste,darkkhaki
 WAV,Wave,navy
 WOF,Wind - Offshore,violet
 WON,Wind - Onshore,blueviolet
+INT,International,darkgreen

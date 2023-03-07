@@ -23,7 +23,7 @@ rule geographic_filter:
     log:
         log = 'results/{scenario}/logs/geographicFilter.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_geographic_filter.py 2> {log}'
+        'python workflow/scripts/osemosys_global/geographic_filter.py 2> {log}'
 
 rule copy_og_config:
     message:

@@ -1,23 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # OSeMOSYS-PLEXOS global model: TS-dependent parameters
-
-# ### Import modules
-
-# In[1]:
-
-
 import pandas as pd
-import datetime
-import numpy as np
 import itertools
 import seaborn as sns; sns.set()
-import matplotlib
-import matplotlib.pyplot as plt
 import urllib
 import os
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
+from osemosys_global.utils import apply_timeshift
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -42,23 +32,6 @@ except FileExistsError:
 
 region_name = config.region_name
 custom_nodes = config.get('nodes_to_add')
-
-# helper functions
-
-def apply_timeshift(x, timeshift):
-    '''Applies timeshift to organize dayparts.
-    
-    Args:
-        x = Value between 0-24
-        timeshift = value offset from UTC (-11 -> +12)'''
-
-    x += timeshift
-    if x > 23:
-        return x - 24
-    elif x < 0:
-        return x + 24
-    else:
-        return x
 
 # Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
 try:
@@ -104,10 +77,6 @@ daytype_included = config.get('daytype')
 model_start_year = config.get('startYear')
 model_end_year = config.get('endYear')
 years = list(range(model_start_year, model_end_year+1))
-
-
-# In[4]:
-
 
 csp_df = pd.read_csv(os.path.join(input_data_dir,
                                   'CSP 2015.csv'),
@@ -177,8 +146,6 @@ wof_df.name = 'WOF'
 
 # ### Create 'output' directory if it doesn't exist
 
-# In[5]:
-
 
 import os
 if not os.path.exists(output_data_dir):
@@ -186,8 +153,6 @@ if not os.path.exists(output_data_dir):
 
 
 # ### Create columns for year, month, day, hour, and day type
-
-# In[6]:
 
 if custom_nodes:
     demand_nodes = [x for x in demand_df.columns if x != 'Datetime'] + custom_nodes
@@ -217,9 +182,6 @@ demand_df.loc[demand_df['Day-of-week'] != 'WD', 'Day-of-week'] = 'WE'
 
 # ### Create dictionaries for 'seasons' and 'dayparts'
 
-# In[7]:
-
-
 seasons_dict = dict(zip(list(seasons_df['month']),
                         list(seasons_df['season'])
                        )
@@ -236,7 +198,6 @@ dayparts_dict = {i: [j, k]
 
 # ### Create columns with 'seasons' and 'dayparts'
 
-# In[8]:
 
 
 demand_df['Season'] = demand_df['Month']
@@ -256,8 +217,6 @@ for daypart in dayparts_dict:
 
 # ### Create column for timeslice with and without day-type
 
-# In[9]:
-
 
 if daytype_included:
     demand_df['TIMESLICE'] = (demand_df['Season'] +
@@ -269,8 +228,6 @@ else:
 
 
 # ### Calculate YearSplit
-
-# In[10]:
 
 
 yearsplit = (demand_df['TIMESLICE'].
@@ -290,12 +247,6 @@ yearsplit_final = yearsplit_final.join(yearsplit.set_index('TIMESLICE'),
 yearsplit_final.to_csv(os.path.join(output_data_dir, 
                                     'YearSplit.csv'),
                        index=None)
-
-
-# ### Calculate SpecifiedAnnualDemand and SpecifiedDemandProfile
-
-# In[11]:
-
 
 sp_demand_df = demand_df[[x 
                           for x in demand_df.columns 
@@ -399,10 +350,6 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
 
 sp_demand_df_final.to_csv(os.path.join(output_data_dir,'SpecifiedDemandProfile.csv'), index=None)
 
-# ### CapacityFactor
-
-# In[12]:
-
 
 datetime_ts_df = demand_df[['Datetime', 'TIMESLICE']]
 capfac_all_df = pd.DataFrame(columns = ['REGION',
@@ -497,11 +444,6 @@ for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
 capfac_all_df.to_csv(os.path.join(output_data_dir, 
                                   'CapacityFactor.csv'),
                      index=None)
-
-
-# ## Create csv for TIMESLICE 
-
-# In[13]:
 
 
 time_slice_list = list(demand_df['TIMESLICE'].unique())

@@ -3,7 +3,7 @@
 import logging
 import pandas as pd
 from pathlib import Path
-from OPG_configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 
 
 # Logging formatting 

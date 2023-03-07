@@ -1,0 +1,298 @@
+"""Module for utility plotting functions."""
+
+import pandas as pd
+import os 
+from osemosys_global.configuration import ConfigFile, ConfigPaths
+from typing import Dict, List
+import itertools
+from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
+from osemosys_global.utils import apply_timeshift, filter_transmission_techs
+from osemosys_global.powerplant_data import format_transmission_name
+import logging 
+logger = logging.getLogger(__name__)
+
+def get_color_codes() -> Dict:
+    """Get color naming dictionary.
+    
+    Return:
+        Dictionary with tech and color name map
+    """
+    config_paths = ConfigPaths()
+    input_data_dir = config_paths.input_data_dir
+    name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
+                                                'color_codes.csv'
+                                                ),
+                                   encoding='latin-1')
+
+    # Get colour mapping dictionary
+    color_dict = dict([(n, c) for n, c
+                   in zip(name_colour_codes.tech_id,
+                          name_colour_codes.colour)])
+    return color_dict
+
+def powerplant_filter(df: pd.DataFrame, country:str = None) -> pd.DataFrame:
+    """Filters dataframe by powerplant generator (PWR)
+    
+    Arguments: 
+        df: pd.DataFrame
+            Input result dataframe  
+        country: str 
+            If a country provided, get data at a country level, else get data
+            at a system level
+    """
+
+    filtered_df = df[~df.TECHNOLOGY.str.contains('TRN')]
+    filtered_df = filtered_df.loc[filtered_df.TECHNOLOGY.str[0:3] == 'PWR']
+    filtered_df['TYPE'] = filtered_df.TECHNOLOGY.str[3:6]
+    filtered_df['COUNTRY'] = filtered_df.TECHNOLOGY.str[6:9]
+
+    if country:
+        filtered_df = filtered_df.loc[filtered_df['COUNTRY'] == country]
+        filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
+    else:
+        filtered_df['LABEL'] = filtered_df['TYPE']
+    
+    filtered_df.drop(['TECHNOLOGY', 'TYPE', 'COUNTRY'],
+            axis=1,
+            inplace=True)
+    return filtered_df
+
+def transform_ts(data:Dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
+    """Adds month, hour, year columns to timesliced data. 
+    
+    Arguments:
+        data: dict[str, pd.DataFrame]
+            Input datastore 
+        df: pd.DataFrame
+            Dataframe to add ts data to 
+        
+    Returns: 
+        pd.DataFrame 
+    """
+
+    generation = list(data["TECHNOLOGY"]["VALUE"].unique())
+
+    config = ConfigFile('config')
+    seasons_raw = config.get('seasons')
+    seasonsData = []
+
+    for s, months in seasons_raw.items():
+        for month in months:
+            seasonsData.append([month, s]) 
+    seasons_df = pd.DataFrame(seasonsData, 
+                              columns=['month', 'season'])
+    seasons_df = seasons_df.sort_values(by=['month']).reset_index(drop=True)
+    dayparts_raw = config.get('dayparts')
+    daypartData = []
+    for dp, hr in dayparts_raw.items():
+        daypartData.append([dp, hr[0], hr[1]])
+    dayparts_df = pd.DataFrame(daypartData,
+                               columns=['daypart', 'start_hour', 'end_hour'])
+    timeshift = config.get('timeshift')
+    dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
+    dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
+
+    month_names = MONTH_NAMES
+    days_per_month = DAYS_PER_MONTH
+
+    seasons_df['month_name'] = seasons_df['month'].map(month_names)
+    seasons_df['days'] = seasons_df['month_name'].map(days_per_month)
+    seasons_df_grouped = seasons_df.groupby(['season'],
+                                            as_index=False)['days'].sum()
+    days_dict = dict(zip(list(seasons_df_grouped['season']),
+                         list(seasons_df_grouped['days'])
+                         )
+                     )
+    seasons_df['days'] = seasons_df['season'].map(days_dict)
+
+    years = config.get_years()
+
+    seasons_dict = dict(zip(list(seasons_df['month']),
+                            list(seasons_df['season'])
+                            )
+                        )
+
+    dayparts_dict = {i: [j, k]
+                     for i, j, k
+                     in zip(list(dayparts_df['daypart']),
+                            list(dayparts_df['start_hour']),
+                            list(dayparts_df['end_hour'])
+                            )
+                     }
+
+    hours_dict = {i: abs(k-j)
+                  for i, j, k
+                  in zip(list(dayparts_df['daypart']),
+                         list(dayparts_df['start_hour']),
+                         list(dayparts_df['end_hour'])
+                         )
+                  }
+
+    months = list(seasons_dict)
+    hours = list(range(1, 25))
+
+    # APPLY TRANSFORMATION
+
+    df_ts_template = pd.DataFrame(list(itertools.product(generation,
+                                                         months,
+                                                         hours,
+                                                         years)
+                                       ),
+                                  columns=['TECHNOLOGY',
+                                           'MONTH',
+                                           'HOUR',
+                                           'YEAR']
+                                  )
+    
+    df_ts_template = df_ts_template.sort_values(by=['TECHNOLOGY', 'YEAR'])
+    df_ts_template['SEASON'] = df_ts_template['MONTH'].map(seasons_dict)
+    df_ts_template['DAYS'] = df_ts_template['SEASON'].map(days_dict)
+    df_ts_template['YEAR'] = df_ts_template['YEAR'].astype(int)
+    df_ts_template = powerplant_filter(df_ts_template)
+
+    for daypart in dayparts_dict:
+        if dayparts_dict[daypart][0] > dayparts_dict[daypart][1]: # loops over 24hrs
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) |
+                          (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                          'DAYPART'] = daypart
+        else:
+            df_ts_template.loc[(df_ts_template['HOUR'] >= dayparts_dict[daypart][0]) &
+                      (df_ts_template['HOUR'] < dayparts_dict[daypart][1]),
+                      'DAYPART'] = daypart
+
+    df_ts_template = df_ts_template.drop_duplicates()
+    df['SEASON'] = df['TIMESLICE'].str[0:2]
+    df['DAYPART'] = df['TIMESLICE'].str[2:]
+    df['YEAR'] = df['YEAR'].astype(int)
+    df.drop(['REGION', 'FUEL', 'TIMESLICE'],
+            axis=1,
+            inplace=True)
+
+    df = df.groupby(['LABEL', 'SEASON', 'DAYPART', 'YEAR'],
+                    as_index=False)['VALUE'].sum()
+    df = pd.merge(df,
+                  df_ts_template,
+                  how='left',
+                  on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
+    df['HOUR_COUNT'] = df['DAYPART'].map(hours_dict)
+    df['VALUE'] = (df['VALUE'].mul(1e6))/(df['DAYS']*df['HOUR_COUNT'].mul(3600))
+
+    df = df.pivot_table(index=['MONTH', 'HOUR', 'YEAR'],
+                        columns='LABEL',
+                        values='VALUE',
+                        aggfunc='mean').reset_index().fillna(0)
+    df['MONTH'] = pd.Categorical(df['MONTH'],
+                                 categories=months,
+                                 ordered=True)
+    df = df.sort_values(by=['MONTH', 'HOUR'])
+
+    return df
+    
+def load_node_data_demand_center(cost_line_expansion_xlsx: str) -> pd.DataFrame:
+    """Gets node names with lats and lons at demand center
+    
+    Arguments:
+        cost_line_expansion_xlsx: str
+            Path to 'Costs Line expansion.xlsx' file  
+            
+    Returns: 
+        Dataframe with nodes and lats and lons
+    """
+    
+    def parse_name(x: str) -> str:
+        parts = x.split("-")
+        if len(parts) > 2:
+            return f"{parts[1]}{parts[2]}"
+        else:
+            return f"{parts[1]}XX"
+        
+    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Centerpoints')
+    df = pd.DataFrame()
+    
+    df["NODE"] = raw["Node"].map(lambda x: parse_name(x))
+    df["LATITUDE"] = raw["Latitude"]
+    df["LONGITUDE"] = raw["Longitude"]
+    
+    # drop extra brazil codes 
+    df = df.loc[
+        (df["NODE"] != "BRAJ1") &
+        (df["NODE"] != "BRAJ2") &
+        (df["NODE"] != "BRAJ3")].reset_index(drop=True)
+    
+    return df
+
+def load_node_data_centroid(plexos_world_softlink_xlsx: str) -> pd.DataFrame:
+    """Gets node names with lats and lons at centroid
+    
+    Arguments:
+        plexos_world_softlink_xlsx: str
+            Path to 'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx' file  
+            
+    Returns: 
+        Dataframe with nodes and lats and lons
+    """
+    
+    def parse_name(x: str) -> str:
+        parts = x.split("-")
+        if len(parts) > 2:
+            return f"{parts[1]}{parts[2]}"
+        else:
+            return f"{parts[1]}XX"
+        
+    raw = pd.read_excel(plexos_world_softlink_xlsx, sheet_name='Attributes')
+    temp = raw.loc[raw["class"] == "Node"]
+
+    temp = temp.loc[
+        (temp["name"] != "SA-BRA-J1") &
+        (temp["name"] != "SA-BRA-J2") &
+        (temp["name"] != "SA-BRA-J3")]
+    
+    temp["NODE"] = temp["name"].map(lambda x: parse_name(x))
+    
+    df_lats = temp.loc[temp["attribute"] == "Latitude"]
+    df_lons = temp.loc[temp["attribute"] == "Longitude"]
+    
+    lats = dict(zip(df_lats["NODE"], df_lats["value"]))
+    lons = dict(zip(df_lons["NODE"], df_lons["value"]))
+    
+    return pd.DataFrame(
+        [[x, lats[x], lons[x]] for x in temp["NODE"].unique().tolist()],
+        columns=["NODE", "LATITUDE", "LONGITUDE"])
+
+def load_line_data(cost_line_expansion_xlsx: str) -> pd.DataFrame:
+    """Gets line names with to/from nodes
+    
+    Arguments:
+        cost_line_expansion_xlsx: str
+            Path to 'Costs Line expansion.xlsx' file  
+    
+    Returns:
+        pd.DataFrame     
+    """
+    def parse_transmission_codes(techs: List[str]) -> pd.DataFrame:
+        """Parses transmission techs to add start/end info"""
+        
+        parsed_data = []
+        for tech in techs:
+            parsed_data.append([
+                tech,
+                tech[3:8],
+                tech[8:]
+            ])
+        return pd.DataFrame(parsed_data, columns=["TECHNOLOGY", "FROM", "TO"])
+    
+    # get all transmission lines
+    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Interface')
+    trn = raw.dropna(subset=["From"])
+    trn = format_transmission_name(trn)
+    
+    # drop extra brazil codes 
+    trn = trn.loc[
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ1") &
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ2") &
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ3") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ1") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ2") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ3")].reset_index(drop=True)
+    
+    return parse_transmission_codes(trn["TECHNOLOGY"].to_list())
