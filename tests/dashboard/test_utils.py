@@ -56,7 +56,7 @@ class TestAddDefaultTemporalValue:
     
     @mark.parametrize("df, expected, column, indices, default_value", test_data, ids=["year", "timeslice"])
     def test_add_default_temporal_value(self, df, expected, column, indices, default_value):
-        actual = utils.add_default_temporal_values(
+        actual = utils.add_default_values(
             df=df,
             column=column,
             default_indices=indices,

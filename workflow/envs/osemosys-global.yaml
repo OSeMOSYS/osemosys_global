@@ -12,8 +12,6 @@ dependencies:
  - urllib3
  - matplotlib
  - seaborn
- - xlsxwriter
- - openpyxl
  - plotly
  - snakemake-minimal
  - basemap

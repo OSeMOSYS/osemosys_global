@@ -2,22 +2,18 @@
 # To build the module reference correctly, make sure every external package
 # under `install_requires` in `setup.cfg` is also listed here!
 importlib-metadata
-matplotlib
 seaborn
-pandas
-numpy
+geopandas
 urllib3
-matplotlib
-seaborn
 PyYAML
-xlsxwriter
-openpyxl
-plotly
 basemap
 pytest
 world-bank-data
 sklearn
-otoole==0.11.0
+myst-parser
+otoole>=1.0.0
+scipy
+dash
 
 # docs
 myst-parser
