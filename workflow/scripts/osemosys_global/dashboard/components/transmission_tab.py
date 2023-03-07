@@ -7,7 +7,7 @@ from osemosys_global.dashboard.utils import get_transmission_techs, plot_by_syst
 from typing import List, Dict
 import pandas as pd
 
-def line_dropdown(lines: List[str], **kwargs) -> html.Div:
+def line_dropdown(lines: List[str], add_all: bool = True, **kwargs) -> html.Div:
     """Selects model variable"""
     
     if "style" in kwargs:
@@ -16,7 +16,8 @@ def line_dropdown(lines: List[str], **kwargs) -> html.Div:
         style = {}
     
     options = [{"label":x, "value":x} for x in lines]
-    options.insert(0,{"label":"All", "value":"all"})
+    if add_all:
+        options.insert(0,{"label":"All", "value":"all"})
     
     return html.Div(
         children=[

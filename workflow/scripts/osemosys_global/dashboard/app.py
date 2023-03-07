@@ -341,11 +341,11 @@ def plot_input_data_callback(
     regions: list[str] = ALL_REGIONS,
     plot_theme: str = const._PLOT_THEME,
     geographic_scope: str = const._GEOGRAPHIC_SCOPE,
-    years: list[int] = ALL_YEARS, 
+    years: list[int] = ALL_YEARS,
     year: int = ALL_YEARS[0],
     plot_type: str = const._PLOT_TYPE,
-    parameter: str = "SpecifiedAnnualDemand",
-    tech_fuel: str = "ELC",
+    parameter: str = "AnnualTechnologyEmission",
+    tech_fuel: str = "all",
 ) -> html.Div:
     """Generic function for plotting input data"""
     
@@ -405,6 +405,7 @@ def tech_filter_dropdown_options_callback(parameter: str, geographic_scope: str)
     try:
         return dropdown_options, dropdown_options[0]["value"]
     except IndexError:
+        logger.debug(f"{parameter} has no dropdown options")
         dropdown_options.insert(0, {"label":"Error", "value":"error"})
         return dropdown_options, dropdown_options[0]["value"]
 
@@ -506,6 +507,7 @@ def tech_filter_dropdown_options_callback(variable: str, geographic_scope: str) 
     try:
         return dropdown_options, dropdown_options[0]["value"]
     except IndexError:
+        logger.debug(f"{variable} has no dropdown options")
         dropdown_options.insert(0, {"label":"Error", "value":"error"})
         return dropdown_options, dropdown_options[0]["value"]
 
@@ -591,6 +593,35 @@ def transmission_slider_visibility(parameter:str):
     else:
         return {"display": "none"}, {"display": "block"}
 
+@app.callback(
+    Output(ids.TRANSMISSION_LINE_DROPDOWN, "options"),
+    Output(ids.TRANSMISSION_LINE_DROPDOWN, "value"),
+    Input(ids.TRANSMISSION_DATA_DROPDOWN, "value"),
+    State(ids.TRANSMISSION_LINE_DROPDOWN, "value")
+)
+def line_dropdown_callback(variable: str, current_line: str) -> html.Div:
+    
+    logger.info("Transmission line dropdown callback")
+    
+    options = [{"label":x, "value":x} for x in LINES]
+    
+    # "All" selections do not make sense for system level imports and exports
+    directional_variables = [
+        "ProductionByTechnologyByModeAnnual",
+        "ProductionByTechnologyByMode"
+    ]
+    if variable not in directional_variables:
+        options.insert(0, {"label":"All", "value":"all"})
+    else:
+        if current_line == "all":
+            current_line = options[0]["value"]
+    
+    try:
+        return options, current_line
+    except IndexError:
+        logger.debug(f"{variable} has no dropdown options")
+        options.insert(0, {"label":"Error", "value":"error"})
+        return options, current_line
 
 if __name__ == '__main__':
     app.run(debug=True)
