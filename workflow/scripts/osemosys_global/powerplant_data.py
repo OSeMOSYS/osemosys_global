@@ -523,56 +523,6 @@ def main():
     
     gem_all_retired_agg = gem_all_retired.groupby(['node_code', 'Technology', 'YEAR'], 
                                               as_index=False)['VALUE'].sum()
-     
-    '''
-    # ### Interactive visualisation of residual capacity by node
-
-    import matplotlib.pyplot as plt
-    import seaborn as sns; sns.set(color_codes = True)
-    from ipywidgets import interact, interactive, fixed, interact_manual, Layout
-    import ipywidgets as widgets
-    #importing plotly and cufflinks in offline mode
-    import plotly as py
-    #import plotly.graph_objs as go
-    import cufflinks
-    import plotly.offline as pyo
-    from plotly.offline import plot, iplot, init_notebook_mode
-    pyo.init_notebook_mode()
-    cufflinks.go_offline()
-    cufflinks.set_config_file(world_readable=True, theme='white')
-
-    color_codes = pd.read_csv(r'data\color_codes.csv', encoding='latin-1')
-    color_dict = dict([(n,c) for n,c in zip(color_codes.tech, color_codes.colour)])
-
-    def f(node):
-        df_plot = df_res_cap_plot.loc[df_res_cap_plot['node_code']==node]
-        df_plot.drop('node_code', 
-                         axis = 1, 
-                         inplace = True)
-        df_plot = df_plot.pivot_table(index='model_year',
-                                      columns='tech_code',
-                                      values='value',
-                                      aggfunc='sum').reset_index()
-
-
-        #plt.figure(figsize=(10, 10), dpi= 80, facecolor='w', edgecolor='k')
-        #ax = sns.barplot(df_plot)
-        return df_plot.iplot(x = 'model_year',
-                             kind = 'bar', 
-                             barmode = 'stack',
-                             xTitle = 'Year',
-                             yTitle = 'Gigawatts',
-                             color=[color_dict[x] for x in df_plot.columns if x != 'model_year'],
-                             title = 'Residual Capacity',
-                             showlegend = True)
-
-    interact(f,
-             node=widgets.Dropdown(options = (df_res_cap_plot['node_code']
-                                              .unique()
-                                             )
-                                  )
-            )
-    '''
 
     # ### Add input and output activity ratios
 
@@ -1204,18 +1154,25 @@ def main():
 
     # Create Operational Life data
     tech_code_dict_reverse = dict((v,k) for k,v in tech_code_dict.items())
-    op_life_techs = list(set(list(df_iar_final['TECHNOLOGY'].unique()) + \
-        list(df_oar_final['TECHNOLOGY'].unique())))
-    op_life_techs = [tech for tech in op_life_techs if 
-        (tech[0:3] == 'PWR') and (len(tech) == 13)]
-    op_life_Out = []
-    for op_life_tech in op_life_techs:
+    op_life_techs = list(set(list(df_iar_final['TECHNOLOGY'].unique()) + list(df_oar_final['TECHNOLOGY'].unique())))
+    op_life_pwr = [tech for tech in op_life_techs if (tech[0:3] == 'PWR') and (len(tech) == 13)]
+    op_life_trn = [tech for tech in op_life_techs if tech[0:3] == 'TRN']
+    
+    op_life_out = []
+    
+    # power generation technologies 
+    for op_life_tech in op_life_pwr:
         op_life_tech_name = tech_code_dict_reverse[op_life_tech[3:6]]
-        op_life_Out.append([
+        op_life_out.append([
             region_name, 
             op_life_tech,
             op_life_dict[op_life_tech_name]])
-    df_op_life_Out = pd.DataFrame(op_life_Out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
+    
+    # transmission technologies 
+    for op_life_tech in op_life_trn:
+        op_life_out.append([region_name, op_life_tech, 30])
+        
+    df_op_life_Out = pd.DataFrame(op_life_out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
 
     df_op_life_Out.to_csv(os.path.join(output_data_dir,
                                                 "OperationalLife.csv"),
