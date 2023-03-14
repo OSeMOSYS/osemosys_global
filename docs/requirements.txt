@@ -6,10 +6,9 @@ seaborn
 geopandas
 urllib3
 PyYAML
-basemap
 pytest
 world-bank-data
-sklearn
+scikit-learn
 myst-parser
 "otoole>=1.0.0"
 scipy

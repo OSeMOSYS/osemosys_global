@@ -107,6 +107,11 @@ and use Python's built-in web server for a preview in your web browser
 python3 -m http.server --directory 'docs/_build/html'
 ```
 
+:::{warning}
+If you run into errors with building through `tox`, ensure you install `cartopy`'s 
+dependencies as described [here](https://scitools.org.uk/cartopy/docs/latest/installing.html#required-dependencies)
+:::
+
 ## Project Structure
 
 OSeMOSYS Global follows uses [Snakemake](https://snakemake.readthedocs.io/en/stable/)
