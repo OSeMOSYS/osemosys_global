@@ -22,7 +22,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install cartopy dependencies
-        run: sudo apt -y install libgeos-dev
+        run: sudo apt-get -y install libgeos-dev
 
       - name: Install dependencies
         run: |
