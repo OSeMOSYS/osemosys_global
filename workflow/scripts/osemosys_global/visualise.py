@@ -233,8 +233,6 @@ def plot_transmission_capacity(
     trn['line_width'] = (scaler.fit_transform(trn[['VALUE']]) * maxlinewidth).round(1)
     trn['line_width'].where(trn['line_width'] >= 0.3, 0.3, inplace = True)
     
-    np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
-    
     # get unique nodes to plot 
     nodes_to_plot = {}
     unique_nodes = set(trn["FROM"].to_list() + trn["TO"].to_list())
@@ -325,9 +323,6 @@ def plot_transmission_flow(
     prd['line_width'] = (scaler.fit_transform(prd[['VALUE']]) * maxlinewidth).round(1)
     prd['line_width'].where(prd['line_width'] >= 0.3, 0.3, inplace = True)
     
-    np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
-    
-
     # get unique nodes to plot 
     nodes_to_plot = {}
     unique_nodes = set(prd["FROM"].to_list() + prd["TO"].to_list())
