@@ -13,6 +13,7 @@ myst-parser
 "otoole>=1.0.0"
 scipy
 dash
+geos
 cartopy
 
 # docs
