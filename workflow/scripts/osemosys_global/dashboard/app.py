@@ -344,7 +344,7 @@ def plot_input_data_callback(
     years: list[int] = ALL_YEARS,
     year: int = ALL_YEARS[0],
     plot_type: str = const._PLOT_TYPE,
-    parameter: str = "AnnualTechnologyEmission",
+    parameter: str = "SpecifiedAnnualDemand",
     tech_fuel: str = "all",
 ) -> html.Div:
     """Generic function for plotting input data"""

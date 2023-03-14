@@ -3,11 +3,15 @@
 import pandas as pd
 import os 
 from osemosys_global.configuration import ConfigFile, ConfigPaths
-from typing import Dict, List
+from typing import Dict, List, Union, Tuple
 import itertools
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift, filter_transmission_techs
 from osemosys_global.powerplant_data import format_transmission_name
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+import matplotlib.pyplot as plt
+
 import logging 
 logger = logging.getLogger(__name__)
 
@@ -296,3 +300,49 @@ def load_line_data(cost_line_expansion_xlsx: str) -> pd.DataFrame:
         (trn["TECHNOLOGY"].str[8:] != "BRAJ3")].reset_index(drop=True)
     
     return parse_transmission_codes(trn["TECHNOLOGY"].to_list())
+
+def get_map(extent:List[Union[int,float]] = None) -> Tuple[plt.figure, plt.axes]: 
+    """Sets up map to plot on
+    
+    Arguments: 
+        extent:List[Union[int,float]]
+            Lats and lons to plot formatted as 
+            [lon_min, lon_max, lat_min, lat_max]
+    """
+    
+    mrc = ccrs.Mercator()
+    fig, ax = plt.subplots(subplot_kw={"projection": mrc})
+    ax.add_feature(cfeature.NaturalEarthFeature('physical', 'land', '50m', edgecolor='face', facecolor='lightgrey'))
+    ax.add_feature(cfeature.NaturalEarthFeature('physical', 'ocean', '50m', edgecolor='black', linewidth = 0.3, facecolor='#46bcec'))
+    ax.add_feature(cfeature.BORDERS, color="black", linewidth = 0.3)
+    
+    if extent:
+        ax.set_extent(extent)
+    
+    return fig, ax
+
+def plot_map_trn_line(ax: plt.axes, x1:float, y1:float, x2:float, y2:float, width:float) -> plt.axes:
+    """Adds a transmission line to a map axes"""
+    
+    return ax.plot(
+        [x1, x2], 
+        [y1, y2],
+        linewidth = width,
+        color = 'crimson',
+        transform=ccrs.PlateCarree(),
+    )
+
+def plot_map_text(ax: plt.axes, x:float, y:float, text:Union[int,float,str]) -> plt.axes:
+    """Adds text to the map plot"""
+    
+    return ax.text(
+        x, 
+        y, 
+        text, 
+        transform = ccrs.PlateCarree(), 
+        fontsize = 8, 
+        fontweight= 'bold', 
+        ha = 'right', 
+        va = 'top', 
+        alpha = .8
+    )
