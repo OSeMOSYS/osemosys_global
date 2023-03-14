@@ -16,11 +16,11 @@ dependencies:
  - openpyxl
  - plotly
  - snakemake-minimal
- - basemap
  - pytest
  - scikit-learn
 
  - pip:
    - world-bank-data
    - otoole>=1.0.0
+   - cartopy==0.18.0
    # - osemosys_global

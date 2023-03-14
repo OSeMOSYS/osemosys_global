@@ -1,13 +1,9 @@
 import pandas as pd
 pd.set_option('mode.chained_assignment', None)
 import plotly.express as px
-import matplotlib.pyplot as plt
 import os
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from mpl_toolkits.basemap import Basemap
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 from typing import Dict
 from osemosys_global.utils import read_csv, filter_transmission_techs
 from osemosys_global.visualisation.utils import get_color_codes, get_map, plot_map_trn_line, plot_map_text, load_node_data_demand_center
