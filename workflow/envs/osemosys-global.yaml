@@ -12,15 +12,14 @@ dependencies:
  - urllib3
  - matplotlib
  - seaborn
- - xlsxwriter
- - openpyxl
- - plotly
  - snakemake-minimal
  - pytest
  - scikit-learn
+ - cartopy
 
  - pip:
    - world-bank-data
    - otoole>=1.0.0
-   - cartopy==0.18.0
+   - dash
+   - geos
    # - osemosys_global

@@ -29,8 +29,7 @@ def main():
     input_data = read_csv(config_paths.scenario_data_dir)
     result_data = read_csv(config_paths.scenario_results_dir)
     
-    """
-    
+
     # Get system level results 
     plot_total_capacity(result_data, scenario_figs_dir, country=None)
     plot_generation_annual(result_data, scenario_figs_dir, country=None)
@@ -47,8 +46,6 @@ def main():
     
             plot_total_capacity(result_data, scenario_figs_dir, country=country)
             plot_generation_annual(result_data, scenario_figs_dir, country=country)
-    
-    """
     
     # Creates transmission maps by year      
     years = [config.get('endYear')]
