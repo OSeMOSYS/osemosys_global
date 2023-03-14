@@ -11,9 +11,10 @@ pytest
 world-bank-data
 sklearn
 myst-parser
-otoole>=1.0.0
+"otoole>=1.0.0"
 scipy
 dash
+cartopy
 
 # docs
 myst-parser

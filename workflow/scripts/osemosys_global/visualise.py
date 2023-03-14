@@ -1,14 +1,12 @@
 import pandas as pd
 pd.set_option('mode.chained_assignment', None)
 import plotly.express as px
-import matplotlib.pyplot as plt
 import os
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from mpl_toolkits.basemap import Basemap
 from typing import Dict
-from osemosys_global.utils import read_csv
-from osemosys_global.visualisation.utils import get_color_codes
+from osemosys_global.utils import read_csv, filter_transmission_techs
+from osemosys_global.visualisation.utils import get_color_codes, get_map, plot_map_trn_line, plot_map_text, load_node_data_demand_center
 from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
 from osemosys_global.configuration import ConfigFile, ConfigPaths
 
@@ -20,6 +18,7 @@ def main():
     config = ConfigFile('config')
     scenario_figs_dir = config_paths.scenario_figs_dir
     results_by_country = config.get('results_by_country')
+    cost_line_expansion_xlsx = os.path.join(config_paths.input_data_dir, "Costs Line expansion.xlsx")
 
     # Check for output directory 
     try:
@@ -29,6 +28,8 @@ def main():
     
     input_data = read_csv(config_paths.scenario_data_dir)
     result_data = read_csv(config_paths.scenario_results_dir)
+    
+    """
     
     # Get system level results 
     plot_total_capacity(result_data, scenario_figs_dir, country=None)
@@ -47,13 +48,15 @@ def main():
             plot_total_capacity(result_data, scenario_figs_dir, country=country)
             plot_generation_annual(result_data, scenario_figs_dir, country=country)
     
+    """
+    
     # Creates transmission maps by year      
     years = [config.get('endYear')]
     for year in years:
-        plot_transmission_capacity(year)
-        plot_transmission_flow(year)
+        plot_transmission_capacity(cost_line_expansion_xlsx, result_data, scenario_figs_dir, year)
+        plot_transmission_flow(cost_line_expansion_xlsx, result_data, scenario_figs_dir, year)
 
-def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None):
+def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None) -> None:
     """Plots total capacity chart 
         
     Arguments:
@@ -100,7 +103,7 @@ def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str
 
     return fig.write_html(fig_file)
 
-def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None):
+def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None) -> None:
     """Plots total annual generation
         
     Arguments:
@@ -153,7 +156,7 @@ def plot_generation_hourly(
     result_data: Dict[str,pd.DataFrame], 
     save_dir: str, 
     country:str = None
-):
+) -> None:
     """Plots total annual generation
         
     Arguments:
@@ -187,187 +190,196 @@ def plot_generation_hourly(
         yaxis_title = 'Gigawatt-Hours (GWh)')
     fig['layout']['title']['font'] = dict(size=24)
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-    '''
-    for axis in fig.layout:
-        if type(fig.layout[axis]) == go.layout.XAxis:
-            fig.layout[axis].title.text = ''
 
-        fig['layout']['yaxis']['title']['text']='Gigawatts (GW)'
-        fig['layout']['yaxis3']['title']['text']=''
-        fig['layout']['xaxis']['title']['text']=''
-        fig['layout']['xaxis7']['title']['text']='Hours'
-    '''
     if country:
         fig_file = os.path.join(save_dir, country, 'GenerationHourly.html')
     else:
         fig_file = os.path.join(save_dir, 'GenerationHourly.html')
     return fig.write_html(fig_file)
     
-
 def midpoint(x1, y1, x2, y2):
     return ((x1 + x2)/2, (y1 + y2)/2)
 
-def plot_transmission_capacity(year):
+def plot_transmission_capacity(
+    cost_line_expansion_xlsx: str, 
+    result_data: Dict[str,pd.DataFrame], 
+    save_dir: str, 
+    year:int
+) -> None:
 
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    scenario_figs_dir = config_paths.scenario_figs_dir
-    scenario_results_dir = config_paths.scenario_results_dir
-    input_data_dir = config_paths.input_data_dir
+    # get result data
+    total_cap_annual = result_data["TotalCapacityAnnual"]
+    trn = filter_transmission_techs(total_cap_annual)
+    trn.VALUE = trn.VALUE.astype('float64')
+    trn['FROM'], trn['TO'] = trn.TECHNOLOGY.str[3:8], trn.TECHNOLOGY.str[8:]
     
-    df = pd.read_csv(os.path.join(scenario_results_dir,
-                                  'TotalCapacityAnnual.csv'
-                                  )
-                     )
+    # get node data 
+    df_centerpoints = load_node_data_demand_center(cost_line_expansion_xlsx)
+    df_centerpoints.set_index('NODE', inplace = True)
     
-    df_centerpoints = pd.read_excel(os.path.join(input_data_dir,
-                                                'Costs Line expansion.xlsx',
-                                                ), sheet_name = 'Centerpoints'
-                                    )
+    # merge result data with node data 
+    trn = trn.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'FROM', right_index = True)
+    trn = trn.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
+    trn = trn.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'LONGITUDE_FROM', 'LATITUDE_FROM', 'LONGITUDE_TO', 'LATITUDE_TO'],
+                    as_index=False)['VALUE'].sum()
     
-    df_centerpoints['Node'] = df_centerpoints['Node'].str.split('-', n = 1).str[1]
-    df_centerpoints['Node'] = np.where(df_centerpoints['Node'].str.len()==3, 
-                                       df_centerpoints['Node'] + 'XX', 
-                                       df_centerpoints['Node'].str.replace('-', '')
-                                       )
+    # assign line widths based on result data 
+    scaler = MinMaxScaler()
+    maxlinewidth = 3
+    trn['line_width'] = (scaler.fit_transform(trn[['VALUE']]) * maxlinewidth).round(1)
+    trn['line_width'].where(trn['line_width'] >= 0.3, 0.3, inplace = True)
     
-    df_centerpoints.set_index('Node', inplace = True)
+    # get unique nodes to plot 
+    nodes_to_plot = {}
+    unique_nodes = set(trn["FROM"].to_list() + trn["TO"].to_list())
+    for node in unique_nodes:
+        nodes_to_plot[node] = [
+            df_centerpoints.loc[node]["LATITUDE"],
+            df_centerpoints.loc[node]["LONGITUDE"],
+        ]
     
-    df = df.loc[df['TECHNOLOGY'].str.startswith('TRN')]
-    df.VALUE = df.VALUE.astype('float64')
-    df['FROM'], df['TO'] = df.TECHNOLOGY.str[3:8], df.TECHNOLOGY.str[8:]
+    # get plotting extent 
+    lat_min = int(trn[['LATITUDE_FROM', 'LATITUDE_TO']].min().min() +-6)
+    lat_max = int(trn[['LATITUDE_FROM', 'LATITUDE_TO']].max().max() +6)
+    lon_min = int(trn[['LONGITUDE_FROM', 'LONGITUDE_TO']].min().min() +-6)
+    lon_max = int(trn[['LONGITUDE_FROM', 'LONGITUDE_TO']].max().max() +6)
+    extent = [lon_min, lon_max, lat_min, lat_max]
     
-    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'FROM', right_index = True)
-    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
-    df = df.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'Longitude_FROM', 'Latitude_FROM', 'Longitude_TO', 'Latitude_TO'],
+    # create new figure
+    fig, ax = get_map(extent=extent)
+    
+    # generates all lines and map text
+    df_year = trn.loc[trn['YEAR'] == year]
+    for y in df_year.index.unique():
+        
+        # get data to plot
+        map_filter = df_year.loc[(df_year.index == y)]
+        x1,y1 = map_filter['LONGITUDE_FROM'].iloc[0] , map_filter['LATITUDE_FROM'].iloc[0]
+        x2,y2 = map_filter['LONGITUDE_TO'].iloc[0] , map_filter['LATITUDE_TO'].iloc[0]
+        midco = midpoint(x1, y1, x2, y2)
+        
+        # add transmission line
+        plot_map_trn_line(
+            ax=ax,
+            x1=x1,
+            y1=y1,
+            x2=x2,
+            y2=y2,
+            width=map_filter['line_width'].iloc[0]
+        )
+        
+        # add capacity label
+        plot_map_text(
+            ax=ax,
+            x=midco[0],
+            y=midco[1],
+            text=int(map_filter['VALUE'].iloc[0])
+        )
+        
+    # add node labels 
+    for _, node in enumerate(nodes_to_plot):
+        plot_map_text(
+            ax=ax,
+            x=nodes_to_plot[node][1],
+            y=nodes_to_plot[node][0],
+            text=node
+        )
+        
+    ax.set_title(f'Transmission Capacity in {year} (GW)', fontsize = '6')
+    return fig.savefig(
+        os.path.join(save_dir, f'TransmissionCapacity{year}.jpg'), 
+        dpi = 500, 
+        bbox_inches="tight"
+    )
+
+def plot_transmission_flow(
+    cost_line_expansion_xlsx: str, 
+    result_data: Dict[str,pd.DataFrame], 
+    save_dir: str, 
+    year:int
+) -> None:
+
+    # get result data
+    production_annual = result_data["ProductionByTechnologyAnnual"]
+    prd = filter_transmission_techs(production_annual)
+    prd.VALUE = prd.VALUE.astype('float64')
+    prd['FROM'], prd['TO'] = prd.TECHNOLOGY.str[3:8], prd.TECHNOLOGY.str[8:]
+    
+    # get node data 
+    df_centerpoints = load_node_data_demand_center(cost_line_expansion_xlsx)
+    df_centerpoints.set_index('NODE', inplace = True)
+    
+    prd = prd.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'FROM', right_index = True)
+    prd = prd.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
+    prd = prd.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'LONGITUDE_FROM', 'LATITUDE_FROM', 'LONGITUDE_TO', 'LATITUDE_TO'],
                     as_index=False)['VALUE'].sum()
     
     scaler = MinMaxScaler()
     maxlinewidth = 3
-    df['line_width'] = (scaler.fit_transform(df[['VALUE']]) * maxlinewidth).round(1)
-    df['line_width'].where(df['line_width'] >= 0.3, 0.3, inplace = True)
+    prd['line_width'] = (scaler.fit_transform(prd[['VALUE']]) * maxlinewidth).round(1)
+    prd['line_width'].where(prd['line_width'] >= 0.3, 0.3, inplace = True)
     
-    np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
-    
-    dfyear = df.loc[df['YEAR'] == year]
-    
-    maplatmin = int(df[['Latitude_FROM', 'Latitude_TO']].min().min() +-6)
-    maplatmax = int(df[['Latitude_FROM', 'Latitude_TO']].max().max() +6)
-    maplonmin = int(df[['Longitude_FROM', 'Longitude_TO']].min().min() +-6)
-    maplonmax = int(df[['Longitude_FROM', 'Longitude_TO']].max().max() +6)
-    
-    # create new figure
-    fig, ax = plt.subplots()
-    #ax.set_title(f'Total Transmission Capacity in {year} (GW)', fontsize = '6')
-    npa = np.array #basemap has limited input data options, doesn't read floats
-    
-    # setup mercator map projection.
-    m = Basemap(projection='cyl',llcrnrlat=maplatmin,urcrnrlat=maplatmax,\
-                llcrnrlon=maplonmin,urcrnrlon=maplonmax,resolution='c'
-                )
-    
-    # generates all lines and map text
-    for y in dfyear.index.unique():
-        Map_Filter = dfyear.loc[(dfyear.index == y)]
-        x1,y1 = npa(Map_Filter['Longitude_FROM']) , npa(Map_Filter['Latitude_FROM'])
-        x2,y2 = npa(Map_Filter['Longitude_TO']) , npa(Map_Filter['Latitude_TO'])
-        
-        midco = midpoint(x1, y1, x2, y2)
-        
-        m.drawgreatcircle(x1 , y1 , x2, y2, linewidth = npa(Map_Filter['line_width']) , color = 'crimson')       
-        m.drawcoastlines(color = 'black', linewidth = 0.3)
-        m.drawmapboundary(fill_color='#46bcec')
-        m.fillcontinents(color = 'lightgrey')
-        m.drawcountries(color="black", linewidth = 0.3)
-       # plt.text(x1, y1, Map_Filter['FROM'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
-       # plt.text(x2, y2, Map_Filter['TO'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
-        plt.text(midco[0], midco[1], int(npa(Map_Filter['VALUE'].iloc[0])), fontsize = 2.5, fontweight= 'bold', ha = 'right', va = 'top', alpha = .8)
-
-    return fig.savefig(os.path.join(scenario_figs_dir,
-                         f'TransmissionCapacity{year}.jpg'
-                         ), dpi = 500, bbox_inches = 'tight'
-            )
-
-def plot_transmission_flow(year):
-
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    scenario_figs_dir = config_paths.scenario_figs_dir
-    scenario_results_dir = config_paths.scenario_results_dir
-    input_data_dir = config_paths.input_data_dir
-    
-    df = pd.read_csv(os.path.join(scenario_results_dir,
-                                  'ProductionByTechnologyAnnual.csv'
-                                  )
-                     )
-    
-    df_centerpoints = pd.read_excel(os.path.join(input_data_dir,
-                                                'Costs Line expansion.xlsx',
-                                                ), sheet_name = 'Centerpoints'
-                                    )
-    
-    df_centerpoints['Node'] = df_centerpoints['Node'].str.split('-', n = 1).str[1]
-    df_centerpoints['Node'] = np.where(df_centerpoints['Node'].str.len()==3, 
-                                       df_centerpoints['Node'] + 'XX', 
-                                       df_centerpoints['Node'].str.replace('-', '')
-                                       )
-    
-    df_centerpoints.set_index('Node', inplace = True)
-    
-    df = df.loc[df['TECHNOLOGY'].str.startswith('TRN')]
-    df.VALUE = df.VALUE.astype('float64')
-    df['FROM'], df['TO'] = df.TECHNOLOGY.str[3:8], df.TECHNOLOGY.str[8:]
-    
-    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'FROM', right_index = True)
-    df = df.merge(df_centerpoints[['Latitude', 'Longitude']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
-    df = df.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'Longitude_FROM', 'Latitude_FROM', 'Longitude_TO', 'Latitude_TO'],
-                    as_index=False)['VALUE'].sum()
-    
-    scaler = MinMaxScaler()
-    maxlinewidth = 3
-    df['line_width'] = (scaler.fit_transform(df[['VALUE']]) * maxlinewidth).round(1)
-    df['line_width'].where(df['line_width'] >= 0.3, 0.3, inplace = True)
-    
-    np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
-    
-    dfyear = df.loc[df['YEAR'] == year]
-    
-    maplatmin = int(df[['Latitude_FROM', 'Latitude_TO']].min().min() +-6)
-    maplatmax = int(df[['Latitude_FROM', 'Latitude_TO']].max().max() +6)
-    maplonmin = int(df[['Longitude_FROM', 'Longitude_TO']].min().min() +-6)
-    maplonmax = int(df[['Longitude_FROM', 'Longitude_TO']].max().max() +6)
+    # get unique nodes to plot 
+    nodes_to_plot = {}
+    unique_nodes = set(prd["FROM"].to_list() + prd["TO"].to_list())
+    for node in unique_nodes:
+        nodes_to_plot[node] = [
+            df_centerpoints.loc[node]["LATITUDE"],
+            df_centerpoints.loc[node]["LONGITUDE"],
+        ]
+    # get plotting extent 
+    lat_min = int(prd[['LATITUDE_FROM', 'LATITUDE_TO']].min().min() +-6)
+    lat_max = int(prd[['LATITUDE_FROM', 'LATITUDE_TO']].max().max() +6)
+    lon_min = int(prd[['LONGITUDE_FROM', 'LONGITUDE_TO']].min().min() +-6)
+    lon_max = int(prd[['LONGITUDE_FROM', 'LONGITUDE_TO']].max().max() +6)
+    extent = [lon_min, lon_max, lat_min, lat_max]
     
     # create new figure
-    fig, ax = plt.subplots()
-    #ax.set_title(f'Total Transmission Flow in {year} (PJ)', fontsize = '6')
-    npa = np.array #basemap has limited input data options, doesn't read floats
-    
-    # setup mercator map projection.
-    m = Basemap(projection='cyl',llcrnrlat=maplatmin,urcrnrlat=maplatmax,\
-                llcrnrlon=maplonmin,urcrnrlon=maplonmax,resolution='c'
-                )
+    fig, ax = get_map(extent=extent)
     
     # generates all lines and map text
-    for y in dfyear.index.unique():
-        Map_Filter = dfyear.loc[(dfyear.index == y)]
-        x1,y1 = npa(Map_Filter['Longitude_FROM']) , npa(Map_Filter['Latitude_FROM'])
-        x2,y2 = npa(Map_Filter['Longitude_TO']) , npa(Map_Filter['Latitude_TO'])
+    df_year = prd.loc[prd['YEAR'] == year]
+    for y in df_year.index.unique():
         
+        # get data to plot
+        map_filter = df_year.loc[(df_year.index == y)]
+        x1,y1 = map_filter['LONGITUDE_FROM'].iloc[0] , map_filter['LATITUDE_FROM'].iloc[0]
+        x2,y2 = map_filter['LONGITUDE_TO'].iloc[0] , map_filter['LATITUDE_TO'].iloc[0]
         midco = midpoint(x1, y1, x2, y2)
         
-        m.drawgreatcircle(x1 , y1 , x2, y2, linewidth = npa(Map_Filter['line_width']) , color = 'crimson')       
-        m.drawcoastlines(color = 'black', linewidth = 0.3)
-        m.drawmapboundary(fill_color='#46bcec')
-        m.fillcontinents(color = 'lightgrey')
-        m.drawcountries(color="black", linewidth = 0.3)
-       # plt.text(x1, y1, Map_Filter['FROM'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
-       # plt.text(x2, y2, Map_Filter['TO'].iloc[0], fontsize = 2, fontweight= 'bold', ha = 'center', va = 'top', alpha = .8)
-        plt.text(midco[0], midco[1], int(npa(Map_Filter['VALUE'].iloc[0])), fontsize = 2.5, fontweight= 'bold', ha = 'right', va = 'top', alpha = .8)
+        # add transmission line
+        plot_map_trn_line(
+            ax=ax,
+            x1=x1,
+            y1=y1,
+            x2=x2,
+            y2=y2,
+            width=map_filter['line_width'].iloc[0]
+        )
+        
+        # add capacity label
+        plot_map_text(
+            ax=ax,
+            x=midco[0],
+            y=midco[1],
+            text=int(map_filter['VALUE'].iloc[0])
+        )
+        
+    # add node labels 
+    for _, node in enumerate(nodes_to_plot):
+        plot_map_text(
+            ax=ax,
+            x=nodes_to_plot[node][1],
+            y=nodes_to_plot[node][0],
+            text=node
+        )
 
-    return fig.savefig(os.path.join(scenario_figs_dir,
-                         f'TransmissionFlow{year}.jpg'
-                         ), dpi = 500, bbox_inches = 'tight'
-            )
+    ax.set_title(f'Total Transmission Flow in {year} (PJ)', fontsize = '6')
+    return fig.savefig(
+        os.path.join(save_dir, f'TransmissionFlow{year}.jpg'), 
+        dpi = 500, 
+        bbox_inches="tight"
+    )
 
 if __name__ == '__main__':
     main()
