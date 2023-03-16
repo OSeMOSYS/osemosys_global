@@ -16,7 +16,7 @@ _INPUT_DATA_CHOICE = "SpecifiedAnnualDemand"
 _INPUT_DATA_TECH = "all"
 
 # Result Data Initialization 
-_RESULT_DATA_CHOICE = "ProductionByTechnologyAnnual"
+_RESULT_DATA_CHOICE = "AnnualTechnologyEmission"
 _RESULT_DATA_TECH = "all"
 
 # Transmission Data Initialization 
