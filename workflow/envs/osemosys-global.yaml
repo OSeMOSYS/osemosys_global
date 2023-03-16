@@ -22,4 +22,4 @@ dependencies:
    - otoole>=1.0.0
    - dash
    - geos
-   # - osemosys_global
+   - git+https://github.com/OSeMOSYS/osemosys_global@master

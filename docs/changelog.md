@@ -4,7 +4,7 @@
 - Adds custom node functionality 
 - Adds interactive dashboard 
 - Adds GitHub workflow for CI  
-- Packaged project and pushed to PyPI 
+- Packaged project
 - Refactor of visualization module 
 - Bumped otoole to v1.0.0
 - Replaced BaseMap with cartopy 
