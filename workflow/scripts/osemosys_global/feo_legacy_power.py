@@ -1,6 +1,10 @@
 import requests, json
+import warnings
+warnings.simplefilter(action='ignore',
+                      category=FutureWarning)
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
+from unidecode import unidecode
 import numpy as np
 import os
 import yaml
@@ -24,7 +28,6 @@ def main():
                             'password':P})
 
     print(r.status_code)
-    print(r.text)
 
     # Load config file 
     config_paths = ConfigPaths()
@@ -67,13 +70,24 @@ def main():
             df = pd.concat([df, df_temp])
         
         # Keep only 'operating' plants
-        #df = df[df['operating_status'] == 'operating']
+        df = df[df['operating_status'] == 'operating']
+        
+        # Use 'state' or 'State/Province' when 'admin_1 is None
+        df['admin_1'].fillna(df['properties'].str.get('state'),
+                             inplace=True)
+        df['admin_1'].fillna(df['properties'].str.get('State/Province'),
+                             inplace=True)
+        df['admin_1'] = df['admin_1'].str.normalize('NFKD').str.encode('ascii', 
+                                                                       errors='ignore').str.decode('utf-8')
 
-        # 
         df = df.dropna(subset=['admin_1'])
         df = df.dropna(subset=['id'])
-        #df.to_csv('residual_capacity_check.csv',
-        #          index=None)
+            
+        df['admin_1'] = (df['admin_1'].str.normalize('NFKD')
+                         .str.encode('ascii', 
+                                     errors='ignore')
+                         .str.decode('utf-8'))
+        
         # Set start_year for each power plant. If not available, set to '0'
         df['START_YEAR'] = df['operation_start'].str.split('-', 
                                                         expand=True)[0]
@@ -87,9 +101,9 @@ def main():
         df = df[~(df['primary_fuel'].isin(['waste_heat']))]
         # Re-order columns
         df = df[['admin_1',
-                'primary_fuel',
-                'START_YEAR',
-                'capacity_mw']]
+                 'primary_fuel',
+                 'START_YEAR',
+                 'capacity_mw']]
 
         # Replace Climate Trace technology codes (ISO2) with FEO tech codes (ISO3)
         df_tech_code = pd.read_csv(os.path.join(input_data_dir,
@@ -141,11 +155,20 @@ def main():
         
         df.rename(columns={'capacity_mw':'CAPACITY'},
                   inplace=True)
+        '''
         df = df[['FUEL_TYPE',
                  'CUSTOM_NODE',
                  'START_YEAR',
                  'END_YEAR',
                  'CAPACITY']]
+        '''
+        df = df[['admin_1',
+                 'FUEL_TYPE',
+                 'CUSTOM_NODE',
+                 'START_YEAR',
+                 'END_YEAR',
+                 'CAPACITY']]
+        
         df.to_csv(os.path.join(input_data_dir,
                                "custom_nodes",
                                "residual_capacity.csv"),

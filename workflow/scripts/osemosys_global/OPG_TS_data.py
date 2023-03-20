@@ -736,6 +736,7 @@ df_daysplit['VALUE'] = df_daysplit['DAILYTIMEBRACKET'].map(daysplit)
 df_daysplit = df_daysplit[['DAILYTIMEBRACKET',
                            'YEAR',
                            'VALUE']]
+df_daysplit['VALUE'] = df_daysplit['VALUE'].round(4)
 df_daysplit.to_csv(os.path.join(output_data_dir,
                                 'DaySplit.csv'),
                    index=None)
@@ -810,7 +811,9 @@ reserve_margin_techs = ['COA',
                         'OTH',
                         'BIO',
                         'HYD',
-                        'GEO'
+                        'GEO',
+                        'SPV',
+                        'WON'
                         ]
 rm_techs = [x for x in df_rmtt['VALUE'].unique()
             if x.startswith('PWR')

@@ -120,7 +120,7 @@ df_prices['MINOTH'] = df_prices['MINOIL']  # Other petroleum products are simila
 df_prices['MINPET'] = df_prices['MINOIL']  # Petroleum products are similar to oil
 
 # Add price for URN. 40 $2020/lb -> 0.0226 m$2020/PJ (3900 GJ/kg)
-df_prices['MINURN'] = 22.6
+df_prices['MINURN'] = 0.0226
 
 # And add in international prices that are 15% higher than the regular ones:
 df_prices['INTCOA'] = df_prices['MINCOA'] * 1.15
