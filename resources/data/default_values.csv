@@ -13,7 +13,7 @@ Conversionlh,0
 Conversionls,0
 DaysInDayType,7
 DaySplit,0.0068
-DepreciationMethod,1
+DepreciationMethod,2
 DiscountRate,0.1
 DiscountRateStorage,0.1
 EmissionActivityRatio,0

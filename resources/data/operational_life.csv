@@ -1,5 +1,5 @@
 tech,years
-Bio,45
+Bio,30
 Coa,30
 Cog,30
 Gas-CCGT,30
@@ -37,8 +37,10 @@ HET,30
 oil,30
 gas,30
 waste_heat,30
-biomass,45
+biomass,30
 coal,30
 gas_or_oil,30
 wind-onshore,30
 sun,30
+waste,30
+wind-offshore,30
