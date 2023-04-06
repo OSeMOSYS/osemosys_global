@@ -28,6 +28,9 @@ def main():
     generation_summary()
     generation_by_node_summary()
     trade_flows()
+    
+    # UPDATED METRICS
+    system_cost_by_node()
 
 
 def renewables_filter(df):
@@ -610,6 +613,81 @@ def apply_timeshift(x, timeshift):
     else:
         return x
 
+'''
+    - Total system costs for each node [$]
+    - Existing, new and decommissioned capacity in electricity generation, 
+    storage, and transmission technology for each year and node [GW (and GWh in 
+    the case of storage)]
+    - Electricity generation, charge and discharge and trade by technology for 
+    each year and node [GWh]
+    - Emissions of each fossil generation technology for each year and node [tCO2]
+    - Implicit electricity price for each year and node [$/MWh]
+    x Implicit carbon price [$/t]
+    - Share in electricity production and generation capacity [%]
+    - Investment volumes by technology [$]
+    - Energetic storage losses node and technology [GWh]
+    - Capacity factors  node and technology [%]
+    - Curtailment by node and technology [GWh]
+    - Fossil fuel consumption [t for coal, bcf for gas]
+    x Early decommissioning of fossil generation [GW]
+'''
+
+def system_cost_by_node():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')
+    #scenario_results_dir = config_paths.scenario_results_dir
+    scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_COA-NZ-HighGas-WOF/results'
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+    scenario_data_dir = config_paths.scenario_data_dir
+    input_data_dir = config_paths.input_data_dir
+    
+    print(scenario_results_dir)
+    penalty = config.get('emission_penalty')
+    
+    df = pd.read_csv(os.path.join(scenario_data_dir,
+                                  'TECHNOLOGY.csv'))
+    df.rename(columns = {'VALUE': 'TECHNOLOGY'},
+              inplace=True)
+    
+    df['VALUE'] = 0
+    df.set_index('TECHNOLOGY', inplace=True)
+        
+    # System cost
+    df_inv = pd.read_csv(os.path.join(scenario_results_dir,
+                                      'CapitalInvestment.csv'
+                                      ))
+    df_fom = pd.read_csv(os.path.join(scenario_results_dir,
+                                      'AnnualFixedOperatingCost.csv'
+                                      ))
+    df_vom = pd.read_csv(os.path.join(scenario_results_dir,
+                                      'AnnualVariableOperatingCost.csv'
+                                      ))
+    df_emi = pd.read_csv(os.path.join(scenario_results_dir,
+                                      'AnnualTechnologyEmission.csv'
+                                      ))
+    df_emi['VALUE'] = df_emi['VALUE']*penalty
+    
+    for each_df in [df_inv, df_fom, df_vom, df_emi]:
+        each_df = each_df[['TECHNOLOGY',
+                           'YEAR',
+                           'VALUE']].fillna(0)
+        each_df.set_index(['TECHNOLOGY', 'YEAR'], inplace=True)
+        df = df.add(each_df, fill_value=0)
+    
+    df.reset_index(inplace=True)
+    df = df[~(df['TECHNOLOGY'].str.startswith('MIN'))]
+    df['NODE'] = df['TECHNOLOGY'].str[6:11]
+    #df = df[['NODE',
+    #         'VALUE']]
+        
+    return df.to_csv(os.path.join(scenario_result_summaries_dir,
+                                  'SystemCostByNode.csv'
+                                  ),
+                     index=None
+                     )
+
+    
 
 if __name__ == '__main__':
     main()

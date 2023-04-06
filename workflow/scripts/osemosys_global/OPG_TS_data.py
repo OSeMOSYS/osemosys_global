@@ -195,6 +195,14 @@ won_df.name = 'WON'
 wof_df = pd.read_csv(os.path.join(input_data_dir,
                                   'Woff 2015.csv'),
                      encoding='latin-1')
+if custom_nodes:
+    wof_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
+                                             'RE_profiles_WOF.csv'),
+                                             encoding='latin-1')
+    wof_df_custom.drop(['Datetime'],
+                        axis=1,
+                        inplace=True)
+    wof_df = pd.concat([wof_df, wof_df_custom], axis=1)
 wof_df.name = 'WOF'
 
 
@@ -580,7 +588,7 @@ df_iar = pd.concat([df_iar, df_storage_iar])
 df_iar.to_csv(os.path.join(output_data_dir,
                            'InputActivityRatio.csv'),
               index=None)
-time.sleep(10)
+time.sleep(20)
 
 # OutputActivityRatio
 df_storage_oar = pd.DataFrame(list(itertools.product([region_name],
@@ -612,7 +620,7 @@ df_oar = pd.concat([df_oar, df_storage_oar])
 df_oar.to_csv(os.path.join(output_data_dir,
                            'OutputActivityRatio.csv'),
               index=None)
-time.sleep(10)
+time.sleep(20)
 
 # Create TechnologyToStorage and TechnologyFromStorage
 

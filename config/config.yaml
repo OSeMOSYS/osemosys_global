@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: 'Indonesia_LC2'
+scenario: 'Indonesia_COA-AC-2'
 
 # Temporal Parameters 
 startYear: 2021
@@ -7,14 +7,16 @@ endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [0, 6]
-  D2: [6, 12]
-  D3: [12, 18]
-  D4: [18, 24]
+  D1: [0, 4]
+  D2: [4, 8]
+  D3: [8, 12]
+  D4: [12, 16]
+  D5: [16, 20]
+  D6: [20, 24]
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 4, 5, 6]
-  S2: [7, 8, 9, 10, 11, 12]
+  S1: [1, 2, 3, 10, 11, 12]
+  S2: [4, 5, 6, 7, 8, 9]
 timeshift: 8 # value between -11 and 12
   
 # Spatial Parameters 
@@ -30,15 +32,16 @@ no_invest_technologies:
   - 'CSP'
   - 'WAV'
 #  - 'URN'
-  - 'WOF'
+#  - 'WOF'
   - 'OTH'
   - 'WAS'
+  - 'COA'
 
 # Result Parameters 
 results_by_country: True
 
 # solver parameters
-solver: 'cbc' # cbc, cplex, gurobi
+solver: 'gurobi' # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, first_year, 'fixed/open']
@@ -135,24 +138,25 @@ powerplant_build_rates:
  # VALUE is the value - either absolute or percentage - by which the capacity 
  # of the associated TECHNOLOGY can increase. It is applied from the START_YEAR 
  # to the END_YEAR.
- SPV1: ['ABS', 0, 2020, 2025]
- SPV2: ['PCT', 5, 2025, 2035]
-# SPV3: ['PCT', 10, 2035, 2051]
- WON1: ['ABS', 0, 2020, 2025]
- #WON2: ['PCT', 5, 2025, 2051]
+ SPV1: ['ABS', 0, 2020, 2024]
+ SPV2: ['PCT', 1, 2024, 2034]
+ SPV3: ['PCT', 5, 2034, 2051]
+ WON1: ['ABS', 0, 2020, 2024]
+ #WON2: ['PCT', 5, 2024, 2051]
+ WOF1: ['ABS', 0, 2020, 2024]
+ WOF2: ['PCT', 5, 2024, 2051]
  COA1: ['ABS', 0, 2020, 2024]
  CCG1: ['ABS', 0, 2020, 2024]
  GEO1: ['ABS', 0, 2020, 2024]
  GEO2: ['PCT', 5, 2024, 2051]
- BAT1: ['ABS', 0, 2020, 2025]
- BAT2: ['ABS', 5, 2025, 2051]
- #BAT3: ['ABS', 10, 2035, 2051]
- BIO1: ['ABS', 0, 2020, 2025]
- BIO2: ['PCT', 5, 2025, 2051]
+ BAT1: ['ABS', 0, 2020, 2024]
+ BAT2: ['ABS', 2, 2024, 2051]
+ BIO1: ['ABS', 0, 2020, 2024]
+ BIO2: ['PCT', 5, 2024, 2051]
  URN1: ['ABS', 0, 2020, 2039]
- URN2: ['ABS', 0, 2039, 2051]
- HYD1: ['ABS', 0, 2020, 2025]
- HYD2: ['PCT', 5, 2025, 2051]
+ URN2: ['ABS', 0.5, 2039, 2051]
+ HYD1: ['ABS', 0, 2020, 2024]
+ HYD2: ['PCT', 5, 2024, 2051]
 
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
@@ -163,8 +167,8 @@ reserve_margin:
 
 emission_limit:
 # EMISSION_LIMIT: [VALUE, YEAR]
-# where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is the 
+# where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
 # when that constraint must be adhered to. All years between multiple emission 
 # constraints will be interpolated.
- EL1: [2040, 9999]
+ EL1: [2030, 9999]
  EL2: [2050, 9999]

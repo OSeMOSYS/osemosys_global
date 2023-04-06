@@ -1282,6 +1282,7 @@ def create_sets(x, df, output_dir, custom_node_elements):
     """
     set_elements = list(df[x].unique()) + list(df[x].unique()) + list(custom_node_elements)
     set_elements = list(set(set_elements))
+    set_elements = [x for x in set_elements if x != 'nan']
     set_elements.sort()
     set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
     return set_elements_df.to_csv(os.path.join(output_dir,
@@ -1597,11 +1598,11 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,
                                         'FUEL'] = ('ELC' + 
                                                    df_oar_custom['TECHNOLOGY'].str[8:13] + 
-                                                   '02')
+                                                   '01')
         df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,
                                         'FUEL'] = ('ELC' + 
                                                    df_oar_custom['TECHNOLOGY'].str[3:8] + 
-                                                   '02')
+                                                   '01')
         df_iar_custom['VALUE'] = 1
         df_oar_custom['VALUE'] = 0.9
         df_iar_custom['REGION'] = region
@@ -1715,9 +1716,14 @@ def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
                                         'YEAR']
                              )
     df_param['REGION'] = region
+    df_custom = df_custom.groupby(['CUSTOM_NODE',
+                                   'FUEL_TYPE',
+                                   'START_YEAR',
+                                   'END_YEAR'],
+                                  as_index=False)['CAPACITY'].sum()
     df_param = pd.merge(df_param,
                         df_custom,
-                        how='outer',
+                        how='left',
                         on=['CUSTOM_NODE',
                             'FUEL_TYPE'])
     df_param['TECHNOLOGY'] = ('PWR' +
