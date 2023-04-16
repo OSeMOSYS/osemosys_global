@@ -186,8 +186,10 @@ Once installed, activate the new `osemosys-global` environment. You will now see
 (osemosys-global) ~/osemosys_global$ 
 ```
 
-:::{caution}
-The installation of the `osemosys-global` environment may take a few minutes. This is normal.
+:::{note}
+The installation of the `osemosys-global` environment may take a few minutes (up to 30min). 
+This is normal. If you are proficient with conda, installing all dependencies manually 
+can be quicker. 
 :::
 
 ### 6. Run a Model
