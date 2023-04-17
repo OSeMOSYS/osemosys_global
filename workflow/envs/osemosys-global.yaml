@@ -23,3 +23,4 @@ dependencies:
    - dash
    - geos
    # - osemosys_global
+   # git+https://github.com/OSeMOSYS/osemosys_global.git@develop

@@ -158,13 +158,16 @@ rule demand_projections:
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
+        custom_nodes = config["nodes_to_add"],
+        input_dir = "resources/data",
+        output_dir = "results/data"
     output:
         csv_files = expand('results/data/{output_file}', output_file = demand_files),
         figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
     log:
         log = 'results/data/logs/demand_projections.log'
     shell:
-        'python workflow/scripts/osemosys_global/demand_projection.py 2> {log}'
+        'python workflow/scripts/osemosys_global/demand_projection.py {params.input_dir} {params.output_dir} {params.start_year} {params.end_year} {params.custom_nodes} 2> {log}'
 
 rule emissions:
     message:

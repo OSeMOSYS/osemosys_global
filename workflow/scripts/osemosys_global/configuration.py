@@ -19,8 +19,9 @@ class ConfigFile:
     region_name = 'GLOBAL' 
 
     def __init__ (self, config_file_name): 
-        self.file_path = Path(Path(__file__).resolve().parent, 
-            '../../../config', f'{config_file_name}.yaml')
+        # self.file_path = Path(Path(__file__).resolve().parent, 
+        #     '../../../config', f'{config_file_name}.yaml')
+        self.file_path = Path("config", f'{config_file_name}.yaml')
 
     def get(self, name):
         with open(self.file_path, encoding='utf-8') as yaml_file:
