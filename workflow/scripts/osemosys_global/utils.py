@@ -1,8 +1,9 @@
 """Utility Functions"""
 
 import pandas as pd
-from typing import Dict
+from typing import Dict, Any, List
 from pathlib import Path
+import yaml
 
 def apply_timeshift(x, timeshift):
     """Applies timeshift to organize dayparts.
@@ -43,3 +44,24 @@ def filter_transmission_techs(df: pd.DataFrame, column_name: str = "TECHNOLOGY")
         pd.DataFrame
     """
     return df.loc[df[column_name].str.startswith("TRN")].reset_index(drop=True)
+
+def get_config_data(config: str, values: List[str]) -> Dict[Any]:
+    """Gets value from config file
+    
+    Args:
+        config: str
+            Path to configuration file
+        value: List[str]
+            Values to extract from config file
+
+    Returns:
+        Values from config file organized in a dictionary  
+    """
+    extracted = {}
+    with open(config, encoding='utf-8') as yaml_file:
+        parsed_yaml_file = yaml.load(yaml_file, Loader = yaml.FullLoader)
+        for value in values:
+            extracted[value] = parsed_yaml_file.get(value)
+            
+    return extracted
+    

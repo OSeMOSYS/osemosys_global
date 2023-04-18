@@ -117,17 +117,15 @@ rule timeslice:
         'resources/data/Won 2015.csv',
         'resources/data/Woff 2015.csv',
     params:
-        start_year = config['startYear'],
-        end_year = config['endYear'],
-        daytype = config['daytype'],
-        daypart = config['dayparts'],
-        seasons = config['seasons'],
+        input_dir = "resources/data",
+        output_dir = "results/data",
+        config_file = "config/config.yaml"
     output:
         csv_files = expand('results/data/{output_file}', output_file=timeslice_files),
     log:
         log = 'results/data/logs/timeslice.log'    
     shell:
-        'python workflow/scripts/osemosys_global/TS_data.py 2> {log}'
+        'python workflow/scripts/osemosys_global/TS_data.py {params.input_dir} {params.output_dir} {params.config_file} 2> {log}'
 
 rule variable_costs:
     message:
@@ -156,18 +154,16 @@ rule demand_projections:
         'resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
         'resources/data/T&D Losses.xlsx',
     params:
-        start_year = config['startYear'],
-        end_year = config['endYear'],
-        custom_nodes = config["nodes_to_add"],
         input_dir = "resources/data",
-        output_dir = "results/data"
+        output_dir = "results/data",
+        config_file = "config/config.yaml"
     output:
         csv_files = expand('results/data/{output_file}', output_file = demand_files),
         figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
     log:
         log = 'results/data/logs/demand_projections.log'
     shell:
-        'python workflow/scripts/osemosys_global/demand_projection.py {params.input_dir} {params.output_dir} {params.start_year} {params.end_year} {params.custom_nodes} 2> {log}'
+        'python workflow/scripts/osemosys_global/demand_projection.py {params.input_dir} {params.output_dir} {params.config_file} 2> {log}'
 
 rule emissions:
     message:

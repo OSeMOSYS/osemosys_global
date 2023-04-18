@@ -11,11 +11,11 @@ import itertools
 import urllib
 import os
 from sklearn.linear_model import LinearRegression
-from osemosys_global.configuration import ConfigFile, ConfigPaths
 import logging 
 from pathlib import Path
 from typing import List
 import sys
+from osemosys_global.utils import get_config_data
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -24,9 +24,9 @@ def main(input_data: str, output_data: str, start_year: int, end_year: int, cust
     
     Args:
         input_data: str
-            Path to resources folder 
+            Path to resources/data folder 
         output_dir: str
-            Path to results folder
+            Path to results/data folder
         start_year: int
             Start year of demand 
         end_year: int
@@ -689,10 +689,19 @@ def main(input_data: str, output_data: str, start_year: int, end_year: int, cust
                         index=None)
     
 if __name__ == "__main__":
-    if len(sys.argv) != 6:
-        print("Usage: python demand_projection.py <resources_dir> <results_dir> <start_year> <end_year> <custom_nodes>")
+    if len(sys.argv) != 4:
+        print("Usage: python demand_projection.py <resources/data> <results/data> <config.yaml>")
         logging.info('Demand Projections Failed')
     else:
-        main(sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), sys.argv[5])
+        config_values = ["startYear", "endYear", "nodes_to_add"]
+        config_data = get_config_data(sys.argv[3], config_values)
+        
+        main(
+            sys.argv[1], 
+            sys.argv[2], 
+            int(config_data["startYear"]),
+            int(config_data["endYear"]),
+            config_data["nodes_to_add"],
+        )
         logging.info('Demand Projections Completed')
     
