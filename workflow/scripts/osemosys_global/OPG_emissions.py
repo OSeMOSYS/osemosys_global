@@ -4,7 +4,8 @@ import logging
 import pandas as pd
 from pathlib import Path
 from OPG_configuration import ConfigFile, ConfigPaths
-
+from utils import apply_dtypes
+from constants import SET_DTYPES
 
 # Logging formatting 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -42,18 +43,20 @@ def main():
     # ASSIGN EMISSION ACTIVITY RATIOS
 
     df_ear = get_ear(_EMISSION)
+    df_ear = apply_dtypes(df_ear, "EmissionActivityRatio")
     df_ear.to_csv(Path(output_data_dir, 'EmissionActivityRatio.csv'), index=False)
     logging.info('Successfully generated emission activity ratio')
 
     # ASSIGN EMISSION PENALTY 
 
     df_emission_penalty = get_emission_penalty(_EMISSION, emission_penalty)
+    df_emission_penalty = apply_dtypes(df_emission_penalty, "EmissionActivityRatio")
     df_emission_penalty.to_csv(Path(output_data_dir, 'EmissionsPenalty.csv'), index=False)
     logging.info('Successfully generated emission penalty')
 
     # ASSIGN EMISSION 
 
-    df_emission = pd.DataFrame([_EMISSION], columns=['VALUE'])
+    df_emission = pd.DataFrame([_EMISSION], columns=['VALUE']).astype(SET_DTYPES["EMISSION"])
     df_emission.to_csv(Path(output_data_dir, 'EMISSION.csv'), index=False)
     logging.info('Successfully generated emission set')
 

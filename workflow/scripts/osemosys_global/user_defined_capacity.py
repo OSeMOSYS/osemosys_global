@@ -3,6 +3,7 @@ import os
 import yaml
 import pandas as pd
 from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
+from utils import apply_dtypes
 
 # LOGGING
 import logging
@@ -60,13 +61,13 @@ def main():
     df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
     df_max_cap_inv.drop_duplicates(inplace=True)
 
+    df_max_cap_inv = apply_dtypes(df_max_cap_inv, "TotalAnnualMaxCapacityInvestment")
+    df_min_cap_inv = apply_dtypes(df_min_cap_inv, "TotalAnnualMinCapacityInvestment")
+
     df_max_cap_inv.to_csv(os.path.join(
         scenario_data_dir, "TotalAnnualMaxCapacityInvestment.csv"), index=None)
     df_min_cap_inv.to_csv(os.path.join(
         scenario_data_dir, "TotalAnnualMinCapacityInvestment.csv"), index=None)
-
-    return print(max_cap_techs_df)
-
 
 if __name__ == '__main__':
     main()

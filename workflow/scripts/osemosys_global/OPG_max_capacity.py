@@ -4,6 +4,7 @@ import os
 import yaml
 import pandas as pd
 from OPG_configuration import ConfigFile, ConfigPaths
+from utils import apply_dtypes
 
 # LOGGING
 import logging
@@ -115,6 +116,7 @@ def main():
         'YEAR',
         'VALUE'
     ])
+    df_max_capacity = apply_dtypes(df_max_capacity, "TotalAnnualMaxCapacity")
     df_max_capacity.to_csv(os.path.join(
         output_data_dir, "TotalAnnualMaxCapacity.csv"), index = None)
 
