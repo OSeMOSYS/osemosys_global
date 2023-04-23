@@ -1,41 +1,51 @@
 
 import requests
 import os
+import sys
 import pandas as pd
 from osemosys_global.configuration import ConfigFile, ConfigPaths
+from osemosys_global.utils import get_config_data
+from pathlib import Path 
 
 # LOGGING
 import logging
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
-def main():
+def main(input_dir: str, output_dir: str, start_year: int, end_year: int):
     """Creates capacity limits on renewable technologies.
+    
+    Args:
+        input_data: str
+            Path to resources/data folder 
+        output_dir: str
+            Path to results/data folder
+        start_year: int
+            Start year of demand 
+        end_year: int
+            End year of demand 
     """
     
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    config = ConfigFile('config')  
-
-    input_dir = config_paths.input_dir
-    output_data_dir = config_paths.output_data_dir
-    region = config.region_name
-    years = config.get_years()
+    # set path variables
+    INPUT_DATA_DIR = Path(input_dir)
+    OUTPUT_DATA_DIR = Path(output_dir)
+    YEARS = list(range(start_year, end_year + 1))
+    REGION = "GLOBAL"
 
     ## Checks whether PLEXOS-World/MESSAGEix-GLOBIOM soft-link model data needs to be 
     # retrieved from the PLEXOS-World Harvard Dataverse.
     try:
         df_reslimit = pd.read_excel(os.path.join(
-            input_dir, "data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"),
+            INPUT_DATA_DIR, "data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"),
             sheet_name = "Properties")
 
     except IOError:
         url = 'https://dataverse.harvard.edu/api/access/datafile/6040815'
         r = requests.get(url)
-        with open(os.path.join(input_dir, 'data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'), 'wb') as outfile:
+        with open(os.path.join(INPUT_DATA_DIR, 'data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'), 'wb') as outfile:
             outfile.write(r.content)
 
         df_reslimit = pd.read_excel(os.path.join(
-            input_dir, "data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"),
+            INPUT_DATA_DIR, "data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"),
             sheet_name = "Properties")
 
     # TECHNOLOGY MAPPING FOR PLEXOS -> OSEMOSYS GLOBAL
@@ -80,7 +90,7 @@ def main():
 
     # GET RESIDUAL CAPACITY VALUES 
 
-    df_res_cap_raw = pd.read_csv(os.path.join(output_data_dir, 'ResidualCapacity.csv'))
+    df_res_cap_raw = pd.read_csv(os.path.join(OUTPUT_DATA_DIR, 'ResidualCapacity.csv'))
     df_res_cap_raw['VALUE'] = df_res_cap_raw.loc[:,'VALUE'].round(4)
     df_res_cap = df_res_cap_raw.loc[
         df_res_cap_raw['TECHNOLOGY'].str[3:6].isin(list(dict_reslimit.values()))]
@@ -100,9 +110,9 @@ def main():
         # annual max capacity and residual capacity 
         max_capacity = round(max_capacity, 4) + 0.0002
 
-        for year in years:
+        for year in YEARS:
             out_data.append([
-                region,
+                REGION,
                 tech,
                 year,
                 max_capacity
@@ -115,10 +125,10 @@ def main():
         'VALUE'
     ])
     df_max_capacity.to_csv(os.path.join(
-        output_data_dir, "TotalAnnualMaxCapacity.csv"), index = None)
+        OUTPUT_DATA_DIR, "TotalAnnualMaxCapacity.csv"), index = None)
 
-def get_max_value_per_technology(df):
-    '''Gets the max value for each unique technology in a dataframe. 
+def get_max_value_per_technology(df: pd.DataFrame) -> pd.DataFrame:
+    """Gets the max value for each unique technology in a dataframe. 
 
     This function will search through a 'TECHNOLOGY' column to idnetify each
     unique technology. The input dataframe will be filtered based on each 
@@ -130,7 +140,7 @@ def get_max_value_per_technology(df):
 
     Returns: 
         df: Filtered dataframe giving max values per technology. 
-    ''' 
+    """ 
 
     # Get list of techs to filter over 
     techs = df['TECHNOLOGY'].unique().tolist()
@@ -153,5 +163,17 @@ def get_max_value_per_technology(df):
     return df_out
 
 if __name__ == '__main__':
-    main()
-    logging.info(f'Max capacity limits sucessfully set')
+    if len(sys.argv) != 4:
+        print("Usage: python demand_projection.py <resources/data> <results/data> <config.yaml>")
+        logging.info("Max capacity limits failed")
+    else:
+        config_values = ["startYear", "endYear", "nodes_to_add"]
+        config_data = get_config_data(sys.argv[3], config_values)
+        
+        main(
+            sys.argv[1], 
+            sys.argv[2], 
+            int(config_data["startYear"]),
+            int(config_data["endYear"]),
+        )
+        logging.info("Max capacity limits sucessfully set")
