@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: 'Indonesia_COA-AC-2'
+scenario: 'Indonesia_NZ-2050-99'
 
 # Temporal Parameters 
 startYear: 2021
@@ -35,7 +35,8 @@ no_invest_technologies:
 #  - 'WOF'
   - 'OTH'
   - 'WAS'
-  - 'COA'
+#  - 'COA'
+  - 'COG' 
 
 # Result Parameters 
 results_by_country: True
@@ -138,37 +139,104 @@ powerplant_build_rates:
  # VALUE is the value - either absolute or percentage - by which the capacity 
  # of the associated TECHNOLOGY can increase. It is applied from the START_YEAR 
  # to the END_YEAR.
- SPV1: ['ABS', 0, 2020, 2024]
- SPV2: ['PCT', 1, 2024, 2034]
+ SPV1: ['ABS', 0, 2020, 2025]
+ SPV2: ['PCT', 1, 2025, 2034]
  SPV3: ['PCT', 5, 2034, 2051]
- WON1: ['ABS', 0, 2020, 2024]
+ WON1: ['ABS', 0, 2020, 2025]
  #WON2: ['PCT', 5, 2024, 2051]
- WOF1: ['ABS', 0, 2020, 2024]
- WOF2: ['PCT', 5, 2024, 2051]
- COA1: ['ABS', 0, 2020, 2024]
+ WOF1: ['ABS', 0, 2020, 2025]
+ WOF2: ['PCT', 5, 2025, 2051]
+ COA1: ['ABS', 0, 2020, 2027]
+ COA2: ['ABS', 0, 2030, 2051]
  CCG1: ['ABS', 0, 2020, 2024]
- GEO1: ['ABS', 0, 2020, 2024]
- GEO2: ['PCT', 5, 2024, 2051]
- BAT1: ['ABS', 0, 2020, 2024]
- BAT2: ['ABS', 2, 2024, 2051]
- BIO1: ['ABS', 0, 2020, 2024]
- BIO2: ['PCT', 5, 2024, 2051]
+ GEO1: ['ABS', 0, 2020, 2025]
+ GEO2: ['PCT', 5, 2025, 2051]
+ BAT1: ['ABS', 0, 2020, 2025]
+ BAT2: ['ABS', 5, 2025, 2051]
+ BIO1: ['ABS', 0, 2020, 2025]
+ BIO2: ['PCT', 1, 2025, 2034]
+ BIO3: ['PCT', 5, 2034, 2051]
  URN1: ['ABS', 0, 2020, 2039]
- URN2: ['ABS', 0.5, 2039, 2051]
+ URN2: ['ABS', 0.25, 2039, 2051]
+ CCS1: ['ABS', 0, 2020, 2039]
+ CCS2: ['ABS', 0.25, 2039, 2051]
  HYD1: ['ABS', 0, 2020, 2024]
- HYD2: ['PCT', 5, 2024, 2051]
+ HYD2: ['PCT', 20, 2024, 2051]
 
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
  RM1: [60, 2020, 2029]
- RM2: [35, 2030, 2039]
- RM3: [15, 2040, 2050]
+ RM2: [35, 2030, 2050]
 
 emission_limit:
 # EMISSION_LIMIT: [VALUE, YEAR]
 # where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
 # when that constraint must be adhered to. All years between multiple emission 
 # constraints will be interpolated.
- EL1: [2030, 9999]
- EL2: [2050, 9999]
+ EL1: [2030, 290]
+ EL2: [2050, 2.9]
+
+fuel_limits:
+# FUEL: [VALUE, COUNTRY/INTERNATIONAL, YEAR]
+# Where FUEL is the fuel on which a limit is being applied (e.g. COA), VALUE is
+# the value in Petajoules (PJ), COUNTRY/INTERNATIONAL specific which domestic 
+# fuel (e.g. IDN) or international fuel ('INT') the limit is being applied to, 
+# and YEAR is the year for which the limit is applied. All years between multiple emission 
+# constraints will be interpolated.
+ GAS1: [453, 'IDN', 2024]
+ GAS2: [933, 'IDN', 2035]
+ GAS3: [933, 'IDN', 2050]
+ GAS4: [0, 'INT', 2030]
+ GAS5: [0, 'INT', 2050]
+ COA1: [3300, 'IDN', 2021]
+ COA2: [3300, 'IDN', 2050]
+ COA3: [0, 'INT', 2021]
+ COA4: [0, 'INT', 2050]
+
+calibration:
+ #GAS1: [203, 'IDN', 2021]
+ #GAS2: [203, 'IDN', 2022]
+ #GAS3: [184, 'IDN', 2023]
+ #GAS4: [170, 'IDN', 2024]
+ #GAS5: [167, 'IDN', 2025]
+ #GAS6: [158, 'IDN', 2026]
+ #GAS7: [147, 'IDN', 2027]
+ #GAS8: [133, 'IDN', 2028]
+ #GAS9: [131, 'IDN', 2029]
+ #GAS10: [130, 'IDN', 2030]
+ #GAS11: [129, 'IDN', 2031]
+ #GAS12: [129, 'IDN', 2032]
+ #GAS13: [128, 'IDN', 2033]
+ #GAS14: [127, 'IDN', 2034]
+ #GAS15: [112, 'IDN', 2035]
+ OCG1: [50, 'IDN', 2021]
+ OCG2: [60, 'IDN', 2022]
+ OCG3: [49, 'IDN', 2023]
+ OCG4: [49, 'IDN', 2024]
+ OCG5: [49, 'IDN', 2025]
+ OCG6: [48, 'IDN', 2026]
+ OCG7: [46, 'IDN', 2027]
+ OCG8: [42, 'IDN', 2028]
+ OCG9: [41, 'IDN', 2029]
+ OCG10: [41, 'IDN', 2030]
+# OCG11: [41, 'IDN', 2031]
+# OCG12: [41, 'IDN', 2032]
+# OCG13: [40, 'IDN', 2033]
+# OCG14: [40, 'IDN', 2034]
+# OCG15: [32, 'IDN', 2035]
+ CCG1: [70, 'IDN', 2021]
+ CCG2: [70, 'IDN', 2022]
+ CCG3: [59, 'IDN', 2023]
+ CCG4: [51, 'IDN', 2024]
+ CCG5: [50, 'IDN', 2025]
+ CCG6: [45, 'IDN', 2026]
+ CCG7: [40, 'IDN', 2027]
+ CCG8: [36, 'IDN', 2028]
+ CCG9: [36, 'IDN', 2029]
+ CCG10: [35, 'IDN', 2030]
+# CCG11: [35, 'IDN', 2031]
+# CCG12: [35, 'IDN', 2032]
+# CCG13: [35, 'IDN', 2033]
+# CCG14: [35, 'IDN', 2034]
+# CCG15: [34, 'IDN', 2035]
