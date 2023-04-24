@@ -297,7 +297,7 @@ var UseAnnual{r in REGION, f in FUEL, y in YEAR}>= 0;
 #
 #########                    Costing Variables                         #############
 #
-#var CapitalInvestment{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
+var CapitalInvestment{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 ####var DiscountedCapitalInvestment{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #
 var VariableOperatingCost{r in REGION, t in TECHNOLOGY, l in TIMESLICE, y in YEAR}>= 0;
@@ -325,12 +325,12 @@ var TotalDiscountedCost{r in REGION, y in YEAR}>= 0;
 #
 #########                        Emissions                                        #############
 #
-var DiscountedTechnologyEmissionsPenalty{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
+var DiscountedTechnologyEmissionsPenalty{r in REGION, t in TECHNOLOGY, y in YEAR};
 var ModelPeriodEmissions{r in REGION, e in EMISSION}>= 0;
 #var AnnualTechnologyEmissionByMode{r in REGION, t in TECHNOLOGY, e in EMISSION, m in MODEperTECHNOLOGY[t], y in YEAR}>= 0;
 #var AnnualTechnologyEmission{r in REGION, t in TECHNOLOGY, e in EMISSION, y in YEAR}>= 0;
 #var AnnualTechnologyEmissionPenaltyByEmission{r in REGION, t in TECHNOLOGY, e in EMISSION, y in YEAR}>= 0;
-#var AnnualTechnologyEmissionsPenalty{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
+var AnnualTechnologyEmissionsPenalty{r in REGION, t in TECHNOLOGY, y in YEAR};
 #var AnnualEmissions{r in REGION, e in EMISSION, y in YEAR}>= 0;
 #
 #        table data IN "CSV" "data.csv": s <- [FROM,TO], d~DISTANCE, c~COST;
@@ -350,6 +350,15 @@ minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR}
             DiscountedTechnologyEmissionsPenalty[r,t,y] - DiscountedSalvageValue[r,t,y]) + 
             sum{r in REGION, s in STORAGE, y in YEAR} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] / DiscountFactor[r,y] - 
             DiscountedSalvageValueStorage[r,s,y]);
+
+#minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR} 
+#    ((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} 
+#        NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + 
+#        sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} 
+#            RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y]) / DiscountFactorMid[r,y] + 
+#            CapitalCost[r,t,y] * NewCapacity[r,t,y] * CapitalRecoveryFactor[r,t] * PvAnnuity[r,t] / DiscountFactor[r,y] + 
+#            DiscountedTechnologyEmissionsPenalty[r,t,y]) + 
+#            sum{r in REGION, s in STORAGE, y in YEAR} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] / DiscountFactor[r,y]);
 
 #
 #####################
@@ -473,7 +482,7 @@ s.t. SI10_TotalDiscountedCostByStorage{r in REGION, s in STORAGE, y in YEAR}: (C
 #
 #########               Capital Costs                              #############
 #
-#s.t. CC1_UndiscountedCapitalInvestment{r in REGION, t in TECHNOLOGY, y in YEAR}: CapitalCost[r,t,y] * NewCapacity[r,t,y] = CapitalInvestment[r,t,y];
+s.t. CC1_UndiscountedCapitalInvestment{r in REGION, t in TECHNOLOGY, y in YEAR}: CapitalCost[r,t,y] * NewCapacity[r,t,y] = CapitalInvestment[r,t,y];
 ####s.t. CC2_DiscountingCapitalInvestment{r in REGION, t in TECHNOLOGY, y in YEAR}: CapitalCost[r,t,y] * NewCapacity[r,t,y] * CapitalRecoveryFactor[r,t] * PvAnnuity[r,t] / DiscountFactor[r,y]= DiscountedCapitalInvestment[r,t,y];
 
 #
@@ -488,13 +497,14 @@ s.t. SV4_SalvageValueDiscountedToStartYear{r in REGION, t in TECHNOLOGY, y in YE
 #
 #s.t. OC1_OperatingCostsVariable{r in REGION, t in TECHNOLOGY, y in YEAR}: sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y] = AnnualVariableOperatingCost[r,t,y];
 #s.t. OC2_OperatingCostsFixedAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}: ((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] = AnnualFixedOperatingCost[r,t,y];
-#s.t. OC3_OperatingCostsTotalAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}: (((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y]) = OperatingCost[r,t,y];
+s.t. OC3_OperatingCostsTotalAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}: (((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y]) = OperatingCost[r,t,y];
 ####s.t. OC4_DiscountedOperatingCostsTotalAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}: (((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y])/DiscountFactorMid[r,y] = DiscountedOperatingCost[r,t,y];
 #
 #########               Total Discounted Costs                 #############
 #
 #s.t. TDC1_TotalDiscountedCostByTechnology{r in REGION, t in TECHNOLOGY, y in YEAR}: ((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y])/DiscountFactorMid[r,y]+CapitalCost[r,t,y] * NewCapacity[r,t,y]/DiscountFactor[r,y]+DiscountedTechnologyEmissionsPenalty[r,t,y]-DiscountedSalvageValue[r,t,y]) = TotalDiscountedCostByTechnology[r,t,y];
-s.t. TDC2_TotalDiscountedCost{r in REGION, y in YEAR}: sum{t in TECHNOLOGY}((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y])/DiscountFactorMid[r,y]+CapitalCost[r,t,y] * NewCapacity[r,t,y]/DiscountFactor[r,y]+DiscountedTechnologyEmissionsPenalty[r,t,y]-DiscountedSalvageValue[r,t,y]) + sum{s in STORAGE} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]-CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]) = TotalDiscountedCost[r,y];
+#s.t. TDC2_TotalDiscountedCost{r in REGION, y in YEAR}: sum{t in TECHNOLOGY}((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y])/DiscountFactorMid[r,y]+CapitalCost[r,t,y] * NewCapacity[r,t,y]/DiscountFactor[r,y]+DiscountedTechnologyEmissionsPenalty[r,t,y]-DiscountedSalvageValue[r,t,y]) + sum{s in STORAGE} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]-CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y]/DiscountFactor[r,y]) = TotalDiscountedCost[r,y];
+s.t. TDC2_TotalDiscountedCost{r in REGION, y in YEAR}: sum{t in TECHNOLOGY}(OperatingCost[r,t,y] + CapitalInvestment[r,t,y] + AnnualTechnologyEmissionsPenalty[r,t,y]) + sum{s in STORAGE} (CapitalInvestmentStorage[r,s,y]) = TotalDiscountedCost[r,y];
 #
 #########                      Total Capacity Constraints         ##############
 #
@@ -553,7 +563,7 @@ s.t. E9_ModelPeriodEmissionsLimit{r in REGION, e in EMISSION: ModelPeriodEmissio
 #s.t. E1_AnnualEmissionProductionByMode{r in REGION, t in TECHNOLOGY, e in EMISSION, m in MODEperTECHNOLOGY[t], y in YEAR}: EmissionActivityRatio[r,t,e,m,y]*sum{l in TIMESLICE} RateOfActivity[r,l,t,m,y]*YearSplit[l,y]=AnnualTechnologyEmissionByMode[r,t,e,m,y];
 #s.t. E2_AnnualEmissionProduction{r in REGION, t in TECHNOLOGY, e in EMISSION, m in MODEperTECHNOLOGY[t], y in YEAR}: sum{l in TIMESLICE, m in MODEperTECHNOLOGY[t]: EmissionActivityRatio[r,t,e,m,y]<>0} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y] = AnnualTechnologyEmission[r,t,e,y];
 #s.t. E3_EmissionsPenaltyByTechAndEmission{r in REGION, t in TECHNOLOGY, e in EMISSION, y in YEAR: EmissionActivityRatio[r,t,e,m,y]<>0}: sum{l in TIMESLICE, m in MODEperTECHNOLOGY[t]} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*EmissionsPenalty[r,e,y] = AnnualTechnologyEmissionPenaltyByEmission[r,t,e,y];
-#s.t. E4_EmissionsPenaltyByTechnology{r in REGION, t in TECHNOLOGY, y in YEAR}: sum{e in EMISSION, l in TIMESLICE, m in MODEperTECHNOLOGY[t]} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*EmissionsPenalty[r,e,y] = AnnualTechnologyEmissionsPenalty[r,t,y];
+s.t. E4_EmissionsPenaltyByTechnology{r in REGION, t in TECHNOLOGY, y in YEAR}: sum{e in EMISSION, l in TIMESLICE, m in MODEperTECHNOLOGY[t]} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*EmissionsPenalty[r,e,y] = AnnualTechnologyEmissionsPenalty[r,t,y];
 #s.t. E6_EmissionsAccounting1{r in REGION, e in EMISSION, y in YEAR}: sum{l in TIMESLICE, t in TECHNOLOGY, m in MODEperTECHNOLOGY[t]: EmissionActivityRatio[r,t,e,m,y]<>0} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y] = AnnualEmissions[r,e,y];
 #s.t. E7_EmissionsAccounting2{r in REGION, e in EMISSION}: sum{l in TIMESLICE, t in TECHNOLOGY, m in MODEperTECHNOLOGY[t], y in YEAR: EmissionActivityRatio[r,t,e,m,y]<>0} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y] + ModelPeriodExogenousEmission[r,e] = ModelPeriodEmissions[r,e];
 #

@@ -37,8 +37,8 @@ RETagTechnology,0
 SpecifiedAnnualDemand,0
 SpecifiedDemandProfile,0
 StorageLevelStart,0
-StorageMaxChargeRate,999
-StorageMaxDischargeRate,999
+StorageMaxChargeRate,99999
+StorageMaxDischargeRate,99999
 TechnologyFromStorage,0
 TechnologyToStorage,0
 TotalAnnualMaxCapacity,-1
