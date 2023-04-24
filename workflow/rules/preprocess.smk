@@ -35,7 +35,8 @@ power_plant_files = [
     'REGION.csv',
     'ResidualCapacity.csv',
     'TECHNOLOGY.csv',
-    'YEAR.csv'
+    'YEAR.csv',
+    'AvailabilityFactor.csv'
     ]
 
 timeslice_files = [
@@ -75,7 +76,10 @@ emission_files = [
 ]
 
 max_capacity_files = [
-    'TotalAnnualMaxCapacity.csv'
+    'TotalAnnualMaxCapacity.csv',
+    'TotalTechnologyAnnualActivityUpperLimit.csv',
+    'AccumulatedAnnualDemand.csv',
+#    'TotalTechnologyModelPeriodActivityUpperLimit.csv'
 ]
 
 user_capacity_files = [

@@ -120,16 +120,16 @@ df_prices['MINOTH'] = df_prices['MINOIL']  # Other petroleum products are simila
 df_prices['MINPET'] = df_prices['MINOIL']  # Petroleum products are similar to oil
 
 # Add price for URN. 40 $2020/lb -> 0.0226 m$2020/PJ (3900 GJ/kg)
-df_prices['MINURN'] = 22.6
+df_prices['MINURN'] = 0.0226
 
-# And add in international prices that are 15% higher than the regular ones:
-df_prices['INTCOA'] = df_prices['MINCOA'] * 1.15
-df_prices['INTOIL'] = df_prices['MINOIL'] * 1.15
-df_prices['INTGAS'] = df_prices['MINGAS'] * 1.15
-df_prices['INTCOG'] = df_prices['MINCOG'] * 1.15
-df_prices['INTOTH'] = df_prices['MINOTH'] * 1.15
-df_prices['INTPET'] = df_prices['MINPET'] * 1.15
-df_prices['INTURN'] = df_prices['MINURN'] * 1.15
+# And add in international prices that are 50% higher than the regular ones:
+df_prices['INTCOA'] = df_prices['MINCOA'] * 1.5
+df_prices['INTOIL'] = df_prices['MINOIL'] * 1.5
+df_prices['INTGAS'] = df_prices['MINGAS'] * 2
+df_prices['INTCOG'] = df_prices['MINCOG'] * 2
+df_prices['INTOTH'] = df_prices['MINOTH'] * 2
+df_prices['INTPET'] = df_prices['MINPET'] * 2
+df_prices['INTURN'] = df_prices['MINURN'] * 1.5
 
 df_prices = df_prices.reindex(years)
 

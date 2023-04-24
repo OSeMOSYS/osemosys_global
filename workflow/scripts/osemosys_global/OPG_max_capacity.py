@@ -25,6 +25,8 @@ def main():
     years = config.get_years()
     custom_nodes = config.get('nodes_to_add')
     max_build = config.get('powerplant_build_rates')
+    max_fuel = config.get('fuel_limits')
+    calibration = config.get('calibration')
 
     ## Checks whether PLEXOS-World/MESSAGEix-GLOBIOM soft-link model data needs to be 
     # retrieved from the PLEXOS-World Harvard Dataverse.
@@ -137,6 +139,8 @@ def main():
         output_data_dir, "TotalAnnualMaxCapacity.csv"), index = None)
     
     apply_build_rates(region, years, output_data_dir, max_build)
+    apply_fuel_limits(region, years, output_data_dir, max_fuel)
+    apply_calibration(region, years, output_data_dir, calibration)
 
 
 def get_max_value_per_technology(df):
@@ -274,6 +278,122 @@ def apply_build_rates(region, years, output_data_dir, max_build):
         df_max_cap.to_csv(os.path.join(output_data_dir, 
                                        "TotalAnnualMaxCapacityInvestment.csv"),
                                        index = None)
+        
+def apply_fuel_limits(region, years, output_data_dir, max_fuel):
+    
+    mf_df = pd.DataFrame(columns=['TECHNOLOGY',
+                                  'YEAR',
+                                  'VALUE'])
+    
+    if not max_fuel is None:
+        for mf, mf_params in max_fuel.items():
+            mf_append = {'TECHNOLOGY': 'MIN' + mf[0:3] + mf_params[1],
+                         'YEAR': mf_params[2],
+                         'VALUE': mf_params[0]}
+            mf_df = mf_df.append(mf_append,
+                                 ignore_index=True)
+            
+        tech_list = mf_df['TECHNOLOGY'].unique()
+        mf_df_final = pd.DataFrame(list(itertools.product(tech_list,
+                                                          years)
+                                        ),
+                                   columns = ['TECHNOLOGY', 
+                                              'YEAR']
+                                   )
+        mf_df_final = pd.merge(mf_df_final, mf_df,
+                               how='left',
+                               on=['TECHNOLOGY', 'YEAR'])  
+        mf_df_final['VALUE'] = mf_df_final['VALUE'].astype(float)
+        for each_tech in tech_list:
+            mf_df_final.loc[mf_df_final['TECHNOLOGY'].isin([each_tech]),
+                            'VALUE'] = mf_df_final.loc[mf_df_final['TECHNOLOGY'].isin([each_tech]),
+                                                       'VALUE'].interpolate().round(0)
+            
+ 
+        mf_df_final['REGION'] = region
+        mf_df_final = mf_df_final[['REGION',
+                                   'TECHNOLOGY',
+                                   'YEAR',
+                                   'VALUE']]
+        mf_df_final.dropna(inplace=True)
+        mf_df_final.to_csv(os.path.join(output_data_dir,
+                                  'TotalTechnologyAnnualActivityUpperLimit.csv'),
+                           index=None)
+        
+        # Model Period Activity Upper Limit for 'MINCOA***01'
+        min_tech_df = pd.read_csv(os.path.join(output_data_dir,
+                                               'TECHNOLOGY.csv'))
+        min_tech = [x for x in min_tech_df['VALUE'].unique()
+                    if x.startswith('MINCOA')
+                    if x.endswith('01')]
+        min_tech_df_final = pd.DataFrame(columns=['REGION',
+                                                  'TECHNOLOGY',
+                                                  'VALUE'])
+        min_tech_df_final['TECHNOLOGY'] = min_tech
+        min_tech_df_final['REGION'] = region
+        min_tech_df_final['VALUE'] = 0
+        min_tech_df_final.to_csv(os.path.join(output_data_dir,
+                                              'TotalTechnologyModelPeriodActivityUpperLimit.csv'),
+                                 index=None)
+        
+def apply_calibration(region, years, output_data_dir, calibration):
+    
+    oar_df = pd.read_csv(os.path.join(output_data_dir,
+                                      'OutputActivityRatio.csv'))
+    cal_df = oar_df.loc[(oar_df['TECHNOLOGY'].str.startswith('PWR')) & 
+                        ~(oar_df['TECHNOLOGY'].str.startswith('PWRTRN')) &
+                        ~(oar_df['TECHNOLOGY'].str.startswith('PWRBAT'))]
+        
+    if not calibration is None:
+        for cal, cal_params in calibration.items():
+            
+            if cal[0:3] in ['GAS']:
+                cal_df.loc[((cal_df['TECHNOLOGY'].str.startswith('PWROCG'+cal_params[1])) |
+                           (cal_df['TECHNOLOGY'].str.startswith('PWRCCG'+cal_params[1]))) &
+                           (cal_df['YEAR'] == cal_params[2]),
+                           'FUEL'] = 'CALGAS' + cal_params[1]
+                cal_df.loc[((cal_df['TECHNOLOGY'].str.startswith('PWROCG'+cal_params[1])) |
+                           (cal_df['TECHNOLOGY'].str.startswith('PWRCCG'+cal_params[1]))) &
+                           (cal_df['YEAR'] == cal_params[2]),
+                           'DEMAND'] = cal_params[0]
+            else:
+                cal_df.loc[(cal_df['TECHNOLOGY'].str.startswith('PWR' + cal[0:3] + cal_params[1])) &
+                           (cal_df['YEAR'] == cal_params[2]),
+                           'FUEL'] = 'CAL' + cal[0:3] + cal_params[1]
+                cal_df.loc[(cal_df['TECHNOLOGY'].str.startswith('PWR' + cal[0:3] + cal_params[1])) &
+                           (cal_df['YEAR'] == cal_params[2]),
+                           'DEMAND'] = cal_params[0]
+    
+        cal_df = cal_df.loc[cal_df['FUEL'].str.startswith('CAL')]
+        cal_df_final = cal_df[[x for x in cal_df.columns
+                               if x not in ['DEMAND']]]
+        oar_df = oar_df.append(cal_df_final)
+        
+        oar_df.to_csv(os.path.join(output_data_dir,
+                                   'OutputActivityRatio.csv'),
+                      index=None)  
+        
+        cal_dem_df = cal_df[['REGION',
+                             'FUEL',
+                             'YEAR',
+                             'DEMAND']]
+        cal_dem_final = cal_dem_df.rename(columns={'DEMAND': 'VALUE'})
+        cal_dem_final.drop_duplicates(inplace=True)
+        cal_dem_final.dropna(inplace=True)
+        cal_dem_final.to_csv(os.path.join(output_data_dir,
+                                          'AccumulatedAnnualDemand.csv'),
+                             index=None)  
+        
+        cal_fuels = list(cal_dem_final['FUEL'].unique())
+        
+        fuel_list_df = pd.read_csv(os.path.join(output_data_dir,
+                                             'FUEL.csv'))
+        fuel_list = list(fuel_list_df['VALUE'].unique()) + cal_fuels
+        fuel_list_df_final = pd.DataFrame(fuel_list,
+                                          columns=['VALUE'])
+        fuel_list_df_final.to_csv(os.path.join(output_data_dir,
+                                               'FUEL.csv'),
+                                  index=None)        
 
 
 if __name__ == '__main__':

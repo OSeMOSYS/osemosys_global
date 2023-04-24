@@ -97,6 +97,9 @@ def main():
     df_weo_regions = pd.read_csv(os.path.join(input_data_dir,
                                               "weo_region_mapping.csv")
                                  )
+    df_af = pd.read_csv(os.path.join(input_data_dir,
+                                     "availability_factors.csv")
+                        )
     
     if custom_nodes:
         df_custom_res_cap = pd.read_csv(os.path.join(input_data_dir,
@@ -599,6 +602,7 @@ def main():
             node_list.append("".join(each_node.split('-')[1:]))
 
     master_fuel_list = list(df_gen_2['tech_code'].unique())
+    master_fuel_list.append('CCS')
 
     mode_list = [1,2]
 
@@ -619,7 +623,8 @@ def main():
                          'PET',
                          'URN',
                          'OIL',
-                         'OTH'
+                         'OTH',
+                         'CCS'
                         ]
 
     thermal_fuel_list_iar = ['COA',
@@ -694,6 +699,16 @@ def main():
     df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 2) &
                (df_iar['TECHNOLOGY'].str[3:6].isin(['CCG'])),
                'FUEL'] = 'GASINT'
+    
+    # CCS Mode 1: Domestic COA
+    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 1) &
+               (df_iar['TECHNOLOGY'].str[3:6].isin(['CCS'])),
+               'FUEL'] = 'COA'+df_iar['TECHNOLOGY'].str[6:9]
+
+    # CCS Mode 2: International COA
+    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 2) &
+               (df_iar['TECHNOLOGY'].str[3:6].isin(['CCS'])),
+               'FUEL'] = 'COAINT'
 
     # For non-GAS thermal fuels, domestic fuel input by country in mode 1 and 
     # 'international' fuel input in mode 2
@@ -724,6 +739,10 @@ def main():
     # When available, choose node and technology average. Else, 
     # choose technology average
     df_iar['VALUE'] = df_iar['node_average_iar']
+    
+    df_iar.loc[df_iar['TECHNOLOGY'].str.startswith('PWRCCS'),
+               'tech_average_iar'] = 3
+    
     df_iar.loc[df_iar['VALUE'].isna(),
                'VALUE'] = df_iar['tech_average_iar']
 
@@ -1042,7 +1061,9 @@ def main():
                   'Wind offshore':'WOF',
                   'Petroleum':'PET',
                   'Oil':'OIL',
-                  'Other':'OTH',} # Added OIL, OTH, PET, WOF to WEO 2018
+                  'Other':'OTH',
+                  'IGCC + CCS':'CCS',
+                  'Coal* + CCS':'CCS',} # Added OIL, OTH, PET, WOF to WEO 2018
 
     df_costs = df_costs.loc[df_costs['technology'].isin(costs_dict.keys())]
     df_costs['technology_code'] = df_costs['technology'].replace(costs_dict)
@@ -1264,6 +1285,7 @@ def main():
                       index = None)
 
     user_defined_capacity(region_name, years, output_data_dir, tech_capacity)
+    availability_factor(region_name, years, output_data_dir, df_af)
 
 
 def create_sets(x, df, output_dir, custom_node_elements):
@@ -1744,7 +1766,37 @@ def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
                                  as_index=False)['VALUE'].sum()
 
     return df_param, technologies
-            
+
+
+def availability_factor(region, 
+                        years,
+                        output_data_dir,
+                        availability):
+    
+    af_dict = dict(zip(list(availability['technology']),
+                       list(availability['value'])))
+    
+    df_tech = pd.read_csv(os.path.join(output_data_dir,
+                                       'TECHNOLOGY.csv'))
+    tech_list = [x for x in df_tech['VALUE']
+                 if x.startswith('PWR')]
+    df_af_final = pd.DataFrame(list(itertools.product(tech_list,
+                                                      years)
+                                    ),
+                               columns = ['TECHNOLOGY', 'YEAR']
+                               )
+    df_af_final['TECH'] = df_af_final['TECHNOLOGY'].str[3:6]
+    df_af_final['VALUE'] = df_af_final['TECH'].map(af_dict)
+    df_af_final.dropna(inplace=True)
+    df_af_final['REGION'] = region
+    
+    df_af_final = df_af_final[['REGION',
+                               'TECHNOLOGY',
+                               'YEAR',
+                               'VALUE']]
+    df_af_final.to_csv(os.path.join(output_data_dir,
+                                    'AvailabilityFactor.csv'),
+                       index=None)
 
 if __name__ == "__main__":
     main()

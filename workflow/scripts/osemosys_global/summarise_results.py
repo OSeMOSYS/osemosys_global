@@ -31,6 +31,10 @@ def main():
     
     # UPDATED METRICS
     system_cost_by_node()
+    new_capacity_summary()
+    new_capacity_summary_trn()
+    investment_summary()
+    investment_summary_trn()
 
 
 def renewables_filter(df):
@@ -74,8 +78,8 @@ def headline_metrics():
 
     df_metrics = pd.DataFrame(columns=['Metric', 'Unit', 'Value'])
     df_metrics['Metric'] = ['Emissions',
-                            'RE Share',
-                            'Total System Cost',
+                            'Renewable energy share',
+                            'Total system cost',
                             'Cost of electricity',
                             'Fossil fuel share']
     df_metrics['Unit'] = ['Million tonnes of CO2-eq.',
@@ -106,7 +110,7 @@ def headline_metrics():
     df_re_share = renewables_filter(df_shares)
     re_total = df_re_share.VALUE.sum()
     re_share = re_total / gen_total
-    df_metrics.loc[df_metrics['Metric'].str.startswith('RE Share'),
+    df_metrics.loc[df_metrics['Metric'].str.startswith('Renewable energy share'),
                    'Value'] = (re_share*100).round(0)
 
     # Fossil Fuel Share
@@ -122,7 +126,7 @@ def headline_metrics():
                                               )
                                  )
     system_cost_total = df_system_cost.VALUE.sum()
-    df_metrics.loc[df_metrics['Metric'].str.startswith('Total System Cost'),
+    df_metrics.loc[df_metrics['Metric'].str.startswith('Total system cost'),
                    'Value'] = (system_cost_total/1000).round(0)
 
     # Cost of electricity generation
@@ -194,6 +198,141 @@ def capacity_summary():
                                              ),
                                 index=None
                                 )
+    
+def new_capacity_summary():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Capacities
+    df_capacities = pd.read_csv(os.path.join(scenario_results_dir,
+                                             'NewCapacity.csv'
+                                             )
+                                )
+
+    df_capacities['NODE'] = (df_capacities['TECHNOLOGY'].str[6:9] +
+                             '-' +
+                             df_capacities['TECHNOLOGY'].str[9:11])
+    df_capacities = powerplant_filter(df_capacities, country=None)
+    df_capacities = df_capacities.groupby(['NODE', 'LABEL', 'YEAR'],
+                                          as_index=False)['VALUE'].sum()
+    df_capacities = df_capacities.sort_values(by=['YEAR',
+                                                  'NODE',
+                                                  'LABEL'])
+    df_capacities['VALUE'] = df_capacities['VALUE'].round(2)
+
+    return df_capacities.to_csv(os.path.join(scenario_result_summaries_dir,
+                                             'New_Capacities_Powerplants.csv'
+                                             ),
+                                index=None
+                                )
+    
+def new_capacity_summary_trn():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Capacities
+    df = pd.read_csv(os.path.join(scenario_results_dir,
+                                  'NewCapacity.csv'
+                                  )
+                     )
+    df = df[df.TECHNOLOGY.str.startswith('TRN')]
+    interconnections = list(df.TECHNOLOGY.unique())
+    if len(interconnections) > 0:
+        df['NODE_1'] = df.TECHNOLOGY.str[3:8]
+        df['NODE_2'] = df.TECHNOLOGY.str[8:13]
+        
+        min_year = df['YEAR'].min()
+        df = df[df['YEAR'] > min_year]
+    
+        df = df[['YEAR',
+                 'NODE_1',
+                 'NODE_2',
+                 'VALUE']]
+    else:
+        df = pd.DataFrame(columns=['YEAR',
+                                   'NODE_1',
+                                   'NODE_2',
+                                   'VALUE']
+                         )
+
+    return df.to_csv(os.path.join(scenario_result_summaries_dir,
+                                  'New_Capacities_Interconnectors.csv'
+                                  ),
+                     index=None
+                     )
+
+
+def investment_summary():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Capacities
+    df_capacities = pd.read_csv(os.path.join(scenario_results_dir,
+                                             'CapitalInvestment.csv'
+                                             )
+                                )
+
+    df_capacities['NODE'] = (df_capacities['TECHNOLOGY'].str[6:9] +
+                             '-' +
+                             df_capacities['TECHNOLOGY'].str[9:11])
+    df_capacities = powerplant_filter(df_capacities, country=None)
+    df_capacities = df_capacities.groupby(['NODE', 'LABEL', 'YEAR'],
+                                          as_index=False)['VALUE'].sum()
+    min_year = df_capacities['YEAR'].min()
+    df_capacities = df_capacities[df_capacities['YEAR'] > min_year]
+    df_capacities = df_capacities.sort_values(by=['YEAR',
+                                                  'NODE',
+                                                  'LABEL'])
+    df_capacities['VALUE'] = df_capacities['VALUE'].round(2)
+
+    return df_capacities.to_csv(os.path.join(scenario_result_summaries_dir,
+                                             'Investment_Summary_Powerplants.csv'
+                                             ),
+                                index=None
+                                )
+    
+def investment_summary_trn():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+
+    # Capacities
+    df = pd.read_csv(os.path.join(scenario_results_dir,
+                                  'CapitalInvestment.csv'
+                                  )
+                     )
+    df = df[df.TECHNOLOGY.str.startswith('TRN')]
+    interconnections = list(df.TECHNOLOGY.unique())
+    if len(interconnections) > 0:
+        df['NODE_1'] = df.TECHNOLOGY.str[3:8]
+        df['NODE_2'] = df.TECHNOLOGY.str[8:13]
+        
+        min_year = df['YEAR'].min()
+        df = df[df['YEAR'] > min_year]
+    
+        df = df[['YEAR',
+                 'NODE_1',
+                 'NODE_2',
+                 'VALUE']]
+    else:
+        df = pd.DataFrame(columns=['YEAR',
+                                   'NODE_1',
+                                   'NODE_2',
+                                   'VALUE']
+                         )
+
+    return df.to_csv(os.path.join(scenario_result_summaries_dir,
+                                  'Investment_Summary_Interconnectors.csv'
+                                  ),
+                     index=None
+                     )
 
 
 def generation_summary():
@@ -615,7 +754,7 @@ def apply_timeshift(x, timeshift):
 
 '''
     - Total system costs for each node [$]
-    - Existing, new and decommissioned capacity in electricity generation, 
+    + Existing, new and decommissioned capacity in electricity generation, 
     storage, and transmission technology for each year and node [GW (and GWh in 
     the case of storage)]
     - Electricity generation, charge and discharge and trade by technology for 
@@ -623,10 +762,10 @@ def apply_timeshift(x, timeshift):
     - Emissions of each fossil generation technology for each year and node [tCO2]
     - Implicit electricity price for each year and node [$/MWh]
     x Implicit carbon price [$/t]
-    - Share in electricity production and generation capacity [%]
-    - Investment volumes by technology [$]
+    x Share in electricity production and generation capacity [%]
+    + Investment volumes by technology [$]
     - Energetic storage losses node and technology [GWh]
-    - Capacity factors  node and technology [%]
+    - Capacity factors by node and technology [%]
     - Curtailment by node and technology [GWh]
     - Fossil fuel consumption [t for coal, bcf for gas]
     x Early decommissioning of fossil generation [GW]
@@ -637,12 +776,12 @@ def system_cost_by_node():
     config_paths = ConfigPaths()
     config = ConfigFile('config')
     #scenario_results_dir = config_paths.scenario_results_dir
-    scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_COA-NZ-HighGas-WOF/results'
+    scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/results'
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
-    scenario_data_dir = config_paths.scenario_data_dir
+    #scenario_data_dir = config_paths.scenario_data_dir
+    scenario_data_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/data'
     input_data_dir = config_paths.input_data_dir
     
-    print(scenario_results_dir)
     penalty = config.get('emission_penalty')
     
     df = pd.read_csv(os.path.join(scenario_data_dir,
@@ -676,17 +815,79 @@ def system_cost_by_node():
         df = df.add(each_df, fill_value=0)
     
     df.reset_index(inplace=True)
-    df = df[~(df['TECHNOLOGY'].str.startswith('MIN'))]
+    df = df[~(df['TECHNOLOGY'].str.startswith('MIN')) & 
+            ~(df['TECHNOLOGY'].str.startswith('RNW')) &
+            ~(df['TECHNOLOGY'].str.startswith('TRN'))]
     df['NODE'] = df['TECHNOLOGY'].str[6:11]
     #df = df[['NODE',
     #         'VALUE']]
+    
+    # Summarise UseByTechnologyAnnual for all powerplants
+    df_use = pd.read_csv(os.path.join(scenario_results_dir,
+                                      'UseByTechnology.csv'
+                                      ))
+    df_use = df_use.groupby(['TECHNOLOGY',
+                             'FUEL',
+                             'YEAR'],
+                            as_index=False)['VALUE'].sum()
+    df_use = df_use.loc[(df_use['TECHNOLOGY'].str.startswith('PWR')) & 
+                        ~(df_use['TECHNOLOGY'].str.startswith('PWRBAT')) &
+                        ~(df_use['TECHNOLOGY'].str.startswith('PWRTRN'))]
+    df_use['VALUE'] = df_use['VALUE'].round(2)
+    df_use.rename(columns={'VALUE':'USE'},
+                  inplace=True)
+    print(df_use)
+    
+    df_oar = pd.read_csv(os.path.join(scenario_data_dir,
+                                      'OutputActivityRatio.csv'
+                                      ))
+    df_oar = df_oar.groupby(['TECHNOLOGY',
+                             'FUEL',
+                             'MODE_OF_OPERATION',
+                             'YEAR'],
+                            as_index=False)['VALUE'].sum()
+    df_oar = df_oar[['TECHNOLOGY',
+                     'FUEL',
+                     'MODE_OF_OPERATION',
+                     'YEAR']]
+    print(df_oar)
+    
+    df_var = pd.read_csv(os.path.join(scenario_data_dir,
+                                      'VariableCost.csv'
+                                      ))
+    df_var = df_var.groupby(['TECHNOLOGY',
+                             'MODE_OF_OPERATION',
+                             'YEAR'],
+                            as_index=False)['VALUE'].sum()
+    df_var['VALUE'] = df_var['VALUE'].round(2)
+    df_var.rename(columns={'VALUE':'VAR'},
+                  inplace=True)
+    print(df_var)
         
     return df.to_csv(os.path.join(scenario_result_summaries_dir,
                                   'SystemCostByNode.csv'
                                   ),
                      index=None
                      )
+'''
+def emissions
+'''   
 
+'''
+def fuel_use():
+    # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+    config = ConfigFile('config')
+    #scenario_results_dir = config_paths.scenario_results_dir
+    scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/results'
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+    #scenario_data_dir = config_paths.scenario_data_dir
+    scenario_data_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/data'
+    input_data_dir = config_paths.input_data_dir
+    
+    
+    
+'''
     
 
 if __name__ == '__main__':
