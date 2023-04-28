@@ -753,21 +753,21 @@ def apply_timeshift(x, timeshift):
         return x
 
 '''
-    - Total system costs for each node [$]
+    + Total system costs for each node [$]
     + Existing, new and decommissioned capacity in electricity generation, 
     storage, and transmission technology for each year and node [GW (and GWh in 
     the case of storage)]
-    - Electricity generation, charge and discharge and trade by technology for 
+    + Electricity generation, charge and discharge and trade by technology for 
     each year and node [GWh]
-    - Emissions of each fossil generation technology for each year and node [tCO2]
-    - Implicit electricity price for each year and node [$/MWh]
+    + Emissions of each fossil generation technology for each year and node [tCO2]
+    x Implicit electricity price for each year and node [$/MWh]
     x Implicit carbon price [$/t]
     x Share in electricity production and generation capacity [%]
     + Investment volumes by technology [$]
-    - Energetic storage losses node and technology [GWh]
+    x Energetic storage losses node and technology [GWh]
     - Capacity factors by node and technology [%]
     - Curtailment by node and technology [GWh]
-    - Fossil fuel consumption [t for coal, bcf for gas]
+    + Fossil fuel consumption [t for coal, bcf for gas]
     x Early decommissioning of fossil generation [GW]
 '''
 
@@ -775,15 +775,17 @@ def system_cost_by_node():
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()
     config = ConfigFile('config')
-    #scenario_results_dir = config_paths.scenario_results_dir
-    scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/results'
+    scenario_results_dir = config_paths.scenario_results_dir
+    #scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/results'
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
-    #scenario_data_dir = config_paths.scenario_data_dir
-    scenario_data_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/data'
+    #scenario_result_summaries_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/result_summaries'
+    scenario_data_dir = config_paths.scenario_data_dir
+    #scenario_data_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/data'
     input_data_dir = config_paths.input_data_dir
     
     penalty = config.get('emission_penalty')
     
+    '''
     df = pd.read_csv(os.path.join(scenario_data_dir,
                                   'TECHNOLOGY.csv'))
     df.rename(columns = {'VALUE': 'TECHNOLOGY'},
@@ -791,78 +793,215 @@ def system_cost_by_node():
     
     df['VALUE'] = 0
     df.set_index('TECHNOLOGY', inplace=True)
-        
-    # System cost
+    '''
+    df = pd.DataFrame(columns=['TECHNOLOGY','YEAR','VALUE'])
+    
+    # System costs by node
+    
+    # Investment costs
     df_inv = pd.read_csv(os.path.join(scenario_results_dir,
                                       'CapitalInvestment.csv'
                                       ))
+    df_inv = df_inv[~(df_inv['TECHNOLOGY'].str.startswith('MIN')) &
+                    ~(df_inv['TECHNOLOGY'].str.startswith('RNW')) &
+                    ~(df_inv['TECHNOLOGY'].str.startswith('TRN'))]
+    
+    # Storage costs
+    df_sto = pd.read_csv(os.path.join(scenario_results_dir,
+                                      'NewStorageCapacity.csv'
+                                      ))
+    df_sto_cost = pd.read_csv(os.path.join(scenario_data_dir,
+                                      'CapitalCostStorage.csv'
+                                      ))
+    df_sto_cost.rename(columns={'VALUE':'COST'},
+                       inplace=True)
+    
+    df_sto = pd.merge(df_sto, df_sto_cost,
+                      on=['REGION','STORAGE', 'YEAR'],
+                      how='left')
+    df_sto['VALUE'] = df_sto['VALUE'] * df_sto_cost['COST']
+    df_sto['STORAGE'] = 'PWR' + df_sto['STORAGE']
+    df_sto.rename(columns={'STORAGE':'TECHNOLOGY'},
+                  inplace=True)
+    df_sto = df_sto[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    
+    # Fixed O&M
     df_fom = pd.read_csv(os.path.join(scenario_results_dir,
                                       'AnnualFixedOperatingCost.csv'
                                       ))
+    
+    # Variable O&M
     df_vom = pd.read_csv(os.path.join(scenario_results_dir,
                                       'AnnualVariableOperatingCost.csv'
                                       ))
+    df_vom = df_vom[~(df_vom['TECHNOLOGY'].str.startswith('MIN'))]
+    
+    # Emissions penalty
     df_emi = pd.read_csv(os.path.join(scenario_results_dir,
                                       'AnnualTechnologyEmission.csv'
                                       ))
     df_emi['VALUE'] = df_emi['VALUE']*penalty
     
-    for each_df in [df_inv, df_fom, df_vom, df_emi]:
+    for each_df in [df_inv, df_fom, df_vom, df_sto]:
+        '''
         each_df = each_df[['TECHNOLOGY',
                            'YEAR',
                            'VALUE']].fillna(0)
         each_df.set_index(['TECHNOLOGY', 'YEAR'], inplace=True)
         df = df.add(each_df, fill_value=0)
+        '''
+        df = pd.concat([df, each_df])
+    
+    df = df.groupby(['TECHNOLOGY','YEAR'],
+                    as_index=False)['VALUE'].sum()
     
     df.reset_index(inplace=True)
-    df = df[~(df['TECHNOLOGY'].str.startswith('MIN')) & 
-            ~(df['TECHNOLOGY'].str.startswith('RNW')) &
-            ~(df['TECHNOLOGY'].str.startswith('TRN'))]
+    #df = df[~(df['TECHNOLOGY'].str.startswith('MIN')) & 
+    #        ~(df['TECHNOLOGY'].str.startswith('RNW')) &
+    #        ~(df['TECHNOLOGY'].str.startswith('TRN'))]
     df['NODE'] = df['TECHNOLOGY'].str[6:11]
+    df = df.groupby(['NODE',
+                     'YEAR'],
+                    as_index=False)['VALUE'].sum()
     #df = df[['NODE',
     #         'VALUE']]
     
     # Summarise UseByTechnologyAnnual for all powerplants
     df_use = pd.read_csv(os.path.join(scenario_results_dir,
-                                      'UseByTechnology.csv'
+                                      'TotalAnnualTechnologyActivityByMode.csv'
                                       ))
-    df_use = df_use.groupby(['TECHNOLOGY',
-                             'FUEL',
-                             'YEAR'],
+    df_use = df_use.groupby(['TECHNOLOGY', 'MODE_OF_OPERATION', 'YEAR'],
                             as_index=False)['VALUE'].sum()
     df_use = df_use.loc[(df_use['TECHNOLOGY'].str.startswith('PWR')) & 
                         ~(df_use['TECHNOLOGY'].str.startswith('PWRBAT')) &
                         ~(df_use['TECHNOLOGY'].str.startswith('PWRTRN'))]
-    df_use['VALUE'] = df_use['VALUE'].round(2)
-    df_use.rename(columns={'VALUE':'USE'},
-                  inplace=True)
-    print(df_use)
+    df_use['VALUE'] = df_use['VALUE'].round(4)
     
+    # Get InputActivityRatios to calculate use by mode of operation
+    df_iar = pd.read_csv(os.path.join(scenario_data_dir,
+                                      'InputActivityRatio.csv'
+                                      ))
+    df_iar = df_iar[['TECHNOLOGY','FUEL','MODE_OF_OPERATION','YEAR','VALUE']]
+    df_iar.rename(columns={'VALUE':'IAR'},
+                  inplace=True)
+    
+    # Calculate use from activity and IAR for each technology
+    df_use = pd.merge(df_use, df_iar,
+                      on=['TECHNOLOGY', 'MODE_OF_OPERATION', 'YEAR'],
+                      how='left')
+    df_use['USE'] = df_use['VALUE']*df_use['IAR'] 
+    
+    # Get OutputActivityRatio to get fuel costs
     df_oar = pd.read_csv(os.path.join(scenario_data_dir,
                                       'OutputActivityRatio.csv'
                                       ))
-    df_oar = df_oar.groupby(['TECHNOLOGY',
-                             'FUEL',
-                             'MODE_OF_OPERATION',
-                             'YEAR'],
-                            as_index=False)['VALUE'].sum()
     df_oar = df_oar[['TECHNOLOGY',
                      'FUEL',
                      'MODE_OF_OPERATION',
                      'YEAR']]
-    print(df_oar)
     
+    # Get VAR for each technology
     df_var = pd.read_csv(os.path.join(scenario_data_dir,
                                       'VariableCost.csv'
                                       ))
-    df_var = df_var.groupby(['TECHNOLOGY',
-                             'MODE_OF_OPERATION',
-                             'YEAR'],
-                            as_index=False)['VALUE'].sum()
+    df_var = df_var[['TECHNOLOGY',
+                     'MODE_OF_OPERATION',
+                     'YEAR',
+                     'VALUE']]
     df_var['VALUE'] = df_var['VALUE'].round(2)
     df_var.rename(columns={'VALUE':'VAR'},
                   inplace=True)
-    print(df_var)
+    
+    # Get EAR for each technology
+    df_ear = pd.read_csv(os.path.join(scenario_data_dir,
+                                      'EmissionActivityRatio.csv'
+                                      ))
+    df_ear = df_ear[['TECHNOLOGY',
+                     'MODE_OF_OPERATION',
+                     'YEAR',
+                     'VALUE']]
+    df_ear['VALUE'] = df_ear['VALUE'].round(4)
+    df_ear.rename(columns={'VALUE':'EAR'},
+                  inplace=True)
+    
+    # Combine VAR and EAR for each technology
+    df_var_ear = pd.merge(df_var, df_ear,
+                          on=['TECHNOLOGY', 'MODE_OF_OPERATION', 'YEAR'],
+                          how='outer')
+    
+    # Get fuel for each MIN technology from OAR 
+    df_var_ear_oar = pd.merge(df_oar, df_var_ear,
+                              on=['TECHNOLOGY', 'MODE_OF_OPERATION', 'YEAR'],
+                              how='left')
+    df_var_ear_oar = df_var_ear_oar[['FUEL', 'YEAR', 'VAR', 'EAR']].drop_duplicates().dropna()
+    
+    # Consolidate all data in single table (VAR, OAR, EAR, USE)
+    df_all = pd.merge(df_use, df_var_ear_oar,
+                      on=['FUEL', 'YEAR'],
+                      how='outer')
+    
+    df_all['FUEL_COST'] = df_all['USE']*df_all['VAR'] 
+    df_all['EMISSIONS'] = df_all['USE']*df_all['EAR']
+    df_all.dropna(inplace=True) 
+    df_all = df_all[df_all['TECHNOLOGY'].str.startswith('PWR')]
+    df_all['LABEL'] = df_all['TECHNOLOGY'].str[3:6]
+    df_all['NODE'] = df_all['TECHNOLOGY'].str[6:11]
+    
+    # Calculate summary tables
+    df_fuel_cost = df_all.groupby(['NODE','LABEL','YEAR'],
+                                  as_index=False)['FUEL_COST'].sum()
+    df_fuel_cost = df_fuel_cost[df_fuel_cost['FUEL_COST'] > 0]
+    
+    
+    df_emissions = df_all.groupby(['NODE','LABEL','YEAR'],
+                                  as_index=False)['EMISSIONS'].sum()
+    df_emissions = df_emissions[~(df_emissions['LABEL'].str.startswith('CCS'))]
+    df_emissions = df_emissions[df_emissions['EMISSIONS'] > 0]
+    df_emissions.to_csv(os.path.join(scenario_result_summaries_dir,
+                                     'AnnualEmissionsByNode.csv'
+                                     ),
+                        index=None
+                        )
+    df_emissions['PENALTY'] = df_emissions['EMISSIONS'] * penalty
+    
+    
+    df_fuel_use = df_all.groupby(['NODE','LABEL'],
+                                  as_index=False)['USE'].sum()
+    df_fuel_use = df_fuel_use[df_fuel_use['LABEL'].isin(['COA',
+                                                         'CCG',
+                                                         'OCG'])]
+    df_fuel_use['LABEL'] = df_fuel_use['LABEL'].replace(['CCG','OCG'], 'GAS')
+    df_fuel_use = df_fuel_use.groupby(['NODE','LABEL'],
+                                      as_index=False)['USE'].sum()
+    df_fuel_use = df_fuel_use[df_fuel_use['USE'] > 0]
+    df_fuel_use = df_fuel_use.pivot(index='NODE',
+                                    columns='LABEL',
+                                    values='USE').reset_index().fillna(0)
+    df_fuel_use['COA'] = df_fuel_use['COA'] / 19 # Energy content of 19 MJ/kg
+    df_fuel_use['GAS'] = df_fuel_use['GAS'] * 0.9478 # PJ to bcf of Natural Gas
+    df_fuel_use.to_csv(os.path.join(scenario_result_summaries_dir,
+                                    'FuelUse.csv'
+                                    ),
+                       index=None
+                       )
+    
+    df_fuel_cost = df_fuel_cost.groupby(['NODE','YEAR'],
+                                        as_index=False)['FUEL_COST'].sum()
+    df = pd.merge(df, df_fuel_cost,
+                  on=['NODE', 'YEAR'],
+                  how='outer')
+    
+    df_emi_pen = df_emissions.groupby(['NODE','YEAR'],
+                                      as_index=False)['PENALTY'].sum()
+    df = pd.merge(df, df_emi_pen,
+                  on=['NODE', 'YEAR'],
+                  how='outer')
+    df.fillna(0,
+              inplace=True)
+    df['SYSTEM_COST'] = df['VALUE'] + df['FUEL_COST'] + df['PENALTY']
+    df = df.groupby(['NODE'],
+                    as_index=False)['SYSTEM_COST'].sum()
+        
         
     return df.to_csv(os.path.join(scenario_result_summaries_dir,
                                   'SystemCostByNode.csv'

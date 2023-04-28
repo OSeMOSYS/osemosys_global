@@ -76,6 +76,14 @@ osemosys\_global.OPG\_variablecosts module
    :undoc-members:
    :show-inheritance:
 
+osemosys\_global.feo\_alias\_api module
+---------------------------------------
+
+.. automodule:: osemosys_global.feo_alias_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 osemosys\_global.feo\_legacy\_power module
 ------------------------------------------
 

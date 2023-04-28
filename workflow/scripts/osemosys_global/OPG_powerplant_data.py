@@ -1556,6 +1556,8 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
             for each_year in years:
                 if row['YEAR'] == each_year:
                     value = row['VALUE']
+                if row['YEAR'] > each_year:
+                    value = 0
                 else:
                     if tech_capacity_dict[row['TECHNOLOGY']] in ['open']:
                         value = np.nan
