@@ -21,4 +21,5 @@ the table and map below - as individual nodes.
 
 ![IDN_provinces](./figures/Indonesia_provinces_english.png "Indonesia provinces")
 
+** Indonesia provinces represented individually in FEO**
 {{ read_csv('./tables/provinces.csv') }}
