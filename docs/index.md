@@ -14,7 +14,7 @@ subset of the globe. It is built using the fully open-source
 ```{toctree}
 :maxdepth: 3
 
-1_indonesia
+feo-esmod-osemosys/docs/1_indonesia.md
 ```
 
 <!---
