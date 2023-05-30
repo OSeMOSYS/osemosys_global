@@ -20,3 +20,5 @@ The model represents all 34 provinces of Indonesia across 7 regions - shown in
 the table and map below - as individual nodes. 
 
 ![IDN_provinces](./figures/Indonesia_provinces_english.png "Indonesia provinces")
+
+{{ read_csv('./tables/provinces.csv') }}

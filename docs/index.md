@@ -10,13 +10,6 @@ subset of the globe. It is built using the fully open-source
 ![Geographic scope](./figures/osemosys-global.png "Geographic scope")
 
 
-## Contents
-```{toctree}
-:maxdepth: 3
-
-feo-esmod-osemosys/docs/1_indonesia.md
-```
-
 <!---
 ## Indices and tables
 
