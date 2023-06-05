@@ -1,37 +1,68 @@
 import pandas as pd
 import itertools
 import os
+import sys
 from pathlib import Path
 from typing import Dict
 from osemosys_global.configuration import ConfigFile, ConfigPaths
 from osemosys_global.visualisation.utils import transform_ts, powerplant_filter
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift
+
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
 pd.set_option('mode.chained_assignment', None)
 
 
-def main():
-    '''Creates summaries of results'''
+def main(input_dir: str, results_dir: str, summary_results_dir: int, start_year: int, 
+         end_year: int, seasons: Dict, dayparts: Dict, daytype: bool, timeshift: int,):
+    """Creates summaries of results
+    
+    Args:
+        input_dir: str
+            Path to scenario/data folder 
+        results_dir: str
+            Path to results/data folder
+        summary_results_dir: int
+            Path to results/summary/ folder
+        start_year: int
+            Start year of demand 
+        end_year: int
+            End year of demand 
+        seasons: Dict
+            season definition 
+        dayparts: Dict
+            daypart definition 
+        daytype: bool
+            Not implemented yet. Set to False
+        timeshift: int
+            value between -11 and 12
+    """
 
-    config_paths = ConfigPaths()
-    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+    # set path variables
+    INPUT_DATA = read_data(Path(input_dir))
+    RESULTS_DATA= read_data(Path(results_dir))
+    SUMMARY_DIR = Path(summary_results_dir)
+    DAYPARTS = dayparts
+    SEASONS = seasons
+    DAYTYPE = daytype
+    TIMESHIFT = timeshift
+    START_YEAR = start_year
+    END_YEAR = start_year
 
     # Check for output directory
     try:
-        os.makedirs(scenario_result_summaries_dir)
+        os.makedirs(SUMMARY_DIR)
     except FileExistsError:
         pass
-    
-    input_data = read_data(config_paths.scenario_data_dir)
-    result_data = read_data(config_paths.scenario_results_dir)
-    save_dir = config_paths.scenario_result_summaries_dir
 
     # SUMMARISE RESULTS
-    headline_metrics(input_data, result_data, save_dir)
-    capacity_summary(input_data, result_data, save_dir)
-    generation_summary(input_data, result_data, save_dir)
-    generation_by_node_summary(input_data, result_data, save_dir)
-    trade_flows(input_data, result_data, save_dir)
+    headline_metrics(INPUT_DATA, RESULTS_DATA, SUMMARY_DIR)
+    capacity_summary(INPUT_DATA, RESULTS_DATA, SUMMARY_DIR)
+    generation_summary(INPUT_DATA, RESULTS_DATA, SUMMARY_DIR)
+    generation_by_node_summary(RESULTS_DATA, SUMMARY_DIR, START_YEAR, END_YEAR, SEASONS, DAYPARTS, TIMESHIFT)
+    trade_flows(INPUT_DATA, RESULTS_DATA, SUMMARY_DIR)
 
 
 def renewables_filter(df):
@@ -183,7 +214,8 @@ def generation_summary(input_data: Dict[str,pd.DataFrame], result_data: Dict[str
     return df_generation.to_csv(os.path.join(save_dir,'Generation.csv'),index=None)
 
 
-def generation_by_node_summary(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str):
+def generation_by_node_summary(result_data: Dict[str,pd.DataFrame], save_dir: str, start_year: int, 
+         end_year: int, seasons: Dict, dayparts: Dict, timeshift: int,):
     """Generation Summary Metrics by Node
     
     Arguments:
@@ -193,34 +225,42 @@ def generation_by_node_summary(input_data: Dict[str,pd.DataFrame], result_data: 
             Internal datastore for results
         save_dir: str
             Location to save table
+        start_year: int
+            Start year of demand 
+        end_year: int
+            End year of demand 
+        seasons: Dict
+            season definition 
+        dayparts: Dict
+            daypart definition 
+        timeshift: int
+            value between -11 and 12
     """
-    config = ConfigFile('config')
+    years = range(start_year, end_year+1)
 
-    # Generation
-    df_gen_by_node = result_data["ProductionByTechnology"]
     # GET TECHS TO PLOT
-    generation = list(df_gen_by_node.TECHNOLOGY.unique())
-    df_gen_by_node['NODE'] = (df_gen_by_node['TECHNOLOGY'].str[6:11])
-    df_gen_by_node = powerplant_filter(df_gen_by_node, country=None)
+    prod_by_tech = result_data["ProductionByTechnology"]
+    generation = list(prod_by_tech.TECHNOLOGY.unique())
+    prod_by_tech['NODE'] = (prod_by_tech['TECHNOLOGY'].str[6:11])
+    prod_by_tech = powerplant_filter(prod_by_tech, country=None)
 
     # GET TIMESLICE DEFINITION
 
-    seasons_raw = config.get('seasons')
     seasonsData = []
 
-    for s, months in seasons_raw.items():
+    for s, months in seasons.items():
         for month in months:
             seasonsData.append([month, s]) 
     seasons_df = pd.DataFrame(seasonsData, 
                               columns=['month', 'season'])
     seasons_df = seasons_df.sort_values(by=['month']).reset_index(drop=True)
-    dayparts_raw = config.get('dayparts')
+
     daypartData = []
-    for dp, hr in dayparts_raw.items():
+    for dp, hr in dayparts.items():
         daypartData.append([dp, hr[0], hr[1]])
     dayparts_df = pd.DataFrame(daypartData,
                                columns=['daypart', 'start_hour', 'end_hour'])
-    timeshift = config.get('timeshift')
+
     dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
     dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
 
@@ -236,8 +276,6 @@ def generation_by_node_summary(input_data: Dict[str,pd.DataFrame], result_data: 
                          )
                      )
     seasons_df['days'] = seasons_df['season'].map(days_dict)
-
-    years = config.get_years()
 
     seasons_dict = dict(zip(list(seasons_df['month']),
                             list(seasons_df['season'])
@@ -293,29 +331,29 @@ def generation_by_node_summary(input_data: Dict[str,pd.DataFrame], result_data: 
 
     df_ts_template = df_ts_template.drop_duplicates()
 
-    df_gen_by_node['SEASON'] = df_gen_by_node['TIMESLICE'].str[0:2]
-    df_gen_by_node['DAYPART'] = df_gen_by_node['TIMESLICE'].str[2:]
-    df_gen_by_node['YEAR'] = df_gen_by_node['YEAR'].astype(int)
-    df_gen_by_node.drop(['REGION', 'TIMESLICE'],
+    prod_by_tech['SEASON'] = prod_by_tech['TIMESLICE'].str[0:2]
+    prod_by_tech['DAYPART'] = prod_by_tech['TIMESLICE'].str[2:]
+    prod_by_tech['YEAR'] = prod_by_tech['YEAR'].astype(int)
+    prod_by_tech.drop(['REGION', 'TIMESLICE'],
                         axis=1,
                         inplace=True)
 
-    df_gen_by_node = pd.merge(df_gen_by_node,
+    prod_by_tech = pd.merge(prod_by_tech,
                               df_ts_template,
                               how='left',
                               on=['LABEL', 'SEASON', 'DAYPART', 'YEAR']).dropna()
-    df_gen_by_node['HOUR_COUNT'] = df_gen_by_node['DAYPART'].map(hours_dict)
-    df_gen_by_node['VALUE'] = (df_gen_by_node['VALUE'].mul(1e6))/(df_gen_by_node['DAYS']*df_gen_by_node['HOUR_COUNT'].mul(3600))
+    prod_by_tech['HOUR_COUNT'] = prod_by_tech['DAYPART'].map(hours_dict)
+    prod_by_tech['VALUE'] = (prod_by_tech['VALUE'].mul(1e6))/(prod_by_tech['DAYS']*prod_by_tech['HOUR_COUNT'].mul(3600))
 
-    df_gen_by_node = df_gen_by_node.pivot_table(index=['MONTH', 'HOUR', 'YEAR', 'NODE'],
+    prod_by_tech = prod_by_tech.pivot_table(index=['MONTH', 'HOUR', 'YEAR', 'NODE'],
                                               columns='LABEL',
                                               values='VALUE',
                                               aggfunc='sum').reset_index().fillna(0)
 
-    df_gen_by_node['MONTH'] = pd.Categorical(df_gen_by_node['MONTH'],
+    prod_by_tech['MONTH'] = pd.Categorical(prod_by_tech['MONTH'],
                                             categories=months,
                                             ordered=True)
-    df_gen_by_node = df_gen_by_node.sort_values(by=['MONTH', 'HOUR'])
+    prod_by_tech = prod_by_tech.sort_values(by=['MONTH', 'HOUR'])
     '''
     df_generation = pd.melt(df_generation,
                             id_vars=['MONTH', 'HOUR', 'YEAR', 'NODE'],
@@ -323,11 +361,11 @@ def generation_by_node_summary(input_data: Dict[str,pd.DataFrame], result_data: 
                                         if x not in ['MONTH', 'HOUR', 'YEAR', 'NODE']],
                             value_name='VALUE')
     '''
-    cols_round = [x for x in df_gen_by_node.columns
+    cols_round = [x for x in prod_by_tech.columns
                   if x not in ['MONTH', 'HOUR', 'YEAR', 'NODE']]
-    df_gen_by_node[cols_round] = df_gen_by_node[cols_round].round(2)
+    prod_by_tech[cols_round] = prod_by_tech[cols_round].round(2)
 
-    return df_gen_by_node.to_csv(os.path.join(save_dir,'Generation_By_Node.csv'),index=None)
+    return prod_by_tech.to_csv(os.path.join(save_dir,'Generation_By_Node.csv'),index=None)
 
 def trade_flows(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str):
     """Trade flow Summary Metrics
@@ -506,4 +544,14 @@ def read_data(dirpath: str) -> Dict[str,pd.DataFrame]:
     return data
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 4:
+        print("Usage: python summarise_results.py <input/data/dir> <results/data/dir> <summary/results/dir>")
+        logging.info('Timeslice Data Creation Failed')
+    else:
+        
+        main(
+            sys.argv[1], 
+            sys.argv[2], 
+            sys.argv[3]
+        )
+        logging.info('Timeslice Data Creation Completed')
