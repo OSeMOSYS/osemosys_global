@@ -1532,6 +1532,12 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         df_min_cap_inv = apply_dtypes(df_min_cap_inv, "TotalAnnualMinCapacityInvestment")
         df_max_cap_inv = apply_dtypes(df_max_cap_inv, "TotalAnnualMaxCapacityInvestment")
         
+        # case where no invest technologies and user_defined_technologies are defined
+        df_min_cap_inv = df_min_cap_inv.drop_duplicates(
+            ["REGION", "TECHNOLOGY", "YEAR"], keep="last")
+        df_max_cap_inv = df_max_cap_inv.drop_duplicates(
+            ["REGION", "TECHNOLOGY", "YEAR"], keep="last")
+        
         df_max_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMaxCapacityInvestment.csv"),
                             index=None)
