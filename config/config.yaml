@@ -7,12 +7,8 @@ endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [0, 4]
-  D2: [4, 8]
-  D3: [8, 12]
-  D4: [12, 16]
-  D5: [16, 20]
-  D6: [20, 24]
+  D1: [0, 12]
+  D2: [12, 24]
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
   S1: [1, 2, 3, 10, 11, 12]
@@ -46,12 +42,14 @@ no_invest_technologies:
   - 'WAS'
 #  - 'COA'
   - 'COG' 
+  - 'GEO'
+  - 'CCS'
 
 # Result Parameters 
 results_by_country: True
 
 # solver parameters
-solver: 'cbc' # cbc, cplex, gurobi
+solver: 'gurobi' # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, first_year, 'fixed/open']
@@ -99,45 +97,82 @@ nodes_to_add:
  # and XX is a 2-letter sub-regional node code. 
  # E.g. - 'IDNSM' for a sub-regional node in Sumatra, Indonesia.
  # - 'IDNSM'
- - 'IDNSA'
- - 'IDNMA'
- - 'IDNJK' 
- - 'IDNBT' 
- - 'IDNJB'
- - 'IDNJI'
- - 'IDNRI'
- - 'IDNMU'
- - 'IDNSU'
- - 'IDNLA'
- - 'IDNKB'
- - 'IDNKS'
- - 'IDNKI'
- - 'IDNJT'
- - 'IDNSN'
- - 'IDNAC'
- - 'IDNSS'
- - 'IDNKT'
- - 'IDNKU'
- - 'IDNYO'
- - 'IDNST'
- - 'IDNJA'
- - 'IDNNB'
- - 'IDNBA'
- - 'IDNSB'
- - 'IDNSG' 
- - 'IDNNT'
- - 'IDNBB'
- - 'IDNPB'
- - 'IDNPA'
- - 'IDNGO'
- - 'IDNKR'
- - 'IDNBE'
- - 'IDNSR'
+  - 'IDNAC'
+  - 'IDNBA'
+  - 'IDNBB'
+  - 'IDNBE'
+  - 'IDNBT'
+  - 'IDNGO'
+  - 'IDNJA'
+  - 'IDNJB'
+  - 'IDNJI'
+  - 'IDNJK'
+  - 'IDNJT'
+  - 'IDNKB'
+  - 'IDNKI'
+  - 'IDNKR'
+  - 'IDNKS'
+  - 'IDNKT'
+  - 'IDNKU'
+  - 'IDNLA'
+  - 'IDNMA'
+  - 'IDNMU'
+  - 'IDNNB'
+  - 'IDNNT'
+  - 'IDNPA'
+  - 'IDNPB'
+  - 'IDNRI'
+  - 'IDNSA'
+  - 'IDNSB'
+  - 'IDNSG'
+  - 'IDNSN'
+  - 'IDNSS'
+  - 'IDNST'
+  - 'IDNSU'
+  - 'IDNYO'
+  - 'IDNSR'
+  - 'VNMNE'
+  - 'VNMNW'
+  - 'VNMRR'
+  - 'VNMNC'
+  - 'VNMSC'
+  - 'VNMCH'
+  - 'VNMSE'
+  - 'VNMME'
+  - 'MYSNO'
+  - 'MYSCE'
+  - 'MYSEA'
+  - 'MYSSO'
+  - 'MYSSH'
+  - 'MYSSK'
+  - 'PHLLU'
+  - 'PHLVI'
+  - 'PHLMI'
+  - 'LAONO'
+  - 'LAOCE'
+  - 'LAOSO'
+  - 'THANE'
+  - 'THANO'
+  - 'THACE'
+  - 'THASO'
+  - 'KHMXX'
+  - 'SGPXX'
+  - 'BRNXX'
+  - 'MMRNO'
+  - 'MMRCE'
+  - 'MMRSO'
 
 nodes_to_remove:
 #- 'AAAXX' where AAA is a 3-letter country code, and XX is a 2-letter 
 # sub-national code
  - 'IDNXX'
+ - 'VNMXX'
+ - 'MYSXX'
+ - 'PHLXX'
+ - 'THAXX'
+ - 'LAOXX'
+ - 'MMRXX'
+
 
 powerplant_build_rates:
  # TECHNOLOGY_TYPE: [METHOD, VALUE, START_YEAR, END_YEAR, METHOD]
@@ -175,8 +210,8 @@ powerplant_build_rates:
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
- RM1: [60, 2020, 2029]
- RM2: [35, 2030, 2050]
+ RM1: [15, 2020, 2029]
+ RM2: [15, 2030, 2050]
 
 emission_limit:
 # EMISSION_LIMIT: [VALUE, YEAR]

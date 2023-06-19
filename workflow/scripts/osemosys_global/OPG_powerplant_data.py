@@ -377,6 +377,9 @@ def main():
         df_res_cap = df_res_cap.append(df_res_cap_custom)
 
     # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
+    df_res_cap.drop_duplicates(subset=['REGION','TECHNOLOGY','YEAR'],
+                               keep='last',
+                               inplace=True)
     df_res_cap.to_csv(os.path.join(output_data_dir, 
                                    "ResidualCapacity.csv"),
                       index=None)
@@ -745,6 +748,7 @@ def main():
     
     df_iar.loc[df_iar['VALUE'].isna(),
                'VALUE'] = df_iar['tech_average_iar']
+    df_iar.drop_duplicates(inplace=True)
 
     # Add 'REGION' column and fill 'GLOBAL' throughout
     df_iar['REGION'] = region_name
@@ -999,6 +1003,7 @@ def main():
     df_oar_final = df_oar_final.append(df_oar_newTechs, ignore_index=True)
 
     #df_oar_final.to_csv(r"osemosys_global_model/data/OutputActivityRatio.csv", index = None)
+    df_oar_final.drop_duplicates(inplace=True)
     df_oar_final.to_csv(os.path.join(output_data_dir,
                                      "OutputActivityRatio.csv"),
                         index=None)
@@ -1647,9 +1652,12 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         
         df_iar = pd.concat([df_iar, df_iar_custom])
         df_oar = pd.concat([df_oar, df_oar_custom])
+        
+        df_iar.drop_duplicates(inplace=True)
         df_iar.to_csv(os.path.join(output_data_dir,
                                    'InputActivityRatio.csv'),
                       index=None)
+        df_oar.drop_duplicates(inplace=True)
         df_oar.to_csv(os.path.join(output_data_dir,
                                    'OutputActivityRatio.csv'),
                       index=None)

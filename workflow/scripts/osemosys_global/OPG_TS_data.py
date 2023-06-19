@@ -407,7 +407,9 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
                                          'TIMESLICE',
                                          'YEAR', 
                                          'VALUE']]
-
+sp_demand_df_final.drop_duplicates(subset=['REGION','TIMESLICE','FUEL','YEAR'],
+                                   keep='last',
+                                   inplace=True)
 sp_demand_df_final.to_csv(os.path.join(output_data_dir,'SpecifiedDemandProfile.csv'), index=None)
 
 # ### CapacityFactor
@@ -504,7 +506,10 @@ def capacity_factor(df):
 for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
     capfac_all_df = capfac_all_df.append(capacity_factor(each),
                                          ignore_index = True)
-    
+
+capfac_all_df.drop_duplicates(subset=['REGION','TECHNOLOGY','TIMESLICE','YEAR'],
+                              keep='last',
+                              inplace=True)    
 capfac_all_df.to_csv(os.path.join(output_data_dir, 
                                   'CapacityFactor.csv'),
                      index=None)

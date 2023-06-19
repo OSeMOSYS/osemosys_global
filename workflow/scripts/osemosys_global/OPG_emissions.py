@@ -173,6 +173,7 @@ def get_ear(emission):
     #fuels = techs.map(_TECH_TO_FUEL)
     #df['VALUE'] = fuels.map(co2_factors)
     df['VALUE'] = df['VALUE'].fillna(0)
+    df.drop_duplicates(inplace=True)
     df = df[[
         'REGION', 
         'TECHNOLOGY', 
