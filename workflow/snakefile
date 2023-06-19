@@ -12,6 +12,10 @@ include: 'rules/preprocess.smk'
 include: 'rules/model.smk'
 include: 'rules/postprocess.smk'
 
+# constants 
+
+OTOOLE_FILES = os.listdir('resources/otoole/data')
+
 # handlers 
         
 onsuccess:

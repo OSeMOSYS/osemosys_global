@@ -807,23 +807,28 @@ def system_cost_by_node():
                     ~(df_inv['TECHNOLOGY'].str.startswith('TRN'))]
     
     # Storage costs
-    df_sto = pd.read_csv(os.path.join(scenario_results_dir,
-                                      'NewStorageCapacity.csv'
-                                      ))
-    df_sto_cost = pd.read_csv(os.path.join(scenario_data_dir,
-                                      'CapitalCostStorage.csv'
-                                      ))
-    df_sto_cost.rename(columns={'VALUE':'COST'},
-                       inplace=True)
-    
-    df_sto = pd.merge(df_sto, df_sto_cost,
-                      on=['REGION','STORAGE', 'YEAR'],
-                      how='left')
-    df_sto['VALUE'] = df_sto['VALUE'] * df_sto_cost['COST']
-    df_sto['STORAGE'] = 'PWR' + df_sto['STORAGE']
-    df_sto.rename(columns={'STORAGE':'TECHNOLOGY'},
-                  inplace=True)
-    df_sto = df_sto[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    if os.path.exists(os.path.join(scenario_results_dir,
+                                   'NewStorageCapacity.csv'
+                                   )):
+        df_sto = pd.read_csv(os.path.join(scenario_results_dir,
+                                          'NewStorageCapacity.csv'
+                                          ))
+        df_sto_cost = pd.read_csv(os.path.join(scenario_data_dir,
+                                               'CapitalCostStorage.csv'
+                                               ))
+        df_sto_cost.rename(columns={'VALUE':'COST'},
+                        inplace=True)
+        
+        df_sto = pd.merge(df_sto, df_sto_cost,
+                        on=['REGION','STORAGE', 'YEAR'],
+                        how='left')
+        df_sto['VALUE'] = df_sto['VALUE'] * df_sto_cost['COST']
+        df_sto['STORAGE'] = 'PWR' + df_sto['STORAGE']
+        df_sto.rename(columns={'STORAGE':'TECHNOLOGY'},
+                    inplace=True)
+        df_sto = df_sto[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    else:
+        df_sto = pd.DataFrame(columns=['REGION','TECHNOLOGY','YEAR','VALUE'])
     
     # Fixed O&M
     df_fom = pd.read_csv(os.path.join(scenario_results_dir,
