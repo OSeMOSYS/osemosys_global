@@ -1289,7 +1289,7 @@ def main():
                                    "REGION.csv"),
                       index = None)
 
-    user_defined_capacity(region_name, years, output_data_dir, tech_capacity)
+    user_defined_capacity(region_name, years, output_data_dir, tech_capacity, op_life_dict)
     availability_factor(region_name, years, output_data_dir, df_af)
 
 
@@ -1338,9 +1338,12 @@ def duplicatePlexosTechs(df_in, techs):
         df_out['TECHNOLOGY'] = [PWRCCGAFGXX02, PWROCGAFGXX02]
     """
     df_out = df_in.copy()
-    df_out = df_out.loc[df_out['TECHNOLOGY'].str[3:6].isin(techs)]
-    df_out['TECHNOLOGY'] = df_out['TECHNOLOGY'].str.slice_replace(
-        start=11, stop=13, repl='01')
+    # df_out = df_out.loc[df_out['TECHNOLOGY'].str[3:6].isin(techs)]
+    df_out = df_out.loc[(df_out['TECHNOLOGY'].str[3:6].isin(techs)) & 
+                        ~(df_out['TECHNOLOGY'].str.startswith('MIN'))]
+    df_out['TECHNOLOGY'] = df_out['TECHNOLOGY'].str.slice_replace(start=11,
+                                                                  stop=13,
+                                                                  repl='01')
     return df_out
 
 def createPwrTechs(df_in, techs):
@@ -1513,7 +1516,7 @@ def format_transmission_name(df):
 
     return df
 
-def user_defined_capacity(region, years, output_data_dir, tech_capacity):
+def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life_dict):
     """User-defined capacities are used when a specific technology must be 
     invested, for a given year and capacity. This is applied hrough the 
     parameter 'TotalAnnualMinCapacityInvestment'. 
@@ -1549,12 +1552,12 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
                 tech_set = tech_set.append(pd.DataFrame({'VALUE':[each_tech]}))
 
         df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
-                                                'TotalAnnualMinCapacityInvestment.csv'))
+                                                  'TotalAnnualMinCapacityInvestment.csv'))
         df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
         df_min_cap_inv.drop_duplicates(inplace=True)
 
         df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
-                                                'TotalAnnualMaxCapacityInvestment.csv'))
+                                                  'TotalAnnualMaxCapacityInvestment.csv'))
 
         max_cap_techs = []
         for index, row in tech_capacity_df.iterrows():
@@ -1584,6 +1587,46 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         df_max_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMaxCapacityInvestment.csv"),
                             index=None)
+        # For technologies with start year before model start year, add to 
+        # ResidualCapacity
+        df_res_cap_ud = df_min_cap_inv.loc[df_min_cap_inv['YEAR'] < min(years)]
+        df_res_cap_ud.rename(columns={'YEAR':'START_YEAR'},
+                             inplace=True)
+        df_res_cap_ud_final = pd.DataFrame(list(itertools.product(df_res_cap_ud['TECHNOLOGY'].unique(),
+                                                                  years)
+                                                ),
+                                           columns = ['TECHNOLOGY',
+                                                      'YEAR']
+                                           )
+        df_res_cap_ud_final = pd.merge(df_res_cap_ud_final,
+                                       df_res_cap_ud,
+                                       how='left',
+                                       on=['TECHNOLOGY'])
+        df_res_cap_ud_final['TECH'] = df_res_cap_ud_final['TECHNOLOGY'].str[3:6]
+        df_res_cap_ud_final.loc[df_res_cap_ud_final['TECHNOLOGY'].str.contains('TRN'),
+                                'TECH'] = 'TRN'
+        df_res_cap_ud_final['OP_LIFE'] = df_res_cap_ud_final['TECH'].map(op_life_dict)
+        df_res_cap_ud_final['END_YEAR'] = (df_res_cap_ud_final['OP_LIFE'] 
+                                           + df_res_cap_ud_final['START_YEAR'])
+        df_res_cap_ud_final = df_res_cap_ud_final.loc[df_res_cap_ud_final['YEAR'] 
+                                                      >= df_res_cap_ud_final['START_YEAR']]
+        df_res_cap_ud_final = df_res_cap_ud_final.loc[df_res_cap_ud_final['YEAR'] 
+                                                      <= df_res_cap_ud_final['END_YEAR']]
+        df_res_cap_ud_final['REGION'] = region
+        df_res_cap_ud_final = df_res_cap_ud_final[['REGION',
+                                                   'TECHNOLOGY',
+                                                   'YEAR',
+                                                   'VALUE']]
+        df_res_cap = pd.read_csv(os.path.join(output_data_dir,
+                                              'ResidualCapacity.csv'))
+        df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final])
+        df_res_cap.to_csv(os.path.join(output_data_dir,
+                                       'ResidualCapacity.csv'),
+                          index=None)
+                
+        # For technologies with start year at or after model start year, add to 
+        # TotalAnnualMinCapacityInvestment      
+        df_min_cap_inv = df_min_cap_inv.loc[df_min_cap_inv['YEAR'] >= min(years)]
         df_min_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMinCapacityInvestment.csv"),
                             index=None)

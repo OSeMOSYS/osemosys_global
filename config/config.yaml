@@ -53,29 +53,29 @@ solver: 'gurobi' # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, first_year, 'fixed/open']
-  TRNIDNJKIDNJB: [10, 2021, 'open']
-  TRNIDNJKIDNBT: [10, 2021, 'open']
-  TRNIDNYOIDNJT: [10, 2021, 'open']
-  TRNIDNJIIDNBA: [2, 2021, 'open']
-  TRNIDNJIIDNJT: [4.2, 2021, 'open']
-  TRNIDNJBIDNBT: [10, 2021, 'open']
-  TRNIDNJBIDNJT: [4.2, 2021, 'open']
-  TRNIDNACIDNSU: [2.5, 2021, 'open']
-  TRNIDNSUIDNRI: [0.4, 2021, 'open']
-  TRNIDNSBIDNRI: [2.5, 2021, 'open']
-  TRNIDNRIIDNJA: [2, 2021, 'open']
-  TRNIDNJAIDNSB: [0.544, 2021, 'open']
-  TRNIDNSSIDNBE: [0.5, 2021, 'open']
-  TRNIDNSSIDNLA: [1.5, 2021, 'open']
-  TRNIDNBTIDNSS: [3, 2021, 'open']
-  TRNIDNKBIDNKT: [0.1, 2021, 'open']
-  TRNIDNKTIDNKS: [0.1, 2021, 'open']
-  TRNIDNKSIDNKI: [0.1, 2021, 'open']
-  TRNIDNKIIDNKU: [0.1, 2021, 'open']
-  TRNIDNSAIDNGO: [0.1, 2021, 'open']
-  TRNIDNGOIDNST: [0.1, 2021, 'open']
-  TRNIDNSTIDNSR: [0.1, 2021, 'open']
-  TRNIDNSRIDNSN: [0.1, 2021, 'open']
+  TRNIDNJKIDNJB: [10, 2020, 'open']
+  TRNIDNJKIDNBT: [10, 2020, 'open']
+  TRNIDNYOIDNJT: [10, 2020, 'open']
+  TRNIDNJIIDNBA: [2, 2020, 'open']
+  TRNIDNJIIDNJT: [4.2, 2020, 'open']
+  TRNIDNJBIDNBT: [10, 2020, 'open']
+  TRNIDNJBIDNJT: [4.2, 2020, 'open']
+  TRNIDNACIDNSU: [2.5, 2020, 'open']
+  TRNIDNSUIDNRI: [0.4, 2020, 'open']
+  TRNIDNSBIDNRI: [2.5, 2020, 'open']
+  TRNIDNRIIDNJA: [2, 2020, 'open']
+  TRNIDNJAIDNSB: [0.544, 2020, 'open']
+  TRNIDNSSIDNBE: [0.5, 2020, 'open']
+  TRNIDNSSIDNLA: [1.5, 2020, 'open']
+  TRNIDNBTIDNSS: [3, 2020, 'open']
+  TRNIDNKBIDNKT: [0.1, 2020, 'open']
+  TRNIDNKTIDNKS: [0.1, 2020, 'open']
+  TRNIDNKSIDNKI: [0.1, 2020, 'open']
+  TRNIDNKIIDNKU: [0.1, 2020, 'open']
+  TRNIDNSAIDNGO: [0.1, 2020, 'open']
+  TRNIDNGOIDNST: [0.1, 2020, 'open']
+  TRNIDNSTIDNSR: [0.1, 2020, 'open']
+  TRNIDNSRIDNSN: [0.1, 2020, 'open']
 
   TRNIDNNBIDNNT: [0.1, 2030, 'open']
   TRNIDNBAIDNNB: [0.1, 2030, 'open']
@@ -226,8 +226,8 @@ fuel_limits:
 # Where FUEL is the fuel on which a limit is being applied (e.g. COA), VALUE is
 # the value in Petajoules (PJ), COUNTRY/INTERNATIONAL specific which domestic 
 # fuel (e.g. IDN) or international fuel ('INT') the limit is being applied to, 
-# and YEAR is the year for which the limit is applied. All years between multiple emission 
-# constraints will be interpolated.
+# and YEAR is the year for which the limit is applied. All years between multiple 
+# fuel extraction constraints will be interpolated.
  GAS1: [453, 'IDN', 2024]
  GAS2: [933, 'IDN', 2035]
  GAS3: [933, 'IDN', 2050]
