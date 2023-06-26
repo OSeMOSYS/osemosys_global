@@ -101,7 +101,8 @@ rule solve_lp:
     input:
         lp_file = 'results/{scenario}/{scenario}.lp'
     output:
-        solution = 'results/{scenario}/{scenario}.sol'
+        solution = 'results/{scenario}/{scenario}.sol',
+        duals = 'results/{scenario}/{scenario}.attr'
     params:
         json = 'results/{scenario}/{scenario}.json',
         ilp = 'results/{scenario}/{scenario}.ilp'
@@ -111,7 +112,7 @@ rule solve_lp:
         '''
         if [ {config[solver]} = gurobi ]
         then
-          gurobi_cl Method=2 ResultFile={output.solution} ResultFile={params.json} ResultFile={params.ilp} {input.lp_file}
+          gurobi_cl Method=2 ResultFile={output.solution} ResultFile={output.duals} ResultFile={params.json} ResultFile={params.ilp} {input.lp_file}
         elif [ {config[solver]} = cplex ]
         then
           cplex -c "read {input.lp_file}" "optimize" "write {output.solution}"

@@ -201,20 +201,23 @@ def apply_build_rates(region, years, output_data_dir, max_build):
         for tech, tech_params in max_build.items():
             '''
             max_build_list.append([tech,            # TECHNOLOGY_TYPE
-                                   tech_params[0],  # METHOD: 'PCT'/'ABS'
-                                   tech_params[1],  # VALUE
-                                   tech_params[2],  # START_YEAR
-                                   tech_params[3]]) # END_YEAR
+                                   tech_params[0]   # COUNTRY
+                                   tech_params[1],  # METHOD: 'PCT'/'ABS'
+                                   tech_params[2],  # VALUE
+                                   tech_params[3],  # START_YEAR
+                                   tech_params[4]]) # END_YEAR
             '''
-            max_build_temp = pd.DataFrame(columns=['TYPE', 
+            max_build_temp = pd.DataFrame(columns=['TYPE',
+                                                   'COUNTRY', 
                                                    'METHOD', 
                                                    'MAX_BUILD',
                                                    'YEAR'])
-            max_build_temp['YEAR'] = list(range(tech_params[2],
-                                                tech_params[3]))
+            max_build_temp['YEAR'] = list(range(tech_params[3],
+                                                tech_params[4]))
             max_build_temp['TYPE'] = tech
-            max_build_temp['METHOD'] = tech_params[0]
-            max_build_temp['MAX_BUILD'] = tech_params[1]
+            max_build_temp['COUNTRY'] = tech_params[0]
+            max_build_temp['METHOD'] = tech_params[1]
+            max_build_temp['MAX_BUILD'] = tech_params[2]
             max_build_df = pd.concat([max_build_df, max_build_temp],
                                      ignore_index=True)
             max_build_df['TYPE'] = max_build_df['TYPE'].str[0:3]
@@ -257,9 +260,10 @@ def apply_build_rates(region, years, output_data_dir, max_build):
                               how='left')
         df_max_cap['REGION'] = region
         df_max_cap['TYPE'] = df_max_cap['TECHNOLOGY'].str[3:6]
+        df_max_cap['COUNTRY'] = df_max_cap['TECHNOLOGY'].str[6:9]
         df_max_cap = pd.merge(left=df_max_cap, 
                               right=max_build_df,
-                              on=['TYPE', 'YEAR'],
+                              on=['TYPE', 'COUNTRY', 'YEAR'],
                               how='left')
         df_max_cap.loc[df_max_cap['METHOD'].isin(['ABS']),
                                   'VALUE'] = df_max_cap['MAX_BUILD']
