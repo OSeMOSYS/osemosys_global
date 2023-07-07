@@ -1028,6 +1028,8 @@ def main():
                                 df_costs['India'] + 
                                 df_costs['Japan'] + 
                                 df_costs['Middle East']).div(4)
+    df_costs['SEA_average'] = (df_costs['Indonesia'] + 
+                                df_costs['Vietnam']).div(2)
     df_costs['NA_average'] = (df_costs['United States'])
     df_costs['SA_average'] = (df_costs['Brazil'])
     df_costs['Global_average'] = (df_costs['Africa'] +

@@ -13,6 +13,7 @@ from OPG_configuration import ConfigFile, ConfigPaths
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from mpl_toolkits.basemap import Basemap
+from d3blocks import D3Blocks 
 
 def main():
     '''Creates system level and country level graphs. '''
@@ -32,6 +33,7 @@ def main():
     plot_totalcapacity(country = None)
     plot_generationannual(country = None)
     plot_generation_hourly()
+    #trade_flow_chord()
 
     # If producing by country results, check for folder structure 
     if results_by_country:
@@ -602,6 +604,52 @@ def plot_transmission_flow(year):
                          f'TransmissionFlow{year}.jpg'
                          ), dpi = 500, bbox_inches = 'tight'
             )
+
+def trade_flow_chord():
+    '''Create trade flow diagrams for first and last years'''
+     # CONFIGURATION PARAMETERS
+    config_paths = ConfigPaths()
+
+    # Fix path below to config_paths
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+    
+    df = pd.read_csv(os.path.join(scenario_result_summaries_dir,
+                                  'TradeFlows.csv'))
+    df = df.groupby(['YEAR',
+                     'NODE_1',
+                     'NODE_2'],
+                    as_index=False)['VALUE'].sum()
+    '''df.rename(columns={'NODE_1': 'source',
+                       'NODE_2': 'target',
+                       'VALUE': 'weight'},
+              inplace=True)
+    '''
+    df_max = df[df['YEAR'] == max(df['YEAR'])]
+    
+    df_max.loc[df_max['VALUE'] < 0,
+               'source'] = df_max.loc[df_max['VALUE'] < 0,
+                                      'NODE_2']
+    df_max.loc[df_max['VALUE'] < 0,
+               'target'] = df_max.loc[df_max['VALUE'] < 0,
+                                      'NODE_1']
+    df_max.loc[df_max['VALUE'] >= 0,
+               'source'] = df_max.loc[df_max['VALUE'] >= 0,
+                                      'NODE_1']
+    df_max.loc[df_max['VALUE'] >= 0,
+               'target'] = df_max.loc[df_max['VALUE'] >= 0,
+                                      'NODE_2']
+               
+    df_max['VALUE'] = df_max['VALUE'].abs()
+    df_max.rename(columns={'VALUE': 'weight'},
+                  inplace=True)
+
+    # Initialize
+    d3 = D3Blocks(chart='Chord', frame=False)
+    return d3.chord(df_max, 
+                    title='2050',
+                    filepath=os.path.join(scenario_result_summaries_dir,
+                                          'chord_min.html'))
 
 def apply_timeshift(x, timeshift):
     '''Applies timeshift to organize dayparts.
