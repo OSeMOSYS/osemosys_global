@@ -7,12 +7,18 @@ endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [0, 12]
-  D2: [12, 24]
+  D1: [0, 4]
+  D2: [4, 8]
+  D3: [8, 12]
+  D4: [12, 16]
+  D5: [16, 20]
+  D6: [20, 24]
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 10, 11, 12]
-  S2: [4, 5, 6, 7, 8, 9]
+  S1: [1, 2, 3]
+  S2: [4, 5, 6]
+  S3: [7, 8, 9]
+  S4: [10, 11, 12]
 timeshift: 8 # value between -11 and 12
   
 # Spatial Parameters 
@@ -30,7 +36,10 @@ geographic_scope:
 crossborderTrade: True
 
 # Emission Parameters 
-emission_penalty: 2.1 # M$/MT CO2
+emission_penalty: 
+# - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
+# where VALUE is in M$/MT CO2
+ - ['CO2', 'IDN', 2020, 2050, 2.1]
 
 # Investment Parameters 
 no_invest_technologies: 
@@ -42,8 +51,8 @@ no_invest_technologies:
   - 'WAS'
 #  - 'COA'
   - 'COG' 
-  - 'GEO'
-  - 'CCS'
+#  - 'GEO'
+#  - 'CCS'
 
 # Result Parameters 
 results_by_country: True
@@ -53,6 +62,7 @@ solver: 'gurobi' # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, first_year, 'fixed/open']
+  # Indonesia
   TRNIDNJKIDNJB: [10, 2020, 'open']
   TRNIDNJKIDNBT: [10, 2020, 'open']
   TRNIDNYOIDNJT: [10, 2020, 'open']
@@ -90,6 +100,42 @@ user_defined_capacity:
   TRNIDNMAIDNMU: [0.001, 2030, 'open']
   TRNIDNMUIDNPB: [0.001, 2030, 'open']
   TRNIDNPBIDNPA: [0.001, 2030, 'open']
+
+  # ASEAN Power Grid
+  TRNBRNXXMYSSK: [0.1, 2030, 'open']
+  TRNKHMXXLAOSO: [0.2, 2020, 'open']
+  TRNKHMXXTHACE: [0.23, 2020, 'open']
+  TRNKHMXXVNMME: [0.2, 2020, 'open']
+  TRNLAONOLAOCE: [0.000001, 2020, 'open']
+  TRNLAONOMMRNO: [0.000001, 2030, 'open']
+  TRNLAOCELAOSO: [0.000001, 2020, 'open']
+  TRNLAONOTHANE: [5.427, 2020, 'open']
+  TRNLAOCEVNMNW: [0.538, 2020, 'open']
+  TRNMMRCETHANO: [0.369, 2030, 'open']
+  TRNMMRNOMMRCE: [0.000001, 2020, 'open']
+  TRNMMRCEMMRSO: [0.000001, 2020, 'open']
+  TRNTHANOTHACE: [0.000001, 2020, 'open']
+  TRNTHANETHACE: [0.000001, 2020, 'open']
+  TRNTHACETHASO: [0.000001, 2020, 'open']
+  TRNTHASOMYSNO: [0.3, 2020, 'open']
+  TRNMYSNOMYSCE: [0.000001, 2020, 'open']
+  TRNMYSNOMYSEA: [0.000001, 2020, 'open']
+  TRNMYSCEMYSEA: [0.000001, 2020, 'open']
+  TRNMYSCEMYSSK: [0.000001, 2030, 'open']
+  TRNMYSSKMYSH: [0.000001, 2030, 'open']
+  TRNMYSSOSGPXX: [0.525, 2020, 'open']
+  TRNMYSSHPHLLU: [0.5, 2020, 'open']
+  TRNMYSSHIDNKI: [0.23, 2020, 'open']
+  TRNMYSSKIDNKB: [0.23, 2020, 'open']
+  TRNMYSCEIDNSU: [0.5, 2020, 'open']
+  TRNSGPXXIDNRI: [0.000001, 2030, 'open']
+  TRNSGPXXIDNKR: [0.6, 2030, 'open']
+  TRNVNMNWVNMNC: [0.000001, 2020, 'open']
+  TRNVNMNCVNMSC: [0.000001, 2020, 'open']
+  TRNVNMSCVNMCH: [0.000001, 2020, 'open']
+  TRNVNMSCVNMSE: [0.000001, 2020, 'open']
+  TRNVNMCHVNMSE: [0.000001, 2020, 'open']
+  TRNVNMSEVNMME: [0.000001, 2020, 'open']
 
 nodes_to_add:
  #- 'AAAXX' where AAA is a 3-letter country code, 
@@ -208,6 +254,32 @@ powerplant_build_rates:
 # CCS2: ['ABS', 0.25, 2039, 2051]
 # HYD1: ['ABS', 0, 2020, 2024]
 # HYD2: ['PCT', 20, 2024, 2051]
+  HYD3: ['BRN', 'ABS', 0, 2020, 2051]
+  HYD4: ['KHM', 'ABS', 0, 2020, 2051]
+  HYD5: ['MMR', 'ABS', 0, 2020, 2051]
+  HYD6: ['MYS', 'ABS', 0, 2020, 2051]
+  HYD7: ['LAO', 'ABS', 0, 2020, 2051]
+  HYD8: ['PHL', 'ABS', 0, 2020, 2051]
+  HYD9: ['SGP', 'ABS', 0, 2020, 2051]
+  HYD10: ['VNM', 'ABS', 0, 2020, 2051]
+
+  GEO3: ['BRN', 'ABS', 0, 2020, 2051]
+  GEO4: ['KHM', 'ABS', 0, 2020, 2051]
+  GEO5: ['MMR', 'ABS', 0, 2020, 2051]
+  GEO6: ['MYS', 'ABS', 0, 2020, 2051]
+  GEO7: ['LAO', 'ABS', 0, 2020, 2051]
+  GEO8: ['PHL', 'ABS', 0, 2020, 2051]
+  GEO9: ['SGP', 'ABS', 0, 2020, 2051]
+  GEO10: ['VNM', 'ABS', 0, 2020, 2051]
+
+  WOF3: ['BRN', 'ABS', 0, 2020, 2051]
+  WOF4: ['KHM', 'ABS', 0, 2020, 2051]
+  WOF5: ['MMR', 'ABS', 0, 2020, 2051]
+  WOF6: ['MYS', 'ABS', 0, 2020, 2051]
+  WOF7: ['LAO', 'ABS', 0, 2020, 2051]
+  WOF8: ['PHL', 'ABS', 0, 2020, 2051]
+  WOF9: ['SGP', 'ABS', 0, 2020, 2051]
+  WOF10: ['VNM', 'ABS', 0, 2020, 2051]
 
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
@@ -216,12 +288,12 @@ reserve_margin:
  RM2: [15, 2030, 2050]
 
 emission_limit:
-# EMISSION_LIMIT: [VALUE, YEAR]
+# - [EMISSION, COUNTRY, YEAR, VALUE]
 # where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
 # when that constraint must be adhered to. All years between multiple emission 
 # constraints will be interpolated.
- EL1: [2030, 99999]
- EL2: [2050, 99999]
+ - ['CO2', 'IDN', 2030, 99999]
+ - ['CO2', 'IDN', 2050, 99999]
 
 fuel_limits:
 # FUEL: [VALUE, COUNTRY/INTERNATIONAL, YEAR]
@@ -264,7 +336,7 @@ calibration:
 
 
 re_targets:
- - ['IDN', 2030, 2040, 30]
- - ['IDN', 2050, 2050, 50]
- - ['VNM', 2038, 2038, 35]
- - ['VNM', 2050, 2050, 75]
+# E.g. - ['IDN', 2030, 2040, 30]
+# where 'IDN' is the country code; 2030, 2040 are the start and end years
+# respectively; and 30 is the target between the start and end years (inclusive)
+# in %

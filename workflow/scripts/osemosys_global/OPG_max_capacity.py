@@ -387,7 +387,6 @@ def apply_calibration(region, years, output_data_dir, calibration):
         cal_dem_final = cal_dem_df.rename(columns={'DEMAND': 'VALUE'})
         cal_dem_final.drop_duplicates(inplace=True)
         cal_dem_final.dropna(inplace=True)
-        print(cal_dem_final)
         cal_dem_final.to_csv(os.path.join(output_data_dir,
                                           'AccumulatedAnnualDemand.csv'),
                              index=None)  
@@ -437,7 +436,7 @@ def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
     
     # Create dataframe template to calculate SpecifiedAnnualDemand
     re_targets_df = pd.DataFrame(list(itertools.product(re_fuels,
-                                                       years)
+                                                        years)
                                      ),
                                 columns = ['FUEL', 
                                            'YEAR']
@@ -450,61 +449,60 @@ def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
         for re_params in re_targets:
             re_targets_df.loc[(re_targets_df['YEAR'].between(re_params[1], 
                                                           re_params[2])) &
-                             (re_targets_df['COUNTRY'].isin([re_params[0]])),
+                              (re_targets_df['COUNTRY'].isin([re_params[0]])),
                              'VALUE'] = (re_params[3]/100)
 
-    re_targets_df = re_targets_df.pivot(index=['YEAR'],
-                                      columns=['COUNTRY'],
-                                      values='VALUE').reset_index()
-    re_targets_df = re_targets_df.interpolate()
-    
-    # Drop all columns with only NaN
-    re_targets_df.dropna(axis=1, 
-                         how='all',
-                         inplace=True)
-    
-    # Melt to get 'COUNTRY' column and remove all rows with NaN
-    re_targets_df = pd.melt(re_targets_df,
-                            id_vars=['YEAR'],
-                            value_vars=[x for x in re_targets_df.columns
-                                        if x not in ['YEAR']],
-                            var_name='COUNTRY',
-                            value_name='VALUE')
-    re_targets_df.dropna(axis=0,
-                         inplace=True)
-    
-    # Read 'SpecifiedAnnualDemand'
-    sp_demand_df = pd.read_csv(os.path.join(output_data_dir,
-                                            'SpecifiedAnnualDemand.csv'))
-    sp_demand_df = sp_demand_df.loc[~(sp_demand_df['FUEL'].str[3:8].isin(remove_nodes))]
-    sp_demand_df['COUNTRY'] = sp_demand_df['FUEL'].str[3:6]
-    sp_demand_df = sp_demand_df.groupby(['YEAR', 'COUNTRY'],
-                                        as_index=False)['VALUE'].sum()
-    sp_demand_df.rename(columns={'VALUE': 'DEMAND'},
-                        inplace=True)
-    # Merge RE targets and SpecifiedAnnualDemand tables
-    re_targets_df = pd.merge(re_targets_df, sp_demand_df,
-                             how='left',
-                             on=['COUNTRY', 'YEAR'])    
-    re_targets_df['VALUE'] = re_targets_df['VALUE'] * re_targets_df['DEMAND']
-    re_targets_df['FUEL'] = 'REN' + re_targets_df['COUNTRY']
-    re_targets_df['REGION'] = region
-    re_targets_df = re_targets_df[['REGION',
-                                   'FUEL',
-                                   'YEAR',
-                                   'VALUE']]
-    
-    # Read 'SpecifiedAnnualDemand'
-    ac_demand_df = pd.read_csv(os.path.join(output_data_dir,
-                                            'AccumulatedAnnualDemand.csv'))
-    print(ac_demand_df)
-    
-    # Append RE target demands and write new AccumulatedAnnualDemand file
-    ac_demand_df.drop_duplicates(inplace=True)
-    ac_demand_df = pd.concat([ac_demand_df, re_targets_df])
-    ac_demand_df.to_csv(os.path.join(output_data_dir,
-                                     'AccumulatedAnnualDemand.csv'),
-                        index=None)
+        re_targets_df = re_targets_df.pivot(index=['YEAR'],
+                                        columns=['COUNTRY'],
+                                        values='VALUE').reset_index()
+        re_targets_df = re_targets_df.interpolate()
+        
+        # Drop all columns with only NaN
+        re_targets_df.dropna(axis=1, 
+                            how='all',
+                            inplace=True)
+        
+        # Melt to get 'COUNTRY' column and remove all rows with NaN
+        re_targets_df = pd.melt(re_targets_df,
+                                id_vars=['YEAR'],
+                                value_vars=[x for x in re_targets_df.columns
+                                            if x not in ['YEAR']],
+                                var_name='COUNTRY',
+                                value_name='VALUE')
+        re_targets_df.dropna(axis=0,
+                            inplace=True)
+        
+        # Read 'SpecifiedAnnualDemand'
+        sp_demand_df = pd.read_csv(os.path.join(output_data_dir,
+                                                'SpecifiedAnnualDemand.csv'))
+        sp_demand_df = sp_demand_df.loc[~(sp_demand_df['FUEL'].str[3:8].isin(remove_nodes))]
+        sp_demand_df['COUNTRY'] = sp_demand_df['FUEL'].str[3:6]
+        sp_demand_df = sp_demand_df.groupby(['YEAR', 'COUNTRY'],
+                                            as_index=False)['VALUE'].sum()
+        sp_demand_df.rename(columns={'VALUE': 'DEMAND'},
+                            inplace=True)
+        # Merge RE targets and SpecifiedAnnualDemand tables
+        re_targets_df = pd.merge(re_targets_df, sp_demand_df,
+                                how='left',
+                                on=['COUNTRY', 'YEAR'])    
+        re_targets_df['VALUE'] = re_targets_df['VALUE'] * re_targets_df['DEMAND']
+        re_targets_df['FUEL'] = 'REN' + re_targets_df['COUNTRY']
+        re_targets_df['REGION'] = region
+        re_targets_df = re_targets_df[['REGION',
+                                    'FUEL',
+                                    'YEAR',
+                                    'VALUE']]
+        
+        # Read 'SpecifiedAnnualDemand'
+        ac_demand_df = pd.read_csv(os.path.join(output_data_dir,
+                                                'AccumulatedAnnualDemand.csv'))
+        
+        # Append RE target demands and write new AccumulatedAnnualDemand file
+        ac_demand_df.drop_duplicates(inplace=True)
+        ac_demand_df = pd.concat([ac_demand_df, re_targets_df])
+        ac_demand_df.to_csv(os.path.join(output_data_dir,
+                                        'AccumulatedAnnualDemand.csv'),
+                            index=None)
 
 
 

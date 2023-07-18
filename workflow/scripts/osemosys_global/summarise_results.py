@@ -30,7 +30,7 @@ def main():
     trade_flows()
     
     # UPDATED METRICS
-    system_cost_by_node()
+    #system_cost_by_node()
     new_capacity_summary()
     new_capacity_summary_trn()
     investment_summary()
@@ -845,7 +845,7 @@ def system_cost_by_node():
     df_emi = pd.read_csv(os.path.join(scenario_results_dir,
                                       'AnnualTechnologyEmission.csv'
                                       ))
-    df_emi['VALUE'] = df_emi['VALUE']*penalty
+
     
     for each_df in [df_inv, df_fom, df_vom, df_sto]:
         '''
@@ -952,6 +952,8 @@ def system_cost_by_node():
     df_all['LABEL'] = df_all['TECHNOLOGY'].str[3:6]
     df_all['NODE'] = df_all['TECHNOLOGY'].str[6:11]
     
+    print(df_all)
+    
     # Calculate summary tables
     df_fuel_cost = df_all.groupby(['NODE','LABEL','YEAR'],
                                   as_index=False)['FUEL_COST'].sum()
@@ -967,7 +969,7 @@ def system_cost_by_node():
                                      ),
                         index=None
                         )
-    df_emissions['PENALTY'] = df_emissions['EMISSIONS'] * penalty
+    #df_emissions['PENALTY'] = df_emissions['EMISSIONS'] * penalty
     
     
     df_fuel_use = df_all.groupby(['NODE','LABEL'],
@@ -982,6 +984,7 @@ def system_cost_by_node():
     df_fuel_use = df_fuel_use.pivot(index='NODE',
                                     columns='LABEL',
                                     values='USE').reset_index().fillna(0)
+    print(df_fuel_use)
     df_fuel_use['COA'] = df_fuel_use['COA'] / 19 # Energy content of 19 MJ/kg
     df_fuel_use['GAS'] = df_fuel_use['GAS'] * 0.9478 # PJ to bcf of Natural Gas
     df_fuel_use.to_csv(os.path.join(scenario_result_summaries_dir,

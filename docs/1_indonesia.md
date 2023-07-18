@@ -71,6 +71,8 @@ on [RUPTL 2021-2030](https://web.pln.co.id/statics/uploads/2021/10/ruptl-2021-20
 
 ## Data
 
+Below is a summary of all the input data used in the model.
+
 ### Technology costs
 
 Battery costs from [NREL](https://www.nrel.gov/docs/fy21osti/79236.pdf). 
