@@ -678,7 +678,10 @@ if custom_nodes:
     df_demands = pd.concat([df_demands,
                             df_sp_annual_demand],
                             ignore_index=True)
-    df_demands['VALUE'] = df_demands['VALUE'].round(2)                        
+    df_demands['VALUE'] = df_demands['VALUE'].round(2)
+    df_demands.drop_duplicates(keep='first',
+                               subset=['REGION', 'FUEL', 'YEAR'],
+                               inplace=True)            
     df_demands.to_csv(os.path.join(output_data_dir, 
                                    "SpecifiedAnnualDemand.csv"),
                       index=None)

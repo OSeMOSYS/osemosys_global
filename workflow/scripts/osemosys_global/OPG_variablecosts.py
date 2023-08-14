@@ -224,9 +224,17 @@ df_fuel_prices = pd.melt(df_fuel_prices,
                          value_name='VALUE')
 df_fuel_prices['VALUE'] = (df_fuel_prices['VALUE'] / 
                            df_fuel_prices['ENERGY_CONTENT'])
-df_fuel_prices['TECHNOLOGY'] = ('MIN' +
-                                df_fuel_prices['FUEL'] +
-                                df_fuel_prices['COUNTRY'])
+#df_fuel_prices['TECHNOLOGY'] = ('MIN' +
+#                                df_fuel_prices['FUEL'] +
+#                                df_fuel_prices['COUNTRY'])
+df_fuel_prices.loc[df_fuel_prices['FUEL'].isin(['BIO']),
+                   'TECHNOLOGY'] = ('RNW' +
+                                    df_fuel_prices['FUEL'] +
+                                    df_fuel_prices['COUNTRY'])      
+df_fuel_prices.loc[~(df_fuel_prices['FUEL'].isin(['BIO'])),
+                   'TECHNOLOGY'] = ('MIN' +
+                                    df_fuel_prices['FUEL'] +
+                                    df_fuel_prices['COUNTRY'])
 df_fuel_prices['VALUE'] = df_fuel_prices['VALUE'].round(2)
 
 # Dataframe with INT fuel prices
@@ -245,7 +253,10 @@ df_fuel_prices = df_fuel_prices[['TECHNOLOGY',
                                  'YEAR',
                                  'VALUE']]
 df_fuel_prices['YEAR'] = df_fuel_prices['YEAR'].astype(int)
+df_fuel_prices.rename(columns={'TECHNOLOGY': 'TECH_COUNTRY'},
+                      inplace=True)
 
+# Scaffolding for final dataframe
 df_fuel_prices_final = pd.DataFrame(list(itertools.product(list(techs),
                                                            [1, 2],
                                                            years)),
@@ -255,6 +266,7 @@ df_fuel_prices_final = pd.DataFrame(list(itertools.product(list(techs),
                                     )
 df_fuel_prices_final['YEAR'] = df_fuel_prices_final['YEAR'].astype(int)
 df_fuel_prices_final['FUEL'] = df_fuel_prices_final['TECHNOLOGY'].str[3:6]
+df_fuel_prices_final['TECH_COUNTRY'] = df_fuel_prices_final['TECHNOLOGY'].str[:9]
 
 # Values for countries WITHOUT country-specific data set to INT values
 df_fuel_prices_final_1 = pd.merge(df_fuel_prices_final.loc[~(df_fuel_prices_final['TECHNOLOGY']
@@ -287,7 +299,8 @@ df_fuel_prices_final_2 = pd.merge(df_fuel_prices_final.loc[(df_fuel_prices_final
                                                             .str[6:9].isin(country_list))],
                                   df_fuel_prices,
                                   how='left',
-                                  on=['TECHNOLOGY', 'YEAR'])
+                                  on=['TECH_COUNTRY', 'YEAR'])
+
 df_fuel_prices_final_2 = df_fuel_prices_final_2[['TECHNOLOGY',
                                                  'MODE_OF_OPERATION',
                                                  'YEAR',

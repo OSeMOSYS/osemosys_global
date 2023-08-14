@@ -30,7 +30,7 @@ def main():
     trade_flows()
     
     # UPDATED METRICS
-    #system_cost_by_node()
+    system_cost_by_node()
     new_capacity_summary()
     new_capacity_summary_trn()
     investment_summary()
@@ -845,25 +845,36 @@ def system_cost_by_node():
     df_emi = pd.read_csv(os.path.join(scenario_results_dir,
                                       'AnnualTechnologyEmission.csv'
                                       ))
-
+    df_pen = pd.read_csv(os.path.join(scenario_data_dir,
+                                      'EmissionsPenalty.csv'
+                                      ))
+    df_pen.rename(columns={'VALUE': 'PENALTY'},
+                  inplace=True)
     
-    for each_df in [df_inv, df_fom, df_vom, df_sto]:
-        '''
+    df_emi_pen = pd.merge(df_emi, df_pen,
+                          how='left',
+                          on=['REGION', 'EMISSION', 'YEAR'])
+    df_emi_pen['VALUE'] = df_emi_pen['VALUE'] * df_emi_pen['PENALTY']
+    df_emi_pen = df_emi_pen.groupby(['REGION', 'TECHNOLOGY', 'YEAR'],
+                                    as_index=False)['VALUE'].sum()
+    df_emi_pen.dropna(inplace=True)
+    
+    for each_df in [df_inv, df_fom, df_vom, df_sto, df_emi_pen]:
         each_df = each_df[['TECHNOLOGY',
                            'YEAR',
                            'VALUE']].fillna(0)
-        each_df.set_index(['TECHNOLOGY', 'YEAR'], inplace=True)
-        df = df.add(each_df, fill_value=0)
-        '''
+        #each_df.set_index(['TECHNOLOGY', 'YEAR'], inplace=True)
+        #df = df.add(each_df, fill_value=0)
+        
         df = pd.concat([df, each_df])
-    
+
     df = df.groupby(['TECHNOLOGY','YEAR'],
                     as_index=False)['VALUE'].sum()
     
     df.reset_index(inplace=True)
-    #df = df[~(df['TECHNOLOGY'].str.startswith('MIN')) & 
-    #        ~(df['TECHNOLOGY'].str.startswith('RNW')) &
-    #        ~(df['TECHNOLOGY'].str.startswith('TRN'))]
+    df = df[~(df['TECHNOLOGY'].str.startswith('MIN')) & 
+            ~(df['TECHNOLOGY'].str.startswith('RNW')) &
+            ~(df['TECHNOLOGY'].str.startswith('TRN'))]
     df['NODE'] = df['TECHNOLOGY'].str[6:11]
     df = df.groupby(['NODE',
                      'YEAR'],
@@ -946,20 +957,18 @@ def system_cost_by_node():
                       how='outer')
     
     df_all['FUEL_COST'] = df_all['USE']*df_all['VAR'] 
-    df_all['EMISSIONS'] = df_all['USE']*df_all['EAR']
+    #df_all['EMISSIONS'] = df_all['USE']*df_all['EAR']
     df_all.dropna(inplace=True) 
     df_all = df_all[df_all['TECHNOLOGY'].str.startswith('PWR')]
     df_all['LABEL'] = df_all['TECHNOLOGY'].str[3:6]
     df_all['NODE'] = df_all['TECHNOLOGY'].str[6:11]
-    
-    print(df_all)
-    
+        
     # Calculate summary tables
     df_fuel_cost = df_all.groupby(['NODE','LABEL','YEAR'],
                                   as_index=False)['FUEL_COST'].sum()
     df_fuel_cost = df_fuel_cost[df_fuel_cost['FUEL_COST'] > 0]
     
-    
+    '''
     df_emissions = df_all.groupby(['NODE','LABEL','YEAR'],
                                   as_index=False)['EMISSIONS'].sum()
     df_emissions = df_emissions[~(df_emissions['LABEL'].str.startswith('CCS'))]
@@ -969,8 +978,8 @@ def system_cost_by_node():
                                      ),
                         index=None
                         )
-    #df_emissions['PENALTY'] = df_emissions['EMISSIONS'] * penalty
-    
+    df_emissions['PENALTY'] = df_emissions['EMISSIONS'] * penalty
+    '''
     
     df_fuel_use = df_all.groupby(['NODE','LABEL'],
                                   as_index=False)['USE'].sum()
@@ -984,9 +993,10 @@ def system_cost_by_node():
     df_fuel_use = df_fuel_use.pivot(index='NODE',
                                     columns='LABEL',
                                     values='USE').reset_index().fillna(0)
-    print(df_fuel_use)
-    df_fuel_use['COA'] = df_fuel_use['COA'] / 19 # Energy content of 19 MJ/kg
-    df_fuel_use['GAS'] = df_fuel_use['GAS'] * 0.9478 # PJ to bcf of Natural Gas
+    if 'COA' in df_fuel_use.columns:
+        df_fuel_use['COA'] = df_fuel_use['COA'] / 19 # Energy content of 19 MJ/kg
+    if 'GAS' in df_fuel_use.columns:
+        df_fuel_use['GAS'] = df_fuel_use['GAS'] * 0.9478 # PJ to bcf of Natural Gas
     df_fuel_use.to_csv(os.path.join(scenario_result_summaries_dir,
                                     'FuelUse.csv'
                                     ),
@@ -999,14 +1009,15 @@ def system_cost_by_node():
                   on=['NODE', 'YEAR'],
                   how='outer')
     
-    df_emi_pen = df_emissions.groupby(['NODE','YEAR'],
-                                      as_index=False)['PENALTY'].sum()
-    df = pd.merge(df, df_emi_pen,
-                  on=['NODE', 'YEAR'],
-                  how='outer')
+    #df_emi_pen = df_emissions.groupby(['NODE','YEAR'],
+    #                                  as_index=False)['PENALTY'].sum()
+    #df = pd.merge(df, df_emi_pen,
+    #              on=['NODE', 'YEAR'],
+    #              how='outer')
     df.fillna(0,
               inplace=True)
-    df['SYSTEM_COST'] = df['VALUE'] + df['FUEL_COST'] + df['PENALTY']
+    #df['SYSTEM_COST'] = df['VALUE'] + df['FUEL_COST'] + df['PENALTY']
+    df['SYSTEM_COST'] = df['VALUE'] + df['FUEL_COST']
     df = df.groupby(['NODE'],
                     as_index=False)['SYSTEM_COST'].sum()
         

@@ -83,12 +83,12 @@ DiscountRate:
     indices: [REGION]
     type: param
     dtype: float
-    default: 0.05
+    default: 0.1
 DiscountRateStorage:
     indices: [REGION,STORAGE]
     type: param
     dtype: float
-    default: 0.05
+    default: 0.1
 EMISSION:
     dtype: str
     type: set

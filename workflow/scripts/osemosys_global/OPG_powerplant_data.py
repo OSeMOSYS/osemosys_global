@@ -979,7 +979,7 @@ def main():
                                  'YEAR', 
                                  'VALUE',]]
 
-    df_iar_final = df_iar_final.append(df_iar_int) # Add in path through international markets
+    ### df_iar_final = df_iar_final.append(df_iar_int) # Add in path through international markets
     df_iar_final = df_iar_final.append(df_iar_trn) # Add in domestic transmission
     df_iar_final = df_iar_final.append(df_int_trn_iar) # Add in international transmission
 
@@ -1535,17 +1535,26 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
     """
     techCapacity = []
     tech_capacity_dict = {}
+    first_year_dict = {}
+    build_rate_dict = {}
+    capex_dict = {}
+    build_year_dict = {}
     
     if not tech_capacity is None:
 
         for tech, tech_params in tech_capacity.items():
             techCapacity.append([tech, tech_params[0], tech_params[1]])
+            #tech_capacity_dict[tech] = tech_params[2]
             tech_capacity_dict[tech] = tech_params[2]
+            build_year_dict[tech] = tech_params[1]
+            first_year_dict[tech] = tech_params[3]
+            build_rate_dict[tech] = tech_params[4]
+            capex_dict[tech] = tech_params[5] # 
         tech_capacity_df = pd.DataFrame(techCapacity,
                                         columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
         tech_capacity_df['REGION'] = region
         tech_capacity_df = tech_capacity_df[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
-
+        
         tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
 
         for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
@@ -1560,35 +1569,84 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
 
         df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
                                                   'TotalAnnualMaxCapacityInvestment.csv'))
+        #df_capex = pd.read_csv(os.path.join(output_data_dir,
+        #                                    'CapitalCost.csv'))
+        
+        df = pd.DataFrame(list(itertools.product(list(tech_capacity_df['TECHNOLOGY'].unique()),
+                                                 years)
+                               ),
+                          columns = ['TECHNOLOGY', 
+                                     'YEAR']
+                          )
+        df['REGION'] = region
+        df = pd.merge(df, df_min_cap_inv,
+                      how='left',
+                      on=['REGION', 'TECHNOLOGY', 'YEAR'])
+        df['FIRST_YEAR'] = df['TECHNOLOGY'].map(first_year_dict)
+        df['BUILD_YEAR'] = df['TECHNOLOGY'].map(build_year_dict)
+        df['MAX_BUILD'] = df['TECHNOLOGY'].map(build_rate_dict)
 
-        max_cap_techs = []
-        for index, row in tech_capacity_df.iterrows():
-            for each_year in years:
-                if row['YEAR'] == each_year:
-                    value = row['VALUE']
-                if row['YEAR'] > each_year:
-                    value = 0
-                else:
-                    if tech_capacity_dict[row['TECHNOLOGY']] in ['open']:
-                        value = np.nan
-                    elif tech_capacity_dict[row['TECHNOLOGY']] in ['fixed']:
-                        value = 0
-                max_cap_techs.append([row['REGION'],
-                                      row['TECHNOLOGY'],
-                                      each_year,
-                                      value])
-        max_cap_techs_df = pd.DataFrame(max_cap_techs,
-                                        columns=['REGION',
-                                                'TECHNOLOGY',
-                                                'YEAR',
-                                                'VALUE'])
-        max_cap_techs_df.dropna(inplace=True)
+        # Fill VALUE with MAX_BUILD for YEAR >= FIRST_YEAR
+        df.loc[(df['YEAR']>=df['FIRST_YEAR']) &
+               (df['YEAR']>df['BUILD_YEAR']),
+               'VALUE'] = df['MAX_BUILD']
+        df.fillna(0,
+                  inplace=True)
+        max_cap_techs_df = df[['REGION',
+                               'TECHNOLOGY',
+                               'YEAR',
+                               'VALUE']]
+
+        #Replace VALUE with CAPEX
+        df['VALUE'] = df['TECHNOLOGY'].map(capex_dict)
+        capex_df = df[['REGION',
+                       'TECHNOLOGY',
+                       'YEAR',
+                       'VALUE']]
+        
+        # Append existing TotalAnnualMaxCapacityInvestment data with MAX_BUILD for TRN
         df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
         df_max_cap_inv.drop_duplicates(inplace=True)
+        
+        # Append existing CapitalCost data with CAPEX for TRN
+        df_capex = df_max_cap_inv.append(capex_df)
+        df_capex.drop_duplicates(inplace=True)
 
+        # max_cap_techs = []
+        # for index, row in tech_capacity_df.iterrows():
+        #     for each_year in years:
+        #         if row['YEAR'] == each_year:
+        #             value = row['VALUE']
+        #         if row['YEAR'] > each_year:
+        #             value = 0
+        #         else:
+        #             if tech_capacity_dict[row['TECHNOLOGY']] in ['open']:
+        #                 value = np.nan
+        #             elif tech_capacity_dict[row['TECHNOLOGY']] in ['fixed']:
+        #                 value = 0
+        #         max_cap_techs.append([row['REGION'],
+        #                               row['TECHNOLOGY'],
+        #                               each_year,
+        #                               value])
+        # max_cap_techs_df = pd.DataFrame(max_cap_techs,
+        #                                 columns=['REGION',
+        #                                         'TECHNOLOGY',
+        #                                         'YEAR',
+        #                                         'VALUE'])
+        # max_cap_techs_df.dropna(inplace=True)
+        # df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
+        # df_max_cap_inv.drop_duplicates(inplace=True)
+
+        # Print TotalAnnualMaxCapacityInvestment.csv with MAX_BUILD for TRN
         df_max_cap_inv.to_csv(os.path.join(output_data_dir,
-                                        "TotalAnnualMaxCapacityInvestment.csv"),
-                            index=None)
+                                           "TotalAnnualMaxCapacityInvestment.csv"),
+                              index=None)
+        
+        # Print CapitalCost.csv with CAPEX for TRN
+        #df_capex.to_csv(os.path.join(output_data_dir,
+        #                             "CapitalCost.csv"),
+        #                index=None)
+        
         # For technologies with start year before model start year, add to 
         # ResidualCapacity
         df_res_cap_ud = df_min_cap_inv.loc[df_min_cap_inv['YEAR'] < min(years)]
@@ -1760,9 +1818,9 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                     columns = ['TECHNOLOGY',
                                                'YEAR'])
         cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('TRN'),
-                         'VALUE'] = 1100
+                         'VALUE'] = 700
         cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('PWRTRN'),
-                         'VALUE'] = 800
+                         'VALUE'] = 300
         cap_cost_trn['REGION'] = region
         cap_cost_trn = cap_cost_trn[['REGION',
                                      'TECHNOLOGY',

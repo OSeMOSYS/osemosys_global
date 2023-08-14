@@ -561,7 +561,7 @@ set_technology = pd.concat([set_techonology, df_storage_techs])
 set_technology.to_csv(os.path.join(output_data_dir,
                                     'TECHNOLOGY.csv'),
                         index=None)
-
+time.sleep(10)
 # Add InputActivityRatio and OutputActivityRatio
 # InputActivityRatio
 df_storage_iar = pd.DataFrame(list(itertools.product([region_name],

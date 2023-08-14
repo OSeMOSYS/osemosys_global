@@ -201,7 +201,7 @@ def apply_build_rates(region, years, output_data_dir, max_build):
                                              'METHOD', 
                                              'MAX_BUILD',
                                              'YEAR'])
-        for tech, tech_params in max_build.items():
+        for tech_params in max_build:
             '''
             max_build_list.append([tech,            # TECHNOLOGY_TYPE
                                    tech_params[0]   # COUNTRY
@@ -215,12 +215,12 @@ def apply_build_rates(region, years, output_data_dir, max_build):
                                                    'METHOD', 
                                                    'MAX_BUILD',
                                                    'YEAR'])
-            max_build_temp['YEAR'] = list(range(tech_params[3],
-                                                tech_params[4]))
-            max_build_temp['TYPE'] = tech
-            max_build_temp['COUNTRY'] = tech_params[0]
-            max_build_temp['METHOD'] = tech_params[1]
-            max_build_temp['MAX_BUILD'] = tech_params[2]
+            max_build_temp['YEAR'] = list(range(tech_params[4],
+                                                tech_params[5]))
+            max_build_temp['TYPE'] = tech_params[0]
+            max_build_temp['COUNTRY'] = tech_params[1]
+            max_build_temp['METHOD'] = tech_params[2]
+            max_build_temp['MAX_BUILD'] = tech_params[3]
             max_build_df = pd.concat([max_build_df, max_build_temp],
                                      ignore_index=True)
             max_build_df['TYPE'] = max_build_df['TYPE'].str[0:3]
@@ -293,10 +293,10 @@ def apply_fuel_limits(region, years, output_data_dir, max_fuel):
                                   'VALUE'])
     
     if not max_fuel is None:
-        for mf, mf_params in max_fuel.items():
-            mf_append = {'TECHNOLOGY': 'MIN' + mf[0:3] + mf_params[1],
-                         'YEAR': mf_params[2],
-                         'VALUE': mf_params[0]}
+        for mf_params in max_fuel:
+            mf_append = {'TECHNOLOGY': 'MIN' + mf_params[0] + mf_params[1],
+                         'YEAR': mf_params[3],
+                         'VALUE': mf_params[2]}
             mf_df = mf_df.append(mf_append,
                                  ignore_index=True)
             
