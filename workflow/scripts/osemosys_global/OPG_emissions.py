@@ -12,7 +12,8 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 # Constant for tech to fuel emission type mapping 
 _TECH_TO_FUEL = {
-    'BIO':'Bagasse',
+    #'BIO':'Bagasse',
+    'WAS':'Municipal Solid Waste',
     'COA':'Lignite Coal',
     'COG':'Lignite Coal',
     'OCG':'Natural Gas',
@@ -20,7 +21,8 @@ _TECH_TO_FUEL = {
     'GAS':'Natural Gas',
     'PET':'Crude Oil',
     'OIL':'Crude Oil',
-    'OTH':'Natural Gas'
+    'OTH':'Natural Gas',
+    'CCS':'Lignite Coal',
 }
 
 # Emission name 
@@ -195,6 +197,10 @@ def get_ear(emission):
 
     df['EMISSION'] = emission + df['COUNTRY']
     
+    df.loc[df['TECH_CODE'].str.startswith('CCS'),
+           'VALUE'] = df.loc[df['TECH_CODE'].str.startswith('COA'),
+                             'VALUE'].mean() * 0.1
+    df['VALUE'] = df['VALUE'].round(4)
     # Final EmissionActivityRatio dataframe
     df = df[[
         'REGION', 

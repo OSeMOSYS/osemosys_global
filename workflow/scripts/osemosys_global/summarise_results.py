@@ -22,7 +22,7 @@ def main():
     except FileExistsError:
         pass
 
-    # SUMMARISE RESULTS
+    # # SUMMARISE RESULTS
     headline_metrics()
     capacity_summary()
     generation_summary()
@@ -35,6 +35,7 @@ def main():
     new_capacity_summary_trn()
     investment_summary()
     investment_summary_trn()
+    marginal_costs()
 
 
 def renewables_filter(df):
@@ -347,6 +348,7 @@ def generation_summary():
                                              )
                                 )
     df_generation = powerplant_filter(df_generation, country=None)
+    df_generation = df_generation.loc[df_generation['FUEL'].str.startswith('ELC')]
     df_generation = transform_ts(df_generation)
     df_generation = pd.melt(df_generation,
                             id_vars=['MONTH', 'HOUR', 'YEAR'],
@@ -381,6 +383,7 @@ def generation_by_node_summary():
     generation = list(df_gen_by_node.TECHNOLOGY.unique())
     df_gen_by_node['NODE'] = (df_gen_by_node['TECHNOLOGY'].str[6:11])
     df_gen_by_node = powerplant_filter(df_gen_by_node, country=None)
+    df_gen_by_node = df_gen_by_node.loc[df_gen_by_node['FUEL'].str.startswith('ELC')]
     # df_generation = transform_ts(df_generation)
 
     # GET TIMESLICE DEFINITION
@@ -1027,26 +1030,99 @@ def system_cost_by_node():
                                   ),
                      index=None
                      )
-'''
-def emissions
-'''   
 
-'''
-def fuel_use():
+
+def marginal_costs():
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()
     config = ConfigFile('config')
-    #scenario_results_dir = config_paths.scenario_results_dir
-    scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/results'
+    scenario_results_dir = config_paths.scenario_results_dir
+    scenario = config.get('scenario')
+    scenario_dir = config_paths.scenario_dir
+    #scenario = 'ASEAN_v4_APG_LC'
+    #scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/results/' + scenario
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
-    #scenario_data_dir = config_paths.scenario_data_dir
-    scenario_data_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/data'
-    input_data_dir = config_paths.input_data_dir
     
     
+    duals = []
     
-'''
+    with open(os.path.join(scenario_dir,
+                           scenario + '.attr')) as sol_file:
+        for line in sol_file:
+            if line.startswith('EBa11'):
+                ts = line.split(' ')[0].split(',')[1]
+                fuel = line.split(' ')[0].split(',')[2]
+                year = int(line.split(' ')[0].split(',')[3].split(')')[0])
+                value = float(line.split(' ')[1])
+                if fuel.startswith('ELC'):
+                    if fuel.endswith('02'):
+                        duals.append([ts, fuel, year, round(value, 2)])
     
+    df_duals = pd.DataFrame(duals,
+                            columns=['TS',
+                                     'FUEL',
+                                     'YEAR',
+                                     'VALUE'])
+    df_duals['SEASON'] = df_duals['TS'].str[:2]
+    df_duals['DAYPART'] = df_duals['TS'].str[2:]
+    months = list(range(1, 13))
+    hours = list(range(1, 25))
+    
+    # Create DataFrame scaffold for dual values
+    df_duals_final = pd.DataFrame(list(itertools.product(df_duals['FUEL'].unique(),
+                                                         months,
+                                                         hours,
+                                                         df_duals['YEAR'].unique())
+                                       ),
+                                       columns=['FUEL',
+                                                'MONTH',
+                                                'HOUR',
+                                                'YEAR']
+                                  )
+    # Create dictionaries of seasons and dayparts
+    seasons_raw = config.get('seasons')
+    seasons_dict = {}
+
+    for s, months in seasons_raw.items():
+        for month in months:
+            seasons_dict[month] = s
+    
+    dayparts_raw = config.get('dayparts')
+    dayparts_dict = {}
+    for dp, hours in dayparts_raw.items():
+        for hour in range(hours[0], hours[1]):
+            dayparts_dict[hour+1] = dp
+
+    # Create SEASON and DAYPART columns for each hour and month
+    df_duals_final['SEASON'] = df_duals_final['MONTH'].map(seasons_dict)
+    df_duals_final['DAYPART'] = df_duals_final['HOUR'].map(dayparts_dict)
+    
+    df_duals_final = pd.merge(df_duals_final, df_duals,
+                              how='left',
+                              on=['FUEL', 'SEASON', 'DAYPART', 'YEAR'])
+    
+    df_duals_final['NODE'] = df_duals_final['FUEL'].str[3:8]
+    
+    # Filter columns for final DataFrame
+    df_duals_final = df_duals_final[['NODE',
+                                     'MONTH',
+                                     'HOUR',
+                                     'YEAR',
+                                     'VALUE']]
+    
+    # Convert $mn/PJ to $/MWh i.e. 3.6
+    df_duals_final['VALUE'] = df_duals_final['VALUE'].mul(3.6)
+    
+    # Apply timeshift
+    timeshift = config.get('timeshift')
+    #df_duals_final['HOUR'] = df_duals_final['HOUR'].map(lambda x: apply_timeshift(x, timeshift))    
+    
+    #print(df_duals_final)
+
+    return df_duals_final.to_csv(os.path.join(scenario_result_summaries_dir,
+                                              'SRMC.csv'),
+                                 index=None)
+
 
 if __name__ == '__main__':
     main()

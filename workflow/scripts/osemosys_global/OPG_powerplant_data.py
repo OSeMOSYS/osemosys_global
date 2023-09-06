@@ -1003,7 +1003,13 @@ def main():
     df_oar_final = df_oar_final.append(df_oar_newTechs, ignore_index=True)
 
     #df_oar_final.to_csv(r"osemosys_global_model/data/OutputActivityRatio.csv", index = None)
-    df_oar_final.drop_duplicates(inplace=True)
+    df_oar_final.drop_duplicates(subset=['REGION', 
+                                         'TECHNOLOGY',
+                                         'FUEL',  
+                                         'MODE_OF_OPERATION',
+                                         'YEAR'],
+                                 keep='last',
+                                 inplace=True)
     df_oar_final.to_csv(os.path.join(output_data_dir,
                                      "OutputActivityRatio.csv"),
                         index=None)
@@ -1187,6 +1193,7 @@ def main():
                        )
 
     df_capact_final['VALUE'] = 31.536
+    df_capact_final.drop_duplicates(inplace=True)
     df_capact_final.to_csv(os.path.join(output_data_dir,
                                         "CapacityToActivityUnit.csv"),
                            index = None)
@@ -1569,8 +1576,6 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
 
         df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
                                                   'TotalAnnualMaxCapacityInvestment.csv'))
-        #df_capex = pd.read_csv(os.path.join(output_data_dir,
-        #                                    'CapitalCost.csv'))
         
         df = pd.DataFrame(list(itertools.product(list(tech_capacity_df['TECHNOLOGY'].unique()),
                                                  years)
@@ -1756,11 +1761,23 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
         df_iar = pd.concat([df_iar, df_iar_custom])
         df_oar = pd.concat([df_oar, df_oar_custom])
         
-        df_iar.drop_duplicates(inplace=True)
+        df_iar.drop_duplicates(subset=['REGION', 
+                                         'TECHNOLOGY',
+                                         'FUEL',  
+                                         'MODE_OF_OPERATION',
+                                         'YEAR'],
+                               keep='last',
+                               inplace=True)
         df_iar.to_csv(os.path.join(output_data_dir,
                                    'InputActivityRatio.csv'),
                       index=None)
-        df_oar.drop_duplicates(inplace=True)
+        df_oar.drop_duplicates(subset=['REGION', 
+                                         'TECHNOLOGY',
+                                         'FUEL',  
+                                         'MODE_OF_OPERATION',
+                                         'YEAR'],
+                                 keep='last',
+                                 inplace=True)
         df_oar.to_csv(os.path.join(output_data_dir,
                                    'OutputActivityRatio.csv'),
                       index=None)
@@ -1805,6 +1822,7 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                          'TECHNOLOGY',
                                          'VALUE']]
         cap_act = pd.concat([cap_act, cap_act_custom])
+        cap_act.drop_duplicates(inplace=True)
         cap_act.to_csv(os.path.join(output_data_dir,
                                     'CapacityToActivityUnit.csv'),
                        index=None)
@@ -1817,8 +1835,14 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                                            years)),
                                     columns = ['TECHNOLOGY',
                                                'YEAR'])
-        cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('TRN'),
-                         'VALUE'] = 700
+
+        # Update CapitalCost with user-defined costs by transmission line
+        for each_trn in tech_list:
+            cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.startswith(each_trn),
+                             'VALUE'] = capex_dict[each_trn]
+
+        #        cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('TRN'),
+        #                         'VALUE'] = 700
         cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('PWRTRN'),
                          'VALUE'] = 300
         cap_cost_trn['REGION'] = region
@@ -1827,6 +1851,9 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                      'YEAR',
                                      'VALUE']]
         cap_cost = pd.concat([cap_cost, cap_cost_trn])
+        cap_cost.drop_duplicates(subset=['REGION', 'TECHNOLOGY', 'YEAR'],
+                                 keep="last",
+                                 inplace=True)
         cap_cost.to_csv(os.path.join(output_data_dir,
                                      'CapitalCost.csv'),
                         index=None)

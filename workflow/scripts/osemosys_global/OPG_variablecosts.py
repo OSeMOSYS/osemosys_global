@@ -227,11 +227,11 @@ df_fuel_prices['VALUE'] = (df_fuel_prices['VALUE'] /
 #df_fuel_prices['TECHNOLOGY'] = ('MIN' +
 #                                df_fuel_prices['FUEL'] +
 #                                df_fuel_prices['COUNTRY'])
-df_fuel_prices.loc[df_fuel_prices['FUEL'].isin(['BIO']),
+df_fuel_prices.loc[df_fuel_prices['FUEL'].isin(['BIO','WAS']),
                    'TECHNOLOGY'] = ('RNW' +
                                     df_fuel_prices['FUEL'] +
                                     df_fuel_prices['COUNTRY'])      
-df_fuel_prices.loc[~(df_fuel_prices['FUEL'].isin(['BIO'])),
+df_fuel_prices.loc[~(df_fuel_prices['FUEL'].isin(['BIO','WAS'])),
                    'TECHNOLOGY'] = ('MIN' +
                                     df_fuel_prices['FUEL'] +
                                     df_fuel_prices['COUNTRY'])
