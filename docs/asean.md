@@ -18,13 +18,13 @@ electricity systems are their spatial and temporal resolution.
 
 ### Spatial resolution
 
-The model represents all 34 provinces of Indonesia across 7 regions - shown in 
-the table and map below - as individual nodes. 
+The model represents all AMS as individually, with Vietnam, Thailand, Indonesia, 
+Malaysia, and the Philippines at a sub-national level and the remaining five AMS
+at the national level. This is shown in the table and map below. 
 
 ![ASEAN_map](./figures/asean_map.png "ASEAN model representation")
 
-** AMS represented in FEO at the sub-national level for Vietnam, Thailand, 
-Indonesia, Malaysia, and the Philippines **
+** AMS regional definitions  **
 
 {{ read_csv('./tables/asean_nodes.csv') }}
 
