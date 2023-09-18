@@ -1,19 +1,19 @@
-# Indonesia
+# ASEAN
 
-The first application of FEO Global is the development of an openly available 
-electricity systems model for Indonesia. This model is used to explore 
-transition pathways to a net-zero electricity system. As with all energy system 
-models, the inputs include a range of datasets and assumptions (e.g. technology 
-cost projections, discount rates). All of these inputs are described here in 
-order to allow for the model to be reviewed, re-run, and re-purposed.
+This model is used to explore the potential benefits of the ASEAN Power Grid -
+a set of proposed cross-border electricity interconnectors between the 10 ASEAN 
+Member States (AMS). As with all energy system models, the inputs include a 
+range of datasets and assumptions (e.g. technology cost projections, discount 
+rates). All of these inputs are described here in order to allow for the model 
+to be reviewed, re-run, and re-purposed.
 
 ## Model scope
 
 
-The model aims to represent the electricity system of Indonesia as accurately as
+The model aims to represent the electricity systems of AMS as accurately as
 possible, subject to constraints on data and computation time. The main aspects 
-that improve the accuracy of the model's representation of Indonesia's 
-electricity system are its spatial and temporal resolution.
+that improve the accuracy of the model's representation of AMS' 
+electricity systems are their spatial and temporal resolution.
 
 
 ### Spatial resolution
@@ -21,11 +21,12 @@ electricity system are its spatial and temporal resolution.
 The model represents all 34 provinces of Indonesia across 7 regions - shown in 
 the table and map below - as individual nodes. 
 
-![IDN_provinces](./figures/Indonesia_provinces_english.png "Indonesia provinces")
+![ASEAN_map](./figures/asean_map.png "ASEAN model representation")
 
-** Indonesia provinces represented individually in FEO**
+** AMS represented in FEO at the sub-national level for Vietnam, Thailand, 
+Indonesia, Malaysia, and the Philippines **
 
-{{ read_csv('./tables/provinces.csv') }}
+{{ read_csv('./tables/asean_nodes.csv') }}
 
 
 ### Temporal resolution
@@ -63,12 +64,6 @@ for a given technology (e.g. power plant). The model assumes a value of
 on the [IEA Cost of Capital Observatory](https://www.iea.org/data-and-statistics/data-tools/cost-of-capital-observatory). 
 
 
-### Reserve Margin
-
-The Reserve margin decreases from the current level of 60% to 35% by 2030, based
-on [RUPTL 2021-2030](https://web.pln.co.id/statics/uploads/2021/10/ruptl-2021-2030.pdf).
-
-
 ## Data
 
 Below is a summary of all the input data used in the model.
@@ -82,7 +77,7 @@ and [PLEXOS World](https://dataverse.harvard.edu/dataverse/PLEXOS-World).
 
 **Technology cost projections (Capital)**
 
-{{  read_csv('./tables/technology_costs_capital.csv')  }}
+{{  read_csv('./tables/technology_costs_capital_asean.csv')  }}
 
 
 ### Renewable Energy Profiles
@@ -105,7 +100,7 @@ sources:
 
 **Renewable energy potentials by province**
 
-{{  read_csv('./tables/re_potentials_summary.csv')  }}
+{{  read_csv('./tables/re_potentials_summary_asean.csv')  }}
 
 
 ### Electricity demand projections
@@ -116,11 +111,11 @@ demands between 2021-2050 is detailed [here](https://docs.google.com/spreadsheet
 
 **Electricity demand projections (GWh)**
 
-{{  read_csv('./tables/demand_projections.csv')  }}
+{{  read_csv('./tables/demand_projections_asean.csv')  }}
 
 
 ### Fuel Prices
 
 **Fuel price projections**
 
-{{  read_csv('./tables/fuel_prices.csv')  }}
+{{  read_csv('./tables/fuel_prices_asean.csv')  }}
