@@ -89,15 +89,6 @@ Data for 2020 was used.
 
 ### Renewable Energy Potentials
 
-Data on renewable energy potentials by province was obtained from multiple 
-sources:
-
-- Geothermal: ['Volcanostratigraphy of Batukuwung-Parakasak Geothermal Area, Serang Regency, West Java', U. Sumotarto, 2019](https://iopscience.iop.org/article/10.1088/1742-6596/1363/1/012048) 
-- Solar PV: ['Beyond 443 GW - Indonesia's Infinite Renewable Energy Potentials', IESR, 2021](https://iesr.or.id/en/pustaka/beyond-443-gw-indonesias-infinite-renewable-energy-potentials)
-- Wind: ['Beyond 443 GW - Indonesia's Infinite Renewable Energy Potentials', IESR, 2021](https://iesr.or.id/en/pustaka/beyond-443-gw-indonesias-infinite-renewable-energy-potentials)
-- Biomass: ['Beyond 443 GW - Indonesia's Infinite Renewable Energy Potentials', IESR, 2021](https://iesr.or.id/en/pustaka/beyond-443-gw-indonesias-infinite-renewable-energy-potentials)
-- Hydropower: [International Hydropower Association, 2019](reate-the-demand-for-industrial-development#:~:text=The%20biggest%20hydropower%20potential%20is,Tenggara%2DMaluku%20is%201.1%20GW)
-
 **Renewable energy potentials by province**
 
 {{  read_csv('./tables/re_potentials_summary_asean.csv')  }}
@@ -105,11 +96,10 @@ sources:
 
 ### Electricity demand projections
 
-Electricity demands for all 34 provinces, current and projected, are inputs to 
-the model. Electricity demand by province for 2021 is obtained from the [RUPTL 2021-2030](https://web.pln.co.id/statics/uploads/2021/10/ruptl-2021-2030.pdf). The methodology used to project these 
-demands between 2021-2050 is detailed [here](https://docs.google.com/spreadsheets/d/1P9va-0Nhl3Tfr68iV4I5B9J3yA1qSakN/edit?usp=sharing&ouid=100957394761881350527&rtpof=true&sd=true) and summarised below.
+Electricity demands for all 24 nodes, current and projected, are inputs to 
+the model. 
 
-**Electricity demand projections (GWh)**
+**Electricity demand projections (TWh)**
 
 {{  read_csv('./tables/demand_projections_asean.csv')  }}
 
