@@ -89,7 +89,7 @@ Data for 2020 was used.
 
 ### Renewable Energy Potentials
 
-**Renewable energy potentials by province**
+**Renewable energy potentials by province (GW)**
 
 {{  read_csv('./tables/re_potentials_summary_asean.csv')  }}
 
