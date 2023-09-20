@@ -8,7 +8,7 @@ with global coverage. It uses [OSeMOSYS Global](https://www.nature.com/articles/
 a starting point and can be used to create inter-connected energy
 systems models for both the entire globe and for any geographically diverse
 subset of the globe. It is built using the fully open-source 
-[OSeMOSYS](https://osemosys.readthedocs.io/en/latest/) energy system modelling tool.!
+[OSeMOSYS](https://osemosys.readthedocs.io/en/latest/) energy system modelling tool.
 
 ## Getting started
 
@@ -40,11 +40,25 @@ No input problem file specified; try glpsol --help
 ```
 
 #### 2. Install a Solver
-FEO-OSeMOSYS supports three solvers: CBC, Gurobi and CPLEX. **You need at least one of these solvers for FEO to function**. CBC is a free solver, while Gurobi and CPLEX are (expensive, but fast) commercial solvers. At TransitonZero, we have access to a floating Gurobi license, so let's install this.
+FEO-OSeMOSYS supports three solvers: CBC, Gurobi and CPLEX. **You need at least one of these solvers for OSeMOSYS to function**. CBC is a free solver, while Gurobi and CPLEX are (expensive, but fast) commercial solvers. At TransitonZero, we have access to a floating Gurobi license, so let's install this.
 
 #### 3. Clone the FEO-OSeMOSYS repository
 
 #### 4. Setup the FEO-OSeMOSYS environment
+
+We now need to setup a `python` environment to install all required Python packages. You should have `conda` or `mamba` setup on your machine. If that's the case, you can setup the environment by following the instructions below.
+
+Using `mamba`:
+
+```
+mamba env create --file=~/workflow/envs/feo-osemosys.yaml
+```
+
+Using `conda`:
+
+```
+conda env create --file=~/workflow/envs/feo-osemosys.yaml
+```
 
 #### 5. Run a small demo model
 
