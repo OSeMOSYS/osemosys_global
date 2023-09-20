@@ -1,6 +1,6 @@
-![Geographic scope](./docs/_static/osemosys-global.png "Geographic scope")
-
 # Future Energy Outlook
+
+![Geographic scope](./docs/_static/osemosys-global.png "Geographic scope")
 
 ## Overview
 'Future Energy Outlook' (FEO) is an open source electricity system model generator
@@ -24,7 +24,7 @@ We can install `GLPK` using `homebrew`. If you haven't installed `homebrew` yet,
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Run the following command to install `GLPK`:
+Once you have `homebrew` setup, run the following command to install `GLPK`:
 
 ```bash
 brew install glpk
@@ -40,6 +40,13 @@ No input problem file specified; try glpsol --help
 ```
 
 #### 2. Install a Solver
+FEO-OSeMOSYS supports three solvers: CBC, Gurobi and CPLEX. **You need at least one of these solvers for FEO to function**. CBC is a free solver, while Gurobi and CPLEX are (expensive, but fast) commercial solvers. At TransitonZero, we have access to a floating Gurobi license, so let's install this.
+
+#### 3. Clone the FEO-OSeMOSYS repository
+
+#### 4. Setup the FEO-OSeMOSYS environment
+
+#### 5. Run a small demo model
 
 ## Useful Links
 
