@@ -43,6 +43,13 @@ No input problem file specified; try glpsol --help
 FEO-OSeMOSYS supports three solvers: CBC, Gurobi and CPLEX. **You need at least one of these solvers for OSeMOSYS to function**. CBC is a free solver, while Gurobi and CPLEX are (expensive, but fast) commercial solvers. At TransitonZero, we have access to a floating Gurobi license, so let's install this.
 
 #### 3. Clone the FEO-OSeMOSYS repository
+Next, clone the `FEO-OSeMOSYS` repository by running:
+
+```
+git clone https://github.com/transition-zero/feo-esmod-osemosys
+```
+
+This will allow you to use and develop the `FEO-OSeMOSYS` modelling framework.
 
 #### 4. Setup the FEO-OSeMOSYS environment
 
