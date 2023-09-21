@@ -1,4 +1,4 @@
-# Future Energy Outlook
+# Future Energy Outlook (FEO)
 
 ![Geographic scope](./docs/_static/osemosys-global.png "Geographic scope")
 
@@ -12,19 +12,37 @@ subset of the globe. It is built using the fully open-source
 
 ## Getting started
 
-### Setup on MacOS
+### Setup on MacOS/Linux
 
 #### 1. Install `GLPK`
 
 [GNU GLPK](https://www.gnu.org/software/glpk/#downloading) package is a open-source linear programming package. OSeMOSYS Global uses it to create a linear programming file.
 
-We can install `GLPK` using `homebrew`. If you haven't installed `homebrew` yet, you can download the `.pkg` file [here](https://github.com/Homebrew/brew/releases/tag/4.1.12) or run the following command in your terminal:
+On **Linux**, installing `GLPK` is usually straightforward and can be done by running:
+
+```
+sudo apt-get install glpk-utils
+```
+
+Meanwhile, on MacOS we can install `GLPK` using `homebrew`. If you haven't installed `homebrew` yet, you can download the `.pkg` file [here](https://github.com/Homebrew/brew/releases/tag/4.1.12) or run the following command in your terminal:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Once you have `homebrew` setup, run the following command to install `GLPK`:
+To verify the `homebrew` installation, type `brew -v` into your terminal. You should see an output similar to below:
+
+```
+Homebrew 4.1.12-2-g1f80e82
+```
+
+If your system did not identify the command, run the following in your terminal:
+
+```
+export PATH=/opt/homebrew/bin:$PATH
+```
+
+`homebrew` should now be setup. We can now install `GLPK` by running:
 
 ```bash
 brew install glpk
@@ -40,7 +58,14 @@ No input problem file specified; try glpsol --help
 ```
 
 #### 2. Install a Solver
-FEO-OSeMOSYS supports three solvers: CBC, Gurobi and CPLEX. **You need at least one of these solvers for OSeMOSYS to function**. CBC is a free solver, while Gurobi and CPLEX are (expensive, but fast) commercial solvers. At TransitonZero, we have access to a floating Gurobi license, so let's install this.
+FEO-OSeMOSYS supports three solvers: CBC, Gurobi and CPLEX. **You need at least one of these solvers for OSeMOSYS to function**. CBC is a free solver, while Gurobi and CPLEX are (expensive, but fast) commercial solvers. At TransitonZero, we tend to use Gurobi, which can be installed by following the instructions [here](https://support.gurobi.com/hc/en-us/articles/4534161999889-How-do-I-install-Gurobi-Optimizer-).
+
+To check Gurobi has installed successfully, type `gurobi_cl --version` into your terminal, which should output as below or similar:
+
+```
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (mac64[arm])
+Copyright (c) 2023, Gurobi Optimization, LLC
+```
 
 #### 3. Clone the FEO-OSeMOSYS repository
 Next, clone the `FEO-OSeMOSYS` repository by running:
@@ -68,6 +93,7 @@ conda env create --file=~/workflow/envs/feo-osemosys.yaml
 ```
 
 #### 5. Run a small demo model
+That's it! FEO-OSeMOSYS should now be installed on your machine. You can verify the install by following one of the [examples](https://feo-esmod-osemosys.readthedocs.io/en/latest/) within the FEO documentation.
 
 ## Useful Links
 
