@@ -5,11 +5,11 @@ plugins:
 
 nav:
   - Home: index.md
-  - Getting Started: 01_getting_started.md
+  - Introduction: 01_introduction.md
   - Indonesia: 02_indonesia.md
 
 theme:
-  name: material
+  name: readthedocs
   font:
     text: Roboto
     code: Roboto Mono
