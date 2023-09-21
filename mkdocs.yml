@@ -5,7 +5,8 @@ plugins:
 
 nav:
   - Home: index.md
-  - Indonesia: 1_indonesia.md
+  - Getting Started: 01_getting_started.md
+  - Indonesia: 02_indonesia.md
 
 theme:
   name: material
