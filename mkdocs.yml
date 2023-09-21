@@ -5,8 +5,9 @@ plugins:
 
 nav:
   - Home: index.md
-  - Introduction: 01_introduction.md
-  - Indonesia: 02_indonesia.md
+  - Getting started: 01_introduction.md
+  - Examples: 02_examples.md
+  - Case-studies: 03_case_studies.md
 
 theme:
   name: readthedocs
