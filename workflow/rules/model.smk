@@ -80,7 +80,7 @@ rule preprocess_data_file:
     log:
         log = 'results/{scenario}/logs/preprocess_data_file.log'
     shell:
-        'python resources/OSeMOSYS_GNU_MathProg/scripts/preprocess_data.py otoole {input} {output} 2> {log}'
+        'python resources/preprocess_data.py otoole {input} {output} 2> {log}'
 
 rule create_lp_file:
     message:
