@@ -5,10 +5,12 @@ plugins:
 
 nav:
   - Home: index.md
-  - Indonesia: 1_indonesia.md
+  - Getting started: 01_introduction.md
+  - Examples: 02_examples.md
+  - Case-studies: 03_case_studies.md
 
 theme:
-  name: material
+  name: readthedocs
   font:
     text: Roboto
     code: Roboto Mono
