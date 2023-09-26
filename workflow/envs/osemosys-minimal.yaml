@@ -1,0 +1,20 @@
+name: osemosys_minimal
+
+channels:
+  - bioconda
+  - conda-forge
+
+dependencies:
+  - python>=3.8
+  - pandas=1.4.1
+  - seaborn
+  - snakemake
+  - openpyxl
+  - pip
+  - scikit-learn
+  - plotly
+  - snakemake-minimal
+
+  - pip:
+      - world-bank-data
+      - otoole==1.1.0
