@@ -65,13 +65,15 @@ def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str
     """Plots total capacity chart 
         
     Arguments:
+        data: Dict[str,pd.DataFrame]
+            Result data
         save_dir: str 
             Directory to save file 
         country: str 
             If a country provided, plot at a country level, else plot at a 
             system level
     """
-    
+
     df = get_total_capacity_data(data, country=country)
     plot_colors = get_color_codes()
 
@@ -389,8 +391,8 @@ def plot_transmission_flow(
 if __name__ == '__main__':
     
     if len(sys.argv) == 8:
-        input_data = pd.read_csv(sys.argv[1])
-        result_data = pd.read_csv(sys.argv[2])
+        input_data = read_csv(sys.argv[1])
+        result_data = read_csv(sys.argv[2])
         scenario_figs_dir = sys.argv[3]
         cost_line_expansion_xlsx = sys.argv[4]
         countries = sys.argv[5]
@@ -412,7 +414,6 @@ if __name__ == '__main__':
         except FileNotFoundError:
             print(f"Usage: python {sys.argv[0]} <input_data.csv> <result_data.csv> <scenario_figs_dir> <cost_line_expansion_xlsx> <countries> <results_by_country> <years>")
             sys.exit(1)
-
 
 '''
 # ### Interactive visualisation of residual capacity by node
