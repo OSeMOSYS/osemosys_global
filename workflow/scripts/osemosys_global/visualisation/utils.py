@@ -2,7 +2,8 @@
 
 import pandas as pd
 import os 
-from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 from typing import Dict, List, Union, Tuple
 import itertools
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES

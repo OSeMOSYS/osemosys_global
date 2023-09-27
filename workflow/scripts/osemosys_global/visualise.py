@@ -3,33 +3,41 @@ pd.set_option('mode.chained_assignment', None)
 import plotly.express as px
 import os
 import numpy as np
+import sys 
+from typing import List
 from sklearn.preprocessing import MinMaxScaler
 from typing import Dict
 from osemosys_global.utils import read_csv, filter_transmission_techs
 from osemosys_global.visualisation.utils import get_color_codes, get_map, plot_map_trn_line, plot_map_text, load_node_data_demand_center
 from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
-# from osemosys_global.configuration import ConfigFile, ConfigPaths
-from configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 
 
-def main():
+def main(
+    input_data: pd.DataFrame,
+    result_data: pd.DataFrame,
+    scenario_figs_dir: str,
+    cost_line_expansion_xlsx: str,
+    countries: List[str],
+    results_by_country: bool = True,
+    years: List[int] = [2050]
+):
     """Creates system level and country level graphs."""
 
-    config_paths = ConfigPaths()
-    config = ConfigFile('config')
-    scenario_figs_dir = config_paths.scenario_figs_dir
-    results_by_country = config.get('results_by_country')
-    cost_line_expansion_xlsx = os.path.join(config_paths.input_data_dir, "Costs Line expansion.xlsx")
+    # config_paths = ConfigPaths()
+    # config = ConfigFile('config')
+    # scenario_figs_dir = config_paths.scenario_figs_dir
+    # results_by_country = config.get('results_by_country')
+    # cost_line_expansion_xlsx = os.path.join(config_paths.input_data_dir, "Costs Line expansion.xlsx")
+    # input_data = read_csv(config_paths.scenario_data_dir)
+    # result_data = read_csv(config_paths.scenario_results_dir)
+    # years = [config.get('endYear')]
 
     # Check for output directory 
     try:
         os.makedirs(scenario_figs_dir)
     except FileExistsError:
         pass
-    
-    input_data = read_csv(config_paths.scenario_data_dir)
-    result_data = read_csv(config_paths.scenario_results_dir)
-    
 
     # Get system level results 
     plot_total_capacity(result_data, scenario_figs_dir, country=None)
@@ -38,7 +46,7 @@ def main():
 
     # If producing by country results, check for folder structure 
     if results_by_country:
-        countries = config.get('geographic_scope')
+        # countries = config.get('geographic_scope')
         for country in countries:
             try:
                 os.makedirs(os.path.join(scenario_figs_dir, country))
@@ -49,7 +57,6 @@ def main():
             plot_generation_annual(result_data, scenario_figs_dir, country=country)
     
     # Creates transmission maps by year      
-    years = [config.get('endYear')]
     for year in years:
         plot_transmission_capacity(cost_line_expansion_xlsx, result_data, scenario_figs_dir, year)
         plot_transmission_flow(cost_line_expansion_xlsx, result_data, scenario_figs_dir, year)
@@ -380,7 +387,31 @@ def plot_transmission_flow(
     )
 
 if __name__ == '__main__':
-    main()
+    
+    if len(sys.argv) == 8:
+        input_data = pd.read_csv(sys.argv[1])
+        result_data = pd.read_csv(sys.argv[2])
+        scenario_figs_dir = sys.argv[3]
+        cost_line_expansion_xlsx = sys.argv[4]
+        countries = sys.argv[5]
+        results_by_country = sys.argv[6]
+        years = sys.argv[7]
+        main(input_data, result_data, scenario_figs_dir, cost_line_expansion_xlsx, countries, results_by_country, years)
+    else:
+        try:
+            config_paths = ConfigPaths()
+            config = ConfigFile('config')
+            scenario_figs_dir = config_paths.scenario_figs_dir
+            results_by_country = config.get('results_by_country')
+            cost_line_expansion_xlsx = os.path.join(config_paths.input_data_dir, "Costs Line expansion.xlsx")
+            countries = config.get('geographic_scope')
+            input_data = read_csv(config_paths.scenario_data_dir)
+            result_data = read_csv(config_paths.scenario_results_dir)
+            years = [config.get('endYear')]
+            main(input_data, result_data, scenario_figs_dir, cost_line_expansion_xlsx, countries, results_by_country, years)
+        except FileNotFoundError:
+            print(f"Usage: python {sys.argv[0]} <input_data.csv> <result_data.csv> <scenario_figs_dir> <cost_line_expansion_xlsx> <countries> <results_by_country> <years>")
+            sys.exit(1)
 
 
 '''
