@@ -257,7 +257,7 @@ def plot_transmission_capacity(
     fig, ax = get_map(extent=extent)
     
     # generates all lines and map text
-    df_year = trn.loc[trn['YEAR'] == year]
+    df_year = trn.loc[trn['YEAR'] == int(year)]
     for y in df_year.index.unique():
         
         # get data to plot
@@ -346,7 +346,7 @@ def plot_transmission_flow(
     fig, ax = get_map(extent=extent)
     
     # generates all lines and map text
-    df_year = prd.loc[prd['YEAR'] == year]
+    df_year = prd.loc[prd['YEAR'] == int(year)]
     for y in df_year.index.unique():
         
         # get data to plot
