@@ -10,6 +10,7 @@ https://community.plotly.com/t/dash-graphs-and-callbacks-multiple-tabs-and-modul
 
 from pathlib import Path
 from typing import Dict, List
+import yaml 
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output, State
 from osemosys_global.dashboard.components import ids
@@ -48,14 +49,20 @@ logger.propagate = False
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 logger.info("Reading configuration options")
-config = ConfigPaths()
-config_file = ConfigFile("config")
-SCENARIO = config_file.get("scenario")
+# config = ConfigPaths()
+# config_file = ConfigFile("config")
+# SCENARIO = config_file.get("scenario")
+config_file_path = "config/config.yaml"
+with open(config_file_path, encoding='utf-8') as yaml_file:
+    scenario = yaml.load(yaml_file, Loader = yaml.FullLoader).get("scenario")
+input_data_dir = Path("resources","data")
+
+SCENARIO = scenario
 
 # read in data
 logger.info("Reading input and result data")
-INPUT_DATA = read_csv(config.scenario_data_dir)
-RESULT_DATA = read_csv(config.scenario_results_dir)
+INPUT_DATA = read_csv(str(Path("results", scenario, "data")))
+RESULT_DATA = read_csv((Path("results", scenario, "results")))
 
 # add in prodution by mode values to result data 
 logger.info("Adding production by mode data")
@@ -71,8 +78,8 @@ RESULT_DATA["ProductionByTechnologyByModeAnnual"] = get_production_by_mode(
 
 # get node/line geolocations
 logger.info("Geolocating nodes and lines")
-cost_line_expansion_file = Path(config.input_data_dir, "Costs Line expansion.xlsx")
-softlink_file = Path(config.input_data_dir, "PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx")
+cost_line_expansion_file = Path(input_data_dir, "Costs Line expansion.xlsx")
+softlink_file = Path(input_data_dir, "PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx")
 
 NODES_DEMAND_CENTER = geolocate_nodes(cost_line_expansion_file, centroid=False)
 LINES_DEMAND_CENTER = geolocate_lines(cost_line_expansion_file, NODES_DEMAND_CENTER)

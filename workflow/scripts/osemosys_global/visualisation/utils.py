@@ -2,10 +2,10 @@
 
 import pandas as pd
 import os 
-# from osemosys_global.configuration import ConfigFile, ConfigPaths
-from configuration import ConfigFile, ConfigPaths
+from osemosys_global.configuration import ConfigFile, ConfigPaths
 from typing import Dict, List, Union, Tuple
 import itertools
+from pathlib import Path
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift, filter_transmission_techs
 from osemosys_global.powerplant_data import format_transmission_name
@@ -22,8 +22,11 @@ def get_color_codes() -> Dict:
     Return:
         Dictionary with tech and color name map
     """
-    config_paths = ConfigPaths()
-    input_data_dir = config_paths.input_data_dir
+    try:
+        config_paths = ConfigPaths()
+        input_data_dir = config_paths.input_data_dir
+    except FileNotFoundError:
+        input_data_dir = str(Path("resources", "data"))
     name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
                                                 'color_codes.csv'
                                                 ),

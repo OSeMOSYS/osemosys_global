@@ -3,7 +3,7 @@
 import pandas as pd
 from typing import Dict, Optional
 from pathlib import Path
-from constants import SET_DTYPES
+from osemosys_global.constants import SET_DTYPES
 
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
