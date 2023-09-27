@@ -397,8 +397,12 @@ if __name__ == '__main__':
         scenario_figs_dir = sys.argv[3]
         cost_line_expansion_xlsx = sys.argv[4]
         countries = sys.argv[5]
+        if not isinstance(countries, list):
+            countries = [countries]
         results_by_country = sys.argv[6]
         years = sys.argv[7]
+        if not isinstance(years, list):
+            years = [years]
         main(input_data, result_data, scenario_figs_dir, cost_line_expansion_xlsx, countries, results_by_country, years)
     else:
         try:
