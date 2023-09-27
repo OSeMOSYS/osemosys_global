@@ -95,10 +95,6 @@ rule visualisation:
     shell: 
         'python workflow/scripts/osemosys_global/visualise.py {params.input_data} {params.result_data} {params.scenario_figs_dir} {params.cost_line_expansion_xlsx} {params.countries} {params.results_by_country} {params.years} 2> {log}'
 
-rule viz:
-    input:
-        'results/India/figures/TotalCapacityAnnual.html'
-
 rule summarise_results:
     message:
         'Generating summary of results...'
