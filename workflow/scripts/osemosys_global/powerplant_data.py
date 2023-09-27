@@ -12,6 +12,9 @@ import itertools
 import urllib
 import os
 from osemosys_global.configuration import ConfigFile, ConfigPaths
+import yaml
+from constants import SET_DTYPES
+from utils import apply_dtypes
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 import os
@@ -211,7 +214,6 @@ def main():
     df_gen_agg_node = df_gen_agg_node.append(nodes_extra_df,
                                              ignore_index=True,
                                              sort='False').fillna(0).sort_values(by='node').set_index('node').round(2)
-    #df_gen_agg_node.to_csv(r'output/test_output_2.csv')
 
 
     # Add region and country code columns
@@ -241,9 +243,6 @@ def main():
                  'retirement_year_model'] = 2030
     df_gen_2.loc[df_gen_2['retirement_diff'] <= 0, 
                  'retirement_year_model'] = df_gen_2['retirement_year_data']
-
-    #df_gen_2.to_csv(r'output/test_output_3.csv')
-
 
     # ### Add naming convention
     tech_code_dict = dict(zip(list(df_tech_code['tech']),
@@ -363,7 +362,7 @@ def main():
         df_res_cap_custom, custom_techs = custom_nodes_csv(custom_nodes, df_custom_res_cap, region_name, years, tech_list)
         df_res_cap = df_res_cap.append(df_res_cap_custom)
 
-    # df_res_cap.to_csv(r"osemosys_global_model/data/ResidualCapacity.csv", index=None)
+    df_res_cap = apply_dtypes(df_res_cap, "Residual Capacity")
     df_res_cap.to_csv(os.path.join(output_data_dir, 
                                    "ResidualCapacity.csv"),
                       index=None)
@@ -605,10 +604,6 @@ def main():
                      'YEAR', 
                      'VALUE',]]
 
-    # Don't write yet - we'll write the IAR and OAR at the end...
-    # df_oar_final.to_csv(r"output/OutputActivityRatio.csv", index = None)
-
-
     # #### InputActivityRatio - Power Generation Technologies
     # Copy OAR table with all columns to IAR
     df_iar = df_oar.copy()
@@ -677,10 +672,6 @@ def main():
                            'MODE_OF_OPERATION',
                            'YEAR', 
                            'VALUE',]]
-
-    # Don't write this yet - we'll write both IAR and OAR at the end...
-    # df_iar_final.to_csv(r"output/InputActivityRatio.csv", index = None)
-
 
     # #### OutputActivityRatios - Upstream
 
@@ -919,6 +910,7 @@ def main():
     df_oar_newTechs = duplicatePlexosTechs(df_oar_final, duplicate_techs)
     df_oar_final = df_oar_final.append(df_oar_newTechs, ignore_index=True)
 
+<<<<<<< HEAD:workflow/scripts/osemosys_global/powerplant_data.py
 
     df_oar_final = df_oar_final.astype({
         "REGION":str,
@@ -940,6 +932,14 @@ def main():
         "YEAR":int,
         "VALUE":float
     })
+=======
+    df_oar_final = apply_dtypes(df_oar_final, "OutputActivityRatio")
+    df_oar_final.to_csv(os.path.join(output_data_dir,
+                                     "OutputActivityRatio.csv"),
+                        index=None)
+    
+    df_iar_final = apply_dtypes(df_iar_final, "InputActivityRatio")
+>>>>>>> master:workflow/scripts/osemosys_global/OPG_powerplant_data.py
     df_iar_final.to_csv(os.path.join(output_data_dir,
                                      "InputActivityRatio.csv"),
                         index=None)
@@ -1089,23 +1089,31 @@ def main():
 
         if each_cost in ['Capital']:
             df_costs_final = df_costs_final.merge(df_trans_capex, how='outer')
+<<<<<<< HEAD:workflow/scripts/osemosys_global/powerplant_data.py
             df_costs_final = df_costs_final.astype({
                 "REGION":str,
                 "TECHNOLOGY":str,
                 "YEAR":int,
                 "VALUE":float
             })
+=======
+            df_costs_final = apply_dtypes(df_costs_final, "CapitalCost")
+>>>>>>> master:workflow/scripts/osemosys_global/OPG_powerplant_data.py
             df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "CapitalCost.csv"),
                                   index = None)
         if each_cost in ['O&M']:
             df_costs_final = df_costs_final.merge(df_trans_fix, how='outer')
+<<<<<<< HEAD:workflow/scripts/osemosys_global/powerplant_data.py
             df_costs_final = df_costs_final.astype({
                 "REGION":str,
                 "TECHNOLOGY":str,
                 "YEAR":int,
                 "VALUE":float
             })
+=======
+            df_costs_final = apply_dtypes(df_costs_final, "FixedCost")
+>>>>>>> master:workflow/scripts/osemosys_global/OPG_powerplant_data.py
             df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "FixedCost.csv"),
                                   index = None)
@@ -1127,6 +1135,7 @@ def main():
                        )
 
     df_capact_final['VALUE'] = 31.536
+    df_capact_final = apply_dtypes(df_capact_final, "CapacityToActivityUnit")
     df_capact_final.to_csv(os.path.join(output_data_dir,
                                         "CapacityToActivityUnit.csv"),
                            index = None)
@@ -1147,6 +1156,8 @@ def main():
         df_crossborder_final = pd.DataFrame(columns=['REGION', 
                                                     'TECHNOLOGY',
                                                     'VALUE'])
+
+    df_crossborder_final = apply_dtypes(df_crossborder_final, "TotalTechnologyModelPeriodActivityUpperLimit")
     df_crossborder_final.to_csv(os.path.join(output_data_dir,
                                             "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
                                 index = None)
@@ -1174,6 +1185,7 @@ def main():
         
     df_op_life_Out = pd.DataFrame(op_life_out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
 
+    df_op_life_Out = apply_dtypes(df_op_life_Out, "OperationalLife")
     df_op_life_Out.to_csv(os.path.join(output_data_dir,
                                                 "OperationalLife.csv"),
                                     index = None)
@@ -1202,13 +1214,15 @@ def main():
     # Save totalAnnualMaxCapacityInvestment
     df_max_cap_invest = pd.DataFrame(max_cap_invest_data,
                                     columns = ['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']
-                                    )       
+                                    )
+    df_max_cap_invest = apply_dtypes(df_max_cap_invest, "TotalAnnualMaxCapacityInvestment")
     df_max_cap_invest.to_csv(os.path.join(output_data_dir, 
                                             'TotalAnnualMaxCapacityInvestment.csv'),
                                         index = None)
     
     df_min_cap_invest = pd.DataFrame(columns = ['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']
                                     )
+    df_min_cap_invest = apply_dtypes(df_min_cap_invest, "TotalAnnualMinCapacityInvestment")
     df_min_cap_invest.to_csv(os.path.join(output_data_dir, 
                                             'TotalAnnualMinCapacityInvestment.csv'),
                                         index = None)
@@ -1222,17 +1236,17 @@ def main():
 
     # ## Create set for YEAR, REGION, MODE_OF_OPERATION
 
-    years_df = pd.DataFrame(years, columns = ['VALUE'])
+    years_df = pd.DataFrame(years, columns = ['VALUE']).astype(SET_DTYPES["YEAR"])
     years_df.to_csv(os.path.join(output_data_dir, 
                                  "YEAR.csv"),
                     index = None)
 
-    mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE'])
+    mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE']).astype(SET_DTYPES["MODE_OF_OPERATION"])
     mode_list_df.to_csv(os.path.join(output_data_dir, 
                                      "MODE_OF_OPERATION.csv"),
                         index = None)
 
-    regions_df = pd.DataFrame(columns = ['VALUE'])
+    regions_df = pd.DataFrame(columns = ['VALUE']).astype(SET_DTYPES["REGION"])
     regions_df.loc[0] = region_name
     regions_df.to_csv(os.path.join(output_data_dir, 
                                    "REGION.csv"),
@@ -1514,6 +1528,15 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity):
         df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
         df_max_cap_inv.drop_duplicates(inplace=True)
 
+        df_min_cap_inv = apply_dtypes(df_min_cap_inv, "TotalAnnualMinCapacityInvestment")
+        df_max_cap_inv = apply_dtypes(df_max_cap_inv, "TotalAnnualMaxCapacityInvestment")
+        
+        # case where no invest technologies and user_defined_technologies are defined
+        df_min_cap_inv = df_min_cap_inv.drop_duplicates(
+            ["REGION", "TECHNOLOGY", "YEAR"], keep="last")
+        df_max_cap_inv = df_max_cap_inv.drop_duplicates(
+            ["REGION", "TECHNOLOGY", "YEAR"], keep="last")
+        
         df_max_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMaxCapacityInvestment.csv"),
                             index=None)
@@ -1563,7 +1586,6 @@ def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
                                  as_index=False)['VALUE'].sum()
 
     return df_param, technologies
-            
 
 if __name__ == "__main__":
     main()

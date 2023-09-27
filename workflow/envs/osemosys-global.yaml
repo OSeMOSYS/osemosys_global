@@ -8,7 +8,7 @@ dependencies:
  - python>=3.8
  - pip
 
- - pandas
+ - pandas<2.0
  - urllib3
  - matplotlib
  - seaborn

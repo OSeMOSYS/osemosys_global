@@ -1,8 +1,12 @@
 """Utility Functions"""
 
 import pandas as pd
-from typing import Dict
+from typing import Dict, Optional
 from pathlib import Path
+from constants import SET_DTYPES
+
+import logging 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 def apply_timeshift(x, timeshift):
     """Applies timeshift to organize dayparts.
@@ -43,3 +47,16 @@ def filter_transmission_techs(df: pd.DataFrame, column_name: str = "TECHNOLOGY")
         pd.DataFrame
     """
     return df.loc[df[column_name].str.startswith("TRN")].reset_index(drop=True)
+
+def apply_dtypes(df:pd.DataFrame, name: Optional[str]) -> pd.DataFrame:
+    """Sets datatypes on dataframe"""
+    
+    for col in df.columns:
+        try:
+            df[col] = df[col].astype(SET_DTYPES[col])
+        except KeyError:
+            if name:
+                logging.info(f"Can not set dtype for {name} on {col}")
+            else:
+                logging.info(f"Can not set dtype on {col}")
+    return df

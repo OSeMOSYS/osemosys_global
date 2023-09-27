@@ -8,6 +8,8 @@ import urllib
 import os
 from osemosys_global.configuration import ConfigFile, ConfigPaths
 from osemosys_global.utils import apply_timeshift
+from utils import apply_dtypes
+from constants import SET_DTYPES
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -244,10 +246,17 @@ yearsplit_final = pd.DataFrame(list(itertools.product(yearsplit['TIMESLICE'].uni
                               )
 yearsplit_final = yearsplit_final.join(yearsplit.set_index('TIMESLICE'), 
                                        on = 'TIMESLICE')
+yearsplit_final = apply_dtypes(yearsplit_final, "Year Split")
 yearsplit_final.to_csv(os.path.join(output_data_dir, 
                                     'YearSplit.csv'),
                        index=None)
 
+<<<<<<< HEAD:workflow/scripts/osemosys_global/TS_data.py
+=======
+
+# ### Calculate SpecifiedAnnualDemand and SpecifiedDemandProfile
+
+>>>>>>> master:workflow/scripts/osemosys_global/OPG_TS_data.py
 sp_demand_df = demand_df[[x 
                           for x in demand_df.columns 
                           if x in demand_nodes or
@@ -337,9 +346,6 @@ total_demand_df_final = (sp_demand_df_final.
 # Convert SpecifiedAnnualDemand to required units
 total_demand_df_final['VALUE'] = total_demand_df_final['VALUE'].mul(3.6*1e-6)
 
-# Generate SpecifiedAnnualDemand.csv file 
-#total_demand_df_final.to_csv(os.path.join(output_dir,'SpecifiedAnnualDemand.csv'), index=None)
-
 # Generate SpecifiedDemandProfile.csv file 
 sp_demand_df_final['VALUE'] = sp_demand_df_final['VALUE'].round(2)
 sp_demand_df_final = sp_demand_df_final[['REGION',
@@ -348,8 +354,13 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
                                          'YEAR', 
                                          'VALUE']]
 
+sp_demand_df_final = apply_dtypes(sp_demand_df_final, "SpecifiedDemandProfile")
 sp_demand_df_final.to_csv(os.path.join(output_data_dir,'SpecifiedDemandProfile.csv'), index=None)
 
+<<<<<<< HEAD:workflow/scripts/osemosys_global/TS_data.py
+=======
+# ### CapacityFactor
+>>>>>>> master:workflow/scripts/osemosys_global/OPG_TS_data.py
 
 datetime_ts_df = demand_df[['Datetime', 'TIMESLICE']]
 capfac_all_df = pd.DataFrame(columns = ['REGION',
@@ -441,13 +452,19 @@ for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
     capfac_all_df = capfac_all_df.append(capacity_factor(each),
                                          ignore_index = True)
     
+capfac_all_df = apply_dtypes(capfac_all_df, "CapacityFactor")
 capfac_all_df.to_csv(os.path.join(output_data_dir, 
                                   'CapacityFactor.csv'),
                      index=None)
 
 
+<<<<<<< HEAD:workflow/scripts/osemosys_global/TS_data.py
+=======
+# ## Create csv for TIMESLICE 
+
+>>>>>>> master:workflow/scripts/osemosys_global/OPG_TS_data.py
 time_slice_list = list(demand_df['TIMESLICE'].unique())
-time_slice_df = pd.DataFrame(time_slice_list, columns = ['VALUE'])
+time_slice_df = pd.DataFrame(time_slice_list, columns = ['VALUE']).astype(SET_DTYPES["TIMESLICE"])
 time_slice_df.to_csv(os.path.join(output_data_dir, 
                                   'TIMESLICE.csv'),
                      index=None)

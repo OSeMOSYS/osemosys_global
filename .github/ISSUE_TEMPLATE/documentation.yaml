@@ -29,7 +29,7 @@ body:
   validations:
     required: true
 
-- type: input
+- type: textarea
   attributes:
     label: Suggested Update
     description: Do you have an idea on how to add or update the documention? 

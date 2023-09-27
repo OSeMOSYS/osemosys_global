@@ -3,6 +3,7 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import os
 from osemosys_global.configuration import ConfigFile, ConfigPaths
+from utils import apply_dtypes
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -186,6 +187,7 @@ df_varcosts_final = df_varcost[['REGION',
                        'YEAR', 
                        'VALUE']]
 
+df_varcosts_final = apply_dtypes(df_varcosts_final, "VariableCost")
 df_varcosts_final.to_csv(os.path.join(output_data_dir,'VariableCost.csv'), mode='w', header=True, index = None)
 
 logging.info('Variable Costs Completed')

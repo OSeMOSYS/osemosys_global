@@ -12,6 +12,7 @@ import urllib
 import os
 from sklearn.linear_model import LinearRegression
 from osemosys_global.configuration import ConfigFile, ConfigPaths
+from utils import apply_dtypes
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -678,6 +679,7 @@ if custom_nodes:
     df_demands = pd.concat([df_demands,
                             df_sp_annual_demand],
                             ignore_index=True)
+    df_demands = apply_dtypes(df_demands, "SpecifiedAnnualDemand")
     df_demands['VALUE'] = df_demands['VALUE'].round(2)                        
     df_demands.to_csv(os.path.join(output_data_dir, 
                                    "SpecifiedAnnualDemand.csv"),
