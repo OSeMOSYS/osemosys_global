@@ -8,7 +8,8 @@ from typing import Dict
 from osemosys_global.utils import read_csv, filter_transmission_techs
 from osemosys_global.visualisation.utils import get_color_codes, get_map, plot_map_trn_line, plot_map_text, load_node_data_demand_center
 from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
-from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 
 
 def main():

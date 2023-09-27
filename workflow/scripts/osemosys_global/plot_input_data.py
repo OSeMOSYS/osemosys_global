@@ -1,7 +1,8 @@
 import pandas as pd
 import plotly.graph_objects as go
 import os
-from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 
 pd.set_option('mode.chained_assignment', None)
 

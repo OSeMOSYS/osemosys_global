@@ -6,7 +6,8 @@ import itertools
 import seaborn as sns; sns.set()
 import urllib
 import os
-from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 from osemosys_global.utils import apply_timeshift
 from utils import apply_dtypes
 from constants import SET_DTYPES
@@ -251,12 +252,9 @@ yearsplit_final.to_csv(os.path.join(output_data_dir,
                                     'YearSplit.csv'),
                        index=None)
 
-<<<<<<< HEAD:workflow/scripts/osemosys_global/TS_data.py
-=======
 
-# ### Calculate SpecifiedAnnualDemand and SpecifiedDemandProfile
+#  Calculate SpecifiedAnnualDemand and SpecifiedDemandProfile
 
->>>>>>> master:workflow/scripts/osemosys_global/OPG_TS_data.py
 sp_demand_df = demand_df[[x 
                           for x in demand_df.columns 
                           if x in demand_nodes or
@@ -357,10 +355,7 @@ sp_demand_df_final = sp_demand_df_final[['REGION',
 sp_demand_df_final = apply_dtypes(sp_demand_df_final, "SpecifiedDemandProfile")
 sp_demand_df_final.to_csv(os.path.join(output_data_dir,'SpecifiedDemandProfile.csv'), index=None)
 
-<<<<<<< HEAD:workflow/scripts/osemosys_global/TS_data.py
-=======
-# ### CapacityFactor
->>>>>>> master:workflow/scripts/osemosys_global/OPG_TS_data.py
+# CapacityFactor
 
 datetime_ts_df = demand_df[['Datetime', 'TIMESLICE']]
 capfac_all_df = pd.DataFrame(columns = ['REGION',
@@ -458,11 +453,8 @@ capfac_all_df.to_csv(os.path.join(output_data_dir,
                      index=None)
 
 
-<<<<<<< HEAD:workflow/scripts/osemosys_global/TS_data.py
-=======
-# ## Create csv for TIMESLICE 
+# Create csv for TIMESLICE 
 
->>>>>>> master:workflow/scripts/osemosys_global/OPG_TS_data.py
 time_slice_list = list(demand_df['TIMESLICE'].unique())
 time_slice_df = pd.DataFrame(time_slice_list, columns = ['VALUE']).astype(SET_DTYPES["TIMESLICE"])
 time_slice_df.to_csv(os.path.join(output_data_dir, 

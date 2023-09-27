@@ -3,7 +3,8 @@
 import logging
 import pandas as pd
 from pathlib import Path
-from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 from utils import apply_dtypes
 from constants import SET_DTYPES
 

@@ -11,7 +11,8 @@ import numpy as np
 import itertools
 import urllib
 import os
-from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 import yaml
 from constants import SET_DTYPES
 from utils import apply_dtypes
@@ -910,36 +911,12 @@ def main():
     df_oar_newTechs = duplicatePlexosTechs(df_oar_final, duplicate_techs)
     df_oar_final = df_oar_final.append(df_oar_newTechs, ignore_index=True)
 
-<<<<<<< HEAD:workflow/scripts/osemosys_global/powerplant_data.py
-
-    df_oar_final = df_oar_final.astype({
-        "REGION":str,
-        "TECHNOLOGY":str,
-        "FUEL":str,
-        "MODE_OF_OPERATION":int,
-        "YEAR":int,
-        "VALUE":float
-    })
-    df_oar_final.to_csv(os.path.join(output_data_dir,
-                                     "OutputActivityRatio.csv"),
-                        index=None)
-
-    df_iar_final = df_iar_final.astype({
-        "REGION":str,
-        "TECHNOLOGY":str,
-        "FUEL":str,
-        "MODE_OF_OPERATION":int,
-        "YEAR":int,
-        "VALUE":float
-    })
-=======
     df_oar_final = apply_dtypes(df_oar_final, "OutputActivityRatio")
     df_oar_final.to_csv(os.path.join(output_data_dir,
                                      "OutputActivityRatio.csv"),
                         index=None)
     
     df_iar_final = apply_dtypes(df_iar_final, "InputActivityRatio")
->>>>>>> master:workflow/scripts/osemosys_global/OPG_powerplant_data.py
     df_iar_final.to_csv(os.path.join(output_data_dir,
                                      "InputActivityRatio.csv"),
                         index=None)
@@ -1089,31 +1066,13 @@ def main():
 
         if each_cost in ['Capital']:
             df_costs_final = df_costs_final.merge(df_trans_capex, how='outer')
-<<<<<<< HEAD:workflow/scripts/osemosys_global/powerplant_data.py
-            df_costs_final = df_costs_final.astype({
-                "REGION":str,
-                "TECHNOLOGY":str,
-                "YEAR":int,
-                "VALUE":float
-            })
-=======
             df_costs_final = apply_dtypes(df_costs_final, "CapitalCost")
->>>>>>> master:workflow/scripts/osemosys_global/OPG_powerplant_data.py
             df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "CapitalCost.csv"),
                                   index = None)
         if each_cost in ['O&M']:
             df_costs_final = df_costs_final.merge(df_trans_fix, how='outer')
-<<<<<<< HEAD:workflow/scripts/osemosys_global/powerplant_data.py
-            df_costs_final = df_costs_final.astype({
-                "REGION":str,
-                "TECHNOLOGY":str,
-                "YEAR":int,
-                "VALUE":float
-            })
-=======
             df_costs_final = apply_dtypes(df_costs_final, "FixedCost")
->>>>>>> master:workflow/scripts/osemosys_global/OPG_powerplant_data.py
             df_costs_final.to_csv(os.path.join(output_data_dir, 
                                                "FixedCost.csv"),
                                   index = None)

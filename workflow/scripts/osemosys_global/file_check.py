@@ -4,7 +4,8 @@
 import pandas as pd
 import os
 import shutil
-from osemosys_global.configuration import ConfigPaths
+# from osemosys_global.configuration import ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 

@@ -2,7 +2,8 @@
 import requests
 import os
 import pandas as pd
-from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
 from utils import apply_dtypes
 
 # LOGGING
