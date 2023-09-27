@@ -81,6 +81,8 @@ def transform_ts(data:Dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
     generation = list(data["TECHNOLOGY"]["VALUE"].unique())
 
     config = ConfigFile('config')
+    if not config.file_path.exists():
+        config.file_path = "config/config.yaml"
     seasons_raw = config.get('seasons')
     seasonsData = []
 
