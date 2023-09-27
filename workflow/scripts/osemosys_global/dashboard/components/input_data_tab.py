@@ -4,7 +4,7 @@ from typing import List
 import pandas as pd
 from dash import Dash, dcc, html
 from typing import Dict
-from osemosys_global.visualisation.utils import get_color_codes
+# from osemosys_global.visualisation.utils import get_color_codes
 from osemosys_global.dashboard.components import ids
 import osemosys_global.dashboard.constants as const
 from osemosys_global.dashboard.utils import (

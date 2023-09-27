@@ -4,12 +4,15 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 from shapely.geometry import LineString
-from osemosys_global.visualisation.utils import (
-    load_node_data_demand_center, 
-    load_node_data_centroid, 
-    load_line_data, 
-    get_color_codes
-)
+from pathlib import Path 
+import os
+from osemosys_global.configuration import ConfigFile, ConfigPaths
+# from osemosys_global.visualisation.utils import (
+#     load_node_data_demand_center, 
+#     load_node_data_centroid, 
+#     load_line_data, 
+#     get_color_codes
+# )
 import osemosys_global.dashboard.constants as const
 from dash import html, dcc
 import plotly.express as px
@@ -528,3 +531,163 @@ def get_production_by_mode(df: pd.DataFrame, year_split: pd.DataFrame, annual: b
         return data.groupby(by=["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "FUEL", "YEAR"]).sum().reset_index()
     else:
         return data.reset_index()
+    
+    
+############################################################################
+## THESE ARE COPY/PASTE FROM VISULIZATION.UTILS TO GET AROUND IMPORT ISSUES
+## FIX IMPORTS THEN DELETE THIS SECTION
+############################################################################
+
+def load_node_data_demand_center(cost_line_expansion_xlsx: str) -> pd.DataFrame:
+    """Gets node names with lats and lons at demand center
+    
+    Arguments:
+        cost_line_expansion_xlsx: str
+            Path to 'Costs Line expansion.xlsx' file  
+            
+    Returns: 
+        Dataframe with nodes and lats and lons
+    """
+    
+    def parse_name(x: str) -> str:
+        parts = x.split("-")
+        if len(parts) > 2:
+            return f"{parts[1]}{parts[2]}"
+        else:
+            return f"{parts[1]}XX"
+        
+    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Centerpoints')
+    df = pd.DataFrame()
+    
+    df["NODE"] = raw["Node"].map(lambda x: parse_name(x))
+    df["LATITUDE"] = raw["Latitude"]
+    df["LONGITUDE"] = raw["Longitude"]
+    
+    # drop extra brazil codes 
+    df = df.loc[
+        (df["NODE"] != "BRAJ1") &
+        (df["NODE"] != "BRAJ2") &
+        (df["NODE"] != "BRAJ3")].reset_index(drop=True)
+    
+    return df
+
+def load_node_data_centroid(plexos_world_softlink_xlsx: str) -> pd.DataFrame:
+    """Gets node names with lats and lons at centroid
+    
+    Arguments:
+        plexos_world_softlink_xlsx: str
+            Path to 'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx' file  
+            
+    Returns: 
+        Dataframe with nodes and lats and lons
+    """
+    
+    def parse_name(x: str) -> str:
+        parts = x.split("-")
+        if len(parts) > 2:
+            return f"{parts[1]}{parts[2]}"
+        else:
+            return f"{parts[1]}XX"
+        
+    raw = pd.read_excel(plexos_world_softlink_xlsx, sheet_name='Attributes')
+    temp = raw.loc[raw["class"] == "Node"]
+
+    temp = temp.loc[
+        (temp["name"] != "SA-BRA-J1") &
+        (temp["name"] != "SA-BRA-J2") &
+        (temp["name"] != "SA-BRA-J3")]
+    
+    temp["NODE"] = temp["name"].map(lambda x: parse_name(x))
+    
+    df_lats = temp.loc[temp["attribute"] == "Latitude"]
+    df_lons = temp.loc[temp["attribute"] == "Longitude"]
+    
+    lats = dict(zip(df_lats["NODE"], df_lats["value"]))
+    lons = dict(zip(df_lons["NODE"], df_lons["value"]))
+    
+    return pd.DataFrame(
+        [[x, lats[x], lons[x]] for x in temp["NODE"].unique().tolist()],
+        columns=["NODE", "LATITUDE", "LONGITUDE"])
+
+def load_line_data(cost_line_expansion_xlsx: str) -> pd.DataFrame:
+    """Gets line names with to/from nodes
+    
+    Arguments:
+        cost_line_expansion_xlsx: str
+            Path to 'Costs Line expansion.xlsx' file  
+    
+    Returns:
+        pd.DataFrame     
+    """
+    def parse_transmission_codes(techs: List[str]) -> pd.DataFrame:
+        """Parses transmission techs to add start/end info"""
+        
+        parsed_data = []
+        for tech in techs:
+            parsed_data.append([
+                tech,
+                tech[3:8],
+                tech[8:]
+            ])
+        return pd.DataFrame(parsed_data, columns=["TECHNOLOGY", "FROM", "TO"])
+    
+    # get all transmission lines
+    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Interface')
+    trn = raw.dropna(subset=["From"])
+    trn = format_transmission_name(trn)
+    
+    # drop extra brazil codes 
+    trn = trn.loc[
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ1") &
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ2") &
+        (trn["TECHNOLOGY"].str[3:8] != "BRAJ3") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ1") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ2") &
+        (trn["TECHNOLOGY"].str[8:] != "BRAJ3")].reset_index(drop=True)
+    
+    return parse_transmission_codes(trn["TECHNOLOGY"].to_list())
+
+def format_transmission_name(df):
+    # If from column has length 6 then it's the last three chars plus XX
+    df.loc[df["From"].str.len() == 6, "From"] = (df["From"].str[3:6] + "XX")
+
+    # If from column has length 9 then it's the 3:6 and 7:9 three chars plus XX
+    df.loc[df["From"].str.len() == 9, "From"] = (
+        df["From"].str[3:6] + df["From"].str[7:9])
+
+    # If to column has length 6 then it's the last three chars plus XX
+    df.loc[df["To"].str.len() == 6, "To"] = (df["To"].str[3:6] + "XX")
+
+    # If to column has length 9 then it's the 3:6 and 7:9 three chars plus XX
+    df.loc[df["To"].str.len() == 9, "To"] = (
+        df["To"].str[3:6] + df["To"].str[7:9])
+
+    # Combine From and To columns.
+    df["TECHNOLOGY"] = ("TRN" + df["From"] + df["To"])
+
+    # Drop to and from columns
+    df = df.drop(["From", "To"], axis=1)
+
+    return df
+
+def get_color_codes() -> Dict:
+    """Get color naming dictionary.
+    
+    Return:
+        Dictionary with tech and color name map
+    """
+    try:
+        config_paths = ConfigPaths()
+        input_data_dir = config_paths.input_data_dir
+    except FileNotFoundError:
+        input_data_dir = str(Path("resources", "data"))
+    name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
+                                                'color_codes.csv'
+                                                ),
+                                   encoding='latin-1')
+
+    # Get colour mapping dictionary
+    color_dict = dict([(n, c) for n, c
+                   in zip(name_colour_codes.tech_id,
+                          name_colour_codes.colour)])
+    return color_dict
