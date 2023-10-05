@@ -12,14 +12,14 @@ dependencies:
  - urllib3
  - matplotlib
  - seaborn
- - xlsxwriter
- - openpyxl
- - plotly
  - snakemake-minimal
- - basemap
  - pytest
  - scikit-learn
+ - cartopy
 
  - pip:
-      - world-bank-data
-      - otoole==0.11.0
+   - world-bank-data
+   - otoole>=1.0.0, <1.1.0
+   - dash
+   - geos
+   - git+https://github.com/OSeMOSYS/osemosys_global@master

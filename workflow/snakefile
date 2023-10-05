@@ -14,7 +14,7 @@ include: 'rules/postprocess.smk'
 
 # constants 
 
-OTOOLE_FILES = os.listdir('resources/simplicity/data')
+OTOOLE_FILES = os.listdir('resources/otoole/data')
 
 # handlers 
         
@@ -55,6 +55,12 @@ rule make_dag:
         'dag created successfully and saved as docs/dag.pdf'
     shell:
         'snakemake --dag all | dot -Tpdf > docs/dag.pdf'
+
+# rule dashboard:
+#     message: 
+#         'Starting dashboard...'
+#     shell:
+#         'python workflow/scripts/osemosys_global/dashboard/app.py'
 
 # cleaning rules
 

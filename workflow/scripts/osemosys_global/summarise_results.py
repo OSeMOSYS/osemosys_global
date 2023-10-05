@@ -1,10 +1,13 @@
 import pandas as pd
 import itertools
 import os
-import sys
-import yaml
-from OPG_configuration import ConfigFile, ConfigPaths
-from visualisation import transform_ts, powerplant_filter
+from pathlib import Path
+from typing import Dict
+# from osemosys_global.configuration import ConfigFile, ConfigPaths
+from configuration import ConfigFile, ConfigPaths
+from osemosys_global.visualisation.utils import transform_ts, powerplant_filter
+from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
+from osemosys_global.utils import apply_timeshift
 pd.set_option('mode.chained_assignment', None)
 
 
@@ -12,8 +15,6 @@ def main():
     '''Creates summaries of results'''
 
     config_paths = ConfigPaths()
-    config = ConfigFile('config')
-
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
 
     # Check for output directory
@@ -21,13 +22,17 @@ def main():
         os.makedirs(scenario_result_summaries_dir)
     except FileExistsError:
         pass
+    
+    input_data = read_data(config_paths.scenario_data_dir)
+    result_data = read_data(config_paths.scenario_results_dir)
+    save_dir = config_paths.scenario_result_summaries_dir
 
     # SUMMARISE RESULTS
-    headline_metrics()
-    capacity_summary()
-    generation_summary()
-    generation_by_node_summary()
-    trade_flows()
+    headline_metrics(input_data, result_data, save_dir)
+    capacity_summary(input_data, result_data, save_dir)
+    generation_summary(input_data, result_data, save_dir)
+    generation_by_node_summary(input_data, result_data, save_dir)
+    trade_flows(input_data, result_data, save_dir)
 
 
 def renewables_filter(df):
@@ -52,20 +57,22 @@ def fossil_filter(df):
     return df
 
 
-def headline_metrics():
+def headline_metrics(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str):
     '''Function to summarise metrics for:
        1. Total emissions
        2. Average RE share
        3. Average cost of electricity generation
        4. Total system cost
-       5. Average fossil fuel share'''
-
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-
-    # Fix path below to config_paths
-    scenario_results_dir = config_paths.scenario_results_dir
-    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+       5. Average fossil fuel share
+       
+    Arguments:
+        input_data: Dict[str,pd.DataFrame]
+            Internal datastore for input data
+        result_data: Dict[str,pd.DataFrame]
+            Internal datastore for results
+        save_dir: str
+            Location to save table
+       '''
 
     # GET RESULTS
 
@@ -82,19 +89,13 @@ def headline_metrics():
                           '%']
 
     # Emissions
-    df_emissions = pd.read_csv(os.path.join(scenario_results_dir,
-                                            'AnnualEmissions.csv'
-                                            )
-                               )
+    df_emissions = result_data["AnnualEmissions"]
     emissions_total = df_emissions.VALUE.sum()
     df_metrics.loc[df_metrics['Metric'].str.startswith('Emissions'),
                    'Value'] = emissions_total.round(0)
 
     # Shares of RE and Fossil fuels
-    df_shares = pd.read_csv(os.path.join(scenario_results_dir,
-                                         'ProductionByTechnologyAnnual.csv'
-                                         )
-                            )
+    df_shares = result_data["ProductionByTechnologyAnnual"]
     df_shares = df_shares[~df_shares.TECHNOLOGY.str.contains('TRN')]
     gen_total = df_shares.loc[df_shares.TECHNOLOGY.str.startswith('PWR'),
                               'VALUE'].sum()
@@ -114,66 +115,33 @@ def headline_metrics():
                    'Value'] = (ff_share*100).round(0)
 
     # Total System Cost
-    df_system_cost = pd.read_csv(os.path.join(scenario_results_dir,
-                                              'TotalDiscountedCost.csv'
-                                              )
-                                 )
+    df_system_cost = result_data["TotalDiscountedCost"]
     system_cost_total = df_system_cost.VALUE.sum()
     df_metrics.loc[df_metrics['Metric'].str.startswith('Total System Cost'),
                    'Value'] = (system_cost_total/1000).round(0)
 
     # Cost of electricity generation
-    df_demand = pd.read_csv(os.path.join(scenario_results_dir,
-                                         'Demand.csv'
-                                         )
-                            )
+    df_demand = result_data["Demand"]
     demand_total = df_demand.VALUE.sum()  # Total demand in TWh
     df_metrics.loc[df_metrics['Metric'].str.startswith('Cost of electricity'),
                    'Value'] = (system_cost_total/(demand_total*0.2778)).round(0)
 
-    return df_metrics.to_csv(os.path.join(scenario_result_summaries_dir,
-                                          'Metrics.csv'
-                                          ),
-                             index=None
-                             )
+    return df_metrics.to_csv(os.path.join(save_dir,'Metrics.csv'),index=None)
 
-
-def powerplant_summary(df):
-    config_paths = ConfigPaths()
-    input_data_dir = config_paths.input_data_dir
-    name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
-                                                 'color_codes.csv'
-                                                 ),
-                                    encoding='latin-1')
-
-    # Get colour mapping dictionary
-    color_dict = dict([(i, n) for i, n
-                       in zip(name_colour_codes.tech_id,
-                              name_colour_codes.tech_name)])
-
-    # Capacities
-    df = df[~df.TECHNOLOGY.str.contains('TRN')]
-    df = df[df.TECHNOLOGY.str.startswith('PWR')]
-    df['NODE'] = (df['TECHNOLOGY'].str[6:9] +
-                  '-' +
-                  df['TECHNOLOGY'].str[9:11])
-    df['LABEL'] = df['TECHNOLOGY'].str[3:6]
-    df = df.replace(color_dict)
+def capacity_summary(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str):
+    """Capacity Summary Metrics 
     
-    return df
-
-
-def capacity_summary():
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    scenario_results_dir = config_paths.scenario_results_dir
-    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+    Arguments:
+        input_data: Dict[str,pd.DataFrame]
+            Internal datastore for input data
+        result_data: Dict[str,pd.DataFrame]
+            Internal datastore for results
+        save_dir: str
+            Location to save table
+    """
 
     # Capacities
-    df_capacities = pd.read_csv(os.path.join(scenario_results_dir,
-                                             'TotalCapacityAnnual.csv'
-                                             )
-                                )
+    df_capacities = result_data["TotalCapacityAnnual"]
 
     df_capacities['NODE'] = (df_capacities['TECHNOLOGY'].str[6:9] +
                              '-' +
@@ -186,26 +154,25 @@ def capacity_summary():
                                                   'LABEL'])
     df_capacities['VALUE'] = df_capacities['VALUE'].round(2)
 
-    return df_capacities.to_csv(os.path.join(scenario_result_summaries_dir,
-                                             'Capacities.csv'
-                                             ),
-                                index=None
-                                )
+    return df_capacities.to_csv(os.path.join(save_dir,'Capacities.csv'),index=None)
 
 
-def generation_summary():
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    scenario_results_dir = config_paths.scenario_results_dir
-    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
+def generation_summary(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str):
+    """Generation Summary Metrics 
+    
+    Arguments:
+        input_data: Dict[str,pd.DataFrame]
+            Internal datastore for input data
+        result_data: Dict[str,pd.DataFrame]
+            Internal datastore for results
+        save_dir: str
+            Location to save table
+    """
 
     # Generation
-    df_generation = pd.read_csv(os.path.join(scenario_results_dir,
-                                             'ProductionByTechnology.csv'
-                                             )
-                                )
+    df_generation = result_data["ProductionByTechnology"]
     df_generation = powerplant_filter(df_generation, country=None)
-    df_generation = transform_ts(df_generation)
+    df_generation = transform_ts(input_data, df_generation)
     df_generation = pd.melt(df_generation,
                             id_vars=['MONTH', 'HOUR', 'YEAR'],
                             value_vars=[x for x in df_generation.columns
@@ -214,32 +181,28 @@ def generation_summary():
     df_generation['VALUE'] = df_generation['VALUE'].round(2)
     df_generation = df_generation[['YEAR', 'MONTH', 'HOUR', 'LABEL', 'VALUE']]
 
-    return df_generation.to_csv(os.path.join(scenario_result_summaries_dir,
-                                             'Generation.csv'
-                                             ),
-                                index=None
-                                )
+    return df_generation.to_csv(os.path.join(save_dir,'Generation.csv'),index=None)
 
 
-def generation_by_node_summary():
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
+def generation_by_node_summary(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str):
+    """Generation Summary Metrics by Node
+    
+    Arguments:
+        input_data: Dict[str,pd.DataFrame]
+            Internal datastore for input data
+        result_data: Dict[str,pd.DataFrame]
+            Internal datastore for results
+        save_dir: str
+            Location to save table
+    """
     config = ConfigFile('config')
-    scenario_results_dir = config_paths.scenario_results_dir
-    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
-    scenario_data_dir = config_paths.scenario_data_dir
-    input_data_dir = config_paths.input_data_dir
 
     # Generation
-    df_gen_by_node = pd.read_csv(os.path.join(scenario_results_dir,
-                                             'ProductionByTechnology.csv'
-                                             )
-                                )
+    df_gen_by_node = result_data["ProductionByTechnology"]
     # GET TECHS TO PLOT
     generation = list(df_gen_by_node.TECHNOLOGY.unique())
     df_gen_by_node['NODE'] = (df_gen_by_node['TECHNOLOGY'].str[6:11])
     df_gen_by_node = powerplant_filter(df_gen_by_node, country=None)
-    # df_generation = transform_ts(df_generation)
 
     # GET TIMESLICE DEFINITION
 
@@ -262,33 +225,8 @@ def generation_by_node_summary():
     dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
     dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
 
-    month_names = {1: 'Jan',
-                   2: 'Feb',
-                   3: 'Mar',
-                   4: 'Apr',
-                   5: 'May',
-                   6: 'Jun',
-                   7: 'Jul',
-                   8: 'Aug',
-                   9: 'Sep',
-                   10: 'Oct',
-                   11: 'Nov',
-                   12: 'Dec',
-                   }
-
-    days_per_month = {'Jan': 31,
-                      'Feb': 28,
-                      'Mar': 31,
-                      'Apr': 30,
-                      'May': 31,
-                      'Jun': 30,
-                      'Jul': 31,
-                      'Aug': 31,
-                      'Sep': 30,
-                      'Oct': 31,
-                      'Nov': 30,
-                      'Dec': 31,
-                      }
+    month_names = MONTH_NAMES
+    days_per_month = DAYS_PER_MONTH
 
     seasons_df['month_name'] = seasons_df['month'].map(month_names)
     seasons_df['days'] = seasons_df['month_name'].map(days_per_month)
@@ -389,30 +327,26 @@ def generation_by_node_summary():
     cols_round = [x for x in df_gen_by_node.columns
                   if x not in ['MONTH', 'HOUR', 'YEAR', 'NODE']]
     df_gen_by_node[cols_round] = df_gen_by_node[cols_round].round(2)
-    # df_generation = df_generation[['YEAR', 'MONTH', 'HOUR', 'NODE', 'LABEL', 'VALUE']]
 
-    return df_gen_by_node.to_csv(os.path.join(scenario_result_summaries_dir,
-                                             'Generation_By_Node.csv'
-                                             ),
-                                index=None
-                                )
+    return df_gen_by_node.to_csv(os.path.join(save_dir,'Generation_By_Node.csv'),index=None)
 
+def trade_flows(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], save_dir: str):
+    """Trade flow Summary Metrics
+    
+    Arguments:
+        input_data: Dict[str,pd.DataFrame]
+            Internal datastore for input data
+        result_data: Dict[str,pd.DataFrame]
+            Internal datastore for results
+        save_dir: str
+            Location to save table
+    """
 
-def trade_flows():
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
     config = ConfigFile('config')
-
-    # Fix path below to config_paths
-    scenario_results_dir = config_paths.scenario_results_dir
-    scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
-    scenario_data_dir = config_paths.scenario_data_dir
-    input_data_dir = config_paths.input_data_dir
 
     # GET TECHS TO PLOT
 
-    df_gen = pd.read_csv(os.path.join(scenario_data_dir,
-                                      'TECHNOLOGY.csv'))
+    df_gen = input_data["TECHNOLOGY"]
     df_gen = df_gen[df_gen.VALUE.str.startswith('TRN')]
     interconnections = list(df_gen.VALUE.unique())
 
@@ -438,33 +372,8 @@ def trade_flows():
         dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
         dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
 
-        month_names = {1: 'Jan',
-                    2: 'Feb',
-                    3: 'Mar',
-                    4: 'Apr',
-                    5: 'May',
-                    6: 'Jun',
-                    7: 'Jul',
-                    8: 'Aug',
-                    9: 'Sep',
-                    10: 'Oct',
-                    11: 'Nov',
-                    12: 'Dec',
-                    }
-
-        days_per_month = {'Jan': 31,
-                        'Feb': 28,
-                        'Mar': 31,
-                        'Apr': 30,
-                        'May': 31,
-                        'Jun': 30,
-                        'Jul': 31,
-                        'Aug': 31,
-                        'Sep': 30,
-                        'Oct': 31,
-                        'Nov': 30,
-                        'Dec': 31,
-                        }
+        month_names = MONTH_NAMES
+        days_per_month = DAYS_PER_MONTH
 
         seasons_df['month_name'] = seasons_df['month'].map(month_names)
         seasons_df['days'] = seasons_df['month_name'].map(days_per_month)
@@ -533,10 +442,7 @@ def trade_flows():
         df_ts_template = df_ts_template.drop_duplicates()
 
         # Trade flows
-        df = pd.read_csv(os.path.join(scenario_results_dir,
-                                    'TotalAnnualTechnologyActivityByMode.csv'
-                                    )
-                        )
+        df = result_data["TotalAnnualTechnologyActivityByMode"]
 
         df['SEASON'] = df['TIMESLICE'].str[0:2]
         df['DAYPART'] = df['TIMESLICE'].str[2:]
@@ -587,29 +493,18 @@ def trade_flows():
                                    'NODE_2',
                                    'VALUE']
                          )
+    return df.to_csv(os.path.join(save_dir,'TradeFlows.csv'),index=None)
 
-    return df.to_csv(os.path.join(scenario_result_summaries_dir,
-                                  'TradeFlows.csv'
-                                  ),
-                     index=None
-                     )
-
-
-def apply_timeshift(x, timeshift):
-    '''Applies timeshift to organize dayparts.
+def read_data(dirpath: str) -> Dict[str,pd.DataFrame]:
+    """Reads in result CSVs
     
-    Args:
-        x = Value between 0-24
-        timeshift = value offset from UTC (-11 -> +12)'''
-
-    x += timeshift
-    if x > 23:
-        return x - 24
-    elif x < 0:
-        return x + 24
-    else:
-        return x
-
+    Replace with ReadCSV in otoole v1.0
+    """
+    data = {}
+    files = [Path(x) for x in Path(dirpath).iterdir()]
+    for f in files:
+        data[f.stem] = pd.read_csv(f)
+    return data
 
 if __name__ == '__main__':
     main()

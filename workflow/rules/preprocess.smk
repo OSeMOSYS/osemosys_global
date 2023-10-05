@@ -6,8 +6,7 @@ configfile: 'config/config.yaml'
 
 # model and scenario output files 
 
-osemosys_files = os.listdir('resources/simplicity/data')
-osemosys_files.remove('default_values.csv') #taken form /resources
+osemosys_files = os.listdir('resources/otoole/data')
 
 demand_figures = [
     'South America',
@@ -68,7 +67,7 @@ user_capacity_files = [
     'TotalAnnualMaxCapacityInvestment.csv'
 ]
 
-check_files = os.listdir('resources/simplicity/data')
+check_files = os.listdir('resources/otoole/data')
 generated_files = [
     power_plant_files, 
     timeslice_files, 
@@ -105,7 +104,7 @@ rule powerplant:
     log:
         log = 'results/data/logs/powerplant.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_powerplant_data.py 2> {log}'
+        'python workflow/scripts/osemosys_global/powerplant_data.py 2> {log}'
 
 rule timeslice:
     message:
@@ -128,7 +127,7 @@ rule timeslice:
     log:
         log = 'results/data/logs/timeslice.log'    
     shell:
-        'python workflow/scripts/osemosys_global/OPG_TS_data.py 2> {log}'
+        'python workflow/scripts/osemosys_global/TS_data.py 2> {log}'
 
 rule variable_costs:
     message:
@@ -144,7 +143,7 @@ rule variable_costs:
     log:
         log = 'results/data/logs/variable_costs.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_variablecosts.py 2> {log}'
+        'python workflow/scripts/osemosys_global/variablecosts.py 2> {log}'
 
 rule demand_projections:
     message:
@@ -165,7 +164,7 @@ rule demand_projections:
     log:
         log = 'results/data/logs/demand_projections.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_demand_projection.py 2> {log}'
+        'python workflow/scripts/osemosys_global/demand_projection.py 2> {log}'
 
 rule emissions:
     message:
@@ -182,7 +181,7 @@ rule emissions:
     log:
         log = 'results/data/../logs/emissions.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_emissions.py 2> {log}'
+        'python workflow/scripts/osemosys_global/emissions.py 2> {log}'
 
 rule max_capacity:
     message: 
@@ -198,7 +197,7 @@ rule max_capacity:
     log:
         log = 'results/data/logs/max_capacity.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_max_capacity.py 2> {log}'
+        'python workflow/scripts/osemosys_global/max_capacity.py 2> {log}'
 
 rule file_check:
     message:
@@ -210,12 +209,11 @@ rule file_check:
         rules.demand_projections.output.csv_files,
         rules.emissions.output.csv_files,
         rules.max_capacity.output.csv_files,
-        'resources/data/default_values.csv'
     output: 
         expand('results/data/{check_file}', check_file = check_files),
     log: 
         log = 'results/data/logs/file_check.log'
     shell:
-        'python workflow/scripts/osemosys_global/OPG_file_check.py 2> {log}'
+        'python workflow/scripts/osemosys_global/file_check.py 2> {log}'
 
 

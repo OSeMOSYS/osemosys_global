@@ -136,3 +136,89 @@ Then run the workflow as normal from the root directory
 ```bash
 snakemake -c
 ```
+
+## Interactive Dashboard
+
+If a user wishes to explore input and output data, OSeMOSYS Global includes 
+an interactive dashboard to do this. This dashboard can only be run 
+after a successful model run. 
+
+### 1. Ensure the OSeMOSYS Global scenario has been run 
+
+The dashboard is **not** integreated with the snakemake workflow, therefore, 
+it will not automatically look for missing input files. Ensure that the 
+workflow has been run and that input data CSVs (`results/<scenario>/data/`)
+and result file CSVs (`results/<scenario>/results/`) exist. Moreover, 
+ensure the scenario name in the configuration file matches the paths to the
+result data. 
+
+### 2. Run the dashboard 
+
+Run the file `dashboard.sh` to start the dashboard in a local host with the 
+following command. Either open the hyperlink from the command line or 
+copy/paste it into a web browser. 
+
+```bash 
+bash dashboard.sh
+```
+
+### 3. Explore the dashboard 
+
+The dashboard is to visualize the input and result data from an OSeMOSYS Global 
+model run. The dashboard consists of 5 tabs; tab 1 is a options tab, and the 
+remaining tabs are different visualization options (described below).
+
+:::{warning}
+For large models, the dashboard my be slow to respond. Especially for 
+parameters/varibales plotted over timeslices, rather than years; for example
+the `ProductionByTechnologyAnnual` plot will respond much quicker than the 
+``ProductionByTechnology` plot. 
+:::
+
+#### 3.1 Options Tab 
+
+Global plotting options for the dashboard. Of note is the Geographic Scope 
+radio buttons. If the option is set to System, the legend axis in graphs will 
+be by technology. If the option is set to Country or Region, the legend axis 
+will be country or region respectively.
+
+#### 3.2 Geographic Overview Tab
+
+Allows the user to visualize what nodes and transmission lines are (and are 
+not) included in the model. The user can hover over each node/line to get the 
+corresponding node and line name. 
+
+:::{warning}
+Any custom nodes added are not included in this map, as latitudes and longitudes 
+are not added with custom nodes. All other tabs will correctly incorporate 
+custom node data. 
+:::
+
+#### 3.3 Input Data Tab
+
+Plots input data. The plot will take on the values described in the options tab. 
+The technology fuel dropdown is dynamic, based on the user parameter selection. This
+means if a technology or fuel is not listed in the dropdown, there is no 
+associated data with it. The plotting options include Area, Line, Stacked Bar 
+and Grouped Bar.
+
+#### 3.4 Result Data Tab
+
+Plots result data. The plot will take on the values described in the options tab. 
+The technology fuel dropdown is dynamic, based on the user variable selection. This
+means if a technology or fuel is not listed in the dropdown, there is no 
+associated data with it. The plotting options include Area, Line, Stacked Bar 
+and Grouped Bar.
+
+#### 3.5 The Options Tab 
+
+Plots transmission line result data. The user can select between plotting 
+at a system level, or for individual lines. Moreover, the variables include 
+poltting options for either directional flow (inports vs. exports) over the 
+line, or total magnitdue of flow. The plotting options include Area, Line, 
+Stacked Bar and Grouped Bar.
+
+### 4. Quit the dashboard 
+
+To exit the dashboard, close the tab/browser that has the dashboard open, and
+press `ctrl+c` or `cmd+c` from the command line. This will stop the local host. 
