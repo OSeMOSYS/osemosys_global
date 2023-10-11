@@ -160,7 +160,7 @@ CCGT + CCS,Middle East,"Annual O&M Costs
 CCGT + CCS,Africa,"Annual O&M Costs
 ($2019 per kW)",85,80,75
 CCGT + CCS,Brazil,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",84,80,71
 Coal* + CCS,Europe,"Annual O&M Costs
 ($2019 per kW)",165,160,135
 Coal* + CCS,United States,"Annual O&M Costs
@@ -174,19 +174,19 @@ Coal* + CCS,China,"Annual O&M Costs
 Coal* + CCS,India,"Annual O&M Costs
 ($2019 per kW)",155,150,130
 Coal* + CCS,Middle East,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",165,160,140
 Coal* + CCS,Africa,"Annual O&M Costs
 ($2019 per kW)",175,165,150
 Coal* + CCS,Brazil,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",165,160,140
 Concentrating solar power,Europe,"Annual O&M Costs
 ($2019 per kW)",230,180,150
 Concentrating solar power,United States,"Annual O&M Costs
 ($2019 per kW)",260,210,180
 Concentrating solar power,Japan,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",220,170,150
 Concentrating solar power,Russia,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",220,170,150
 Concentrating solar power,China,"Annual O&M Costs
 ($2019 per kW)",200,150,130
 Concentrating solar power,India,"Annual O&M Costs
@@ -250,7 +250,7 @@ Geothermal,Middle East,"Annual O&M Costs
 Geothermal,Africa,"Annual O&M Costs
 ($2019 per kW)",60,60,55
 Geothermal,Brazil,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",55,50,50
 Hydropower - large-scale,Europe,"Annual O&M Costs
 ($2019 per kW)",60,60,60
 Hydropower - large-scale,United States,"Annual O&M Costs
@@ -318,11 +318,11 @@ IGCC + CCS,China,"Annual O&M Costs
 IGCC + CCS,India,"Annual O&M Costs
 ($2019 per kW)",185,175,155
 IGCC + CCS,Middle East,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",200,185,165
 IGCC + CCS,Africa,"Annual O&M Costs
 ($2019 per kW)",210,200,185
 IGCC + CCS,Brazil,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",200,185,165
 Marine,Europe,"Annual O&M Costs
 ($2019 per kW)",210,140,100
 Marine,United States,"Annual O&M Costs
@@ -340,7 +340,7 @@ Marine,Middle East,"Annual O&M Costs
 Marine,Africa,"Annual O&M Costs
 ($2019 per kW)",200,130,100
 Marine,Brazil,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",200,135,100
 Nuclear,Europe,"Annual O&M Costs
 ($2019 per kW)",160,160,160
 Nuclear,United States,"Annual O&M Costs
@@ -408,11 +408,11 @@ Oxyfuel + CCS,China,"Annual O&M Costs
 Oxyfuel + CCS,India,"Annual O&M Costs
 ($2019 per kW)",165,155,145
 Oxyfuel + CCS,Middle East,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",170,160,150
 Oxyfuel + CCS,Africa,"Annual O&M Costs
 ($2019 per kW)",185,175,160
 Oxyfuel + CCS,Brazil,"Annual O&M Costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",170,160,150
 Petroleum,Europe,"Annual O&M Costs
 ($2019 per kW)",21,21,21
 Petroleum,United States,"Annual O&M Costs
@@ -718,7 +718,7 @@ CCGT + CCS,Middle East,"Capital costs
 CCGT + CCS,Africa,"Capital costs
 ($2019 per kW)",2450,2350,2100
 CCGT + CCS,Brazil,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",2725,2625,2300
 Coal* + CCS,Europe,"Capital costs
 ($2019 per kW)",5500,5300,4600
 Coal* + CCS,United States,"Capital costs
@@ -732,19 +732,19 @@ Coal* + CCS,China,"Capital costs
 Coal* + CCS,India,"Capital costs
 ($2019 per kW)",3900,3750,3300
 Coal* + CCS,Middle East,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",4900,4700,4100
 Coal* + CCS,Africa,"Capital costs
 ($2019 per kW)",4500,4350,3850
 Coal* + CCS,Brazil,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",4900,4700,4100
 Concentrating solar power,Europe,"Capital costs
 ($2019 per kW)",5650,4450,3850
 Concentrating solar power,United States,"Capital costs
 ($2019 per kW)",6500,5300,4600
 Concentrating solar power,Japan,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",5500,4300,3700
 Concentrating solar power,Russia,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",5500,4300,3700
 Concentrating solar power,China,"Capital costs
 ($2019 per kW)",4900,3750,3250
 Concentrating solar power,India,"Capital costs
@@ -808,7 +808,7 @@ Geothermal,Middle East,"Capital costs
 Geothermal,Africa,"Capital costs
 ($2019 per kW)",3050,2900,2800
 Geothermal,Brazil,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",2600,2500,2400
 Hydropower - large-scale,Europe,"Capital costs
 ($2019 per kW)",2650,2650,2650
 Hydropower - large-scale,United States,"Capital costs
@@ -876,11 +876,11 @@ IGCC + CCS,China,"Capital costs
 IGCC + CCS,India,"Capital costs
 ($2019 per kW)",4150,3900,3500
 IGCC + CCS,Middle East,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",5200,4900,4300
 IGCC + CCS,Africa,"Capital costs
 ($2019 per kW)",4850,4600,4150
 IGCC + CCS,Brazil,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",5200,4900,4300
 Marine,Europe,"Capital costs
 ($2019 per kW)",6950,4650,3450
 Marine,United States,"Capital costs
@@ -898,7 +898,7 @@ Marine,Middle East,"Capital costs
 Marine,Africa,"Capital costs
 ($2019 per kW)",6550,4400,3300
 Marine,Brazil,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",6700,4500,3400
 Nuclear,Europe,"Capital costs
 ($2019 per kW)",6600,5100,4500
 Nuclear,United States,"Capital costs
@@ -966,11 +966,11 @@ Oxyfuel + CCS,China,"Capital costs
 Oxyfuel + CCS,India,"Capital costs
 ($2019 per kW)",4100,3950,3550
 Oxyfuel + CCS,Middle East,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",5000,4900,4400
 Oxyfuel + CCS,Africa,"Capital costs
 ($2019 per kW)",4800,4650,4200
 Oxyfuel + CCS,Brazil,"Capital costs
-($2019 per kW)",n.a.,n.a.,n.a.
+($2019 per kW)",5000,4900,4400
 Petroleum,Europe,"Capital costs
 ($2019 per kW)",1240,1240,1240
 Petroleum,United States,"Capital costs

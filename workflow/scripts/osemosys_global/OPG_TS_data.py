@@ -113,6 +113,15 @@ years = list(range(model_start_year, model_end_year+1))
 csp_df = pd.read_csv(os.path.join(input_data_dir,
                                   'CSP 2015.csv'),
                      encoding='latin-1')
+if custom_nodes:
+    csp_df_custom = pd.read_csv(os.path.join(custom_nodes_dir,
+                                             'RE_profiles_CSP.csv'),
+                                             encoding='latin-1')
+    csp_df_custom.drop(['Datetime'],
+                        axis=1,
+                        inplace=True)
+    csp_df = pd.concat([csp_df, csp_df_custom], axis=1)
+
 csp_df.name = 'CSP'
 
 spv_df = pd.read_csv(os.path.join(input_data_dir,

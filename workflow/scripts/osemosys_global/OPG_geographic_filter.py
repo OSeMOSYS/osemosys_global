@@ -58,6 +58,16 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
                     df = df.loc[~(df['TECHNOLOGY'].str[3:8].isin(remove_nodes) | 
                                 df['TECHNOLOGY'].str[6:11].isin(remove_nodes) | 
                                 df['TECHNOLOGY'].str[8:13].isin(remove_nodes))]
+                    
+            if 'STORAGE' in df.columns:
+                df = df.loc[df['STORAGE'].str[3:6].isin(geographic_scope) | 
+                            df['STORAGE'].str[6:9].isin(geographic_scope) | 
+                            df['STORAGE'].str[8:11].isin(geographic_scope)]
+
+                if remove_nodes:
+                    df = df.loc[~(df['STORAGE'].str[3:8].isin(remove_nodes) | 
+                                df['STORAGE'].str[6:11].isin(remove_nodes) | 
+                                df['STORAGE'].str[8:13].isin(remove_nodes))]
 
             if 'FUEL' in df.columns:
                 df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
