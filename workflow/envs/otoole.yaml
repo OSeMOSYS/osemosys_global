@@ -1,9 +1,0 @@
-name: otoole
-
-channels:
- - conda-forge
-
-dependencies:
- - pip
- - pip: 
-    - otoole==0.11.0

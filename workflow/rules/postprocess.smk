@@ -67,7 +67,8 @@ rule otoole_results:
         '''
         otoole results {config[solver]} csv \
         {input.solution_file} results/{wildcards.scenario}/results \
-        {input.otoole_config} --input_datafile {input.pre_process_file} \
+        datafile {input.pre_process_file} \
+        {input.otoole_config}
         #--input_datafile {input.pre_process_file} \
         2> {log} 
         '''

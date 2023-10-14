@@ -215,9 +215,15 @@ def main():
                         'SA-SUR',]
     nodes_extra_df['node'] = nodes_extra_list
 
-    df_gen_agg_node = df_gen_agg_node.append(nodes_extra_df,
-                                             ignore_index=True,
-                                             sort='False').fillna(0).sort_values(by='node').set_index('node').round(2)
+    df_gen_agg_node = pd.concat(
+        [df_gen_agg_node,nodes_extra_df],
+        ignore_index=True,
+        sort=False,
+    ).fillna(0).sort_values(by='node').set_index('node').round(2)
+
+    # df_gen_agg_node = df_gen_agg_node.append(nodes_extra_df,
+    #                                          ignore_index=True,
+    #                                          sort='False').fillna(0).sort_values(by='node').set_index('node').round(2)
     #df_gen_agg_node.to_csv(r'output/test_output_2.csv')
 
 
