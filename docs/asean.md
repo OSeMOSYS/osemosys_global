@@ -20,7 +20,10 @@ electricity systems are their spatial and temporal resolution.
 
 The model represents all AMS as individually, with Vietnam, Thailand, Indonesia, 
 Malaysia, and the Philippines at a sub-national level and the remaining five AMS
-at the national level. This is shown in the table and map below. 
+at the national level. This is shown in the table and map below. (NOTE: This 
+publication and any map included herein are without prejudice to the status of 
+or sovereignty over any territory, to the delimitation of international 
+frontiers and boundaries and to the name of any territory, city or area.)
 
 ![ASEAN_map](./figures/asean_map.png "ASEAN model representation")
 
