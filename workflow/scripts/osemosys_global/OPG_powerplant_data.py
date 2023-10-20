@@ -387,6 +387,8 @@ def main():
     df_res_cap.drop_duplicates(subset=['REGION','TECHNOLOGY','YEAR'],
                                keep='last',
                                inplace=True)
+    df_res_cap = df_res_cap.loc[(df_res_cap['TECHNOLOGY'].str.startswith('PWR')) &
+                                (~df_res_cap['TECHNOLOGY'].str.endswith('00'))]
     df_res_cap.to_csv(os.path.join(output_data_dir, 
                                    "ResidualCapacity.csv"),
                       index=None)

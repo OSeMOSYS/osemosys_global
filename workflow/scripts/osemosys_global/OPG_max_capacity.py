@@ -115,9 +115,9 @@ def main():
     out_data = []
     for tech, maxad in cap_addition_limit.items():
         try:
-            max_capacity = res_cap[tech] + maxad
+            max_capacity = float(res_cap[tech]) + float(maxad)
         except KeyError:
-            max_capacity = maxad
+            max_capacity = float(maxad)
 
         # Add 0.0002 to enusre there is no rounding mismathch between total 
         # annual max capacity and residual capacity 
@@ -137,6 +137,7 @@ def main():
         'YEAR',
         'VALUE'
     ])
+    df_max_capacity.dropna(inplace=True)
     df_max_capacity.to_csv(os.path.join(
         output_data_dir, "TotalAnnualMaxCapacity.csv"), index = None)
     
