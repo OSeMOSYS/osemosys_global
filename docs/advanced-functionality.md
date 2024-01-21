@@ -38,7 +38,7 @@ are identified by being named in files with all capitals (ie. REGION.csv).
 Restart the workflow, which will build and solve the model, through the command: 
 
 ```bash
-snakemake -c
+snakemake -j6
 ```
 
 ## Custom Nodes 
@@ -134,7 +134,7 @@ geographic_scope:
 Then run the workflow as normal from the root directory
 
 ```bash
-snakemake -c
+snakemake -j6
 ```
 
 ## Interactive Dashboard

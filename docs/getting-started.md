@@ -93,18 +93,18 @@ the configuration file at `config/config.yaml`
 **Goal**: Run the workflow with default settings. This will produce a model 
 of India from 2015 to 2050 with 8 time slices per year, and solve it using CBC.
 
-1. Run the command `snakemake -c`. The time to build and solve the model will
+1. Run the command `snakemake -j6`. The time to build and solve the model will
 vary depending on your computer, but in general, this example will finish 
 within minutes .
 
     ```bash
-    (osemosys-global) ~/osemosys_global$ snakemake -c
+    (osemosys-global) ~/osemosys_global$ snakemake -j6
     ```
 
     :::{tip}
-    The `-c` command will instruct Snakemake to use all available computer 
-    cores. If your want to restrict this, input a number after the `-c` to 
-    specify the number of cores. For example, the command `snakemake -c2` will
+    The `-j6` command will instruct Snakemake to use six cores.
+    If your want to restrict this, change the number after the `-j` to 
+    specify the number of cores. For example, the command `snakemake -j2` will
     run the workflow using 2 cores. See 
     [snakemake's documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html#useful-command-line-arguments) 
     for more information.   
@@ -254,10 +254,10 @@ are inclusive.
     emission_penalty: 50 
     ```
 
-8. Run the command `snakemake -c`
+8. Run the command `snakemake -j6`
 
     ```bash
-    (osemosys-global) ~/osemosys_global$ snakemake -c
+    (osemosys-global) ~/osemosys_global$ snakemake -j6
     ```
 
     :::{tip}
@@ -438,7 +438,7 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
     solver: 'cplex'
     ```
 
-8. Run the command `snakemake -c` 
+8. Run the command `snakemake -j6` 
 
     :::{warning}
     This scenario will take multiple hours to run using a commercial solver 
@@ -446,7 +446,7 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
     :::
 
     ```bash
-    (osemosys-global) ~/osemosys_global$ snakemake -c
+    (osemosys-global) ~/osemosys_global$ snakemake -j6
     ```
 
 8. View system level results in the `results/WORLD/figures` folder
