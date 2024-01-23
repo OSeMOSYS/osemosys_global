@@ -22,7 +22,6 @@ build:
     python: "3.11"
 
 python:
-  version: 3.11
   install:
     - requirements: docs/requirements.txt
     - {path: ., method: pip}
