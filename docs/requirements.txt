@@ -10,7 +10,7 @@ pytest
 world-bank-data
 scikit-learn
 myst-parser
-"otoole>=1.0.0"
+otoole>=1.0.0, <1.1.0
 scipy
 dash
 geos
@@ -18,6 +18,6 @@ cartopy
 
 # docs
 myst-parser
-pydata-sphinx-theme==0.8.1
-sphinx-book-theme==0.3.3
+pydata-sphinx-theme>=0.8.1
+sphinx-book-theme>=0.3.3
 docutils==0.17.1

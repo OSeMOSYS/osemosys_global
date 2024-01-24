@@ -10,7 +10,7 @@ from typing import Dict
 from osemosys_global.utils import read_csv, filter_transmission_techs
 from osemosys_global.visualisation.utils import get_color_codes, get_map, plot_map_trn_line, plot_map_text, load_node_data_demand_center
 from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
-# from osemosys_global.configuration import ConfigFile, ConfigPaths
+import osemosys_global.constants as constants
 from configuration import ConfigFile, ConfigPaths
 
 
@@ -76,7 +76,8 @@ def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str
     """
 
     df = get_total_capacity_data(data, country=country)
-    plot_colors = get_color_codes()
+    # plot_colors = get_color_codes()
+    plot_colors = constants.COLORS
 
     if not country: # System level titles
         graph_title = 'Total System Capacity'
@@ -218,6 +219,10 @@ def plot_transmission_capacity(
     # get result data
     total_cap_annual = result_data["TotalCapacityAnnual"]
     trn = filter_transmission_techs(total_cap_annual)
+    
+    if trn.empty:
+        return
+    
     trn.VALUE = trn.VALUE.astype('float64')
     trn['FROM'], trn['TO'] = trn.TECHNOLOGY.str[3:8], trn.TECHNOLOGY.str[8:]
     
@@ -310,6 +315,10 @@ def plot_transmission_flow(
     # get result data
     production_annual = result_data["ProductionByTechnologyAnnual"]
     prd = filter_transmission_techs(production_annual)
+    
+    if prd.empty:
+        return
+    
     prd.VALUE = prd.VALUE.astype('float64')
     prd['FROM'], prd['TO'] = prd.TECHNOLOGY.str[3:8], prd.TECHNOLOGY.str[8:]
     
