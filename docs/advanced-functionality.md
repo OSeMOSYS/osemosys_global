@@ -210,7 +210,7 @@ means if a technology or fuel is not listed in the dropdown, there is no
 associated data with it. The plotting options include Area, Line, Stacked Bar 
 and Grouped Bar.
 
-#### 3.5 The Options Tab 
+#### 3.5 The Transmission Tab 
 
 Plots transmission line result data. The user can select between plotting 
 at a system level, or for individual lines. Moreover, the variables include 
