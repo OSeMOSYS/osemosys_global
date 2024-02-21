@@ -18,7 +18,7 @@ Instead of running the full workflow, we will only run the workflow up to
 the generation of the input CSV files through the command: 
 
 ```bash
-snakemake generate_input_data -c
+snakemake generate_input_data -j6
 ```
 
 ### 2. Modify Parameter Data 
