@@ -28,11 +28,11 @@ def main():
     save_dir = config_paths.scenario_result_summaries_dir
 
     # # SUMMARISE RESULTS
-    headline_metrics()
-    capacity_summary()
-    generation_summary()
-    generation_by_node_summary()
-    trade_flows()
+    headline_metrics(input_data, result_data, save_dir)
+    capacity_summary(input_data, result_data, save_dir)
+    generation_summary(input_data, result_data, save_dir)
+    generation_by_node_summary(input_data, result_data, save_dir)
+    trade_flows(input_data, result_data, save_dir)
     
     # UPDATED METRICS
     system_cost_by_node()
@@ -40,7 +40,7 @@ def main():
     new_capacity_summary_trn()
     investment_summary()
     investment_summary_trn()
-    marginal_costs()
+    # marginal_costs()
 
 
 def renewables_filter(df):
@@ -162,7 +162,7 @@ def capacity_summary(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,p
                                                   'LABEL'])
     df_capacities['VALUE'] = df_capacities['VALUE'].round(2)
 
-    return df_capacities.to_csv(os.path.join(scenario_result_summaries_dir,
+    return df_capacities.to_csv(os.path.join(save_dir,'result_summaries'
                                              'Capacities.csv'
                                              ),
                                 index=None
@@ -320,7 +320,7 @@ def generation_summary(input_data: Dict[str,pd.DataFrame], result_data: Dict[str
     df_generation = result_data["ProductionByTechnology"]
     df_generation = powerplant_filter(df_generation, country=None)
     df_generation = df_generation.loc[df_generation['FUEL'].str.startswith('ELC')]
-    df_generation = transform_ts(df_generation)
+    df_generation = transform_ts(input_data, df_generation)
     df_generation = pd.melt(df_generation,
                             id_vars=['MONTH', 'HOUR', 'YEAR'],
                             value_vars=[x for x in df_generation.columns
@@ -1013,6 +1013,17 @@ def marginal_costs():
                                               'SRMC.csv'),
                                  index=None)
 
+
+def read_data(dirpath: str) -> Dict[str,pd.DataFrame]:
+    """Reads in result CSVs
+    
+    Replace with ReadCSV in otoole v1.0
+    """
+    data = {}
+    files = [Path(x) for x in Path(dirpath).iterdir()]
+    for f in files:
+        data[f.stem] = pd.read_csv(f)
+    return data
 
 if __name__ == '__main__':
     main()

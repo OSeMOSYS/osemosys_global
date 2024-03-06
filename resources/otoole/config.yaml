@@ -444,7 +444,7 @@ NumberOfNewTechnologyUnits:
     default: 0
     calculated: False
 OperatingCost: 
-    indices: [REGION, TECHNOLOGY, TIMESLICE, YEAR]
+    indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
