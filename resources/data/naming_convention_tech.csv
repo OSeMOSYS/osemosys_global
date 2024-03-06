@@ -16,3 +16,14 @@ Wav,WAV
 Win,WON
 Csp,CSP
 Wof,WOF
+oil,OIL
+gas,OCG
+waste_heat,HET
+biomass,BIO
+coal,COA
+gas_or_oil,PET
+wind-onshore,WON
+sun,SPV
+wind-offshore,WOF
+waste,WAS
+coal+ccs,CCS

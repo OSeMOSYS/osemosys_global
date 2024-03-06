@@ -1,0 +1,637 @@
+# Scenario Name 
+scenario: 'ASEAN_v4_APG_CP'
+
+# Temporal Parameters 
+startYear: 2021
+endYear: 2050
+daytype: False
+dayparts:
+  #daypart : [start_hour (inclusive), end_hour (exclusive)]
+  D1: [0, 6]
+  D2: [6, 12]
+  D3: [12, 18]
+  D4: [18, 24]
+seasons:
+  #season : [month 1, month 2, ...] (all inclusive)
+  S1: [1, 2, 3, 4, 5, 6]
+  S2: [7, 8, 9, 10, 11, 12]
+timeshift: 8 # value between -11 and 12
+  
+# Spatial Parameters 
+geographic_scope:
+    - 'IDN'
+    - 'VNM'
+    - 'MYS'
+    - 'PHL'
+    - 'THA'
+    - 'LAO'
+    - 'MMR'
+    - 'SGP'
+    - 'KHM'
+    - 'BRN'
+crossborderTrade: True
+
+# Emission Parameters 
+emission_penalty: 
+# - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
+# where VALUE is in M$/MT CO2
+ - ['CO2', 'IDN', 2020, 2050, 2.1]
+
+# Investment Parameters 
+no_invest_technologies: 
+  - 'CSP'
+  - 'WAV'
+#  - 'URN'
+#  - 'WOF'
+  - 'OTH'
+  - 'WAS'
+#  - 'COA'
+  - 'COG' 
+#  - 'GEO'
+#  - 'CCS'
+#  - 'BIO'
+  - 'PET'
+#  - 'OIL'
+
+# Result Parameters 
+results_by_country: True
+
+# solver parameters
+solver: 'gurobi' # cbc, cplex, gurobi
+
+user_defined_capacity:
+  # technology: [capacity, 
+  #              first_year, 
+  #              'fixed/open', 
+  #              first_year_of_expansion, 
+  #              build_rate_per_year, 
+  #              cost]
+  # Indonesia
+  TRNIDNJKIDNJB: [10, 2020, 'open', 2030, 1, 800]
+  TRNIDNJKIDNBT: [10, 2020, 'open', 2030, 1, 800]
+  TRNIDNYOIDNJT: [10, 2020, 'open', 2030, 1, 800]
+  TRNIDNJIIDNBA: [2, 2020, 'open', 2030, 1, 800]
+  TRNIDNJIIDNJT: [4.2, 2020, 'open', 2030, 1, 800]
+  TRNIDNJBIDNBT: [10, 2020, 'open', 2030, 1, 800]
+  TRNIDNJBIDNJT: [4.2, 2020, 'open', 2030, 1, 800]
+  TRNIDNACIDNSU: [2.5, 2020, 'open', 2030, 1, 800]
+  TRNIDNSUIDNRI: [0.4, 2020, 'open', 2030, 1, 800]
+  TRNIDNSBIDNRI: [2.5, 2020, 'open', 2030, 1, 800]
+  TRNIDNRIIDNJA: [2, 2020, 'open', 2030, 1, 800]
+  TRNIDNJAIDNSB: [0.544, 2020, 'open', 2030, 1, 800]
+  TRNIDNSSIDNBE: [0.5, 2020, 'open', 2030, 1, 800]
+  TRNIDNSSIDNLA: [1.5, 2020, 'open', 2030, 1, 800]
+  TRNIDNBTIDNSS: [3, 2020, 'open', 2030, 1, 800]
+
+  TRNIDNKBIDNKT: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNIDNKTIDNKS: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNIDNKSIDNKI: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNIDNKIIDNKU: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNIDNSAIDNGO: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNIDNGOIDNST: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNIDNSTIDNSR: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNIDNSRIDNSN: [0.001, 2020, 'open', 2030, 1, 800]
+
+  TRNIDNNBIDNNT: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNBAIDNNB: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNSNIDNNB: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNMAIDNSG: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNKSIDNSN: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNKSIDNJI: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNBAIDNJI: [0.001, 2030, 'open', 2030, 1, 800]
+
+  TRNIDNJAIDNSS: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNSTIDNSG: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNMAIDNMU: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNMUIDNPB: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNIDNPBIDNPA: [0.001, 2030, 'open', 2030, 1, 800]
+
+  # APG intra-country
+  TRNLAOCELAOSO: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNLAONOLAOCE: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNMMRCEMMRSO: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNMMRNOMMRCE: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNTHACETHASO: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNTHANETHACE: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNTHANOTHACE: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNMYSCEMYSEA: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNMYSCEMYSSO: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNMYSNOMYSCE: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNMYSNOMYSEA: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNPHLLUPHLVI: [0.4, 2020, 'open', 2030, 1, 800]
+  TRNPHLVIPHLMI: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNVNMCHVNMSE: [4, 2020, 'open', 2030, 1, 800]
+  TRNVNMNCVNMSC: [3.5, 2020, 'open', 2030, 1, 800]
+  TRNVNMNEVNMRR: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNVNMNWVNMNC: [2.2, 2020, 'open', 2030, 1, 800]
+  TRNVNMNWVNMNE: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNVNMNWVNMRR: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNVNMRRVNMNC: [0.001, 2020, 'open', 2030, 1, 800]
+  TRNVNMSCVNMCH: [2.8, 2020, 'open', 2030, 1, 800]
+  TRNVNMSCVNMSE: [8, 2020, 'open', 2030, 1, 800]
+  TRNVNMSEVNMME: [0.001, 2020, 'open', 2030, 1, 800]
+
+  # APG inter-country
+    # Existing
+  TRNKHMXXLAOSO: [0.2, 2020, 'open', 2030, 1, 800]
+  TRNKHMXXTHACE: [0.23, 2020, 'open', 2030, 1, 800]
+  TRNKHMXXVNMME: [0.2, 2020, 'open', 2030, 1, 800]
+  TRNLAOCEVNMNW: [0.538, 2020, 'open', 2030, 1, 800]
+  TRNLAONOTHANE: [5.427, 2020, 'open', 2030, 1, 800]
+  TRNTHASOMYSNO: [0.3, 2020, 'open', 2030, 1, 800]
+  TRNMYSSKIDNKB: [0.23, 2020, 'open', 2030, 1, 800]
+  TRNMYSSOSGPXX: [0.525, 2020, 'open', 2030, 1, 800]
+
+    # New 
+  TRNBRNXXMYSSK: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNLAONOMMRNO: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNMMRCETHANO: [0.369, 2030, 'open', 2030, 1, 800]
+  TRNMYSCEMYSSK: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNMYSSHIDNKI: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNMYSCEIDNSU: [0.5, 2030, 'open', 2030, 1, 800]
+  TRNMYSSKMYSSH: [0.001, 2030, 'open', 2030, 1, 800]
+  TRNMYSSHPHLLU: [0.5, 2030, 'open', 2030, 1, 800]
+  TRNSGPXXIDNKR: [0.6, 2030, 'open', 2030, 1, 800]
+  TRNSGPXXIDNRI: [0.001, 2030, 'open', 2030, 1, 800]
+
+nodes_to_add:
+ #- 'AAAXX' where AAA is a 3-letter country code, 
+ # specified in the 'geographic scope' 
+ # and XX is a 2-letter sub-regional node code. 
+ # E.g. - 'IDNSM' for a sub-regional node in Sumatra, Indonesia.
+ # - 'IDNSM'
+  - 'IDNAC'
+  - 'IDNBA'
+  - 'IDNBB'
+  - 'IDNBE'
+  - 'IDNBT'
+  - 'IDNGO'
+  - 'IDNJA'
+  - 'IDNJB'
+  - 'IDNJI'
+  - 'IDNJK'
+  - 'IDNJT'
+  - 'IDNKB'
+  - 'IDNKI'
+  - 'IDNKR'
+  - 'IDNKS'
+  - 'IDNKT'
+  - 'IDNKU'
+  - 'IDNLA'
+  - 'IDNMA'
+  - 'IDNMU'
+  - 'IDNNB'
+  - 'IDNNT'
+  - 'IDNPA'
+  - 'IDNPB'
+  - 'IDNRI'
+  - 'IDNSA'
+  - 'IDNSB'
+  - 'IDNSG'
+  - 'IDNSN'
+  - 'IDNSS'
+  - 'IDNST'
+  - 'IDNSU'
+  - 'IDNYO'
+  - 'IDNSR'
+  - 'VNMNE'
+  - 'VNMNW'
+  - 'VNMRR'
+  - 'VNMNC'
+  - 'VNMSC'
+  - 'VNMCH'
+  - 'VNMSE'
+  - 'VNMME'
+  - 'MYSNO'
+  - 'MYSCE'
+  - 'MYSEA'
+  - 'MYSSO'
+  - 'MYSSH'
+  - 'MYSSK'
+  - 'PHLLU'
+  - 'PHLVI'
+  - 'PHLMI'
+  - 'LAONO'
+  - 'LAOCE'
+  - 'LAOSO'
+  - 'THANE'
+  - 'THANO'
+  - 'THACE'
+  - 'THASO'
+  - 'KHMXX'
+  - 'SGPXX'
+  - 'BRNXX'
+  - 'MMRNO'
+  - 'MMRCE'
+  - 'MMRSO'
+
+nodes_to_remove:
+#- 'AAAXX' where AAA is a 3-letter country code, and XX is a 2-letter 
+# sub-national code
+ - 'IDNXX'
+ - 'VNMXX'
+ - 'MYSXX'
+ - 'PHLXX'
+ - 'THAXX'
+ - 'LAOXX'
+ - 'MMRXX'
+
+
+powerplant_build_rates:
+ # TECHNOLOGY_TYPE: [COUNTRY, METHOD, VALUE, START_YEAR, END_YEAR, METHOD]
+ # where TECHNOLOGY_TYPE is, for example, all coal powerplants and is in the 
+ # format COA.
+ # COUNTRY is the 3-letter country code. E.g. 'IDN' for 'Indonesia' 
+ # METHOD specifies how the build rate is applied: absolute ('ABS' or as a 
+ # percentage ('PCT') of the maximum capacity for a TECHNOLOGY_TYPE.
+ # VALUE is the value - either absolute or percentage - by which the capacity 
+ # of the associated TECHNOLOGY can increase. It is applied from the START_YEAR 
+ # to the END_YEAR.
+ # E.g. - ['SPV', 'IDN', 'ABS', 0, 2020, 2025] 
+ - ['BAT', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'BRN', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'IDN', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'KHM', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'LAO', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'MMR', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'MYS', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'PHL', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'SGP', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'SGP', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'THA', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'THA', 'ABS', 10, 2025, 2051]
+ - ['BAT', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['BAT', 'VNM', 'ABS', 10, 2025, 2051]
+ - ['BIO', 'BRN', 'ABS', 0, 2020, 2051]
+ - ['BIO', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'IDN', 'PCT', 1, 2025, 2034]
+ - ['BIO', 'IDN', 'PCT', 5, 2034, 2051]
+ - ['BIO', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'KHM', 'ABS', 5, 2025, 2034]
+ - ['BIO', 'KHM', 'ABS', 10, 2034, 2051]
+ - ['BIO', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'LAO', 'ABS', 5, 2025, 2034]
+ - ['BIO', 'LAO', 'ABS', 10, 2034, 2051]
+ - ['BIO', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'MMR', 'ABS', 5, 2025, 2034]
+ - ['BIO', 'MMR', 'ABS', 10, 2034, 2051]
+ - ['BIO', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'MYS', 'ABS', 5, 2025, 2034]
+ - ['BIO', 'MYS', 'ABS', 10, 2034, 2051]
+ - ['BIO', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'PHL', 'ABS', 5, 2025, 2034]
+ - ['BIO', 'PHL', 'ABS', 10, 2034, 2051]
+ - ['BIO', 'SGP', 'ABS', 0, 2020, 2051]
+ - ['BIO', 'THA', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'THA', 'ABS', 5, 2025, 2034]
+ - ['BIO', 'THA', 'ABS', 10, 2034, 2051]
+ - ['BIO', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['BIO', 'VNM', 'ABS', 5, 2025, 2034]
+ - ['BIO', 'VNM', 'ABS', 10, 2034, 2051]
+ - ['CCG', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'SGP', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'THA', 'ABS', 0, 2020, 2025]
+ - ['CCG', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['CCS', 'BRN', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'BRN', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'IDN', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'IDN', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'KHM', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'KHM', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'LAO', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'LAO', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'MMR', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'MMR', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'MYS', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'MYS', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'PHL', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'PHL', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'SGP', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'SGP', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'THA', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'THA', 'ABS', 10, 2040, 2051]
+ - ['CCS', 'VNM', 'ABS', 0, 2020, 2040]
+ - ['CCS', 'VNM', 'ABS', 10, 2040, 2051]
+ - ['COA', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['COA', 'IDN', 'ABS', 0, 2020, 2027]
+ - ['COA', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['COA', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['COA', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['COA', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['COA', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['COA', 'SGP', 'ABS', 0, 2020, 2051]
+ - ['COA', 'THA', 'ABS', 0, 2020, 2025]
+ - ['COA', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'BRN', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'IDN', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'KHM', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'LAO', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'MMR', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'MYS', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'PHL', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'SGP', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'SGP', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'THA', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'THA', 'PCT', 20, 2025, 2051]
+ - ['GEO', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['GEO', 'VNM', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'BRN', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'IDN', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'KHM', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'LAO', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'MMR', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'MYS', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'PHL', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'SGP', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'SGP', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'THA', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'THA', 'PCT', 20, 2025, 2051]
+ - ['HYD', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['HYD', 'VNM', 'PCT', 20, 2025, 2051]
+ - ['SPV', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'BRN', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'BRN', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'IDN', 'PCT', 5, 2025, 2034]
+ - ['SPV', 'IDN', 'PCT', 10, 2034, 2051]
+ - ['SPV', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'KHM', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'KHM', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'LAO', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'LAO', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'MMR', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'MMR', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'MYS', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'MYS', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'PHL', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'PHL', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'SGP', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'SGP', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'SGP', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'THA', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'THA', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'THA', 'PCT', 20, 2034, 2051]
+ - ['SPV', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['SPV', 'VNM', 'PCT', 10, 2025, 2034]
+ - ['SPV', 'VNM', 'PCT', 20, 2034, 2051]
+ - ['URN', 'BRN', 'ABS', 0, 2020, 2039]
+ - ['URN', 'BRN', 'ABS', 0, 2039, 2051]
+ - ['URN', 'IDN', 'ABS', 0, 2020, 2039]
+ - ['URN', 'IDN', 'ABS', 0.25, 2039, 2051]
+ - ['URN', 'KHM', 'ABS', 0, 2020, 2039]
+ - ['URN', 'KHM', 'ABS', 0, 2039, 2051]
+ - ['URN', 'LAO', 'ABS', 0, 2020, 2039]
+ - ['URN', 'LAO', 'ABS', 0, 2039, 2051]
+ - ['URN', 'MMR', 'ABS', 0, 2020, 2039]
+ - ['URN', 'MMR', 'ABS', 0, 2039, 2051]
+ - ['URN', 'MYS', 'ABS', 0, 2020, 2039]
+ - ['URN', 'MYS', 'ABS', 1, 2039, 2051]
+ - ['URN', 'PHL', 'ABS', 0, 2020, 2039]
+ - ['URN', 'PHL', 'ABS', 1, 2039, 2051]
+ - ['URN', 'SGP', 'ABS', 0, 2020, 2039]
+ - ['URN', 'SGP', 'ABS', 1, 2039, 2051]
+ - ['URN', 'THA', 'ABS', 0, 2020, 2039]
+ - ['URN', 'THA', 'ABS', 1, 2039, 2051]
+ - ['URN', 'VNM', 'ABS', 0, 2020, 2039]
+ - ['URN', 'VNM', 'ABS', 1, 2039, 2051]
+ - ['WOF', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'BRN', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'IDN', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'KHM', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'LAO', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'MMR', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'MYS', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'PHL', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'SGP', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'SGP', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'THA', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'THA', 'PCT', 20, 2027, 2051]
+ - ['WOF', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['WOF', 'VNM', 'PCT', 10, 2025, 2035]
+ - ['WOF', 'VNM', 'PCT', 20, 2035, 2051]
+ - ['WON', 'BRN', 'ABS', 0, 2020, 2025]
+ - ['WON', 'BRN', 'PCT', 10, 2025, 2035]
+ - ['WON', 'BRN', 'PCT', 20, 2035, 2051]
+ - ['WON', 'IDN', 'ABS', 0, 2020, 2025]
+ - ['WON', 'IDN', 'PCT', 10, 2025, 2051]
+ - ['WON', 'KHM', 'ABS', 0, 2020, 2025]
+ - ['WON', 'KHM', 'PCT', 10, 2025, 2035]
+ - ['WON', 'KHM', 'PCT', 20, 2035, 2051]
+ - ['WON', 'LAO', 'ABS', 0, 2020, 2025]
+ - ['WON', 'LAO', 'PCT', 10, 2025, 2035]
+ - ['WON', 'LAO', 'PCT', 20, 2035, 2051]
+ - ['WON', 'MMR', 'ABS', 0, 2020, 2025]
+ - ['WON', 'MMR', 'PCT', 10, 2025, 2035]
+ - ['WON', 'MMR', 'PCT', 20, 2035, 2051]
+ - ['WON', 'MYS', 'ABS', 0, 2020, 2025]
+ - ['WON', 'MYS', 'PCT', 10, 2025, 2035]
+ - ['WON', 'MYS', 'PCT', 20, 2035, 2051]
+ - ['WON', 'PHL', 'ABS', 0, 2020, 2025]
+ - ['WON', 'PHL', 'PCT', 10, 2025, 2035]
+ - ['WON', 'PHL', 'PCT', 20, 2035, 2051]
+ - ['WON', 'SGP', 'ABS', 0, 2020, 2025]
+ - ['WON', 'SGP', 'PCT', 10, 2025, 2035]
+ - ['WON', 'SGP', 'PCT', 20, 2035, 2051]
+ - ['WON', 'THA', 'ABS', 0, 2020, 2025]
+ - ['WON', 'THA', 'PCT', 10, 2025, 2035]
+ - ['WON', 'THA', 'PCT', 20, 2035, 2051]
+ - ['WON', 'VNM', 'ABS', 0, 2020, 2025]
+ - ['WON', 'VNM', 'PCT', 10, 2025, 2035]
+ - ['WON', 'VNM', 'PCT', 20, 2035, 2051]
+
+reserve_margin:
+# RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
+# Years for which there is no PERCENTAGE value will be interpolated
+ RM1: [15, 2020, 2029]
+ RM2: [15, 2030, 2050]
+
+emission_limit:
+# - [EMISSION, COUNTRY, YEAR, VALUE]
+# where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
+# when that constraint must be adhered to. All years between multiple emission 
+# constraints will be interpolated.
+ - ['CO2', 'IDN', 2030, 99999]
+#  - ['CO2', 'BRN', 2030, 5]
+#  - ['CO2', 'KHM', 2030, 20]
+#  - ['CO2', 'IDN', 2030, 316]
+#  - ['CO2', 'LAO', 2030, 5]
+#  - ['CO2', 'MYS', 2030, 106]
+#  - ['CO2', 'MMR', 2030, 7]
+#  - ['CO2', 'PHL', 2030, 130]
+#  - ['CO2', 'SGP', 2030, 39]
+#  - ['CO2', 'THA', 2030, 192]
+#  - ['CO2', 'VNM', 2030, 283]
+#  - ['CO2', 'BRN', 2060, 0]
+#  - ['CO2', 'KHM', 2060, 0]
+#  - ['CO2', 'IDN', 2060, 0]
+#  - ['CO2', 'LAO', 2060, 0]
+#  - ['CO2', 'MYS', 2060, 0]
+#  - ['CO2', 'MMR', 2060, 0]
+#  - ['CO2', 'PHL', 2060, 0]
+#  - ['CO2', 'SGP', 2060, 0]
+#  - ['CO2', 'THA', 2060, 0]
+#  - ['CO2', 'VNM', 2060, 0]
+
+fuel_limits:
+# FUEL: [VALUE, COUNTRY/INTERNATIONAL, YEAR]
+# Where FUEL is the fuel on which a limit is being applied (e.g. COA), VALUE is
+# the value in Petajoules (PJ), COUNTRY/INTERNATIONAL specific which domestic 
+# fuel (e.g. IDN) or international fuel ('INT') the limit is being applied to, 
+# and YEAR is the year for which the limit is applied. All years between multiple 
+# fuel extraction constraints will be interpolated.
+ - ['GAS', 'IDN', 453, 2021]
+ - ['GAS', 'IDN', 933, 2035]
+ - ['GAS', 'IDN', 933, 2050]
+ - ['COA', 'IDN', 3300, 2021]
+ - ['COA', 'IDN', 3300, 2050]
+ - ['OIL', 'IDN', 0, 2021]
+ - ['OIL', 'IDN', 0, 2050]
+
+ - ['GAS', 'VNM', 89, 2021]
+ - ['GAS', 'VNM', 178, 2035]
+ - ['GAS', 'VNM', 178, 2050]
+ - ['COA', 'VNM', 510, 2021]
+ - ['COA', 'VNM', 510, 2050]
+ - ['OIL', 'VNM', 0, 2021]
+ - ['OIL', 'VNM', 0, 2050]
+
+ - ['GAS', 'MYS', 667, 2021]
+ - ['GAS', 'MYS', 1335, 2035]
+ - ['GAS', 'MYS', 1335, 2050]
+ - ['COA', 'MYS', 0, 2021]
+ - ['COA', 'MYS', 0, 2050]
+ - ['OIL', 'MYS', 0, 2021]
+ - ['OIL', 'MYS', 0, 2050]
+
+ - ['GAS', 'PHL', 35, 2021]
+ - ['GAS', 'PHL', 71, 2035]
+ - ['GAS', 'PHL', 71, 2050]
+ - ['COA', 'PHL', 129, 2021]
+ - ['COA', 'PHL', 129, 2050]
+ - ['OIL', 'PHL', 0, 2021]
+ - ['OIL', 'PHL', 0, 2050]
+
+ - ['GAS', 'LAO', 0, 2021]
+ - ['GAS', 'LAO', 0, 2035]
+ - ['GAS', 'LAO', 0, 2050]
+ - ['COA', 'LAO', 236, 2021]
+ - ['COA', 'LAO', 236, 2050]
+ - ['OIL', 'LAO', 0, 2021]
+ - ['OIL', 'LAO', 0, 2050]
+
+ - ['GAS', 'THA', 339, 2021]
+ - ['GAS', 'THA', 678, 2035]
+ - ['GAS', 'THA', 678, 2050]
+ - ['COA', 'THA', 140, 2021]
+ - ['COA', 'THA', 140, 2050]
+ - ['OIL', 'THA', 0, 2021]
+ - ['OIL', 'THA', 0, 2050]
+
+ - ['GAS', 'KHM', 0, 2021]
+ - ['GAS', 'KHM', 0, 2035]
+ - ['GAS', 'KHM', 0, 2050]
+ - ['COA', 'KHM', 0, 2021]
+ - ['COA', 'KHM', 0, 2050]
+ - ['OIL', 'KHM', 0, 2021]
+ - ['OIL', 'KHM', 0, 2050]
+
+ - ['GAS', 'SGP', 0, 2021]
+ - ['GAS', 'SGP', 0, 2035]
+ - ['GAS', 'SGP', 0, 2050]
+ - ['COA', 'SGP', 0, 2021]
+ - ['COA', 'SGP', 0, 2050]
+ - ['OIL', 'SGP', 0, 2021]
+ - ['OIL', 'SGP', 0, 2050]
+
+ - ['GAS', 'BRN', 108, 2021]
+ - ['GAS', 'BRN', 216, 2035]
+ - ['GAS', 'BRN', 216, 2050]
+ - ['COA', 'BRN', 0, 2021]
+ - ['COA', 'BRN', 0, 2050]
+ - ['OIL', 'BRN', 0, 2021]
+ - ['OIL', 'BRN', 0, 2050]
+
+ - ['GAS', 'MMR', 157, 2021]
+ - ['GAS', 'MMR', 315, 2035]
+ - ['GAS', 'MMR', 315, 2050]
+ - ['COA', 'MMR', 0, 2021]
+ - ['COA', 'MMR', 0, 2050]
+ - ['OIL', 'MMR', 0, 2021]
+ - ['OIL', 'MMR', 0, 2050]
+
+calibration:
+ OCG1: [50, 'IDN', 2021]
+ OCG2: [60, 'IDN', 2022]
+ OCG3: [49, 'IDN', 2023]
+ OCG4: [49, 'IDN', 2024]
+ OCG5: [49, 'IDN', 2025]
+ OCG6: [48, 'IDN', 2026]
+ OCG7: [46, 'IDN', 2027]
+ OCG8: [42, 'IDN', 2028]
+ OCG9: [41, 'IDN', 2029]
+ OCG10: [41, 'IDN', 2030]
+ CCG1: [70, 'IDN', 2021]
+ CCG2: [70, 'IDN', 2022]
+ CCG3: [59, 'IDN', 2023]
+ CCG4: [51, 'IDN', 2024]
+ CCG5: [50, 'IDN', 2025]
+ CCG6: [45, 'IDN', 2026]
+ CCG7: [40, 'IDN', 2027]
+ CCG8: [36, 'IDN', 2028]
+ CCG9: [36, 'IDN', 2029]
+ CCG10: [35, 'IDN', 2030]
+
+
+re_targets:
+# E.g. - ['IDN', 2030, 2040, 30]
+# where 'IDN' is the country code; 2030, 2040 are the start and end years
+# respectively; and 30 is the target between the start and end years (inclusive)
+# in %
+# - ['BRN', 2035, 2050, 30]
+ - ['KHM', 2030, 2050, 25]
+ - ['IDN', 2030, 2050, 20]
+ - ['LAO', 2025, 2050, 20]
+ - ['MYS', 2025, 2034, 31]
+ - ['MYS', 2035, 2050, 40]
+ - ['MMR', 2030, 2050, 39]
+ - ['PHL', 2030, 2039, 35]
+ - ['PHL', 2040, 2050, 50]
+ - ['THA', 2037, 2050, 20]
+ - ['VNM', 2030, 2049, 32]
+ - ['VNM', 2050, 2050, 43]

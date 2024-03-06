@@ -37,12 +37,12 @@ CapitalCost:
     indices: [REGION,TECHNOLOGY,YEAR]
     type: param
     dtype: float
-    default: 0.1
+    default: 0.001
 CapitalCostStorage:
     indices: [REGION,STORAGE,YEAR]
     type: param
     dtype: float
-    default: 0
+    default: 2000
 Conversionld:
     indices: [TIMESLICE,DAYTYPE]
     type: param
@@ -70,7 +70,7 @@ DaySplit:
     indices: [DAILYTIMEBRACKET,YEAR]
     type: param
     dtype: float
-    default: 0.00137
+    default: 0.0068
 DAYTYPE:
     dtype: int
     type: set
@@ -78,17 +78,17 @@ DepreciationMethod:
     indices: [REGION]
     type: param
     dtype: float
-    default: 1
+    default: 2
 DiscountRate:
     indices: [REGION]
     type: param
     dtype: float
-    default: 0.05
+    default: 0.1
 DiscountRateStorage:
     indices: [REGION,STORAGE]
     type: param
     dtype: float
-    default: 0.05
+    default: 0.1
 EMISSION:
     dtype: str
     type: set
@@ -142,7 +142,7 @@ OperationalLifeStorage:
     indices: [REGION,STORAGE]
     type: param
     dtype: float
-    default: 0
+    default: 10
 OutputActivityRatio:
     indices: [REGION,TECHNOLOGY,FUEL,MODE_OF_OPERATION,YEAR]
     type: param
@@ -180,7 +180,7 @@ ResidualStorageCapacity:
     indices: [REGION,STORAGE,YEAR]
     type: param
     dtype: float
-    default: 999
+    default: 0
 RETagFuel:
     indices: [REGION,FUEL,YEAR]
     type: param
@@ -216,12 +216,12 @@ StorageMaxChargeRate:
     indices: [REGION,STORAGE]
     type: param
     dtype: float
-    default: 0
+    default: 99999
 StorageMaxDischargeRate:
     indices: [REGION,STORAGE]
     type: param
     dtype: float
-    default: 0
+    default: 99999
 TECHNOLOGY:
     dtype: str
     type: set

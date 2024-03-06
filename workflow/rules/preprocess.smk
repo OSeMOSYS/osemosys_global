@@ -6,6 +6,8 @@ configfile: 'config/config.yaml'
 
 # model and scenario output files 
 
+#osemosys_files = os.listdir('resources/simplicity/data')
+#osemosys_files.remove('default_values.csv') #taken form /resources
 osemosys_files = os.listdir('resources/otoole/data')
 
 demand_figures = [
@@ -34,14 +36,29 @@ power_plant_files = [
     'REGION.csv',
     'ResidualCapacity.csv',
     'TECHNOLOGY.csv',
-    'YEAR.csv'
+    'YEAR.csv',
+    'AvailabilityFactor.csv'
     ]
 
 timeslice_files = [
     'CapacityFactor.csv',
     'TIMESLICE.csv',
     'SpecifiedDemandProfile.csv',
-    'YearSplit.csv'
+    'YearSplit.csv',
+    'STORAGE.csv',
+    'TechnologyToStorage.csv',
+    'TechnologyFromStorage.csv',
+    'Conversionls.csv',
+    'Conversionld.csv',
+    'Conversionlh.csv',
+    'SEASON.csv',
+    'DAYTYPE.csv',
+    'DAILYTIMEBRACKET.csv',
+    'CapitalCostStorage.csv',
+    'DaySplit.csv',
+    'ReserveMargin.csv',
+    'ReserveMarginTagTechnology.csv',
+    'ReserveMarginTagFuel.csv'
     ]
 
 variable_cost_files = [
@@ -55,11 +72,15 @@ demand_files = [
 emission_files = [
     'EmissionActivityRatio.csv',
     'EmissionsPenalty.csv',
-    'EMISSION.csv'
+    'EMISSION.csv',
+    'AnnualEmissionLimit.csv'
 ]
 
 max_capacity_files = [
-    'TotalAnnualMaxCapacity.csv'
+    'TotalAnnualMaxCapacity.csv',
+    'TotalTechnologyAnnualActivityUpperLimit.csv',
+    'AccumulatedAnnualDemand.csv',
+#    'TotalTechnologyModelPeriodActivityUpperLimit.csv'
 ]
 
 user_capacity_files = [
@@ -67,6 +88,7 @@ user_capacity_files = [
     'TotalAnnualMaxCapacityInvestment.csv'
 ]
 
+#check_files = os.listdir('resources/simplicity/data')
 check_files = os.listdir('resources/otoole/data')
 generated_files = [
     power_plant_files, 
@@ -89,7 +111,7 @@ rule powerplant:
         'Generating powerplant data...'
     input:
         'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
-        'resources/data/weo_2018_powerplant_costs.csv',
+        'resources/data/weo_2020_powerplant_costs.csv',
         'resources/data/operational_life.csv',
         'resources/data/naming_convention_tech.csv',
         'resources/data/Costs Line expansion.xlsx',
@@ -209,6 +231,7 @@ rule file_check:
         rules.demand_projections.output.csv_files,
         rules.emissions.output.csv_files,
         rules.max_capacity.output.csv_files,
+        #'resources/data/default_values.csv'
     output: 
         expand('results/data/{check_file}', check_file = check_files),
     log: 

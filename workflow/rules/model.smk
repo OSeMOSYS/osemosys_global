@@ -7,6 +7,7 @@ configfile: 'config/config.yaml'
 
 # OUTPUT FILES 
 
+#osemosys_files = os.listdir('resources/simplicity/data')
 osemosys_files = os.listdir('resources/otoole/data')
 
 # RULES
@@ -20,10 +21,33 @@ rule geographic_filter:
         geographic_scope = config['geographic_scope']
     output:
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
+        # datapackage = 'results/{scenario}/datapackage.json'
+    # conda:
+    #     '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/geographicFilter.log'
     shell:
         'python workflow/scripts/osemosys_global/geographic_filter.py 2> {log}'
+
+rule copy_og_config:
+    message:
+        'Copying OSeMOSYS Global Configuration File'
+    input:
+        config='config/config.yaml'
+    output:
+        config='results/{scenario}/og.yaml'
+    run:
+        shutil.copyfile(input.config, output.config)
+
+rule copy_otoole_confg:
+    message:
+        'Copying otoole configuration file...'
+    input:
+        config='resources/otoole/config.yaml'
+    output:
+        config='results/{scenario}/otoole.yaml'
+    run:
+        shutil.copyfile(input.config, output.config)
 
 rule copy_og_config:
     message:
@@ -51,6 +75,7 @@ rule otoole_convert:
     params:
         csv_dir = 'results/{scenario}/data/'
     input:
+        #datapackage = 'results/{scenario}/datapackage.json',
         otoole_config = 'results/{scenario}/otoole.yaml',
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
     output:
@@ -58,6 +83,7 @@ rule otoole_convert:
     log:
         log = 'results/{scenario}/logs/otoole_convert.log'
     shell:
+        #'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
         'otoole convert csv datafile {params.csv_dir} {output} {input.otoole_config} 2> {log}'
 
 rule preprocess_data_file:
@@ -67,10 +93,12 @@ rule preprocess_data_file:
         data_file = 'results/{scenario}/{scenario}.txt'
     output:
         data_file = 'results/{scenario}/PreProcessed_{scenario}.txt'
+    #conda:
+    #    '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/preprocess_data_file.log'
     shell:
-        'python resources/OSeMOSYS_GNU_MathProg/scripts/preprocess_data.py otoole {input} {output} 2> {log}'
+        'python resources/preprocess_data.py otoole {input} {output} 2> {log}'
 
 rule create_lp_file:
     message:
@@ -91,7 +119,8 @@ rule solve_lp:
     input:
         lp_file = 'results/{scenario}/{scenario}.lp'
     output:
-        solution = 'results/{scenario}/{scenario}.sol'
+        solution = 'results/{scenario}/{scenario}.sol',
+        duals = 'results/{scenario}/{scenario}.attr'
     params:
         json = 'results/{scenario}/{scenario}.json',
         ilp = 'results/{scenario}/{scenario}.ilp'
@@ -101,7 +130,7 @@ rule solve_lp:
         '''
         if [ {config[solver]} = gurobi ]
         then
-          gurobi_cl Method=2 ResultFile={output.solution} ResultFile={params.json} ResultFile={params.ilp} {input.lp_file}
+          gurobi_cl Method=2 ResultFile={output.solution} ResultFile={output.duals} ResultFile={params.json} ResultFile={params.ilp} {input.lp_file}
         elif [ {config[solver]} = cplex ]
         then
           cplex -c "read {input.lp_file}" "optimize" "write {output.solution}"
