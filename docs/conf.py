@@ -117,18 +117,11 @@ source_suffix = {
 # The master toctree document.
 master_doc = "index"
 
+# General information about the project.
+project = "OSeMOSYS Global"
+copyright = "2022, osemosys"
+# copyright = f"{datetime.datetime.today().year}, {author}"
 
-project = 'feo-esmod-osemosys'
-copyright = '2023, TransitionZero'
-author = 'TransitionZero'
-release = '2023.0.0'
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -188,23 +181,24 @@ pygments_style = "sphinx"
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
 
+
 # -- Options for HTML output -------------------------------------------------
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-#html_theme = "furo"
+# html_theme = "furo"
 html_theme = "sphinx_book_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_logo = "_static/tz_logo.svg"
-html_favicon = "_static/tz_logo_small.svg"
+html_logo = "_static/logo.svg"
+html_favicon = "_static/logo.svg"
 html_title = ""
 html_theme_options = {
     "home_page_in_toc": True,
-    "github_url": "https://github.com/transition-zero/feo-esmod-osemosys",
-    "repository_url": "https://github.com/transition-zero/feo-esmod-osemosys",
+    "github_url": "https://github.com/OSeMOSYS/osemosys_global",
+    "repository_url": "https://github.com/OSeMOSYS/osemosys_global",
     "repository_branch": "master",
     "path_to_docs": "docs",
     "use_repository_button": True,
@@ -277,15 +271,16 @@ html_static_path = ["_static"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "feo-esmod_osemosys-doc"
+htmlhelp_basename = "osemosys-global-doc"
+
 
 # -- Options for LaTeX output ------------------------------------------------
 
 latex_elements = {
     # The paper size ("letterpaper" or "a4paper").
-    "papersize": "a4paper",
+    # "papersize": "letterpaper",
     # The font size ("10pt", "11pt" or "12pt").
-    "pointsize": "11pt",
+    # "pointsize": "10pt",
     # Additional stuff for the LaTeX preamble.
     # "preamble": "",
 }
@@ -293,7 +288,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "user_guide.tex", "FEO Global Documentation", "TransitionZero", "manual")
+    ("index", "user_guide.tex", "osemosys_global Documentation", "osemosys", "manual")
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -331,4 +326,3 @@ intersphinx_mapping = {
 }
 
 print(f"loading configurations for {project} {version} ...", file=sys.stderr)
-

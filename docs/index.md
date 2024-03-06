@@ -1,21 +1,25 @@
-# FEO Global (OSeMOSYS)
+# Welcome to the documentation of **OSeMOSYS Global**! 
 
 ![OSeMOSYS Global](_static/osemosys-global.png "OSeMOSYS Global")
 
 OSeMOSYS Global is an open-source, open-data model generator for creating
 global energy system models. It can be used to create inter-connected energy
 systems models for both the entire globe and for any geographically diverse
-subset of the globe. It is built using the fully open-source 
-[OSeMOSYS](https://osemosys.readthedocs.io/en/latest/) energy system modelling tool.
+subset of the globe. Compared to other existing global models, OSeMOSYS Global
+creates a full energy system representation, allows for full user flexibility
+in determining the modelling detail and geographic scope, and is built using
+the fully open-source [OSeMOSYS](https://osemosys.readthedocs.io/en/latest/)
+energy system model.
 
-![Geographic scope](./figures/osemosys-global.png "Geographic scope")
+## Contents
+```{toctree}
+:maxdepth: 2
 
 installation
 getting-started
 contributing
 model-structure
 advanced-functionality
-license
 changelog
 citing
 ```
@@ -27,7 +31,6 @@ citing
 - {ref}`modindex`
 - {ref}`search`
 -->
-
 
 [autodoc]: https://www.sphinx-doc.org/en/master/ext/autodoc.html
 [classical style]: https://www.sphinx-doc.org/en/master/domains.html#info-field-lists
