@@ -7,6 +7,7 @@ from configuration import ConfigFile, ConfigPaths
 from utils import apply_dtypes
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+import itertools
 
 # CONFIGURATION PARAMETERS
 

@@ -69,7 +69,6 @@ rule otoole_results:
         {input.solution_file} results/{wildcards.scenario}/results \
         --input_datafile {input.pre_process_file} \
         {input.otoole_config}
-        #datafile {input.pre_process_file} \
         2> {log} 
         '''
 

@@ -29,16 +29,6 @@ rule geographic_filter:
     shell:
         'python workflow/scripts/osemosys_global/geographic_filter.py 2> {log}'
 
-rule copy_og_config:
-    message:
-        'Copying OSeMOSYS Global Configuration File'
-    input:
-        config='config/config.yaml'
-    output:
-        config='results/{scenario}/og.yaml'
-    run:
-        shutil.copyfile(input.config, output.config)
-
 rule copy_otoole_confg:
     message:
         'Copying otoole configuration file...'
@@ -56,16 +46,6 @@ rule copy_og_config:
         config='config/config.yaml'
     output:
         config='results/{scenario}/og.yaml'
-    run:
-        shutil.copyfile(input.config, output.config)
-
-rule copy_otoole_confg:
-    message:
-        'Copying otoole configuration file...'
-    input:
-        config='resources/otoole/config.yaml'
-    output:
-        config='results/{scenario}/otoole.yaml'
     run:
         shutil.copyfile(input.config, output.config)
 
@@ -120,17 +100,17 @@ rule solve_lp:
         lp_file = 'results/{scenario}/{scenario}.lp'
     output:
         solution = 'results/{scenario}/{scenario}.sol',
-        duals = 'results/{scenario}/{scenario}.attr'
     params:
         json = 'results/{scenario}/{scenario}.json',
-        ilp = 'results/{scenario}/{scenario}.ilp'
+        ilp = 'results/{scenario}/{scenario}.ilp',
+        duals = 'results/{scenario}/{scenario}.attr'
     log:
         log = 'results/{scenario}/logs/solve_lp.log'
     shell: 
         '''
         if [ {config[solver]} = gurobi ]
         then
-          gurobi_cl Method=2 ResultFile={output.solution} ResultFile={output.duals} ResultFile={params.json} ResultFile={params.ilp} {input.lp_file}
+          gurobi_cl Method=2 ResultFile={output.solution} ResultFile={params.duals} ResultFile={params.json} ResultFile={params.ilp} {input.lp_file}
         elif [ {config[solver]} = cplex ]
         then
           cplex -c "read {input.lp_file}" "optimize" "write {output.solution}"

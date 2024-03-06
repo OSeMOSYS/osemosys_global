@@ -429,7 +429,12 @@ def apply_calibration(region, years, output_data_dir, calibration):
                                           columns=['VALUE'])
         fuel_list_df_final.to_csv(os.path.join(output_data_dir,
                                                'FUEL.csv'),
-                                  index=None)        
+                                  index=None) 
+    else:
+        cal_dem_final = pd.DataFrame(columns=["REGION", "FUEL", "YEAR", "VALUE"])
+        cal_dem_final.to_csv(os.path.join(output_data_dir,
+                                          'AccumulatedAnnualDemand.csv'),
+                             index=None)  
         
 def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
     '''Apply Renewable Energy targets by country and year'''
