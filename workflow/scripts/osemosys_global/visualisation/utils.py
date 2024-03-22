@@ -56,7 +56,7 @@ def powerplant_filter(df: pd.DataFrame, country:str = None) -> pd.DataFrame:
 
     if country:
         filtered_df = filtered_df.loc[filtered_df['COUNTRY'] == country]
-        filtered_df['LABEL'] = filtered_df['COUNTRY'] + '-' + filtered_df['TYPE']
+        filtered_df['LABEL'] = filtered_df['TYPE']
     else:
         filtered_df['LABEL'] = filtered_df['TYPE']
     
