@@ -123,7 +123,7 @@ def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:
             system level
     """
 
-    df = get_generation_annual_data(data, country=None)
+    df = get_generation_annual_data(data, country=country)
     plot_colors = get_color_codes()
 
     if not country: # System level titles
