@@ -7,6 +7,7 @@ from configuration import ConfigFile, ConfigPaths
 from utils import apply_dtypes
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+import itertools
 
 # CONFIGURATION PARAMETERS
 
@@ -46,8 +47,10 @@ emissions = []
 
 # ### Filter technologies to keep only fuel production technologies (MIN)
 
-df_techs = df_techs[df_techs.VALUE.str.contains('MIN')]
+df_techs = df_techs[df_techs.VALUE.str.contains('|'.join(['MIN','RNW']))]
+techs = df_techs['VALUE']
 
+'''
 df_techs['REGION'] = region_name
 df_techs['MODE_OF_OPERATION'] = 1
 df_techs_temp = df_techs.copy()
@@ -110,13 +113,17 @@ df_prices['MINCOG'] = df_prices['MINGAS']  # Cogen is powered by gas
 df_prices['MINOTH'] = df_prices['MINOIL']  # Other petroleum products are similar to oil
 df_prices['MINPET'] = df_prices['MINOIL']  # Petroleum products are similar to oil
 
-# And add in international prices that are 15% higher than the regular ones:
-df_prices['INTCOA'] = df_prices['MINCOA'] * 0.15
-df_prices['INTOIL'] = df_prices['MINOIL'] * 0.15
-df_prices['INTGAS'] = df_prices['MINGAS'] * 0.15
-df_prices['INTCOG'] = df_prices['MINCOG'] * 0.15
-df_prices['INTOTH'] = df_prices['MINOTH'] * 0.15
-df_prices['INTPET'] = df_prices['MINPET'] * 0.15
+# Add price for URN. 40 $2020/lb -> 0.0226 m$2020/PJ (3900 GJ/kg)
+df_prices['MINURN'] = 0.0226
+
+# And add in international prices that are 50% higher than the regular ones:
+df_prices['INTCOA'] = df_prices['MINCOA'] * 1.5
+df_prices['INTOIL'] = df_prices['MINOIL'] * 1.5
+df_prices['INTGAS'] = df_prices['MINGAS'] * 2
+df_prices['INTCOG'] = df_prices['MINCOG'] * 2
+df_prices['INTOTH'] = df_prices['MINOTH'] * 2
+df_prices['INTPET'] = df_prices['MINPET'] * 2
+df_prices['INTURN'] = df_prices['MINURN'] * 1.5
 
 df_prices = df_prices.reindex(years)
 
@@ -154,7 +161,7 @@ df_varcost = df_varcost.drop(['TEMPTECH'], axis=1)
 ## BUT THIS IS ALREADY DONE FOR US BY THE MERGE
 #df_techs.dropna(subset = ["VALUE"], inplace=True)
 #print(df_techs)
-
+'''
 
 
 # Get transmission variable costs 
@@ -173,10 +180,11 @@ df_trn_varcosts = df_trn_varcosts.explode('YEAR')
 
 # Hardcode in transmission variable cost parameter following PLEXOS of $4/MWh
 # $4/MWh * 1Wh/3600J * 1000000000 MJ/1PJ * 1M$/$1000000 
-trn_varcost = 4 / 3.6
+trn_varcost = 4 / 3600
 
 df_trn_varcosts['VALUE'] = round(trn_varcost, 4)
 
+'''
 # Merge with mining variable costs 
 df_varcost = pd.concat([df_varcost, df_trn_varcosts])
 
@@ -187,8 +195,144 @@ df_varcosts_final = df_varcost[['REGION',
                        'MODE_OF_OPERATION',
                        'YEAR', 
                        'VALUE']]
+df_varcosts_final['VALUE'] = df_varcosts_final['VALUE'].round(2)
+#df_varcosts_final.to_csv(os.path.join(output_data_dir,'VariableCost.csv'), mode='w', header=True, index = None)
+'''
+# New calculation of fuel prices
+df_fuel_prices =pd.read_csv(os.path.join(input_data_dir,
+                                         'fuel_prices.csv'))
+df_fuel_prices.drop(['UNIT'],
+                    axis=1,
+                    inplace=True)
+df_fuel_prices = pd.melt(df_fuel_prices,
+                         id_vars=['FUEL',
+                                  'COUNTRY',
+                                  'ENERGY_CONTENT'],
+                         value_vars=[x for x in df_fuel_prices.columns
+                                     if x not in ['FUEL',
+                                                  'COUNTRY',
+                                                  'ENERGY_CONTENT']],
+                         var_name='YEAR',
+                         value_name='VALUE')
+df_fuel_prices['VALUE'] = (df_fuel_prices['VALUE'] / 
+                           df_fuel_prices['ENERGY_CONTENT'])
+#df_fuel_prices['TECHNOLOGY'] = ('MIN' +
+#                                df_fuel_prices['FUEL'] +
+#                                df_fuel_prices['COUNTRY'])
+df_fuel_prices.loc[df_fuel_prices['FUEL'].isin(['BIO','WAS']),
+                   'TECHNOLOGY'] = ('RNW' +
+                                    df_fuel_prices['FUEL'] +
+                                    df_fuel_prices['COUNTRY'])      
+df_fuel_prices.loc[~(df_fuel_prices['FUEL'].isin(['BIO','WAS'])),
+                   'TECHNOLOGY'] = ('MIN' +
+                                    df_fuel_prices['FUEL'] +
+                                    df_fuel_prices['COUNTRY'])
+df_fuel_prices['VALUE'] = df_fuel_prices['VALUE'].round(2)
 
-df_varcosts_final = apply_dtypes(df_varcosts_final, "VariableCost")
-df_varcosts_final.to_csv(os.path.join(output_data_dir,'VariableCost.csv'), mode='w', header=True, index = None)
+# df_varcosts_final = apply_dtypes(df_varcosts_final, "VariableCost")
+# df_varcosts_final.to_csv(os.path.join(output_data_dir,'VariableCost.csv'), mode='w', header=True, index = None)
+
+# Dataframe with INT fuel prices
+df_int_fuel_prices = df_fuel_prices.loc[df_fuel_prices['COUNTRY'].isin(['INT'])]
+df_int_fuel_prices = df_int_fuel_prices[['FUEL',
+                                         'YEAR',
+                                         'VALUE']]
+df_int_fuel_prices['YEAR'] = df_int_fuel_prices['YEAR'].astype(int)
+
+# List of countries with country-specific values
+country_list = [x for x in df_fuel_prices['COUNTRY'].unique()
+                if x not in ['INT']]
+
+# Dataframe with country-specific and INT values
+df_fuel_prices = df_fuel_prices[['TECHNOLOGY',
+                                 'YEAR',
+                                 'VALUE']]
+df_fuel_prices['YEAR'] = df_fuel_prices['YEAR'].astype(int)
+df_fuel_prices.rename(columns={'TECHNOLOGY': 'TECH_COUNTRY'},
+                      inplace=True)
+
+# Scaffolding for final dataframe
+df_fuel_prices_final = pd.DataFrame(list(itertools.product(list(techs),
+                                                           [1, 2],
+                                                           years)),
+                                    columns = ['TECHNOLOGY',
+                                               'MODE_OF_OPERATION',
+                                               'YEAR']
+                                    )
+df_fuel_prices_final['YEAR'] = df_fuel_prices_final['YEAR'].astype(int)
+df_fuel_prices_final['FUEL'] = df_fuel_prices_final['TECHNOLOGY'].str[3:6]
+df_fuel_prices_final['TECH_COUNTRY'] = df_fuel_prices_final['TECHNOLOGY'].str[:9]
+
+# Values for countries WITHOUT country-specific data set to INT values
+df_fuel_prices_final_1 = pd.merge(df_fuel_prices_final.loc[~(df_fuel_prices_final['TECHNOLOGY']
+                                                            .str[6:9].isin(country_list))],
+                                  df_int_fuel_prices,
+                                  how='left',
+                                  on=['FUEL', 'YEAR'])
+df_fuel_prices_final_1 = df_fuel_prices_final_1[['TECHNOLOGY',
+                                                 'MODE_OF_OPERATION',
+                                                 'YEAR',
+                                                 'VALUE']]
+df_fuel_prices_final_1 = df_fuel_prices_final_1.pivot(index=['YEAR',
+                                                             'MODE_OF_OPERATION'],
+                                                      columns='TECHNOLOGY',
+                                                      values='VALUE').reset_index()
+df_fuel_prices_final_1 = df_fuel_prices_final_1.interpolate(method='linear', 
+                                                            limit_direction='both')
+df_fuel_prices_final_1 = df_fuel_prices_final_1.dropna(axis='columns')
+df_fuel_prices_final_1 = pd.melt(df_fuel_prices_final_1,
+                                 id_vars=['YEAR','MODE_OF_OPERATION'],
+                                 value_vars=[x for x in df_fuel_prices_final_1
+                                             if x not in
+                                             ['YEAR','MODE_OF_OPERATION']],
+                                 var_name='TECHNOLOGY',
+                                 value_name='VALUE')
+df_fuel_prices_final_1['VALUE'] = df_fuel_prices_final_1['VALUE'].round(2)
+
+# Merge values for countries with country-specific data
+df_fuel_prices_final_2 = pd.merge(df_fuel_prices_final.loc[(df_fuel_prices_final['TECHNOLOGY']
+                                                            .str[6:9].isin(country_list))],
+                                  df_fuel_prices,
+                                  how='left',
+                                  on=['TECH_COUNTRY', 'YEAR'])
+
+df_fuel_prices_final_2 = df_fuel_prices_final_2[['TECHNOLOGY',
+                                                 'MODE_OF_OPERATION',
+                                                 'YEAR',
+                                                 'VALUE']]
+df_fuel_prices_final_2 = df_fuel_prices_final_2.pivot(index=['YEAR',
+                                                             'MODE_OF_OPERATION'],
+                                                      columns='TECHNOLOGY',
+                                                      values='VALUE').reset_index()
+df_fuel_prices_final_2 = df_fuel_prices_final_2.interpolate(method='linear', 
+                                                            limit_direction='both')
+df_fuel_prices_final_2 = df_fuel_prices_final_2.dropna(axis='columns')
+df_fuel_prices_final_2 = pd.melt(df_fuel_prices_final_2,
+                                 id_vars=['YEAR','MODE_OF_OPERATION'],
+                                 value_vars=[x for x in df_fuel_prices_final_2
+                                             if x not in
+                                             ['YEAR','MODE_OF_OPERATION']],
+                                 var_name='TECHNOLOGY',
+                                 value_name='VALUE')
+df_fuel_prices_final_2['VALUE'] = df_fuel_prices_final_2['VALUE'].round(2)
+
+# Combine dataframes with country-specific and international values
+df_fuel_prices_final = pd.concat([df_fuel_prices_final_1,
+                                  df_fuel_prices_final_2])
+
+df_fuel_prices_final['REGION'] = region_name
+df_fuel_prices_final = df_fuel_prices_final[['REGION', 
+                                             'TECHNOLOGY', 
+                                             'MODE_OF_OPERATION',
+                                             'YEAR',
+                                             'VALUE']]
+df_fuel_prices_final = pd.concat([df_fuel_prices_final,
+                                  df_trn_varcosts])
+
+df_fuel_prices_final.to_csv(os.path.join(output_data_dir,
+                                         'VariableCost.csv'),
+                            mode='w',
+                            header=True,
+                            index = None)
 
 logging.info('Variable Costs Completed')

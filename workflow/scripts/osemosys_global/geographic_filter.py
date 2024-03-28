@@ -25,6 +25,7 @@ remove_nodes = config.get('nodes_to_remove')
 output_data_dir = config_paths.output_data_dir
 scenario_dir = config_paths.scenario_dir
 scenario_data_dir = config_paths.scenario_data_dir
+# simplicity_dir = config_paths.simplicity
 
 # FILTERING 
 
@@ -58,6 +59,16 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
                     df = df.loc[~(df['TECHNOLOGY'].str[3:8].isin(remove_nodes) | 
                                 df['TECHNOLOGY'].str[6:11].isin(remove_nodes) | 
                                 df['TECHNOLOGY'].str[8:13].isin(remove_nodes))]
+                    
+            if 'STORAGE' in df.columns:
+                df = df.loc[df['STORAGE'].str[3:6].isin(geographic_scope) | 
+                            df['STORAGE'].str[6:9].isin(geographic_scope) | 
+                            df['STORAGE'].str[8:11].isin(geographic_scope)]
+
+                if remove_nodes:
+                    df = df.loc[~(df['STORAGE'].str[3:8].isin(remove_nodes) | 
+                                df['STORAGE'].str[6:11].isin(remove_nodes) | 
+                                df['STORAGE'].str[8:13].isin(remove_nodes))]
 
             if 'FUEL' in df.columns:
                 df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
@@ -94,5 +105,8 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
         
     df.to_csv(os.path.join(os.path.join(scenario_data_dir, each_csv.name)), index = None)
 
+# copy datapackage over for otoole convert
+# shutil.copyfile(os.path.join(simplicity_dir, 'datapackage.json'),
+#                 os.path.join(scenario_dir, 'datapackage.json'))
 
 logging.info('Geographic Filter Applied')

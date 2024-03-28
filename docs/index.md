@@ -20,7 +20,6 @@ getting-started
 contributing
 model-structure
 advanced-functionality
-license
 changelog
 citing
 ```

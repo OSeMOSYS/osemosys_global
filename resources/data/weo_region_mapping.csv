@@ -20,7 +20,7 @@ BIH,Europe
 BLR,Europe
 BOL,SA_average
 BRA,Brazil
-BRN,AS_average
+BRN,SEA_average
 BTN,AS_average
 BWA,Africa
 CAF,Africa
@@ -68,7 +68,7 @@ GUY,SA_average
 HND,NA_average
 HRV,Europe
 HUN,Europe
-IDN,AS_average
+IDN,Indonesia
 IND,India
 IRL,Europe
 IRN,Middle East
@@ -82,11 +82,11 @@ JPN,Japan
 KAZ,AS_average
 KEN,Africa
 KGZ,AS_average
-KHM,SA_average
+KHM,SEA_average
 KOR,AS_average
 KOS,Europe
 KWT,Middle East
-LAO,AS_average
+LAO,SEA_average
 LBN,Middle East
 LBR,Africa
 LBY,Africa
@@ -101,14 +101,14 @@ MDG,Africa
 MEX,NA_average
 MKD,Europe
 MLI,Africa
-MMR,AS_average
+MMR,SEA_average
 MNE,Europe
 MNG,AS_average
 MOZ,Africa
 MRT,Africa
 MUS,Africa
 MWI,Africa
-MYS,AS_average
+MYS,SEA_average
 NAM,Africa
 NER,Africa
 NGA,Africa
@@ -121,7 +121,7 @@ OMN,Middle East
 PAK,AS_average
 PAN,NA_average
 PER,SA_average
-PHL,AS_average
+PHL,SEA_average
 PNG,AS_average
 POL,Europe
 PRK,AS_average
@@ -134,7 +134,7 @@ RWA,Africa
 SAU,Middle East
 SDN,Africa
 SEN,Africa
-SGP,AS_average
+SGP,SEA_average
 SLE,Africa
 SLV,NA_average
 SRB,Europe
@@ -144,7 +144,7 @@ SWE,Europe
 SWZ,Africa
 SYR,Middle East
 TGO,Africa
-THA,AS_average
+THA,SEA_average
 TJK,AS_average
 TKM,AS_average
 TTO,NA_average
@@ -158,7 +158,7 @@ URY,SA_average
 USA,United States
 UZB,AS_average
 VEN,SA_average
-VNM,AS_average
+VNM,Vietnam
 YEM,Middle East
 ZAF,Africa
 ZMB,Africa

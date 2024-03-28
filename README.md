@@ -10,7 +10,14 @@ in determining the modelling detail and geographic scope, and is built using
 the fully open-source [OSeMOSYS](https://osemosys.readthedocs.io/en/latest/)
 energy system model.
 
-### Useful Links
+## Open-Source, Open-Data, Global Electricity System Models
+
+OSeMOSYS Global allows the user to configure both the spatial resolution (up to 163 countries 
+and 265 nodes) and the temporal resolution ! 
+
+![OSeMOSYS Global](./docs/_static/osemosys-global.png "OSeMOSYS Global")
+
+## Useful Links
 
 - [Documentation](https://osemosys-global.readthedocs.io/en/latest/)
 - [Installation](https://osemosys-global.readthedocs.io/en/latest/installation.html)
@@ -18,11 +25,3 @@ energy system model.
 - [Contributing](https://osemosys-global.readthedocs.io/en/latest/contributing.html)
 - [Model Structure](https://osemosys-global.readthedocs.io/en/latest/model-structure.html)
 - [License](https://osemosys-global.readthedocs.io/en/latest/license.html)
-- [How to Cite OSeMOSYS Global](https://osemosys-global.readthedocs.io/en/latest/citing.html)
-
-## Open-Source, Open-Data, Global Electricity System Models
-
-OSeMOSYS Global allows the user to configure both the spatial resolution (up to 163 countries 
-and 265 nodes) and the temporal resolution ! 
-
-![OSeMOSYS Global](./docs/_static/osemosys-global.png "OSeMOSYS Global")

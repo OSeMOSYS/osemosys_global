@@ -29,6 +29,14 @@ osemosys\_global.configuration module
    :undoc-members:
    :show-inheritance:
 
+osemosys\_global.constants module
+---------------------------------
+
+.. automodule:: osemosys_global.constants
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 osemosys\_global.demand\_projection module
 ------------------------------------------
 
@@ -41,6 +49,14 @@ osemosys\_global.emissions module
 ---------------------------------
 
 .. automodule:: osemosys_global.emissions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+osemosys\_global.feo\_legacy\_power module
+------------------------------------------
+
+.. automodule:: osemosys_global.feo_legacy_power
    :members:
    :undoc-members:
    :show-inheritance:
@@ -69,6 +85,14 @@ osemosys\_global.max\_capacity module
    :undoc-members:
    :show-inheritance:
 
+osemosys\_global.node\_mapping module
+-------------------------------------
+
+.. automodule:: osemosys_global.node_mapping
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 osemosys\_global.plot\_input\_data module
 -----------------------------------------
 
@@ -93,6 +117,14 @@ osemosys\_global.summarise\_results module
    :undoc-members:
    :show-inheritance:
 
+osemosys\_global.trade\_flows module
+------------------------------------
+
+.. automodule:: osemosys_global.trade_flows
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 osemosys\_global.user\_defined\_capacity module
 -----------------------------------------------
 
@@ -113,6 +145,14 @@ osemosys\_global.variablecosts module
 -------------------------------------
 
 .. automodule:: osemosys_global.variablecosts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+osemosys\_global.visualisation module
+-------------------------------------
+
+.. automodule:: osemosys_global.visualisation
    :members:
    :undoc-members:
    :show-inheritance:
