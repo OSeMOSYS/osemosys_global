@@ -1,0 +1,35 @@
+site_name: FEO Global
+site_url: ""
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Getting started: 01_introduction.md
+  - Examples: 02_examples.md
+  - Case-studies: 03_case_studies.md
+
+theme:
+  name: readthedocs
+  font:
+    text: Roboto
+    code: Roboto Mono
+  palette:
+    primary: amber
+    accent: indigo
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+  logo: _static/tz_logo.svg
+  favicon: _static/tz_logo_small.svg
+  
+
+
+  
+  
+
+    
+

@@ -17,7 +17,8 @@ geos
 cartopy
 
 # docs
+sphinx
 myst-parser
 pydata-sphinx-theme>=0.8.1
-sphinx-book-theme>=0.3.3
+sphinx-book-theme
 docutils==0.17.1

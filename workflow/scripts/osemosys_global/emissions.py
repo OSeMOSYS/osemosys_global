@@ -3,24 +3,26 @@
 import logging
 import pandas as pd
 from pathlib import Path
-# from osemosys_global.configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
-from utils import apply_dtypes
-from constants import SET_DTYPES
+import itertools
+
 
 # Logging formatting 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 # Constant for tech to fuel emission type mapping 
 _TECH_TO_FUEL = {
-    'BIO':'Bagasse',
+    #'BIO':'Bagasse',
+    'WAS':'Municipal Solid Waste',
     'COA':'Lignite Coal',
     'COG':'Lignite Coal',
     'OCG':'Natural Gas',
     'CCG':'Natural Gas',
-    'PET':'Motor Gasoline',
+    'GAS':'Natural Gas',
+    'PET':'Crude Oil',
     'OIL':'Crude Oil',
-    'OTH':'Natural Gas'
+    'OTH':'Natural Gas',
+    'CCS':'Lignite Coal',
 }
 
 # Emission name 
@@ -40,27 +42,44 @@ def main():
     
     output_data_dir = config_paths.output_data_dir
     emission_penalty = config.get('emission_penalty') # M$/MT
-
+    emission_limit = config.get('emission_limit') # MT of CO2-eq.
+    start_year = config.get('startYear')
+    end_year = config.get('endYear')
+    region = config.region_name
+    
     # ASSIGN EMISSION ACTIVITY RATIOS
 
     df_ear = get_ear(_EMISSION)
-    df_ear = apply_dtypes(df_ear, "EmissionActivityRatio")
-    df_ear.to_csv(Path(output_data_dir, 'EmissionActivityRatio.csv'), index=False)
+    df_ear.to_csv(Path(output_data_dir, 'EmissionActivityRatio.csv'), 
+                  index=False)
     logging.info('Successfully generated emission activity ratio')
-
-    # ASSIGN EMISSION PENALTY 
-
-    df_emission_penalty = get_emission_penalty(_EMISSION, emission_penalty)
-    df_emission_penalty = apply_dtypes(df_emission_penalty, "EmissionActivityRatio")
-    df_emission_penalty.to_csv(Path(output_data_dir, 'EmissionsPenalty.csv'), index=False)
-    logging.info('Successfully generated emission penalty')
 
     # ASSIGN EMISSION 
 
-    df_emission = pd.DataFrame([_EMISSION], columns=['VALUE']).astype(SET_DTYPES["EMISSION"])
-    df_emission.to_csv(Path(output_data_dir, 'EMISSION.csv'), index=False)
+    #df_emission = pd.DataFrame([_EMISSION], columns=['VALUE'])
+    df_emission = df_ear[['EMISSION']].drop_duplicates()
+    df_emission.rename(columns={'EMISSION': 'VALUE'},
+                       inplace=True)
+    df_emission.to_csv(Path(output_data_dir, 'EMISSION.csv'), 
+                       index=False)
     logging.info('Successfully generated emission set')
-
+    
+    # Create of list of EMISSIONS
+    emissions = list(df_emission['VALUE'])
+    
+    # ASSIGN EMISSION PENALTY 
+    
+    df_emission_penalty = get_emission_penalty(emissions, emission_penalty)
+    df_emission_penalty.to_csv(Path(output_data_dir, 'EmissionsPenalty.csv'), 
+                               index=False)
+    logging.info('Successfully generated emission penalty')
+    
+    # ADD EMISSION LIMITS
+    df_emission_limits = add_emission_limits(emissions, 
+                                             emission_limit)
+    df_emission_limits.to_csv(Path(output_data_dir, 'AnnualEmissionLimit.csv'), 
+                              index=False)
+    logging.info('Successfully generated annual emissions limit')
 
 def get_co2_emission_factors():
     """Gets co2 emission factors for diferent fuels. 
@@ -137,19 +156,52 @@ def get_ear(emission):
 
     # GET INFO FROM INPUT ACTIVITY RATIO
 
-    df_iar = pd.read_csv(Path(output_data_dir, 'InputActivityRatio.csv'))
-    df = df_iar.drop(['FUEL', 'VALUE'], axis=1)
-
-    # ADD IN EMISSION COLUMN
-
-    df['EMISSION'] = emission
+    df_oar = pd.read_csv(Path(output_data_dir, 'OutputActivityRatio.csv'))
+    df = df_oar.drop(['FUEL', 'VALUE'], axis=1)
+    #df = df[(df['TECHNOLOGY'].str.startswith('MIN')) |
+    #        (df['TECHNOLOGY'].str.startswith('PWRCCS'))]
+    df = df[(df['TECHNOLOGY'].str.startswith('PWR')) &
+            ~(df['TECHNOLOGY'].str.startswith('PWRTRN'))]
     
     # ADD MAPPING OF TECHNOLOGY TO EMISSION ACTIVITY RATIO
 
-    techs = pd.Series(df['TECHNOLOGY'].str[3:6])
-    fules = techs.map(_TECH_TO_FUEL)
-    df['VALUE'] = fules.map(co2_factors)
+    df['TECH_CODE'] = df['TECHNOLOGY'].str[3:6]
+    df['COUNTRY'] = df['TECHNOLOGY'].str[6:9]
+    df['FUEL_NAME'] = df['TECH_CODE'].map(_TECH_TO_FUEL)
+    df['VALUE'] = df['FUEL_NAME'].map(co2_factors)
+    '''
+    ccs_co2_factor = df.loc[df['TECH_CODE'].str.startswith('COA'),
+                            'VALUE'].mean()
+    ccs_co2_factor = round(ccs_co2_factor*(-3), 4)
+    df.loc[df['TECH_CODE'].str.startswith('CCS'),
+           'VALUE'] = ccs_co2_factor
+    '''
+    #techs = pd.Series(df['TECHNOLOGY'].str[3:6])
+    #fuels = techs.map(_TECH_TO_FUEL)
+    #df['VALUE'] = fuels.map(co2_factors)
+    
+    # Multiply by InputActivityRatio
+    df_iar = pd.read_csv(Path(output_data_dir, 
+                              'InputActivityRatio.csv'))
+    df_iar.rename(columns={'VALUE': 'IAR'},
+                  inplace=True)
+    df = pd.merge(df, df_iar,
+                  how='left',
+                  on=['REGION', 'TECHNOLOGY', 'MODE_OF_OPERATION', 'YEAR'])
     df['VALUE'] = df['VALUE'].fillna(0)
+    df['VALUE'] = df['VALUE'] * df['IAR']
+    df.drop_duplicates(inplace=True)
+    df['VALUE'] = df['VALUE'].round(4)
+    
+    # ADD IN EMISSION COLUMN
+
+    df['EMISSION'] = emission + df['COUNTRY']
+    
+    df.loc[df['TECH_CODE'].str.startswith('CCS'),
+           'VALUE'] = df.loc[df['TECH_CODE'].str.startswith('COA'),
+                             'VALUE'].mean() * 0.1
+    df['VALUE'] = df['VALUE'].round(4)
+    # Final EmissionActivityRatio dataframe
     df = df[[
         'REGION', 
         'TECHNOLOGY', 
@@ -160,7 +212,7 @@ def get_ear(emission):
     
     return df
 
-def get_emission_penalty(emission, penalty): 
+def get_emission_penalty(emissions, emission_penalty): 
     """Creates emission penalty dataframe. 
 
     The emission penalty is applied at a global geographical level. All regions
@@ -179,14 +231,143 @@ def get_emission_penalty(emission, penalty):
     config = ConfigFile('config')
     start_year = config.get('startYear')
     end_year = config.get('endYear')
+    years = list(range(start_year, end_year+1))
     region = config.region_name
 
     # GENERATE DATA
     
-    data = []
-    for year in range(start_year, end_year+1):
-        data.append([region, emission, year, penalty])
-    df = pd.DataFrame(data, columns=['REGION','EMISSION','YEAR','VALUE'])
+    # Create dataframe template to calculate SpecifiedAnnualDemand
+    df = pd.DataFrame(list(itertools.product(emissions,
+                                             years)
+                           ),
+                      columns = ['EMISSION', 
+                                 'YEAR']
+                      )
+    
+    if not emission_penalty is None:
+        for ep_params in emission_penalty:
+            df.loc[(df['YEAR'].between(ep_params[2], 
+                                       ep_params[3])) &
+                   (df['EMISSION'].isin([ep_params[0] + 
+                                         ep_params[1]])),
+                   'VALUE'] = ep_params[4]
+
+    df = df.pivot(index=['YEAR'],
+                  columns=['EMISSION'],
+                  values='VALUE').reset_index()
+    #df = df.interpolate()
+    
+    # Drop all columns with only NaN
+    df.dropna(axis=1, 
+              how='all',
+              inplace=True)
+    
+    # Melt to get 'COUNTRY' column and remove all rows with NaN
+    df = pd.melt(df,
+                 id_vars=['YEAR'],
+                 value_vars=[x for x in df.columns
+                             if x not in ['YEAR']],
+                             var_name='EMISSION',
+                             value_name='VALUE')
+    df.dropna(axis=0,
+              inplace=True)
+    df['REGION'] = region
+    df = df[['REGION',
+             'EMISSION',
+             'YEAR',
+             'VALUE']]
+    
+    return df
+
+
+def add_emission_limits(emissions, 
+                        emission_limit):
+    
+    # CONFIGURATION PARAMETERS
+    config = ConfigFile('config')
+    start_year = config.get('startYear')
+    end_year = config.get('endYear')
+    years = list(range(start_year, end_year+1))
+    region = config.region_name
+    
+    # GENERATE DATA
+    
+    # Create dataframe template to calculate SpecifiedAnnualDemand
+    df = pd.DataFrame(list(itertools.product(emissions,
+                                             years)
+                           ),
+                      columns = ['EMISSION', 
+                                 'YEAR']
+                      )
+    
+    if not emission_limit is None:
+        for el_params in emission_limit:
+            df.loc[(df['YEAR'] == el_params[2]) &
+                   (df['EMISSION'].isin([el_params[0] + 
+                                         el_params[1]])),
+                   'VALUE'] = el_params[3]
+
+    df = df.pivot(index=['YEAR'],
+                  columns=['EMISSION'],
+                  values='VALUE').reset_index()
+    
+    # Drop all columns with only NaN
+    df.dropna(axis=1, 
+              how='all',
+              inplace=True)
+    df = df.interpolate()
+    # Melt to get 'COUNTRY' column and remove all rows with NaN
+    df = pd.melt(df,
+                 id_vars=['YEAR'],
+                 value_vars=[x for x in df.columns
+                             if x not in ['YEAR']],
+                             var_name='EMISSION',
+                             value_name='VALUE')
+    
+    df.dropna(axis=0,
+              inplace=True)   
+    df['REGION'] = region 
+    df = df[['REGION',
+             'EMISSION',
+             'YEAR',
+             'VALUE']]
+    '''
+    
+    el_years = {}
+    years = list(range(start_year, 
+                       end_year+1))
+    if not emission_limit is None:
+        for el_params in emission_limit:
+            el_years[el_params[0]] = el_params[1]
+
+        if len(el_years) > 1:
+            el_years_max =  max(el_years)
+        else:
+            el_years_max = int(end_year) 
+
+        df = pd.DataFrame(list(range(min(el_years),
+                                    el_years_max + 1)),
+                        columns=['YEAR'])
+        df.sort_values(by=['YEAR'],
+                    inplace=True)
+        df['VALUE'] = df['YEAR'].map(el_years)
+        df['VALUE'].interpolate(inplace=True)
+        df['VALUE'] = df['VALUE'].round(0)
+        df = df[df['YEAR'].isin(years)]
+        
+        df['EMISSION'] = emission
+        df['REGION'] = region
+    
+        df = df[['REGION',
+                'EMISSION',
+                'YEAR',
+                'VALUE']]
+    else:
+        df = pd.DataFrame(columns=['REGION',
+                                   'EMISSION',
+                                   'YEAR',
+                                   'VALUE'])
+    '''
     return df
 
 if __name__ == '__main__':

@@ -59,13 +59,16 @@ rule otoole_results:
         otoole_config = 'results/{scenario}/otoole.yaml',
     output:
         expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
+    # conda:
+    #     '../envs/otoole.yaml'
     log:
         log = 'results/{scenario}/logs/otoole_results.log'
     shell: 
         '''
         otoole results {config[solver]} csv \
         {input.solution_file} results/{wildcards.scenario}/results \
-        {input.otoole_config} --input_datafile {input.pre_process_file} \
+        --input_datafile {input.pre_process_file} \
+        {input.otoole_config}
         2> {log} 
         '''
 
