@@ -83,7 +83,7 @@ powerplant_build_rates:
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
-  - RM1: [15, 2030, 2050]
+  RM1: [15, 2030, 2050]
 
 emission_limit:
 # - [EMISSION, COUNTRY, YEAR, VALUE]
