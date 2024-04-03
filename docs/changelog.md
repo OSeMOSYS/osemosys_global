@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 1.1.0
+- Merges in Transition Zero functionality. Includes:
+  - User defined capacity 
+  - Reserve margins 
+  - Powerplant build rates 
+  - Emission limits  
+  - Fuel limits 
+  - Renewable energy targets 
+
 ## Version 1.0.0
 - Adds custom node functionality 
 - Adds interactive dashboard 
