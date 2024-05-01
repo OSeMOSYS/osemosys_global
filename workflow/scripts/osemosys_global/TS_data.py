@@ -395,7 +395,7 @@ capfac_all_df = pd.DataFrame(
 
 
 def capacity_factor(df):
-    df["Datetime"] = pd.to_datetime(df["Datetime"])
+    df["Datetime"] = pd.to_datetime(df["Datetime"], format="%d/%m/%Y %H:%M")
     capfac_df = df.set_index("Datetime").join(
         datetime_ts_df.set_index("Datetime"), on="Datetime"
     )

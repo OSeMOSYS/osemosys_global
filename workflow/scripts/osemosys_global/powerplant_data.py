@@ -288,7 +288,7 @@ def main():
     # Average efficiency by node and technology
     df_eff_node = df_eff.groupby(['tech_code',
                                   'node_code'],
-                                 as_index = False).agg('mean')
+                                 as_index = False).mean()
 
     df_eff_node['node_average_iar'] = ((1 / df_eff_node['efficiency']).
                                        round(2))
@@ -298,8 +298,7 @@ def main():
                      inplace = True)
 
     # Average efficiency by technology
-    df_eff_tech = df_eff.groupby('tech_code',
-                                 as_index = False).agg('mean')
+    df_eff_tech = df_eff.drop(columns="node_code").groupby('tech_code', as_index = False).mean()
 
     df_eff_tech['tech_average_iar'] = ((1 / df_eff_tech['efficiency']).
                                        round(2))
@@ -975,7 +974,7 @@ def main():
     df_costs = pd.melt(df_weo_data, 
                        id_vars = ['technology', 'weo_region', 'parameter'], 
                        value_vars = ['2019', '2030', '2040'], 
-                       var_name = ['YEAR'])
+                       var_name = 'YEAR')
     df_costs['parameter'] = df_costs['parameter'].str.split('\r\n').str[0]
     df_costs['value'] = df_costs['value'].replace({'n.a.':0})
     df_costs['value'] = df_costs['value'].astype(float) 
@@ -1537,7 +1536,6 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
 
         df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
                                                   'TotalAnnualMinCapacityInvestment.csv'))
-        df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
         df_min_cap_inv = pd.concat([df_min_cap_inv, tech_capacity_df])
         df_min_cap_inv.drop_duplicates(inplace=True)
 
@@ -1577,7 +1575,6 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                        'VALUE']]
         
         # Append existing TotalAnnualMaxCapacityInvestment data with MAX_BUILD for TRN
-        df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
         df_max_cap_inv = pd.concat([df_max_cap_inv, max_cap_techs_df]).drop_duplicates()
 
         # Print TotalAnnualMaxCapacityInvestment.csv with MAX_BUILD for TRN
