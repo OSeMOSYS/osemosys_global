@@ -292,7 +292,7 @@ for x in Country_Regression.index.unique():
 
         Country_Regression_Grouped = pd.concat(
             [Country_Regression_Grouped, Country_Regression_Temp]
-        ).reset_index(drop=True)
+        )
 
     # If Urbanization is not included linear regression occurs with single independent variables (GDPppp) for the dependent
     # variable (Electricity demand).
@@ -313,7 +313,7 @@ for x in Country_Regression.index.unique():
 
         Country_Regression_Grouped = pd.concat(
             [Country_Regression_Grouped, Country_Regression_Temp]
-        ).reset_index(drop=True)
+        )
 
 
 for a in Country_Regression_Grouped.index.unique():
@@ -383,9 +383,7 @@ for x in Country_POP_SSP_Missing.index:
 Import_POP_Missing = Import_POP_Missing.loc[(Import_POP_Missing["Scenario"] == Pathway)]
 
 # Appends both dataframes
-Country_POP_SSP = pd.concat([Country_POP_SSP, Import_POP_Missing]).reset_index(
-    drop=True
-)
+Country_POP_SSP = pd.concat([Country_POP_SSP, Import_POP_Missing])
 
 # Filters data for relevant to be modelled countries
 Country_POP_SSP = pd.merge(
@@ -426,9 +424,7 @@ for x in Country_GDPppp_SSP_Missing.index:
 Import_GDP_Missing = Import_GDP_Missing.loc[(Import_GDP_Missing["Scenario"] == Pathway)]
 
 # Appends both dataframes
-Country_GDPppp_SSP = pd.concat([Country_GDPppp_SSP.Import_GDP_Missing]).reset_index(
-    drop=True
-)
+Country_GDPppp_SSP = pd.concat([Country_GDPppp_SSP, Import_GDP_Missing])
 
 # Filters data for relevant to be modelled countries
 Country_GDPppp_SSP = pd.merge(
@@ -469,9 +465,7 @@ for x in Country_URB_SSP_Missing.index:
 Import_URB_Missing = Import_URB_Missing.loc[(Import_URB_Missing["Scenario"] == Pathway)]
 
 # Appends both dataframes
-Country_URB_SSP = pd.concat([Country_URB_SSP, Import_URB_Missing]).reset_index(
-    drop=True
-)
+Country_URB_SSP = pd.concat([Country_URB_SSP, Import_URB_Missing])
 
 # Filters data for relevant to be modelled countries
 Country_URB_SSP = pd.merge(
@@ -621,26 +615,16 @@ for z in Years_List_5:
 # In case of linear regression, smaller countries with signficantly lower projected independent variables (GDP, Urbanization) compared to the regional average can lead to very low and often negative projected demand values (e.g. EU-KOS). Hence, a comparison is being made to the 2015 baseline demand values with the assumption that a decline in electricity demand is not realistic (note: as of now no decoupling of GDP growth and energy demand reduction has been assumed).
 
 Country_Demand_projected_SSP_Incl_Losses = pd.DataFrame()
-
+country_demands = []
 for x in Country_Demand_projected_SSP_Incl_Losses_Raw.index.unique():
     Country_Demand_projected_SSP_Incl_Losses_x = (
         Country_Demand_projected_SSP_Incl_Losses_Raw.loc[x]
     )
-
     Node_Demand_2015_x = Node_Demand_2015[Node_Demand_2015["Country"].str.contains(x)]
-
-    Country_Demand_projected_SSP_Incl_Losses_x = (
-        Country_Demand_projected_SSP_Incl_Losses_x.clip(
-            (Node_Demand_2015_x.iloc[0]["Country_Demand_2015"] / 1000),
-        )
-    )
-
-    Country_Demand_projected_SSP_Incl_Losses = pd.concat(
-        [
-            Country_Demand_projected_SSP_Incl_Losses,
-            Country_Demand_projected_SSP_Incl_Losses_x,
-        ]
-    ).reset_index(drop=True)
+    country_demand = Country_Demand_projected_SSP_Incl_Losses_x.clip((Node_Demand_2015_x.iloc[0]["Country_Demand_2015"] / 1000))
+    country_demands.append(pd.DataFrame(country_demand).T)
+    
+Country_Demand_projected_SSP_Incl_Losses = pd.concat(country_demands)
 
 # ## Downscaling from country-level to nodal-level
 
