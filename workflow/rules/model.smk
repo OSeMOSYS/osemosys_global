@@ -7,7 +7,6 @@ configfile: 'config/config.yaml'
 
 # OUTPUT FILES 
 
-#osemosys_files = os.listdir('resources/simplicity/data')
 osemosys_files = os.listdir('resources/otoole/data')
 
 # RULES
@@ -21,7 +20,6 @@ rule geographic_filter:
         geographic_scope = config['geographic_scope']
     output:
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
-        # datapackage = 'results/{scenario}/datapackage.json'
     # conda:
     #     '../envs/data_processing.yaml'
     log:
@@ -55,7 +53,6 @@ rule otoole_convert:
     params:
         csv_dir = 'results/{scenario}/data/'
     input:
-        #datapackage = 'results/{scenario}/datapackage.json',
         otoole_config = 'results/{scenario}/otoole.yaml',
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
     output:
@@ -63,7 +60,6 @@ rule otoole_convert:
     log:
         log = 'results/{scenario}/logs/otoole_convert.log'
     shell:
-        #'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
         'otoole convert csv datafile {params.csv_dir} {output} {input.otoole_config} 2> {log}'
 
 rule preprocess_data_file:
@@ -78,7 +74,7 @@ rule preprocess_data_file:
     log:
         log = 'results/{scenario}/logs/preprocess_data_file.log'
     shell:
-        'python resources/preprocess_data.py otoole {input} {output} 2> {log}'
+        'python resources/preprocess_data.py {input} {output} 2> {log}'
 
 rule create_lp_file:
     message:
@@ -118,27 +114,3 @@ rule solve_lp:
           cbc {input.lp_file} solve -sec 1500 -solu {output.solution}
         fi
         '''
-
-rule transform_cplex:
-    message:
-        'Transforming cplex results...'
-    input:
-        solution = 'results/{scenario}/{scenario}.sol'
-    output: 
-        transform = 'results/{scenario}/{scenario}_transform.sol'
-    log:
-        log = 'results/{scenario}/logs/transform_cplex.log'
-    shell: 
-        'python resources/cplex_transform.py {input.solution} {output.transform} 2> {log}'
-
-rule sort_cplex:
-    message:
-        'Sorting cplex results...'
-    input:
-        transform = 'results/{scenario}/{scenario}_transform.sol'
-    output: 
-        sort = 'results/{scenario}/{scenario}_sort.sol'
-    log:
-        log = 'results/{scenario}/logs/sort_cplex.log'
-    shell: 
-        'sort {input.transform} > {output.sort} 2> {log}'

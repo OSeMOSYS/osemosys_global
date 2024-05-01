@@ -10,7 +10,7 @@ pytest
 world-bank-data
 scikit-learn
 myst-parser
-otoole>=1.0.0, <1.1.0
+otoole>=1.1.0
 scipy
 dash
 geos

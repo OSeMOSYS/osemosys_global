@@ -8,6 +8,8 @@
   - Emission limits  
   - Fuel limits 
   - Renewable energy targets 
+- Bumps pandas to version 2.0
+- Bumps otoole to version 1.1
 
 ## Version 1.0.0
 - Adds custom node functionality 

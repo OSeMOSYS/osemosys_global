@@ -6,8 +6,6 @@ configfile: 'config/config.yaml'
 
 # model and scenario output files 
 
-#osemosys_files = os.listdir('resources/simplicity/data')
-#osemosys_files.remove('default_values.csv') #taken form /resources
 osemosys_files = os.listdir('resources/otoole/data')
 
 demand_figures = [
@@ -88,7 +86,6 @@ user_capacity_files = [
     'TotalAnnualMaxCapacityInvestment.csv'
 ]
 
-#check_files = os.listdir('resources/simplicity/data')
 check_files = os.listdir('resources/otoole/data')
 generated_files = [
     power_plant_files, 

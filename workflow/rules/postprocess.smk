@@ -40,22 +40,14 @@ result_summaries = [
     'Metrics'
 ]
 
-# imput functions
-
-def solver_file_type(wildcards):
-    if config['solver'] == 'cplex':
-        return 'results/{scenario}/{scenario}_sort.sol'
-    else: 
-        return 'results/{scenario}/{scenario}.sol'
-
 # rules
 
 rule otoole_results:
     message:
         'Generating result csv files...'
     input:
-        solution_file = solver_file_type,
-        pre_process_file = 'results/{scenario}/{scenario}.txt',
+        solution_file = "results/{scenario}/{scenario}.sol",
+        datafile = 'results/{scenario}/{scenario}.txt',
         otoole_config = 'results/{scenario}/otoole.yaml',
     output:
         expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
@@ -64,13 +56,13 @@ rule otoole_results:
     log:
         log = 'results/{scenario}/logs/otoole_results.log'
     shell: 
-        '''
+        """
         otoole results {config[solver]} csv \
         {input.solution_file} results/{wildcards.scenario}/results \
-        --input_datafile {input.pre_process_file} \
+        datafile {input.datafile} \
         {input.otoole_config}
         2> {log} 
-        '''
+        """
 
 rule visualisation:
     message:
@@ -78,12 +70,6 @@ rule visualisation:
     input:
         csv_files = expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
     params:
-        # start_year = config['startYear'],
-        # end_year = config['endYear'],
-        # dayparts = config['dayparts'],
-        # seasons = config['seasons'],
-        # by_country = config['results_by_country'],
-        # geographic_scope = config['geographic_scope'],
         input_data = "results/{scenario}/data/",
         result_data = "results/{scenario}/results/",
         scenario_figs_dir = "results/{scenario}/figures/",
