@@ -25,7 +25,6 @@ remove_nodes = config.get('nodes_to_remove')
 output_data_dir = config_paths.output_data_dir
 scenario_dir = config_paths.scenario_dir
 scenario_data_dir = config_paths.scenario_data_dir
-# simplicity_dir = config_paths.simplicity
 
 # FILTERING 
 
