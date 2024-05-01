@@ -37,7 +37,7 @@ def main():
         if each_tech not in list(tech_set['VALUE']):
             tech_capacity_df = tech_capacity_df.loc[~(tech_capacity_df['TECHNOLOGY'].isin([each_tech]))]
     df_min_cap_inv = pd.read_csv(os.path.join(scenario_data_dir, 'TotalAnnualMinCapacityInvestment.csv'))
-    df_min_cap_inv = df_min_cap_inv.append(tech_capacity_df)
+    df_min_cap_inv = pd.concat([df_min_cap_inv, tech_capacity_df]).reset_index(drop=True)
     df_min_cap_inv.drop_duplicates(inplace=True)
 
     df_max_cap_inv = pd.read_csv(os.path.join(scenario_data_dir, 'TotalAnnualMaxCapacityInvestment.csv'))
@@ -58,7 +58,7 @@ def main():
                                              'TECHNOLOGY',
                                              'YEAR',
                                              'VALUE'])
-    df_max_cap_inv = df_max_cap_inv.append(max_cap_techs_df)
+    df_max_cap_inv = pd.concat([df_max_cap_inv, max_cap_techs_df]).reset_index(drop=True)
     df_max_cap_inv.drop_duplicates(inplace=True)
 
     df_max_cap_inv = apply_dtypes(df_max_cap_inv, "TotalAnnualMaxCapacityInvestment")
