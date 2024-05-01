@@ -105,8 +105,4 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
         
     df.to_csv(os.path.join(os.path.join(scenario_data_dir, each_csv.name)), index = None)
 
-# copy datapackage over for otoole convert
-# shutil.copyfile(os.path.join(simplicity_dir, 'datapackage.json'),
-#                 os.path.join(scenario_dir, 'datapackage.json'))
-
 logging.info('Geographic Filter Applied')
