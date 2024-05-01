@@ -92,8 +92,8 @@ def main():
         df_reslimit_capacity["value"] * df_reslimit_units["value"] / 1000
     ).rename(columns={"value": "VALUE"})
     df_reslimit_final["node"], df_reslimit_final["powerplant"] = (
-        df_reslimit_final.index.str.rsplit("|", 1).str[1],
-        df_reslimit_final.index.str.rsplit("|", 1).str[0],
+        df_reslimit_final.index.str.rsplit(pat="|",n=1).str[1],
+        df_reslimit_final.index.str.rsplit(pat="|",n=1).str[0],
     )
     df_reslimit_final["powerplant"] = df_reslimit_final["powerplant"].map(dict_reslimit)
 
@@ -421,7 +421,7 @@ def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
     re_df = oar_df.loc[
         (oar_df["TECHNOLOGY"].str.startswith("PWR"))
         & (oar_df["TECHNOLOGY"].str[3:6].isin(re_techs))
-    ]
+    ].copy()
 
     # Create dummy commodity starting with 'REN' for renewables
     re_df["FUEL"] = "REN" + re_df["FUEL"].str[3:6]
@@ -431,7 +431,7 @@ def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
     # Create list of fuels
     re_fuels = list(re_df.loc[re_df["FUEL"].str.startswith("REN"), "FUEL"].unique())
     fuels_df = pd.read_csv(os.path.join(output_data_dir, "FUEL.csv"))
-    fuels_ren_df = re_df[["FUEL"]]
+    fuels_ren_df = re_df[["FUEL"]].copy()
     fuels_ren_df.rename(columns={"FUEL": "VALUE"}, inplace=True)
     fuels_df = pd.concat([fuels_df, fuels_ren_df])
     fuels_df.drop_duplicates(inplace=True)

@@ -20,6 +20,7 @@ from osemosys_global.utils import apply_timeshift
 from utils import apply_dtypes
 from constants import SET_DTYPES
 import time
+from datetime import datetime
 
 # from OPG_configuration import ConfigFile, ConfigPaths
 import logging
@@ -182,6 +183,20 @@ if not os.path.exists(output_data_dir):
     os.makedirs(output_data_dir)
 
 
+def correct_datetime_formatting(time_str):
+    """start hours are not padded with 00:00"""
+    try:
+        date_obj = datetime.strptime(time_str, "%d/%m/%Y %H:%M")
+    except ValueError:
+        try:
+            date_obj = datetime.strptime(time_str, "%d/%m/%Y")
+            date_obj = date_obj.replace(hour=0, minute=0)
+        except ValueError as ex:
+            print(ex)
+            raise ValueError
+    return date_obj
+
+
 # ### Create columns for year, month, day, hour, and day type
 
 if custom_nodes:
@@ -189,7 +204,8 @@ if custom_nodes:
 else:
     demand_nodes = [x for x in demand_df.columns if x != "Datetime"]
 # Convert datetime to year, month, day, and hour
-demand_df["Datetime"] = pd.to_datetime(demand_df["Datetime"])
+demand_df["Datetime"] = demand_df.Datetime.map(correct_datetime_formatting)
+demand_df["Datetime"] = pd.to_datetime(demand_df["Datetime"], format="%d/%m/%Y %H:%M")
 demand_df["Year"] = demand_df["Datetime"].dt.strftime("%Y").astype(int)
 demand_df["Month"] = demand_df["Datetime"].dt.strftime("%m").astype(int)
 demand_df["Day"] = demand_df["Datetime"].dt.strftime("%d").astype(int)
@@ -294,7 +310,9 @@ sp_demand_df = pd.melt(
 sp_demand_df = sp_demand_df.groupby(["TIMESLICE", "node"], as_index=False).agg(sum)
 
 # Calculate SpecifiedAnnualDemand
-total_demand_df = sp_demand_df.groupby("node", as_index=False).agg(sum)
+total_demand_df = (
+    sp_demand_df.drop(columns="TIMESLICE").groupby("node", as_index=False).sum()
+)
 
 total_demand_df.rename({"demand": "total_demand"}, axis=1, inplace=True)
 
@@ -427,6 +445,7 @@ def capacity_factor(df):
     ]
 
     return capfac_df_final
+
 
 capfacs = [capfac_all_df]
 for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
