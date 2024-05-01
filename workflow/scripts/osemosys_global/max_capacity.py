@@ -92,8 +92,8 @@ def main():
         df_reslimit_capacity["value"] * df_reslimit_units["value"] / 1000
     ).rename(columns={"value": "VALUE"})
     df_reslimit_final["node"], df_reslimit_final["powerplant"] = (
-        df_reslimit_final.index.str.rsplit("|", 1).str[1],
-        df_reslimit_final.index.str.rsplit("|", 1).str[0],
+        df_reslimit_final.index.str.rsplit(pat="|",n=1).str[1],
+        df_reslimit_final.index.str.rsplit(pat="|",n=1).str[0],
     )
     df_reslimit_final["powerplant"] = df_reslimit_final["powerplant"].map(dict_reslimit)
 
@@ -206,50 +206,6 @@ def get_max_value_per_technology(df):
 
 
 def apply_build_rates(region, years, output_data_dir, input_dir, max_build):
-    """To add description
-
-    Args:
-        region:
-        years:
-        output_data_dir:
-        max_build:
-
-    Returns
-        None
-    """
-    max_build_list = []
-
-    # if not max_build is None:
-
-    # max_build_df = pd.DataFrame(columns=['TYPE',
-    #                                      'METHOD',
-    #                                      'MAX_BUILD',
-    #                                      'YEAR'])
-    """
-        for tech_params in max_build:
-            
-            # max_build_list.append([tech,            # TECHNOLOGY_TYPE
-            #                        tech_params[0]   # COUNTRY
-            #                        tech_params[1],  # METHOD: 'PCT'/'ABS'
-            #                        tech_params[2],  # VALUE
-            #                        tech_params[3],  # START_YEAR
-            #                        tech_params[4]]) # END_YEAR
-            
-            max_build_temp = pd.DataFrame(columns=['TYPE',
-                                                   'COUNTRY', 
-                                                   'METHOD', 
-                                                   'MAX_BUILD',
-                                                   'YEAR'])
-            max_build_temp['YEAR'] = list(range(tech_params[4],
-                                                tech_params[5]))
-            max_build_temp['TYPE'] = tech_params[0]
-            max_build_temp['COUNTRY'] = tech_params[1]
-            max_build_temp['METHOD'] = tech_params[2]
-            max_build_temp['MAX_BUILD'] = tech_params[3]
-            max_build_df = pd.concat([max_build_df, max_build_temp],
-                                     ignore_index=True)
-            max_build_df['TYPE'] = max_build_df['TYPE'].str[0:3]
-    """
     max_build_df = pd.read_csv(
         os.path.join(input_dir, "data", "powerplant_build_rates.csv")
     )
@@ -316,18 +272,6 @@ def apply_build_rates(region, years, output_data_dir, input_dir, max_build):
 
 
 def apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel):
-
-    # mf_df = pd.DataFrame(columns=['TECHNOLOGY',
-    #                               'YEAR',
-    #                               'VALUE'])
-
-    # if not max_fuel is None:
-    #     for mf_params in max_fuel:
-    #         mf_append = {'TECHNOLOGY': 'MIN' + mf_params[0] + mf_params[1],
-    #                      'YEAR': mf_params[3],
-    #                      'VALUE': mf_params[2]}
-    #         mf_df = mf_df.append(mf_append,
-    #                              ignore_index=True)
 
     mf_df = pd.read_csv(os.path.join(input_dir, "data", "fuel_limits.csv"))
     mf_df["TECHNOLOGY"] = "MIN" + mf_df["FUEL"] + mf_df["COUNTRY"]
@@ -477,7 +421,7 @@ def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
     re_df = oar_df.loc[
         (oar_df["TECHNOLOGY"].str.startswith("PWR"))
         & (oar_df["TECHNOLOGY"].str[3:6].isin(re_techs))
-    ]
+    ].copy()
 
     # Create dummy commodity starting with 'REN' for renewables
     re_df["FUEL"] = "REN" + re_df["FUEL"].str[3:6]
@@ -487,9 +431,9 @@ def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
     # Create list of fuels
     re_fuels = list(re_df.loc[re_df["FUEL"].str.startswith("REN"), "FUEL"].unique())
     fuels_df = pd.read_csv(os.path.join(output_data_dir, "FUEL.csv"))
-    fuels_ren_df = re_df[["FUEL"]]
+    fuels_ren_df = re_df[["FUEL"]].copy()
     fuels_ren_df.rename(columns={"FUEL": "VALUE"}, inplace=True)
-    fuels_df = fuels_df.append(fuels_ren_df)
+    fuels_df = pd.concat([fuels_df, fuels_ren_df])
     fuels_df.drop_duplicates(inplace=True)
     fuels_df.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index=None)
 

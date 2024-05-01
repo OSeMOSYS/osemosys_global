@@ -124,7 +124,7 @@ rule powerplant:
     output:
         csv_files = expand('results/data/{output_file}', output_file = power_plant_files)
     log:
-        log = 'results/data/logs/powerplant.log'
+        log = 'results/logs/powerplant.log'
     shell:
         'python workflow/scripts/osemosys_global/powerplant_data.py 2> {log}'
 
@@ -147,7 +147,7 @@ rule timeslice:
     output:
         csv_files = expand('results/data/{output_file}', output_file=timeslice_files),
     log:
-        log = 'results/data/logs/timeslice.log'    
+        log = 'results/logs/timeslice.log'    
     shell:
         'python workflow/scripts/osemosys_global/TS_data.py 2> {log}'
 
@@ -163,7 +163,7 @@ rule variable_costs:
     output:
         csv_files = expand('results/data/{output_file}', output_file=variable_cost_files),
     log:
-        log = 'results/data/logs/variable_costs.log'
+        log = 'results/logs/variable_costs.log'
     shell:
         'python workflow/scripts/osemosys_global/variablecosts.py 2> {log}'
 
@@ -184,7 +184,7 @@ rule demand_projections:
         csv_files = expand('results/data/{output_file}', output_file = demand_files),
         figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
     log:
-        log = 'results/data/logs/demand_projections.log'
+        log = 'results/logs/demand_projections.log'
     shell:
         'python workflow/scripts/osemosys_global/demand_projection.py 2> {log}'
 
@@ -201,7 +201,7 @@ rule emissions:
     output: 
         csv_files = expand('results/data/{output_file}', output_file = emission_files),
     log:
-        log = 'results/data/../logs/emissions.log'
+        log = 'results/logs/emissions.log'
     shell:
         'python workflow/scripts/osemosys_global/emissions.py 2> {log}'
 
@@ -217,7 +217,7 @@ rule max_capacity:
     output:
         csv_files = expand('results/data/{output_file}', output_file = max_capacity_files),
     log:
-        log = 'results/data/logs/max_capacity.log'
+        log = 'results/logs/max_capacity.log'
     shell:
         'python workflow/scripts/osemosys_global/max_capacity.py 2> {log}'
 
@@ -235,7 +235,7 @@ rule file_check:
     output: 
         expand('results/data/{check_file}', check_file = check_files),
     log: 
-        log = 'results/data/logs/file_check.log'
+        log = 'results/logs/file_check.log'
     shell:
         'python workflow/scripts/osemosys_global/file_check.py 2> {log}'
 
