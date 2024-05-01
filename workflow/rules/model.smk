@@ -55,7 +55,6 @@ rule otoole_convert:
     params:
         csv_dir = 'results/{scenario}/data/'
     input:
-        #datapackage = 'results/{scenario}/datapackage.json',
         otoole_config = 'results/{scenario}/otoole.yaml',
         csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
     output:
@@ -63,7 +62,6 @@ rule otoole_convert:
     log:
         log = 'results/{scenario}/logs/otoole_convert.log'
     shell:
-        #'otoole convert datapackage datafile {input.datapackage} {output} 2> {log}'
         'otoole convert csv datafile {params.csv_dir} {output} {input.otoole_config} 2> {log}'
 
 rule preprocess_data_file:
@@ -78,7 +76,7 @@ rule preprocess_data_file:
     log:
         log = 'results/{scenario}/logs/preprocess_data_file.log'
     shell:
-        'python resources/preprocess_data.py otoole {input} {output} 2> {log}'
+        'python resources/preprocess_data.py {input} {output} 2> {log}'
 
 rule create_lp_file:
     message:

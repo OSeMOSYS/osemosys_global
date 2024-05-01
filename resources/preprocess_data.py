@@ -30,12 +30,11 @@ need to be introduced to its associated OSeMOSYS model file::
 
 """
 
-import pandas as pd
-import os, sys
+import sys
 from collections import defaultdict
 
 
-def main(data_format, data_infile, data_outfile):
+def main(data_infile, data_outfile):
 
     lines = []
 
@@ -131,117 +130,64 @@ def main(data_format, data_infile, data_outfile):
                 parsing_storage = False
                 parsing_emission = False
 
-    start_year = year_list[0]
+    with open(data_infile, 'r') as f:
+        for line in f:
+            details = line.split(' ')
+            if line.startswith(";"):
+                parsing = False
+            if parsing:
+                if len(details) > 1:
+                    if param_current == 'OutputActivityRatio':
+                        tech = details[1].strip()
+                        fuel = details[2].strip()
+                        mode = details[3].strip()
+                        year = details[4].strip()
+                        value = details[5].strip()
 
-    if data_format == 'momani':
-        with open(data_infile, 'r') as f:
-            for line in f:
-                if line.startswith(";"):
-                    parsing = False
-                if parsing:
-                    if line.startswith('['):
-                        fuel = line.split(',')[2]
-                        tech = line.split(',')[1]
-                        emission = line.split(',')[2]
-                    elif line.startswith(start_year):
-                        years = line.rstrip(':= ;\n').split(' ')[0:]
-                        years = [i.strip(':=') for i in years]
-                    else:
-                        values = line.rstrip().split(' ')[1:]
-                        mode = line.split(' ')[0]
-
-                        if param_current == 'OutputActivityRatio':
+                        if float(value) != 0.0:
                             data_out.append(tuple([fuel, tech, mode]))
-                            for i in range(0, len(years)):
-                                output_table.append(tuple([tech, fuel, mode, years[i], values[i]]))
+                            output_table.append(tuple([tech, fuel, mode, year, value]))
+                            data_all.append(tuple([tech, mode]))
 
-                        if param_current == 'InputActivityRatio':
+                    if param_current == 'InputActivityRatio':
+                        tech = details[1].strip()
+                        fuel = details[2].strip()
+                        mode = details[3].strip()
+                        value = details[5].strip()
+                        if float(value) != 0.0:
                             data_inp.append(tuple([fuel, tech, mode]))
+                            data_all.append(tuple([tech, mode]))
 
-                        data_all.append(tuple([tech, mode]))
+                    if param_current == 'TechnologyToStorage':
+                        tech = details[1].strip()
+                        storage = details[2].strip()
+                        mode = details[3].strip()
+                        value = details[4].strip()
+                        if float(value) > 0.0:
+                            storage_to.append(tuple([storage, tech, mode]))
+                            data_all.append(tuple([storage, mode]))
 
-                        if param_current == 'TechnologyToStorage':
-                            if not line.startswith(mode_list[0]):
-                                storage = line.split(' ')[0]
-                                values = line.rstrip().split(' ')[1:]
-                                for i in range(0, len(mode_list)):
-                                    if values[i] != '0':
-                                        storage_to.append(tuple([storage, tech, mode_list[i]]))
+                    if param_current == 'TechnologyFromStorage':
+                        tech = details[1].strip()
+                        storage = details[2].strip()
+                        mode = details[3].strip()
+                        value = details[4].strip()
+                        if float(value) > 0.0:
+                            storage_from.append(tuple([storage, tech, mode]))
+                            data_all.append(tuple([storage, mode]))
 
-                        if param_current == 'TechnologyFromStorage':
-                            if not line.startswith(mode_list[0]):
-                                storage = line.split(' ')[0]
-                                values = line.rstrip().split(' ')[1:]
-                                for i in range(0, len(mode_list)):
-                                    if values[i] != '0':
-                                        storage_from.append(tuple([storage, tech, mode_list[i]]))
-
-                        if param_current == 'EmissionActivityRatio':
+                    if param_current == 'EmissionActivityRatio':
+                        tech = details[1].strip()
+                        emission = details[2].strip()
+                        mode = details[3].strip()
+                        value = details[5].strip()
+                        if float(value) != 0.0:
                             emission_table.append(tuple([emission, tech, mode]))
+                            data_all.append(tuple([tech, mode]))
 
-                if line.startswith(('param OutputActivityRatio', 'param InputActivityRatio', 'param TechnologyToStorage', 'param TechnologyFromStorage', 'param EmissionActivityRatio')):
-                    param_current = line.split(' ')[1]
-                    parsing = True
-
-    if data_format == 'otoole':
-        with open(data_infile, 'r') as f:
-            for line in f:
-                details = line.split(' ')
-                if line.startswith(";"):
-                    parsing = False
-                if parsing:
-                    if len(details) > 1:
-                        if param_current == 'OutputActivityRatio':
-                            tech = details[1].strip()
-                            fuel = details[2].strip()
-                            mode = details[3].strip()
-                            year = details[4].strip()
-                            value = details[5].strip()
-
-                            if float(value) != 0.0:
-                                data_out.append(tuple([fuel, tech, mode]))
-                                output_table.append(tuple([tech, fuel, mode, year, value]))
-                                data_all.append(tuple([tech, mode]))
-
-                        if param_current == 'InputActivityRatio':
-                            tech = details[1].strip()
-                            fuel = details[2].strip()
-                            mode = details[3].strip()
-                            value = details[5].strip()
-                            if float(value) != 0.0:
-                                data_inp.append(tuple([fuel, tech, mode]))
-                                data_all.append(tuple([tech, mode]))
-
-                        if param_current == 'TechnologyToStorage':
-                            tech = details[1].strip()
-                            storage = details[2].strip()
-                            mode = details[3].strip()
-                            value = details[4].strip()
-                            if float(value) > 0.0:
-                                storage_to.append(tuple([storage, tech, mode]))
-                                data_all.append(tuple([storage, mode]))
-
-                        if param_current == 'TechnologyFromStorage':
-                            tech = details[1].strip()
-                            storage = details[2].strip()
-                            mode = details[3].strip()
-                            value = details[4].strip()
-                            if float(value) > 0.0:
-                                storage_from.append(tuple([storage, tech, mode]))
-                                data_all.append(tuple([storage, mode]))
-
-                        if param_current == 'EmissionActivityRatio':
-                            tech = details[1].strip()
-                            emission = details[2].strip()
-                            mode = details[3].strip()
-                            value = details[5].strip()
-                            if float(value) != 0.0:
-                                emission_table.append(tuple([emission, tech, mode]))
-                                data_all.append(tuple([tech, mode]))
-
-                if any(param in line for param in params_to_check):
-                    param_current = details[-2]
-                    parsing = True
+            if any(param in line for param in params_to_check):
+                param_current = details[-2]
+                parsing = True
 
     data_out = list(set(data_out))
     data_inp = list(set(data_inp))
@@ -289,9 +235,6 @@ def main(data_format, data_infile, data_outfile):
 
             file_out.write(line + ';' + '\n')
 
-    storage_list_len = {'otoole': 0,
-                        'momani': 1}
-
     # Append lines at the end of the data file
     with open(data_outfile, 'w') as file_out:  # 'a' to open in 'append' mode
 
@@ -301,7 +244,7 @@ def main(data_format, data_infile, data_outfile):
         file_output_function(dict_inp, dict_inp, fuel_list, 'set MODExTECHNOLOGYperFUELin[', '')
         file_output_function(dict_all, dict_all, tech_list, 'set MODEperTECHNOLOGY[', '*')
 
-        if len(storage_list) > storage_list_len[data_format]:
+        if len(storage_list) > 0:
             file_output_function(dict_stt, dict_stt, storage_list, 'set MODExTECHNOLOGYperSTORAGEto[', '')
             file_output_function(dict_stf, dict_stf, storage_list, 'set MODExTECHNOLOGYperSTORAGEfrom[', '')
 
@@ -314,11 +257,10 @@ def main(data_format, data_infile, data_outfile):
 if __name__ == '__main__':
 
     if len(sys.argv) != 4:
-        msg = "Usage: python {} <otoole/momani> <infile> <outfile>"
+        msg = "Usage: python {} <infile> <outfile>"
         print(msg.format(sys.argv[0]))
         sys.exit(1)
     else:
-        data_format = sys.argv[1]
         data_infile = sys.argv[2]
         data_outfile = sys.argv[3]
-        main(data_format, data_infile, data_outfile)
+        main(data_infile, data_outfile)
