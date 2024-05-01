@@ -428,12 +428,12 @@ def capacity_factor(df):
 
     return capfac_df_final
 
-
+capfacs = [capfac_all_df]
 for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
-    capfac_all_df = capfac_all_df.append(capacity_factor(each), ignore_index=True)
+    capfacs.append(capacity_factor(each))
+capfac_all_df = pd.concat(capfacs).reset_index(drop=True)
 
 # capfac_all_df = apply_dtypes(capfac_all_df, "CapacityFactor")
-
 capfac_all_df.drop_duplicates(
     subset=["REGION", "TECHNOLOGY", "TIMESLICE", "YEAR"], keep="last", inplace=True
 )
