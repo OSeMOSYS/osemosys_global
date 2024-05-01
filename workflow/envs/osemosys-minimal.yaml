@@ -6,7 +6,7 @@ channels:
 
 dependencies:
   - python>=3.8
-  - pandas=1.4.1
+  - pandas
   - seaborn
   - snakemake
   - openpyxl
@@ -17,4 +17,4 @@ dependencies:
 
   - pip:
       - world-bank-data
-      - otoole==1.1.0
+      - otoole>=1.0.0, <1.1.0
