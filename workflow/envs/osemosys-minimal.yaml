@@ -5,8 +5,8 @@ channels:
   - conda-forge
 
 dependencies:
-  - python>=3.8
-  - pandas
+  - python>=3.9
+  - pandas>=2.0
   - seaborn
   - snakemake
   - openpyxl
