@@ -1,25 +1,27 @@
 name: osemosys-global
 
 channels:
+ - defaults
  - bioconda
  - conda-forge
  
 dependencies:
  - python>=3.9
- - pip
+ - pip>=24.0
 
- - pandas>=2.0
- - urllib3
- - matplotlib
- - seaborn
- - snakemake-minimal
- - pytest
- - scikit-learn
- - cartopy
+ - pandas==2.0.3 # otoole req. Relax to 2.2 in upcoming release
+ - urllib3>=2.2
+ - matplotlib>=3.8
+ - seaborn>=0.13
+ - snakemake-minimal>=7.32
+ - pytest>=8.2
+ - scikit-learn>=1.4
+ - cartopy>=0.23
+ - geopandas>=0.14
+ - plotly>=5.22
 
  - pip:
-   - world-bank-data
-   - otoole>=1.1.0
-   - dash
-   - geos
-   - git+https://github.com/OSeMOSYS/osemosys_global@master
+   - world-bank-data>=0.1.3
+   - otoole==1.1.2
+   - dash==2.17
+   - .
