@@ -24,4 +24,4 @@ dependencies:
    - world-bank-data>=0.1.3
    - otoole==1.1.2
    - dash==2.17
-   - .
+   - ../../. # path to setup.py
