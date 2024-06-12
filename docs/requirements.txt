@@ -15,10 +15,10 @@ scipy
 dash
 geos
 cartopy
+pandas>=2.0
 
 # docs
 sphinx
 myst-parser
 pydata-sphinx-theme>=0.8.1
-sphinx-book-theme
 docutils==0.17.1
