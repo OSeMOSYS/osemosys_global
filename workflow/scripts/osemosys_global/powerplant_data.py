@@ -1532,7 +1532,7 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
 
         for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
             if each_tech not in list(tech_set['VALUE']):
-                tech_set = tech_set.append(pd.DataFrame({'VALUE':[each_tech]}))
+                tech_set = pd.concat([tech_set, pd.DataFrame({'VALUE':[each_tech]})])
 
         df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
                                                   'TotalAnnualMinCapacityInvestment.csv'))
