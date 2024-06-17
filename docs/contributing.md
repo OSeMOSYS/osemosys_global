@@ -186,7 +186,7 @@ to avoid any problems with your installed Python packages. This can easily be
 done via [Miniconda](https://docs.conda.io/en/latest/miniconda.html):
 
 :::{seealso}
-How to [install](installation.md#5-create-the-conda-environment) OSeMOSYS 
+How to [install](installation.md#3-create-the-conda-environment) OSeMOSYS 
 Global's prepared conda environment
 :::
 

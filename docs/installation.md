@@ -41,26 +41,27 @@ would like to learn more about version control, GitHub has great
 
 ### 2. Install Mamba
 
-OSeMOSYS Global uses Python and the workflow management tool [Snakemake](https://snakemake.readthedocs.io). 
-to build OSeMOSYS models. To manage the Python dependencies, we recommend using [Mambaforge](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html). This is a drop-in replacement for conda. 
+OSeMOSYS Global uses Python and the workflow management tool [Snakemake](https://snakemake.readthedocs.io) to build OSeMOSYS models. To manage the Python dependencies, we recommend using [mamba](https://mamba.readthedocs.io/). Installation instructions to install mamba through miniforge can be found on the mamba website [here](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html). 
 
-To verify that mamba is installed, run the command `conda info`. Information 
-about your conda environment will be printed out. 
+To verify that mamba is installed, run the command `mamba info`. Information 
+about your mamba environment will be printed out. 
 
 ```bash
-(base) ~/osemosys_global$ conda info
+(base) ~/ $ mamba info
 
-active environment : base
-active env location : ~/miniconda3/envs/base
-shell level : 2
-user config file : ~/.condarc
-populated config files : 
-conda version : 4.12.0
+     active environment : base
+    active env location : /home/xxx/miniforge3
+            shell level : 3
+       user config file : /home/xxx/.condarc
+ populated config files : /home/xxx/miniforge3/.condarc
+          conda version : 24.3.0
+    conda-build version : not installed
+         python version : 3.10.14.final.0
 ...
 ```
 
 :::{note}
-You may need to restart your terminal for conda to finish installing. Once 
+You may need to restart your terminal for mamba to finish installing. Once 
 Miniconda is installed, you will see `(base)` in front at the start of your
 command line.
 :::
@@ -72,59 +73,49 @@ to create a new environment. Run the command below to create a new
 envirnoment called `osemosys-global`.
 
 ```bash
-(base) ~/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml    
+(base) ~/ $ mamba env create -f workflow/envs/osemosys-global.yaml    
 ```
 
 Once installed, activate the new `osemosys-global` environment. You will now see 
 `(osemosys-global)` at the start of your command prompt.
 
 ```bash
-(base) ~/osemosys_global$ conda activate osemosys-global
-(osemosys-global) ~/osemosys_global$ 
+(base) ~/ $ mamba activate osemosys-global
+(osemosys-global) ~/ $ 
 ```
 
-:::{note}
-The installation of the `osemosys-global` environment may take a few minutes (up to 30min). 
-This is normal.
-:::
+### 4. (Optional) Install a Solver
 
-###  4. Install GLPK
+OSeMOSYS Global supports three solvers; [CBC](https://github.com/coin-or/Cbc), [Gurobi](https://www.gurobi.com/) and [CPLEX](https://www.ibm.com/analytics/cplex-optimizer). Moreover, OSeMOSYS uses [GLPK](https://www.gnu.org/software/glpk/) to generate solver independent linear programming file. **If you installed the dependencies through the environment file, and are using open-source solvers, you do not need to follow these steps.** 
 
-The GNU GLPK package is a open-source linear programming package. OSeMOSYS 
-Global uses it to create a linear programming file. Full installation 
-instructions can be found on their [website](https://www.gnu.org/software/glpk/). 
-Once installed run the command `glpsol` in the command line. The following
-message will display indicating that GLPK has installed correctly. 
+#### 4.1. Install GLPK
 
-``` bash
-$ glpsol
+[GNU GLPK](https://www.gnu.org/software/glpk/) is an open-source linear programming 
+package that **will be installed with the environment**. OSeMOSYS Global uses 
+it to create a linear programming files. To check that 
+it installed correctly, run the command `glpsol` in the command line. The 
+following message will display indicating that GLPK has installed. 
+
+```bash 
+ ~/ $ glpsol
 
 GLPSOL: GLPK LP/MIP Solver, v4.65
 No input problem file specified; try glpsol --help
 ```
 
-### 5. Install a Solver
+If for any reason you need to manually install GLPK, you can do so through mamba 
+using the command `mamba install glpk`.
 
-OSeMOSYS Global supports three solvers. Included is the open-source solver 
-[CBC](https://github.com/coin-or/Cbc), and the commercial solvers 
-[Gurobi](https://www.gurobi.com/) and 
-[CPLEX](https://www.ibm.com/analytics/cplex-optimizer). **You must install at 
-least one of these solvers**. If you are uncertain about which one, we suggest 
-[CBC](https://github.com/coin-or/Cbc) as it is free and the easiest to setup. 
+#### 4.2. Install CBC
 
-:::{note}
-Support for the new open-source solver, [HiGHS](https://highs.dev/), is planned for a later release. 
-:::
-
-#### 5.1. Install CBC
-
-Follow the [download instruction](https://github.com/coin-or/Cbc#download) on 
-CBC's GitHub. Once installed, run the command `cbc` in the command line. The 
-following message will display indicating that CBC has installed correctly. 
+[CBC](https://github.com/coin-or/Cbc) is open-source and 
+**will be installed with the environment**. To check that 
+it installed correctly, run the command `cbc` in the command line. The 
+following message will display indicating that CBC has installed. 
 Type `quit` to exit CBC.
 
 ```bash
-$ cbc
+(osemosys-global) ~/ $ cbc
 
 Welcome to the CBC MILP Solver 
 Version: 2.10.3 
@@ -135,7 +126,11 @@ Enter ? for list of commands or help
 Coin:
  ``` 
 
-#### 5.2. Install CPLEX
+If a differnt CBC version needs to be installed, follow the 
+[download instruction](https://github.com/coin-or/Cbc#download) on 
+CBC's GitHub. 
+
+#### 4.3. Install CPLEX
 
 If you are an academic researcher or student, you may qualify for the 
 [academic license](https://www.ibm.com/academic/topic/data-science) of IBM's 
@@ -146,7 +141,7 @@ message will display indicating that CPLEX has installed correctly.
 Type `quit` to exit CPLEX.
 
 ```bash
-$ cplex
+ ~/ $ cplex
 
 Welcome to IBM(R) ILOG(R) CPLEX(R) Interactive Optimizer 22.1.0.0
 with Simplex, Mixed Integer & Barrier Optimizers
@@ -160,7 +155,7 @@ information on commands.
 CPLEX> 
 ``` 
 
-#### 5.3. Gurobi
+#### 4.4. Gurobi
 
 If you are an academic researcher or student, you may qualify for the 
 [academic license](https://www.gurobi.com/academia/) of Gurobi's optimizer. 
@@ -170,8 +165,7 @@ Once installed, run the command `gurobi_cl` in the command line. The following
 message will display indicating that Gurobi has installed correctly. 
 
 ```bash
-
-$ gurobi_cl
+ ~/ $ gurobi_cl
 
 Set parameter Username
 Set parameter LogFile to value "gurobi.log"
@@ -181,7 +175,7 @@ Usage: gurobi_cl [--command]* [param=value]* filename
 Type 'gurobi_cl --help' for more information.
 ```
 
-### 6. Run a Model
+### 5. Run a Model
 
 And thats it! You can now follow [our examples](getting-started.md#examples) 
 to create a model for yourself. 
@@ -195,10 +189,6 @@ our GitHub
 [discussion fourm](https://github.com/OSeMOSYS/osemosys_global/discussions) is 
 a great place to ask general OSeMOSYS Global questions.
 
-:::{seealso}
- OSeMOSYS' [Google Group](https://groups.google.com/g/osemosys) is a good place to ask questions about the OSeMOSYS framework.   
-:::
-
 ## Dependencies
 
 OSeMOSYS Global relies on numerous open-source community supported tools.
@@ -208,7 +198,7 @@ investigate further!
 [Python](https://www.python.org/downloads/)
 : All data processing is writen in the Python programming language
 
-[Miniconda](https://docs.conda.io/en/latest/miniconda.html) 
+[Mamba](https://mamba.readthedocs.io/en/) 
 : Python package management tool
 
 [Snakemake](https://snakemake.readthedocs.io/en/stable/)
