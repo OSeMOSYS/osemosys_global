@@ -12,7 +12,83 @@ Windows, we suggest you install
 
 ## Installation Steps
 
-###  1. Install GLPK
+### 1. Clone Repository
+
+All source code for OSeMOSYS Global is hosted in a 
+[GitHub repository](https://github.com/OSeMOSYS/osemosys_global), nested under 
+the [OSeMOSYS organization](https://github.com/OSeMOSYS).
+
+To clone by `HTTPS`, run the following command. 
+
+```bash
+$ git clone https://github.com/OSeMOSYS/osemosys_global.git
+```
+
+To clone by `SSH`, run the following command. Note, you will first need to 
+set up a `SSH` key following [instructions by GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account). 
+
+```bash 
+git clone git@github.com:OSeMOSYS/osemosys_global.git
+```
+
+:::{seealso}
+If you are new to [Git](https://git-scm.com) and [GitHub](https://github.com/), 
+not to worry! All relevant Git commands are provided below. However, if you 
+would like to learn more about version control, GitHub has great 
+[documentation](https://docs.github.com/en/get-started/quickstart/hello-world).
+:::
+
+
+### 2. Install Mamba
+
+OSeMOSYS Global uses Python and the workflow management tool [Snakemake](https://snakemake.readthedocs.io). 
+to build OSeMOSYS models. To manage the Python dependencies, we recommend using [Mambaforge](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html). This is a drop-in replacement for conda. 
+
+To verify that mamba is installed, run the command `conda info`. Information 
+about your conda environment will be printed out. 
+
+```bash
+(base) ~/osemosys_global$ conda info
+
+active environment : base
+active env location : ~/miniconda3/envs/base
+shell level : 2
+user config file : ~/.condarc
+populated config files : 
+conda version : 4.12.0
+...
+```
+
+:::{note}
+You may need to restart your terminal for conda to finish installing. Once 
+Miniconda is installed, you will see `(base)` in front at the start of your
+command line.
+:::
+
+### 3. Create the Conda Environment
+
+OSeMOSYS Global stores all project dependencies in a file that mamba can read 
+to create a new environment. Run the command below to create a new 
+envirnoment called `osemosys-global`.
+
+```bash
+(base) ~/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml    
+```
+
+Once installed, activate the new `osemosys-global` environment. You will now see 
+`(osemosys-global)` at the start of your command prompt.
+
+```bash
+(base) ~/osemosys_global$ conda activate osemosys-global
+(osemosys-global) ~/osemosys_global$ 
+```
+
+:::{note}
+The installation of the `osemosys-global` environment may take a few minutes (up to 30min). 
+This is normal.
+:::
+
+###  4. Install GLPK
 
 The GNU GLPK package is a open-source linear programming package. OSeMOSYS 
 Global uses it to create a linear programming file. Full installation 
@@ -27,7 +103,7 @@ GLPSOL: GLPK LP/MIP Solver, v4.65
 No input problem file specified; try glpsol --help
 ```
 
-### 2. Install a Solver
+### 5. Install a Solver
 
 OSeMOSYS Global supports three solvers. Included is the open-source solver 
 [CBC](https://github.com/coin-or/Cbc), and the commercial solvers 
@@ -40,7 +116,7 @@ least one of these solvers**. If you are uncertain about which one, we suggest
 Support for the new open-source solver, [HiGHS](https://highs.dev/), is planned for a later release. 
 :::
 
-#### 2.1. Install CBC
+#### 5.1. Install CBC
 
 Follow the [download instruction](https://github.com/coin-or/Cbc#download) on 
 CBC's GitHub. Once installed, run the command `cbc` in the command line. The 
@@ -59,7 +135,7 @@ Enter ? for list of commands or help
 Coin:
  ``` 
 
-#### 2.2. Install CPLEX
+#### 5.2. Install CPLEX
 
 If you are an academic researcher or student, you may qualify for the 
 [academic license](https://www.ibm.com/academic/topic/data-science) of IBM's 
@@ -84,7 +160,7 @@ information on commands.
 CPLEX> 
 ``` 
 
-#### 2.3. Gurobi
+#### 5.3. Gurobi
 
 If you are an academic researcher or student, you may qualify for the 
 [academic license](https://www.gurobi.com/academia/) of Gurobi's optimizer. 
@@ -104,93 +180,6 @@ Using license file /home/../gurobi.lic
 Usage: gurobi_cl [--command]* [param=value]* filename
 Type 'gurobi_cl --help' for more information.
 ```
-
-### 3. Clone Repository
-
-All source code for OSeMOSYS Global is hosted in a 
-[GitHub repository](https://github.com/OSeMOSYS/osemosys_global), nested under 
-the [OSeMOSYS organization](https://github.com/OSeMOSYS).
-
-:::{seealso}
-If you are new to [Git](https://git-scm.com) and [GitHub](https://github.com/), 
-not to worry! All relevant Git commands are provided below. However, if you 
-would like to learn more about version control, GitHub has great 
-[documentation](https://docs.github.com/en/get-started/quickstart/hello-world).
-:::
-
-In the command line, navigate to the directory you want to clone the repository 
-into. Clone the repository using the command below, being sure to include the
-`--recurse-submodules` flag. Navigate into the new `osemosys_global` directory.
-
-```bash
-$ git clone --recurse-submodules https://github.com/OSeMOSYS/osemosys_global.git 
-
-$ cd osemosys_global
-
-~/osemosys_global$ 
-
-```
-
-:::{note}
-If the repository was cloned without the `--recurse-submodules` flag, run the 
-commands `git submodule init` and `git submodule update `
-
-```bash
-~/osemosys_global$ git submodule init
-~/osemosys_global$ git submodule update 
-```
-:::
-
-### 4. Install Miniconda
-
-OSeMOSYS Global processes and plots data using a series of Python scripts. 
-OSeMOSYS Global uses [Miniconda](https://docs.conda.io/en/latest/miniconda.html) 
-to helps manage all required Python packages. Install Miniconda following their 
-[instructions](https://docs.conda.io/en/latest/miniconda.html).
-
-To verify that conda is installed, run the command `conda info`. Information 
-about your conda environment will be printed out. 
-
-```bash
-(base) ~/osemosys_global$ conda info
-
-active environment : base
-active env location : ~/miniconda3/envs/base
-shell level : 2
-user config file : ~/.condarc
-populated config files : 
-conda version : 4.12.0
-...
-```
-:::{note}
-You may need to restart your terminal for conda to finish installing. Once 
-Miniconda is installed, you will see `(base)` in front at the start of your
-command line.
-:::
-
-### 5. Create the Conda Environment
-
-OSeMOSYS Global stores all project dependencies in a file that conda can read 
-to create a new environment. Run the command below to create a new 
-envirnoment called `osemosys-global`.
-
-```bash
-(base) ~/osemosys_global$ conda env create -f workflow/envs/osemosys-global.yaml    
-```
-
-Once installed, activate the new `osemosys-global` environment. You will now see 
-`(osemosys-global)` at the start of your command prompt.
-
-```bash
-(base) ~/osemosys_global$ conda activate osemosys-global
-(osemosys-global) ~/osemosys_global$ 
-```
-
-:::{note}
-The installation of the `osemosys-global` environment may take a few minutes (up to 30min). 
-This is normal. If you are proficient with conda, installing all dependencies manually 
-can be quicker. 
-:::
 
 ### 6. Run a Model
 
