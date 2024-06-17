@@ -1,24 +1,26 @@
 # Requirements file for ReadTheDocs, check .readthedocs.yml.
 # To build the module reference correctly, make sure every external package
 # under `install_requires` in `setup.cfg` is also listed here!
+
+# scripts
 importlib-metadata
 seaborn
+pandas>=2.0
 geopandas
 urllib3
 PyYAML
 pytest
 world-bank-data
 scikit-learn
-myst-parser
 otoole>=1.1.0
 scipy
 dash
 geos
 cartopy
-pandas>=2.0
 
 # docs
 sphinx
 myst-parser
 pydata-sphinx-theme>=0.8.1
 docutils==0.17.1
+sphinx_book_theme

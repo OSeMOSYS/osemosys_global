@@ -19,6 +19,7 @@ dependencies:
  - cartopy>=0.23
  - geopandas>=0.14
  - plotly>=5.22
+ - glpk>=5.0
 
  - pip:
    - world-bank-data>=0.1.3
