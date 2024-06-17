@@ -236,6 +236,9 @@ def plot_transmission_capacity(
     trn = trn.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'LONGITUDE_FROM', 'LATITUDE_FROM', 'LONGITUDE_TO', 'LATITUDE_TO'],
                     as_index=False)['VALUE'].sum()
     
+    if trn.empty:
+        return
+    
     # assign line widths based on result data 
     scaler = MinMaxScaler()
     maxlinewidth = 3
@@ -330,6 +333,9 @@ def plot_transmission_flow(
     prd = prd.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
     prd = prd.groupby(['TECHNOLOGY', 'YEAR', 'FROM', 'TO', 'LONGITUDE_FROM', 'LATITUDE_FROM', 'LONGITUDE_TO', 'LATITUDE_TO'],
                     as_index=False)['VALUE'].sum()
+    
+    if prd.empty:
+        return
     
     scaler = MinMaxScaler()
     maxlinewidth = 3
