@@ -4,7 +4,8 @@
 # Script for electricity demand projection and downscaling
 
 import pandas as pd
-import world_bank_data as wb
+import wbgapi as wb
+from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
@@ -195,25 +196,30 @@ Node_Demand_2015["Share_%_Country_Demand"] = (
 
 # ### Creates historic relationships based on World Bank and Our World In Data datasets.
 
-# Extracts historical GDPppp per capita (constant 2017 international $) from the World Bank API
-Country_GDPppp_WB = wb.get_series(
-    "NY.GDP.PCAP.PP.KD", date="1985:2020", id_or_value="id"
-)
+# Extracts historical GDPppp per capita from the World Bank API
+Country_GDPppp_WB_raw = wb.data.DataFrame(['NY.GDP.PCAP.PP.KD'], mrv= datetime.now().year - 1990
+                                          ).reset_index().rename(columns = {'economy' : 'Country'}
+                                                                 ).set_index('Country')
 
-Country_GDPppp_WB = (
-    Country_GDPppp_WB.reset_index()
-    .rename(columns={"NY.GDP.PCAP.PP.KD": "WB_GDPppp"})
-    .set_index("Country")
-)
+Country_GDPppp_WB = pd.DataFrame()
 
 # Extracts Urban population (% of total population) from the World Bank API.
-Country_Urb_WB = wb.get_series("SP.URB.TOTL.IN.ZS", date="1985:2020", id_or_value="id")
+Country_Urb_WB_raw = wb.data.DataFrame(['SP.URB.TOTL.IN.ZS'], mrv= datetime.now().year - 1990
+                                       ).reset_index().rename(columns = {'economy' : 'Country'}
+                                                              ).set_index('Country')
 
-Country_Urb_WB = (
-    Country_Urb_WB.reset_index()
-    .rename(columns={"SP.URB.TOTL.IN.ZS": "WB_Urb"})
-    .set_index("Country")
-)
+Country_Urb_WB = pd.DataFrame()
+
+# Transforms WB df's into long format.
+
+for year in Country_GDPppp_WB_raw.columns:
+    data = Country_GDPppp_WB_raw [[year]].rename(columns = {year : 'WB_GDPppp'})
+    data['Year'] = year.replace('YR', '')
+    Country_GDPppp_WB = pd.concat([Country_GDPppp_WB, data])
+    
+    data = Country_Urb_WB_raw [[year]].rename(columns = {year : 'WB_Urb'})
+    data['Year'] = year.replace('YR', '')
+    Country_Urb_WB = pd.concat([Country_Urb_WB, data])
 
 # Extracts data from Our World In Data per capita electricity consumption dataset. Original data is based on sources from BP and Ember.
 # Dataset retreived through (https://ourworldindata.org/energy-production-consumption).
@@ -548,7 +554,7 @@ for a in Spatial_Mapping_Country["child_object"].unique():
     b = Country_Regression_Grouped_plot["intercept"].unique()
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
-    ax1.scatter(x, y, color="grey", alpha=0.5, label="1985-2020")
+    ax1.scatter(x, y, color="grey", alpha=0.5, label= f'1990 - {datetime.now().year}')
     ax1.scatter(x2, y2, color="green", alpha=0.5, label="2035")
     ax1.scatter(x3, y3, color="blue", alpha=0.5, label="2050")
     ax1.scatter(x4, y4, color="red", alpha=0.5, label="2100")
