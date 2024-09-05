@@ -54,24 +54,11 @@ except FileExistsError:
 region_name = config.region_name
 custom_nodes = config.get("nodes_to_add")
 
-# Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
-try:
-    # Open = open(r'data/All_Demand_UTC_2015.csv')
-    Open = open(os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"))
-    # demand_df = pd.read_csv(r'data/All_Demand_UTC_2015.csv' , encoding='latin-1')
-    demand_df = pd.read_csv(
-        os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"), encoding="latin-1"
-    )
+# Inputs PLEXOS-World 2015 data.
 
-except IOError:
-    urllib.request.urlretrieve(
-        "https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true",
-        os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"),
-    )
-
-    demand_df = pd.read_csv(
-        os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"), encoding="latin-1"
-    )
+demand_df = pd.read_csv(
+    os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"), encoding="latin-1"
+)
 
 seasons_raw = config.get("seasons")
 seasonsData = []

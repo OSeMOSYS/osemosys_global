@@ -9,7 +9,6 @@ from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
-import urllib
 import os
 from sklearn.linear_model import LinearRegression
 
@@ -37,22 +36,7 @@ output_data_dir = config_paths.output_data_dir
 
 region_name = config.region_name
 
-# Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
-
-try:
-    Open = open(os.path.join(input_data_dir, "PLEXOS_World_2015_Gold_V1.1.xlsx"))
-
-except IOError:
-    urllib.request.urlretrieve(
-        "https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true",
-        os.path.join(input_data_dir, "PLEXOS_World_2015_Gold_V1.1.xlsx"),
-    )
-
-    Open = open(os.path.join(input_data_dir, "PLEXOS_World_2015_Gold_V1.1.xlsx"))
-
-finally:
-    Open.close()
-
+# Imports PLEXOS-World 2015 model file as basis for the spatial mapping.
 Import_memberships = pd.read_excel(
     os.path.join(input_data_dir, "PLEXOS_World_2015_Gold_V1.1.xlsx"),
     sheet_name="Memberships",
@@ -128,23 +112,9 @@ Spatial_Mapping_Node = Spatial_Mapping_Node.loc[
 # ### Retrieves PLEXOS-World 2015 hourly demand data incl. T&D losses for all nodes as baseline value for the demand forecasting
 # Used to be able to disaggregate regional electricity demand to the nodal level as well as calculate relative peak demand per node.
 
-# Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
-try:
-    Open = open(os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"))
-
-    Import_Hourly_Demand_2015 = pd.read_csv(
-        os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"), encoding="latin-1"
-    )
-
-except IOError:
-    urllib.request.urlretrieve(
-        "https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true",
-        os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"),
-    )
-
-    Import_Hourly_Demand_2015 = pd.read_csv(
-        os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"), encoding="latin-1"
-    )
+Import_Hourly_Demand_2015 = pd.read_csv(
+    os.path.join(input_data_dir, "All_Demand_UTC_2015.csv"), encoding="latin-1"
+)
 
 # ### Determines relative 2015 share of demand per sub-country node
 

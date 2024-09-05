@@ -15,12 +15,10 @@ import urllib
 import os
 # from osemosys_global.configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
-import yaml
 from constants import SET_DTYPES
 from utils import apply_dtypes
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
-import os
 from scipy import spatial
 
 def main():
@@ -55,24 +53,8 @@ def main():
     if not os.path.exists(output_data_dir):
         os.makedirs(output_data_dir)
 
-    #Checks whether PLEXOS-World 2015 data needs to be retrieved from the PLEXOS-World Harvard Dataverse.
-    try:
-        Open = open(os.path.join(input_data_dir,
-                                 "PLEXOS_World_2015_Gold_V1.1.xlsx"))
-
-    except IOError:
-        urllib.request.urlretrieve("https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true" , 
-                                   os.path.join(input_data_dir,
-                                                "PLEXOS_World_2015_Gold_V1.1.xlsx")
-                                   )
-
-        Open = open(os.path.join(input_data_dir,
-                                 "PLEXOS_World_2015_Gold_V1.1.xlsx")
-                    )
-
-    finally:
-        Open.close()
-
+    # Inputs the PLEXOS-World 2015 dataset as basis for the powerplant data.
+    
     df = pd.read_excel(os.path.join(input_data_dir,
                                     "PLEXOS_World_2015_Gold_V1.1.xlsx"), 
                        sheet_name = "Properties")
@@ -84,6 +66,7 @@ def main():
     df_dict = df_dict[df_dict["parent_class"] == "Generator"].rename(
         {"parent_object": "powerplant"}, axis=1
         )
+    
     df_weo_data = pd.read_csv(os.path.join(input_data_dir,
                                            "weo_2020_powerplant_costs.csv")
                               )

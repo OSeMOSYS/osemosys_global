@@ -15,12 +15,18 @@ import requests
 # CONFIGURATION PARAMETERS
 config_paths = ConfigPaths()
 input_data_dir = config_paths.input_data_dir
-output_data_dir = config_paths.output_data_dir
 
-external_files = {'PLEXOS_World_2015_Gold_V1.1.xlsx' : 
-                  'https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true',
-                  'All_Demand_UTC_2015.csv' :
-                  'https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true'}
+external_files = {
+    'PLEXOS_World_2015_Gold_V1.1.xlsx' : 
+    'https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true',
+    
+    'All_Demand_UTC_2015.csv' :
+    'https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true',
+    
+    'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx' :
+    'https://dataverse.harvard.edu/api/access/datafile/6040815'
+    
+                  }
 
 if __name__ == "__main__":
     for file, url in external_files.items():

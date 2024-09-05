@@ -21,7 +21,8 @@ demand_figures = [
 
 external_files = [
     'PLEXOS_World_2015_Gold_V1.1.xlsx',
-    'All_Demand_UTC_2015.csv'
+    'All_Demand_UTC_2015.csv',
+    'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
     ]
 
 power_plant_files = [
