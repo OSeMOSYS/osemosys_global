@@ -22,7 +22,8 @@ demand_figures = [
 external_files = [
     'PLEXOS_World_2015_Gold_V1.1.xlsx',
     'All_Demand_UTC_2015.csv',
-    'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
+    'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
+    'ember_yearly_electricity_data.csv'
     ]
 
 power_plant_files = [
@@ -190,6 +191,7 @@ rule demand_projections:
         'resources/data/iamc_db_URB_Countries.xlsx',
         'resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
         'resources/data/T&D Losses.xlsx',
+	'resources/data/ember_yearly_electricity_data.csv'
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],

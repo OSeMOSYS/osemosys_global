@@ -164,17 +164,17 @@ Node_Demand_2015["Share_%_Country_Demand"] = (
 
 # ## Historical relationships
 
-# ### Creates historic relationships based on World Bank and Our World In Data datasets.
+# ### Creates historic relationships based on World Bank and EMBER datasets.
 
-# Extracts historical GDPppp per capita from the World Bank API
-Country_GDPppp_WB_raw = wb.data.DataFrame(['NY.GDP.PCAP.PP.KD'], mrv= datetime.now().year - 1990
+# Extracts historical GDPppp per capita from the World Bank API. 2000 as first year since EMBER dataset doesn't go back further.
+Country_GDPppp_WB_raw = wb.data.DataFrame(['NY.GDP.PCAP.PP.KD'], mrv= datetime.now().year - 2000
                                           ).reset_index().rename(columns = {'economy' : 'Country'}
                                                                  ).set_index('Country')
 
 Country_GDPppp_WB = pd.DataFrame()
 
-# Extracts Urban population (% of total population) from the World Bank API.
-Country_Urb_WB_raw = wb.data.DataFrame(['SP.URB.TOTL.IN.ZS'], mrv= datetime.now().year - 1990
+# Extracts Urban population (% of total population) from the World Bank API. 2000 as first year since EMBER dataset doesn't go back further.
+Country_Urb_WB_raw = wb.data.DataFrame(['SP.URB.TOTL.IN.ZS'], mrv= datetime.now().year - 2000
                                        ).reset_index().rename(columns = {'economy' : 'Country'}
                                                               ).set_index('Country')
 
@@ -191,32 +191,33 @@ for year in Country_GDPppp_WB_raw.columns:
     data['Year'] = year.replace('YR', '')
     Country_Urb_WB = pd.concat([Country_Urb_WB, data])
 
-# Extracts data from Our World In Data per capita electricity consumption dataset. Original data is based on sources from BP and Ember.
-# Dataset retreived through (https://ourworldindata.org/energy-production-consumption).
-Country_Elec_OWID = (
+# Imports yearly electricity data from EMBER.
+Country_Elec_ember = (
     pd.read_csv(
-        os.path.join(input_data_dir, "owid_pcconsumption.csv"), encoding="latin-1"
-    )
-    .iloc[:, -3:]
-    .rename(columns={"Per capita electricity (kWh)": "OWID_Elec", "Code": "Country"})
-    .set_index("Country")
-)
+        os.path.join(input_data_dir, "ember_yearly_electricity_data.csv"), encoding="latin-1"
+    ))[['Country code', 'Year', 'Variable', 'Value']].rename(columns = {'Value' : 'ember_Elec', 
+                                                                        'Country code' : 'Country'}).dropna().set_index('Country')
 
-Country_Elec_OWID["Year"] = Country_Elec_OWID["Year"].astype("str")
+# Electricity demand per capita only
+Country_Elec_ember = Country_Elec_ember.loc[Country_Elec_ember['Variable'] == 'Demand per capita'].drop(columns = {'Variable'})
+
+# Conversion to kWh
+Country_Elec_ember['ember_Elec']  = Country_Elec_ember['ember_Elec'] * 1000 
+Country_Elec_ember['Year'] = Country_Elec_ember['Year'].astype('str')
 
 # ### Applies linear regression
 
 # Merges the relevant dataframes
 Country_Regression = pd.merge(
     Country_GDPppp_WB[["Year", "WB_GDPppp"]],
-    Country_Elec_OWID[["Year", "OWID_Elec"]],
+    Country_Elec_ember[["Year", "ember_Elec"]],
     left_on=["Year", "Country"],
     right_on=["Year", "Country"],
 )
 
 if Urbanization == "Yes":
     Country_Regression = pd.merge(
-        Country_Regression[["Year", "WB_GDPppp", "OWID_Elec"]],
+        Country_Regression[["Year", "WB_GDPppp", "ember_Elec"]],
         Country_Urb_WB[["Year", "WB_Urb"]],
         left_on=["Year", "Country"],
         right_on=["Year", "Country"],
@@ -248,7 +249,7 @@ for x in Country_Regression.index.unique():
 
         sklearn_lr.fit(
             Country_Regression_Temp[["WB_GDPppp", "WB_Urb"]],
-            Country_Regression_Temp["OWID_Elec"],
+            Country_Regression_Temp["ember_Elec"],
         )
 
         (
@@ -263,7 +264,7 @@ for x in Country_Regression.index.unique():
 
         Country_Regression_Temp["R2_GDPppp_Urb/Elec"] = sklearn_lr.score(
             Country_Regression_Temp[["WB_GDPppp", "WB_Urb"]],
-            Country_Regression_Temp["OWID_Elec"],
+            Country_Regression_Temp["ember_Elec"],
         )
 
         Country_Regression_Grouped = pd.concat(
@@ -275,7 +276,7 @@ for x in Country_Regression.index.unique():
     else:
 
         sklearn_lr.fit(
-            Country_Regression_Temp[["WB_GDPppp"]], Country_Regression_Temp["OWID_Elec"]
+            Country_Regression_Temp[["WB_GDPppp"]], Country_Regression_Temp["ember_Elec"]
         )
 
         Country_Regression_Temp["intercept"], Country_Regression_Temp["coef_GDPppp"] = [
@@ -284,7 +285,7 @@ for x in Country_Regression.index.unique():
         ]
 
         Country_Regression_Temp["R2_GDPppp/Elec"] = sklearn_lr.score(
-            Country_Regression_Temp[["WB_GDPppp"]], Country_Regression_Temp["OWID_Elec"]
+            Country_Regression_Temp[["WB_GDPppp"]], Country_Regression_Temp["ember_Elec"]
         )
 
         Country_Regression_Grouped = pd.concat(
@@ -295,7 +296,7 @@ for x in Country_Regression.index.unique():
 for a in Country_Regression_Grouped.index.unique():
     Country_Regression_plot = Country_Regression_Grouped.loc[a]
     b = Country_Regression_plot["WB_GDPppp"]
-    c = Country_Regression_plot["OWID_Elec"]
+    c = Country_Regression_plot["ember_Elec"]
     x = Country_Regression_plot.loc[a, "WB_GDPppp"]
     m = Country_Regression_plot.loc[a, "coef_GDPppp"]
     z = Country_Regression_plot.loc[a, "intercept"]
@@ -516,7 +517,7 @@ for a in Spatial_Mapping_Country["child_object"].unique():
     x2 = Country_GDPppp_pp_SSP_plot[2035]
     x3 = Country_GDPppp_pp_SSP_plot[2050]
     x4 = Country_GDPppp_pp_SSP_plot[2100]
-    y = Country_Regression_Grouped_plot["OWID_Elec"]
+    y = Country_Regression_Grouped_plot["ember_Elec"]
     y2 = Country_Demand_projected_SSP_plot[2035]
     y3 = Country_Demand_projected_SSP_plot[2050]
     y4 = Country_Demand_projected_SSP_plot[2100]
@@ -524,7 +525,7 @@ for a in Spatial_Mapping_Country["child_object"].unique():
     b = Country_Regression_Grouped_plot["intercept"].unique()
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
-    ax1.scatter(x, y, color="grey", alpha=0.5, label= f'1990 - {datetime.now().year}')
+    ax1.scatter(x, y, color="grey", alpha=0.5, label= f'2000 - {datetime.now().year}')
     ax1.scatter(x2, y2, color="green", alpha=0.5, label="2035")
     ax1.scatter(x3, y3, color="blue", alpha=0.5, label="2050")
     ax1.scatter(x4, y4, color="red", alpha=0.5, label="2100")
@@ -537,7 +538,7 @@ for a in Spatial_Mapping_Country["child_object"].unique():
         plt.plot(x4, m * x4 + b, color="black", alpha=0.5)
 
     plt.title(f"Demand projection {a}")
-    ax1.set_xlabel("GDPppp per capita (constant 2017 international $)")
+    ax1.set_xlabel("GDPppp per capita")
     ax1.set_ylabel("Electricity demand per capita (kWh)")
     plt.rcParams["figure.figsize"] = [8, 4]
 
