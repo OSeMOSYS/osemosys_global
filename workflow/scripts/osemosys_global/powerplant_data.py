@@ -15,12 +15,10 @@ import urllib
 import os
 # from osemosys_global.configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
-import yaml
 from constants import SET_DTYPES
 from utils import apply_dtypes
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
-import os
 from scipy import spatial
 
 def main():
@@ -110,8 +108,6 @@ def main():
                                                      "residual_capacity.csv")
                                  )
     
-
-    emissions = []
 
     # Technologies that will have 00 and 01 suffixes to represent PLEXOS 
     # historical values and future values 
@@ -346,12 +342,6 @@ def main():
     # Convert total capacity from MW to GW
     df_res_cap['value'] = df_res_cap['value'].div(1000)
 
-
-    df_res_cap_plot = df_res_cap[['node_code', 
-                                 'tech_code', 
-                                 'model_year', 
-                                 'value']]
-
     # Rename 'model_year' to 'year' and 'total_capacity' to 'value'
     df_res_cap.rename({'model_year': 'YEAR',
                        'value': 'VALUE'},
@@ -538,9 +528,6 @@ def main():
     gem_all_new_agg_oplife['YEAR'] = gem_all_new_agg_oplife['YEAR'] + gem_all_new_agg_oplife['operational_life']
     
     gem_all_retired = pd.concat([gem_all_retired, gem_all_new_agg_oplife])
-    
-    gem_all_retired_agg = gem_all_retired.groupby(['node_code', 'Technology', 'YEAR'], 
-                                              as_index=False)['VALUE'].sum()
 
     # ### Add input and output activity ratios
 
@@ -1569,10 +1556,6 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
 
         #Replace VALUE with CAPEX
         df['VALUE'] = df['TECHNOLOGY'].map(capex_dict)
-        capex_df = df[['REGION',
-                       'TECHNOLOGY',
-                       'YEAR',
-                       'VALUE']]
         
         # Append existing TotalAnnualMaxCapacityInvestment data with MAX_BUILD for TRN
         df_max_cap_inv = pd.concat([df_max_cap_inv, max_cap_techs_df]).drop_duplicates()

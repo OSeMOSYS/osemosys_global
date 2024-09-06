@@ -142,3 +142,4 @@ workflow/scripts/.DS_Store
 
 # Environment credentials
 .env
+workflow/scripts/osemosys_global/powerplant_data_test.py
