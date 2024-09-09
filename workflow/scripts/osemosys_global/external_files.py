@@ -6,40 +6,48 @@ Created on Wed Sep  4 15:14:43 2024
 """
 
 import logging
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
+logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 from pathlib import Path
 from configuration import ConfigPaths
 import os
 import requests
+import sys
+
+
+def download_file(file: str, url: Path | str) -> None:
+    """Downloads a file if the file does not already exist"""
+
+    if Path(path).exists():
+        logging.info(f"{file} already exists")
+        return
+
+    logging.info(f"Downloading {file}")
+
+    data = requests.get(url, path)
+
+    with open(path, "wb") as f:
+        f.write(data.content)
+
 
 # CONFIGURATION PARAMETERS
 config_paths = ConfigPaths()
 input_data_dir = config_paths.input_data_dir
 
-external_files = {
-    
-    'PLEXOS_World_2015_Gold_V1.1.xlsx' : 
-    'https://dataverse.harvard.edu/api/access/datafile/4008393?format=original&gbrecs=true',
-    
-    'All_Demand_UTC_2015.csv' :
-    'https://dataverse.harvard.edu/api/access/datafile/3985039?format=original&gbrecs=true',
-    
-    'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx' :
-    'https://dataverse.harvard.edu/api/access/datafile/6040815',
-    
-    'ember_yearly_electricity_data.csv' :
-    'https://ember-climate.org/app/uploads/2022/07/yearly_full_release_long_format.csv'
-    
-                  }
-
 if __name__ == "__main__":
+
+    if "snakemake" in globals():
+        external_files = snakemake.params.files
+    else:
+        if len(sys.argv) != 3:
+            msg = "Usage: python {} <save_name> <url>"
+            print(msg.format(sys.argv[0]))
+            sys.exit(1)
+        else:
+            in_file = sys.argv[1]
+            in_url = sys.argv[2]
+            external_files = {in_file: in_url}
+
     for file, url in external_files.items():
         path = os.path.join(input_data_dir, file)
-
-        if not Path(path).exists():
-            logging.info(f'Downloading {file}')
-
-            data = requests.get(url , path)
-            
-            with open(path, 'wb') as f:
-                f.write(data.content)
+        download_file(file, url)

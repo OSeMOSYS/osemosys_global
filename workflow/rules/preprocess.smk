@@ -19,13 +19,6 @@ demand_figures = [
 
 # output script files
 
-external_files = [
-    'PLEXOS_World_2015_Gold_V1.1.xlsx',
-    'All_Demand_UTC_2015.csv',
-    'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
-    'ember_yearly_electricity_data.csv'
-    ]
-
 power_plant_files = [
     'CapitalCost.csv',
     'FixedCost.csv',
@@ -109,16 +102,6 @@ for file_list in generated_files:
 rule make_data_dir:
     output: directory('results/data')
     shell: 'mkdir -p {output}'
-
-rule download_external_files:
-    message:
-        'Downloading external files...'
-    log:
-        log = 'results/logs/external_files.log'
-    output:
-        csv_files = expand('resources/data/{output_file}', output_file=external_files),
-    shell:
-        'python workflow/scripts/osemosys_global/external_files.py 2> {log}'
 
 rule powerplant:
     message:
