@@ -18,7 +18,7 @@ import sys
 def download_file(file: str, url: Path | str) -> None:
     """Downloads a file if the file does not already exist"""
 
-    if Path(path).exists():
+    if Path(file).exists():
         logging.info(f"{file} already exists")
         return
 
