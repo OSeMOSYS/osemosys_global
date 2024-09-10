@@ -1165,7 +1165,7 @@ def main():
     
     # transmission technologies 
     for op_life_tech in op_life_trn:
-        op_life_out.append([region_name, op_life_tech, 30])
+        op_life_out.append([region_name, op_life_tech, 60])
         
     df_op_life_Out = pd.DataFrame(op_life_out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
 
