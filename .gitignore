@@ -2,6 +2,7 @@
 .snakemake
 results/*
 config/config.yaml
+resources/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
