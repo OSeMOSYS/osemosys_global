@@ -1,10 +1,8 @@
-import requests
 import os
 import pandas as pd
 
 # from osemosys_global.configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
-from utils import apply_dtypes
 
 # from OPG_configuration import ConfigFile, ConfigPaths
 import itertools
@@ -24,6 +22,7 @@ def main():
 
     input_dir = config_paths.input_dir
     output_data_dir = config_paths.output_data_dir
+    input_data_dir = config_paths.input_data_dir
     custom_nodes_dir = config_paths.custom_nodes_dir
     region = config.region_name
     years = config.get_years()
@@ -33,34 +32,15 @@ def main():
     max_fuel = config.get("fuel_limits")
     calibration = config.get("calibration")
     re_targets = config.get("re_targets")
+    
+    # Imports PLEXOS-World model which includes RES resource limits.
 
-    ## Checks whether PLEXOS-World/MESSAGEix-GLOBIOM soft-link model data needs to be
-    # retrieved from the PLEXOS-World Harvard Dataverse.
-    try:
-        df_reslimit = pd.read_excel(
-            os.path.join(
-                input_dir, "data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"
-            ),
-            sheet_name="Properties",
-        )
-
-    except IOError:
-        url = "https://dataverse.harvard.edu/api/access/datafile/6040815"
-        r = requests.get(url)
-        with open(
-            os.path.join(
-                input_dir, "data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"
-            ),
-            "wb",
-        ) as outfile:
-            outfile.write(r.content)
-
-        df_reslimit = pd.read_excel(
-            os.path.join(
-                input_dir, "data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"
-            ),
-            sheet_name="Properties",
-        )
+    df_reslimit = pd.read_excel(
+        os.path.join(
+            input_data_dir, "PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx"
+        ),
+        sheet_name="Properties",
+    )
 
     # TECHNOLOGY MAPPING FOR PLEXOS -> OSEMOSYS GLOBAL
 
@@ -508,4 +488,4 @@ def apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes):
 
 if __name__ == "__main__":
     main()
-    logging.info(f"Max capacity limits sucessfully set")
+    logging.info("Max capacity limits sucessfully set")

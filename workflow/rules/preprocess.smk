@@ -174,6 +174,7 @@ rule demand_projections:
         'resources/data/iamc_db_URB_Countries.xlsx',
         'resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
         'resources/data/T&D Losses.xlsx',
+	'resources/data/ember_yearly_electricity_data.csv'
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
