@@ -166,15 +166,16 @@ rule variable_costs:
 
 rule demand_projections:
     message:
-        'Generating demand data...'
+        "Generating demand data..."
     input:
-        'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
-        'resources/data/iamc_db_GDPppp_Countries.xlsx',
-        'resources/data/iamc_db_POP_Countries.xlsx',
-        'resources/data/iamc_db_URB_Countries.xlsx',
-        'resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx',
-        'resources/data/T&D Losses.xlsx',
-	'resources/data/ember_yearly_electricity_data.csv'
+        plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx",
+        plexos_demand = "resources/data/All_Demand_UTC_2015.csv",
+        iamc_gdp ="resources/data/iamc_db_GDPppp_Countries.xlsx",
+        iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
+        iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
+        iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
+        td_losses = "resources/data/T&D Losses.xlsx",
+	    ember = "resources/data/ember_yearly_electricity_data.csv"
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -183,8 +184,8 @@ rule demand_projections:
         figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
     log:
         log = 'results/logs/demand_projections.log'
-    shell:
-        'python workflow/scripts/osemosys_global/demand_projection.py 2> {log}'
+    script:
+        "../scripts/osemosys_global/demand/demand_projections.py"
 
 rule emissions:
     message:
