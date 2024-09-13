@@ -1,7 +1,17 @@
 """Creates demand projections"""
 
 import pandas as pd
+from .read import (
+    import_ember_elec,
+    import_hourly_demand,
+    import_iamc,
+    import_iamc_missing,
+    import_plexos_2015,
+    import_td_losses
+)
 from .regression import create_regression_dataframe
+
+def main()
 
 if __name__ == "__main__":
     
@@ -26,6 +36,12 @@ if __name__ == "__main__":
         
     plexos = import_plexos_2015(file_plexos)
     ember = import_ember_elec(file_ember)
+    demand = import_hourly_demand(file_plexos_demand),
+    iamc_gdp = import_iamc(file_iamc_gdp),
+    iamc_pop = import_iamc(file_iamc_pop),
+    iamc_urb = import_iamc(file_iamc_urb),
+    iamc_missing = import_iamc_missing(file_iamc_missing),
+    td_losses = import_td_losses(file_td_losses)
     
     df = create_regression_dataframe(plexos, ember, )
     

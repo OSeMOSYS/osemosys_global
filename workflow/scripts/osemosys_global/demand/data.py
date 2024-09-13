@@ -1,16 +1,16 @@
-"""Functions to extract historical data"""
+"""Functions to extract relevent data"""
 
 import pandas as pd
 import wbgapi as wb
-import datetime
+from datetime import datetime
 
-from _read import (
-    import_ember_elec,
-    import_hourly_demand,
-    import_iamc,
-    import_iamc_missing,
-    import_plexos_2015,
-    import_td_losses,
+from spatial import get_spatial_mapping_country
+from constants import (
+    POP_COUNTRIES_SOURCE,
+    GDP_PPP_COUNTRIES_SOURCE,
+    URB_COUNTRIES_SOURCE,
+    PATHWAY,
+    SPATIAL_RESOLUTION,
 )
 
 
@@ -110,10 +110,10 @@ def _longify_wb(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return pd.concat(dfs)
 
 
-def get_historical_ember_demand(f: str) -> pd.DataFrame:
+def get_historical_ember_demand(ember: pd.DataFrame) -> pd.DataFrame:
     """Gets historical ember electricity data per capita"""
 
-    df = _import_ember_elec(f)
+    df = ember.copy()
 
     # Electricity demand per capita only
     df = df[df.Variable == "Demand per capita"].drop(columns={"Variable"})
@@ -124,4 +124,55 @@ def get_historical_ember_demand(f: str) -> pd.DataFrame:
 
     return df
 
-def get_iamc_data(iamc: str, missing: str, metric: str) -> pd.DataFrame:
+
+def _iamc_data_available(
+    iamc: pd.DataFrame, iamc_missing: pd.DataFrame, spatial_mapping: pd.DataFrame
+) -> bool:
+    """Checks whether pathway data is available for all included countries.
+
+    In case pathway data is not available for all countriesit checks wheter custom data is provided in 'iamc_db_POP_POP_Countries_Missing.xlsx'. If not, an error POPs up indicatingfor which countries data is missing. Data has to be manually added to project demand for all countries.
+    """
+
+    country_missing = spatial_mapping[(~spatial_mapping.index.isin(iamc.index))]
+
+    for x in country_missing.index:
+        if not x in iamc_missing.index:
+            return False
+    return True
+
+
+def get_iamc_data(
+    plexos: pd.DataFrame, iamc: pd.DataFrame, iamc_missing: pd.DataFrame, metric: str
+) -> pd.DataFrame:
+    """Gets full iamc data"""
+
+    if metric == "gdp":
+        model = GDP_PPP_COUNTRIES_SOURCE
+    elif metric == "pop":
+        model = POP_COUNTRIES_SOURCE
+    elif metric == "urb":
+        model = URB_COUNTRIES_SOURCE
+    else:
+        raise NotImplementedError
+
+    spatial_mapping = get_spatial_mapping_country(plexos)
+
+    df_original = iamc[
+        (iamc["Model"] == model) & (iamc["Scenario"] == PATHWAY)
+    ].set_index("Region")
+
+    if not _iamc_data_available(df, iamc_missing, spatial_mapping):
+        raise ValueError("Country data for is not available in custom dataset!")
+
+    df_missing = iamc_missing[(iamc_missing["Scenario"] == PATHWAY)]
+
+    df = pd.concat([df_original, df_missing])
+
+    # Filters data for relevant to be modelled countries
+    return pd.merge(
+        spatial_mapping[[SPATIAL_RESOLUTION]],
+        df,
+        left_index=True,
+        right_index=True,
+        how="inner",
+    )
