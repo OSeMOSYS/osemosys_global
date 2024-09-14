@@ -134,3 +134,17 @@ def _regression_without_urbanization(df: pd.DataFrame) -> pd.DataFrame:
     df["R2_GDPppp/Elec"] = lr.score(df[["WB_GDPppp"]], df["ember_Elec"])
 
     return df
+
+def get_regression_coefficients(lr: pd.DataFrame, urbanization: bool) -> pd.DataFrame:
+    """Gets regression coefficients"""
+    
+    df = lr.copy()
+    
+    coef = df.loc[~df.index.duplicated(keep="first")]
+    
+    if urbanization:
+        cols = ["coef_GDPppp", "coef_Urb", "intercept"]
+    else:
+        cols = ["coef_GDPppp", "intercept"]
+        
+    return coef[cols]

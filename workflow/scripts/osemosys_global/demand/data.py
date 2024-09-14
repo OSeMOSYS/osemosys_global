@@ -161,7 +161,7 @@ def get_iamc_data(
         (iamc["Model"] == model) & (iamc["Scenario"] == PATHWAY)
     ].set_index("Region")
 
-    if not _iamc_data_available(df, iamc_missing, spatial_mapping):
+    if not _iamc_data_available(df_original, iamc_missing, spatial_mapping):
         raise ValueError("Country data for is not available in custom dataset!")
 
     df_missing = iamc_missing[(iamc_missing["Scenario"] == PATHWAY)]
