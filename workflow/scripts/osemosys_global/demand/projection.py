@@ -10,15 +10,13 @@ from typing import Optional
 
 def _get_year_interval(start: int, end: int) -> range:
     """Standard interval for demand projections"""
-    return range(start, end + 1, 5)
+    return range(start, end, 5)
 
 
 def perform_country_projection(
-    plexos: pd.DataFrame,
     iamc_gdp: pd.DataFrame,
     iamc_pop: pd.DataFrame,
     iamc_urb: pd.DataFrame,
-    iamc_missing: pd.DataFrame,
     lr: pd.DataFrame,
 ) -> pd.DataFrame:
     """Perfroms demand projections at country level
@@ -27,17 +25,14 @@ def perform_country_projection(
     specific Population, GDP|PPP and optionally urbanization projections
     """
 
-    gdp = get_iamc_data(plexos, iamc_gdp, iamc_missing, "gdp")
-    pop = get_iamc_data(plexos, iamc_pop, iamc_missing, "pop")
-    urb = get_iamc_data(plexos, iamc_urb, iamc_missing, "urb")
-
     lr_coef = get_regression_coefficients(lr, True)
 
-    base = _get_base_data(gdp, pop, lr_coef)
-    
-    df = get_electrical_projection_country(base, urb)
-    
+    base = _get_base_data(iamc_gdp, iamc_pop, lr_coef)
+
+    df = get_electrical_projection_country(base, iamc_urb)
+
     return df
+
 
 def _get_base_data(
     iamc_gdp: pd.DataFrame,
@@ -62,7 +57,7 @@ def _get_base_data(
     years = _get_year_interval(START_YEAR, END_YEAR)
 
     for year in years:
-        df[year] = (base[year] * 1000) / iamc_pop[year]
+        df[year] = (iamc_gdp[year] * 1000) / iamc_pop[year]
 
     return df
 

@@ -7,7 +7,7 @@ from datetime import datetime
 
 from regression import perform_regression, get_regression_coefficients
 from projection import perform_country_projection, _get_base_data
-from data import get_historical_urban_pop_wb
+from data import get_historical_urban_pop_wb, get_iamc_data
 from read import import_ember_elec, import_plexos_2015, import_iamc, import_iamc_missing
 from constants import SPATIAL_RESOLUTION
 from spatial import get_spatial_mapping_country
@@ -120,7 +120,13 @@ def create_demand_plot(
 
         for year, colour in zip(years, colours):
 
-            temp = pd.concat([ctry_base[year], ctry_dem[year]], columns=["base", "dem"])
+            temp = pd.concat(
+                [
+                    ctry_base[year].to_frame(name="base"),
+                    ctry_dem[year].to_frame(name="dem"),
+                ],
+                axis=1,
+            )
 
             temp.plot.scatter(
                 "base",
@@ -172,10 +178,16 @@ if __name__ == "__main__":
     ember = import_ember_elec(file_ember)
     urban = get_historical_urban_pop_wb(long=True)
 
-    iamc_gdp = import_iamc(file_iamc_gdp)
-    iamc_pop = import_iamc(file_iamc_pop)
-    iamc_urb = import_iamc(file_iamc_urb)
-    iamc_missing = import_iamc(file_iamc_missing)
+    iamc_gdp_orig = import_iamc(file_iamc_gdp)
+    iamc_pop_orig = import_iamc(file_iamc_pop)
+    iamc_urb_orig = import_iamc(file_iamc_urb)
+    iamc_gdp_missing = import_iamc_missing(file_iamc_missing, "gdp")
+    iamc_pop_missing = import_iamc_missing(file_iamc_missing, "pop")
+    iamc_urb_missing = import_iamc_missing(file_iamc_missing, "urb")
+
+    iamc_gdp = get_iamc_data(plexos, iamc_gdp_orig, iamc_gdp_missing, "gdp")
+    iamc_pop = get_iamc_data(plexos, iamc_pop_orig, iamc_pop_missing, "pop")
+    iamc_urb = get_iamc_data(plexos, iamc_urb_orig, iamc_urb_missing, "urb")
 
     # create regression plots
 
@@ -187,12 +199,10 @@ if __name__ == "__main__":
 
     # create demand projection plots
 
-    dem = perform_country_projection(
-        plexos, iamc_gdp, iamc_pop, iamc_urb, iamc_missing, reg
-    )
+    dem = perform_country_projection(iamc_gdp, iamc_pop, iamc_urb, reg)
     lr_coef = get_regression_coefficients(reg, True)
     dem_base = _get_base_data(iamc_gdp, iamc_pop, lr_coef)
 
     fig, axs = create_demand_plot(plexos, dem_base, reg, dem)
 
-    fig.save_fig(demand_plot)
+    fig.savefig(demand_plot)
