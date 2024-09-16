@@ -154,14 +154,14 @@ def create_demand_plot(
 if __name__ == "__main__":
 
     if "snakemake" in globals():
-        file_plexos = snamkemake.inputs.plexos
-        file_ember = snamkemake.inputs.ember
-        file_iamc_gdp = snamkemake.inputs.iamc_gdp
-        file_iamc_pop = snamkemake.inputs.iamc_pop
-        file_iamc_urb = snamkemake.inputs.iamc_urb
-        file_iamc_missing = snamkemake.inputs.iamc_missing
-        regression_plot = snakemake.outputs.regression
-        demand_plot = snakemake.outputs.demand
+        file_plexos = snakemake.input.plexos
+        file_ember = snakemake.input.ember
+        file_iamc_gdp = snakemake.input.iamc_gdp
+        file_iamc_pop = snakemake.input.iamc_pop
+        file_iamc_urb = snakemake.input.iamc_urb
+        file_iamc_missing = snakemake.input.iamc_missing
+        regression_plot = snakemake.output.regression
+        projection_plot = snakemake.output.projection
     else:
         file_plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx"
         file_ember = "resources/data/ember_yearly_electricity_data.csv"
@@ -172,7 +172,7 @@ if __name__ == "__main__":
             "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx"
         )
         regression_plot = "regression.png"
-        demand_plot = "demand.png"
+        projection_plot = "projection.png"
 
     plexos = import_plexos_2015(file_plexos)
     ember = import_ember_elec(file_ember)
@@ -207,4 +207,4 @@ if __name__ == "__main__":
 
     fig, axs = create_demand_plot(plexos, dem_base, reg, dem)
 
-    fig.savefig(demand_plot)
+    fig.savefig(projection_plot)

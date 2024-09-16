@@ -47,15 +47,17 @@ if __name__ == "__main__":
 
     # gets file paths
     if "snakemake" in globals():
-        file_plexos = snamkemake.inputs.plexos
-        file_plexos_demand = snakemake.inputs.plexos_demand
-        file_iamc_gdp = snamkemake.inputs.iamc_gdp
-        file_iamc_pop = snamkemake.inputs.iamc_pop
-        file_iamc_urb = snamkemake.inputs.iamc_urb
-        file_iamc_missing = snamkemake.inputs.iamc_missing
-        file_td_losses = snamkemake.inputs.td_losses
-        file_ember = snamkemake.inputs.ember
-        save_csv = snakemake.outputs.save
+        file_plexos = snakemake.input.plexos
+        file_plexos_demand = snakemake.input.plexos_demand
+        file_iamc_gdp = snakemake.input.iamc_gdp
+        file_iamc_pop = snakemake.input.iamc_pop
+        file_iamc_urb = snakemake.input.iamc_urb
+        file_iamc_missing = snakemake.input.iamc_missing
+        file_td_losses = snakemake.input.td_losses
+        file_ember = snakemake.input.ember
+        csv = snakemake.output.csv_files
+        start_year = snakemake.params.start_year
+        end_year = snakemake.params.end_year
     else:
         file_plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx"
         file_plexos_demand = "resources/data/All_Demand_UTC_2015.csv"
@@ -67,7 +69,9 @@ if __name__ == "__main__":
         )
         file_td_losses = "resources/data/T&D Losses.xlsx"
         file_ember = "resources/data/ember_yearly_electricity_data.csv"
-        save_csv = "SpecifiedAnnualDemand.csv"
+        csv = "SpecifiedAnnualDemand.csv"
+        start_year = 2020
+        end_year = 2050
 
     # first bring together original and missing iamc data
     plexos = import_plexos_2015(file_plexos)
@@ -96,4 +100,6 @@ if __name__ == "__main__":
 
     df = main(**input_data)
 
-    df.to_csv(save_csv, index=False)
+    df = df[df.YEAR.isin(range(start_year, end_year + 1))]
+
+    df.to_csv(csv, index=False)

@@ -76,9 +76,9 @@ def perform_country_projection_step(
     base = _get_base_data(iamc_gdp, iamc_pop, lr_coef)
 
     if per_capita:
-        df = _get_electrical_projection_country(base, iamc_urb, iamc_pop)
-    else:
         df = _get_electrical_projection_country(base, iamc_urb)
+    else:
+        df = _get_electrical_projection_country(base, iamc_urb, iamc_pop)
 
     return df
 

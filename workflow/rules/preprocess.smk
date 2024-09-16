@@ -180,12 +180,29 @@ rule demand_projections:
         start_year = config['startYear'],
         end_year = config['endYear'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file = demand_files),
-        figures = expand('results/data/../figs/Demand projection {demand_figure}.jpg', demand_figure = demand_figures),
+        csv_files = 'results/data/SpecifiedAnnualDemand.csv',
     log:
         log = 'results/logs/demand_projections.log'
     script:
-        "../scripts/osemosys_global/demand/demand_projections.py"
+        "../scripts/osemosys_global/demand/main.py"
+
+rule demand_projection_figures:
+    message:
+        "Generating demand figures..."
+    input:
+        plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx",
+        iamc_gdp ="resources/data/iamc_db_GDPppp_Countries.xlsx",
+        iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
+        iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
+        iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
+	    ember = "resources/data/ember_yearly_electricity_data.csv"
+    output:
+        regression = 'results/figs/regression.png',
+        projection = 'results/figs/projection.png'
+    log:
+        log = 'results/logs/demand_projection_plot.log'
+    script:
+        "../scripts/osemosys_global/demand/figures.py"
 
 rule emissions:
     message:
@@ -209,7 +226,8 @@ rule max_capacity:
         'Generating capacity limits...'
     input:
         'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
-        'results/data/ResidualCapacity.csv'
+        'results/data/ResidualCapacity.csv',
+        'results/data/SpecifiedAnnualDemand.csv'
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
