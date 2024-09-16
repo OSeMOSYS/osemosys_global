@@ -6,7 +6,7 @@ from typing import Optional
 from datetime import datetime
 
 from regression import perform_regression, get_regression_coefficients
-from projection import perform_country_projection, _get_base_data
+from projection import perform_country_projection_step, _get_base_data
 from data import get_historical_urban_pop_wb, get_iamc_data
 from read import import_ember_elec, import_plexos_2015, import_iamc, import_iamc_missing
 from constants import SPATIAL_RESOLUTION
@@ -199,7 +199,9 @@ if __name__ == "__main__":
 
     # create demand projection plots
 
-    dem = perform_country_projection(iamc_gdp, iamc_pop, iamc_urb, reg)
+    dem = perform_country_projection_step(
+        reg, iamc_gdp, iamc_pop, iamc_urb, per_capita=True
+    )
     lr_coef = get_regression_coefficients(reg, True)
     dem_base = _get_base_data(iamc_gdp, iamc_pop, lr_coef)
 

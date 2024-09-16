@@ -11,13 +11,16 @@ from constants import (
     URB_COUNTRIES_SOURCE,
     PATHWAY,
     SPATIAL_RESOLUTION,
+    START_YEAR,
+    END_YEAR,
 )
 
 
 def get_nodal_plexos_demand(plexos: pd.DataFrame) -> pd.DataFrame:
     """Gets historical nodal demand
 
-    Determines relative 2015 share of demand per sub-country node
+    Determines relative 2015 share of demand per sub-country node from
+    'All_Demand_UTC_2015.csv'
     """
 
     raw = plexos.copy()
@@ -176,3 +179,33 @@ def get_iamc_data(
         right_index=True,
         how="inner",
     )
+
+
+def format_for_writing(df: pd.DataFrame) -> pd.DataFrame:
+    """Formats projection to be written out as a CSV"""
+
+    def _extract_fuel(s: str) -> str:
+        if len(s) == 6:
+            return "ELC" + s[3:6] + "XX02"
+        elif len(s) == 9:
+            return "ELC" + s[3:6] + s[7:9] + "02"
+        else:
+            raise NotImplementedError
+
+    df = df.reset_index(drop=False)
+
+    assert "PLEXOS_Nodes" in df.columns
+
+    cols = list(range(START_YEAR, END_YEAR + 1))
+    cols.insert(0, "PLEXOS_Nodes")
+    df = df[cols]
+
+    df = df.melt(id_vars="PLEXOS_Nodes", var_name="YEAR", value_name="VALUE")
+
+    df["FUEL"] = df.PLEXOS_Nodes.map(lambda x: _extract_fuel(x))
+
+    df["VALUE"] = df.VALUE.mul(0.0036)  # MW -> PJ ?
+
+    df["REGION"] = "GLOBAL"
+
+    return df[["REGION", "FUEL", "YEAR", "VALUE"]]

@@ -11,6 +11,58 @@ from data import (
 )
 from constants import SPATIAL_RESOLUTION
 
+###
+# Public Methods
+###
+
+
+def perform_regression(
+    plexos: pd.DataFrame, ember: pd.DataFrame, urban: Optional[pd.DataFrame] = None
+) -> pd.DataFrame:
+    """Performs the Linear Regression"""
+
+    df = _create_regression_dataframe(plexos, ember, urban)
+
+    urbanization = True if isinstance(urban, pd.DataFrame) else False
+
+    # Groups the entries by <Spatial_Resolution> and calculates the regional linear
+    # fit based on all historical values
+
+    dfs = []
+
+    for country in df.index.unique():
+
+        df_country = df.loc[country].copy()
+
+        if urbanization:
+            country_lr = _regression_with_urbanization(df_country)
+        else:
+            country_lr = _regression_without_urbanization(df_country)
+
+        dfs.append(country_lr)
+
+    return pd.concat(dfs)
+
+
+def get_regression_coefficients(lr: pd.DataFrame, urbanization: bool) -> pd.DataFrame:
+    """Gets regression coefficients"""
+
+    df = lr.copy()
+
+    coef = df.loc[~df.index.duplicated(keep="first")]
+
+    if urbanization:
+        cols = ["coef_GDPppp", "coef_Urb", "intercept"]
+    else:
+        cols = ["coef_GDPppp", "intercept"]
+
+    return coef[cols]
+
+
+###
+# Private functions
+###
+
 
 def _create_regression_dataframe(
     plexos: pd.DataFrame, ember: pd.DataFrame, urban: Optional[pd.DataFrame] = None
@@ -53,34 +105,6 @@ def _create_regression_dataframe(
     )
 
     return df.set_index(SPATIAL_RESOLUTION)
-
-
-def perform_regression(
-    plexos: pd.DataFrame, ember: pd.DataFrame, urban: Optional[pd.DataFrame] = None
-) -> pd.DataFrame:
-    """Performs the Linear Regression"""
-
-    df = _create_regression_dataframe(plexos, ember, urban)
-
-    urbanization = True if isinstance(urban, pd.DataFrame) else False
-
-    # Groups the entries by <Spatial_Resolution> and calculates the regional linear
-    # fit based on all historical values
-
-    dfs = []
-
-    for country in df.index.unique():
-
-        df_country = df.loc[country].copy()
-
-        if urbanization:
-            country_lr = _regression_with_urbanization(df_country)
-        else:
-            country_lr = _regression_without_urbanization(df_country)
-
-        dfs.append(country_lr)
-
-    return pd.concat(dfs)
 
 
 def _regression_with_urbanization(df: pd.DataFrame) -> pd.DataFrame:
@@ -134,17 +158,3 @@ def _regression_without_urbanization(df: pd.DataFrame) -> pd.DataFrame:
     df["R2_GDPppp/Elec"] = lr.score(df[["WB_GDPppp"]], df["ember_Elec"])
 
     return df
-
-def get_regression_coefficients(lr: pd.DataFrame, urbanization: bool) -> pd.DataFrame:
-    """Gets regression coefficients"""
-    
-    df = lr.copy()
-    
-    coef = df.loc[~df.index.duplicated(keep="first")]
-    
-    if urbanization:
-        cols = ["coef_GDPppp", "coef_Urb", "intercept"]
-    else:
-        cols = ["coef_GDPppp", "intercept"]
-        
-    return coef[cols]
