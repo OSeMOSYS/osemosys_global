@@ -1,12 +1,9 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # Import modules
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 from datetime import datetime
-pd.options.mode.chained_assignment = None  # default='warn'
+pd.options.mode.chained_assignment = None
 import numpy as np
 import itertools
 import os
@@ -21,8 +18,10 @@ def main():
     
     """Main retrieves the script input data, sets user configurations
        and calls the different functions as defined within the script."""
-    
+           
     # CONFIGURATION PARAMETERS
+    
+    global config, region_name, input_data_dir, output_data_dir
 
     config_paths = ConfigPaths()
     config = ConfigFile('config')
@@ -38,29 +37,32 @@ def main():
         os.makedirs(custom_nodes_dir)
     except FileExistsError:
         pass
+    
+    global model_start_year, model_end_year, years, custom_nodes
 
+    tech_capacity = config.get('user_defined_capacity')
     cross_border_trade = config.get('crossborderTrade')
     model_start_year = config.get('startYear')
     model_end_year = config.get('endYear')
     years = list(range(model_start_year, model_end_year + 1))
-    tech_capacity = config.get('user_defined_capacity')
     custom_nodes = config.get('nodes_to_add')
-
+    no_investment_techs = config.get('no_invest_technologies')
+    
     # Create output directory 
     if not os.path.exists(output_data_dir):
         os.makedirs(output_data_dir)
 
-    # Inputs the PLEXOS-World 2015 dataset as basis for the powerplant data.
+    # INPUT FILES
     
-    df = pd.read_excel(os.path.join(input_data_dir,
+    df_pw_prop = pd.read_excel(os.path.join(input_data_dir,
                                     "PLEXOS_World_2015_Gold_V1.1.xlsx"), 
                        sheet_name = "Properties")
 
-    df_dict = pd.read_excel(os.path.join(input_data_dir, 
+    df_pw_memb = pd.read_excel(os.path.join(input_data_dir, 
                                          "PLEXOS_World_2015_Gold_V1.1.xlsx"), 
                             sheet_name = "Memberships")
 
-    df_dict = df_dict[df_dict["parent_class"] == "Generator"].rename(
+    df_dict = df_pw_memb[df_pw_memb["parent_class"] == "Generator"].rename(
         {"parent_object": "powerplant"}, axis=1
         )
     
@@ -87,12 +89,22 @@ def main():
                                                      "Costs Line expansion.xlsx"),
                                         sheet_name = 'Interface'
                                         )
+    
+    df_trn_lines = pd.read_excel(os.path.join(input_data_dir,
+                                                 "Costs Line expansion.xlsx"),
+                                    sheet_name = 'Lines')
+    
     df_weo_regions = pd.read_csv(os.path.join(input_data_dir,
                                               "weo_region_mapping.csv")
                                  )
+    
+    df_tech_set = os.path.join(output_data_dir, 'TECHNOLOGY.csv')
+
     df_af = pd.read_csv(os.path.join(input_data_dir,
                                      "availability_factors.csv")
                         )
+    
+    fuel_set = os.path.join(output_data_dir, 'FUEL.csv')
     
     if custom_nodes:
         df_custom_res_cap = pd.read_csv(os.path.join(input_data_dir,
@@ -106,12 +118,22 @@ def main():
         
     # USER INPUTS
     
+    """Change IAR for CSP value taken from PLEXOS to 1.0. 
+    Relevant for the 'average_efficiency' function."""
+    avg_csp_eff = 1
+    
+    """Change IAR for URN value taken from PLEXOS to 2.2 (45%). 
+    Relevant for the 'average_efficiency' function."""
+    avg_urn_eff = 0.45
+    
     """Technologies that will have 00 and 01 suffixes to represent PLEXOS 
-       historical values and future values."""
+       historical values and future values. Relevant for the 'residual_capacity' 
+       and activity functions."""
     duplicate_techs = ['CCG', 'OCG']
-    
-    
-    """ Add extra nodes which exist in 2050 but are not in the 2015 data"""
+        
+    """Add extra nodes which exist in 2050 but are not in the 2015 PLEXOS-World 
+    data to enable their addition to the workflow. Relevant for the 
+    'generator_table' and activity functions"""
     nodes_extra_list = ['AF-SOM',
                         'AF-TCD',
                         'AS-TLS',
@@ -122,9 +144,13 @@ def main():
                         'SA-BRA-J2',
                         'SA-BRA-J3',
                         'SA-SUR']
-    
+
+    """Sets the mode of operations for technologies. 
+    Relevant for the activity_master_start function."""
     mode_list = [1,2]
     
+    """List of technologies (thermal) for which output activity ratios need 
+    to be developed. Relevant for the 'activity_output_pwr' function."""
     thermal_fuel_list_oar = ['COA',
                          'COG',
                          'OCG',
@@ -136,15 +162,8 @@ def main():
                          'CCS'
                         ]
     
-    thermal_fuels_list_mining = ['COA',
-                                 'COG',
-                                 'GAS',
-                                 'PET',
-                                 'URN',
-                                 'OIL',
-                                 'OTH'
-                                ]
-            
+    """List of technologies (thermal) for which input activity ratios need 
+    to be developed. Relevant for the 'activity_input_pwr' function."""
     thermal_fuel_list_iar = ['COA',
                              'COG',
                              'PET',
@@ -153,6 +172,20 @@ def main():
                              'OTH'
                             ]
     
+    """List of upstream fuels for which output activity ratios need 
+    to be developed. Relevant for the 'activity_upstream' function."""
+    thermal_fuels_list_mining = ['COA',
+                                 'COG',
+                                 'GAS',
+                                 'PET',
+                                 'URN',
+                                 'OIL',
+                                 'OTH'
+                                ]
+    
+    """List of technologies (renewable) for which activity ratios need 
+    to be developed. Relevant for the 'activity_input_pwr' and 
+    'activity_upstream' functions."""
     renewables_list = ['BIO',
                        'GEO',
                        'HYD',
@@ -163,6 +196,8 @@ def main():
                        'WON', 
                        'WOF']
     
+    """Technology input for the mapping of WEO cost data to OG technologies.
+    Relevant for the 'costs_pwr' function."""
     costs_dict = {'Biomass - waste incineration - CHP':'WAS',
                   'Biomass Power plant':'BIO', 
                   'CCGT':'CCG', 
@@ -183,62 +218,85 @@ def main():
                   'Oil':'OIL',
                   'Other':'OTH',
                   'IGCC + CCS':'CCS',
-                  'Coal* + CCS':'CCS',} # Added OIL, OTH, PET, WOF to WEO 2018
+                  'Coal* + CCS':'CCS',}
+    
+    """setings for custom iar values deviating from derived values from the 
+       PLEXOS-World dataset. Relevant for the 'newIar' function."""
+    global new_iar_ccg, new_iar_ocg, new_iar_coa, new_iar_default
+    
+    new_iar_ccg = 0.5
+    new_iar_ocg = 0.35
+    new_iar_coa = 0.33
+    new_iar_default = 1
+    
+    """Set iar and oar values for custom transmission entries. I.e. oar of 0.9
+    assumes 10% losses. Relevant for the user_defined_capacity function."""
+    df_iar_custom_val = 1
+    df_oar_custom_val = 0.9
         
     # CALL FUNCTIONS
     
-    gen_table = generator_table(df, df_dict, model_start_year, custom_nodes, tech_code_dict, op_life_dict, nodes_extra_list)
+    gen_table = generator_table(df_pw_prop, df_dict, tech_code_dict, 
+                                op_life_dict, nodes_extra_list)
     
-    df_eff_node, df_eff_tech = average_efficiency(gen_table)
+    df_eff_node, df_eff_tech = average_efficiency(gen_table, avg_csp_eff, 
+                                                  avg_urn_eff)
     
-    df_res_cap, custom_techs = residual_capacity(gen_table, tech_list, df_tech_code, model_start_year, model_end_year,
-                          custom_nodes, df_custom_res_cap, years, output_data_dir, duplicate_techs, region_name)
+    df_res_cap, custom_techs = residual_capacity(gen_table, tech_list, df_tech_code, 
+                                                 df_custom_res_cap, duplicate_techs)
+
+    gem_cap(gen_table, tech_code_dict, op_life_dict)
     
-    gem_cap(gen_table, input_data_dir, model_start_year, tech_code_dict, op_life_dict)
+    df_ratios = activity_master_start(gen_table, nodes_extra_list, 
+                                      duplicate_techs, mode_list)
     
-    df_ratios = activity_master_start(gen_table, custom_nodes, nodes_extra_list, years, duplicate_techs, mode_list)
+    df_oar, df_oar_base = activity_output_pwr(df_ratios, thermal_fuel_list_oar)
     
-    df_oar, df_oar_base = activity_output_pwr(df_ratios, thermal_fuel_list_oar, region_name)
+    df_iar_base = activity_input_pwr(df_oar, thermal_fuel_list_iar, renewables_list, 
+                                     df_eff_node, df_eff_tech)
     
-    df_iar_base = activity_input_pwr(df_oar, thermal_fuel_list_iar, renewables_list, df_eff_node, df_eff_tech, region_name)
+    df_oar_upstream, df_oar_int = activity_upstream(df_iar_base, renewables_list, 
+                                                    thermal_fuels_list_mining)
     
-    df_oar_upstream, df_oar_int = activity_upstream(df_iar_base, renewables_list, thermal_fuels_list_mining)
+    df_iar_trn, df_oar_trn, df_int_trn_oar, df_int_trn_iar = activity_transmission(df_oar_base, 
+                                                                                   df_pw_prop, 
+                                                                                   df_trn_efficiencies)
     
-    df_iar_trn, df_oar_trn, df_int_trn_oar, df_int_trn_iar = activity_transmission(df_oar_base, df, model_start_year, 
-                                                                                   model_end_year, df_trn_efficiencies, 
-                                                                                   region_name)
-    
-    df_oar_final, df_iar_final = activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, df_oar_trn, 
-                                                     df_int_trn_oar, df_iar_base, df_iar_trn, df_int_trn_iar,
-                                                     duplicate_techs, output_data_dir)
+    df_oar_final, df_iar_final = activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, 
+                                                     df_oar_trn, df_int_trn_oar, df_iar_base, 
+                                                     df_iar_trn, df_int_trn_iar, duplicate_techs)
                             
     df_costs = costs_pwr(df_weo_data, costs_dict)
     
-    df_trans_capex, df_trans_fix = costs_transmission(years, df_oar_final, region_name, output_data_dir)
-    
-    costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex, df_trans_fix, output_data_dir)
-    
-    capact(df_oar_final, output_data_dir)
-    
-    activity_transmission_limit(cross_border_trade, df_oar_final, output_data_dir)
-    
-    op_life_trn, op_life_out = op_life(tech_code_dict, df_iar_final, df_oar_final, op_life_dict, region_name)
-    
-    op_life_transmission(op_life_trn, op_life_out, output_data_dir, region_name)
-    
-    cap_investment_constraints(df_iar_final, years, config, output_data_dir, region_name)
-    
-    output_sets(custom_nodes, df_oar_final, output_data_dir, custom_techs, years, mode_list, region_name)
-    
-    user_defined_capacity(region_name, years, output_data_dir, tech_capacity, op_life_dict)
-    
-    availability_factor(region_name, years, output_data_dir, df_af)
+    df_trans_capex, df_trans_fix = get_transmission_costs(df_trn_lines, df_oar_final)
 
-def generator_table(df, df_dict, model_start_year, custom_nodes, tech_code_dict, op_life_dict, nodes_extra_list):    
+    cap_cost_base, fix_cost_base = costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex, df_trans_fix)
+    
+    cap_act_base = capact(df_oar_final)
+    
+    activity_transmission_limit(cross_border_trade, df_oar_final)
+    
+    op_life_trn, op_life_out = op_life(tech_code_dict, df_iar_final, 
+                                       df_oar_final, op_life_dict)
+    
+    op_life_base = op_life_transmission(op_life_trn, op_life_out, op_life_dict)
+    
+    df_max_cap_invest, df_min_cap_invest = cap_investment_constraints(df_iar_final, no_investment_techs)
+    
+    output_sets(df_oar_final, custom_techs, mode_list)
+    
+    tech_set_base = user_defined_capacity(tech_capacity, op_life_dict, df_tech_set, 
+                          df_min_cap_invest, df_max_cap_invest, df_res_cap,
+                          df_iar_final, df_oar_final, fuel_set, op_life_base, cap_act_base,
+                          cap_cost_base, df_iar_custom_val, df_oar_custom_val)
+    
+    availability_factor(df_af, tech_set_base)
+    
+def generator_table(df_pw_prop, df_dict, tech_code_dict, op_life_dict, nodes_extra_list):    
     
     # Create main generator table
     gen_cols_1 = ["child_class", "child_object", "property", "value"]
-    df_gen = df[gen_cols_1]
+    df_gen = df_pw_prop[gen_cols_1]
     df_gen = df_gen[df_gen["child_class"] == "Generator"]
     df_gen.rename(columns={"child_object": "powerplant"}, inplace=True)
     df_gen.drop("child_class", axis=1, inplace=True)
@@ -253,8 +311,8 @@ def generator_table(df, df_dict, model_start_year, custom_nodes, tech_code_dict,
         df_gen["Units"].astype(int)
     )
 
-    gen_cols_2 = ["Commission Date", "Heat Rate", "Max Capacity", "total_capacity"]
-    df_gen_2 = df_gen[gen_cols_2]
+    gen_cols_base = ["Commission Date", "Heat Rate", "Max Capacity", "total_capacity"]
+    df_gen_base = df_gen[gen_cols_base]
 
     ## Compile dataframe with powerplants, nodes, and fuels
     df_dict_fuel = df_dict[df_dict["collection"] == "Fuels"]
@@ -265,48 +323,48 @@ def generator_table(df, df_dict, model_start_year, custom_nodes, tech_code_dict,
     
     
     ## Merge original generator dataframe with nodes and fuels
-    df_gen_2 = pd.merge(df_gen_2, df_dict_2, how="outer", on="powerplant")
-    df_gen_2.rename(
+    df_gen_base = pd.merge(df_gen_base, df_dict_2, how="outer", on="powerplant")
+    df_gen_base.rename(
         {"child_object_x": "fuel", "child_object_y": "node"}, axis=1, inplace=True
     )
     
     ## Extract start year from Commission Date
-    df_gen_2["Commission Date"] = (pd.TimedeltaIndex(df_gen_2["Commission Date"].astype(int),
+    df_gen_base["Commission Date"] = (pd.TimedeltaIndex(df_gen_base["Commission Date"].astype(int),
                                                 unit='d') + 
                                datetime(1900, 1, 1))
-    df_gen_2["start_year"] = df_gen_2["Commission Date"].dt.year
-    df_gen_2.drop("Commission Date", axis=1, inplace=True)
+    df_gen_base["start_year"] = df_gen_base["Commission Date"].dt.year
+    df_gen_base.drop("Commission Date", axis=1, inplace=True)
     
     ## Calculate efficiency from heat rate. Units of heat rate in MJ/kWh
-    df_gen_2["efficiency"] = 3.6 / df_gen_2["Heat Rate"].astype(float)
-    df_gen_2.drop("Heat Rate", axis=1, inplace=True)
+    df_gen_base["efficiency"] = 3.6 / df_gen_base["Heat Rate"].astype(float)
+    df_gen_base.drop("Heat Rate", axis=1, inplace=True)
     
-    ## Calcluate years of operation from start year until 2015
-    df_gen_2["years_of_operation"] = model_start_year - df_gen_2["start_year"]
+    ## Calcluate years of operation from start year
+    df_gen_base["years_of_operation"] = model_start_year - df_gen_base["start_year"]
     
     ## Fix blank spaces in 'fuels' columns. Appearing for 'Oil' powerplants in certain countries
-    df_gen_2.loc[df_gen_2["fuel"].isna(), "fuel"] = (
-        df_gen_2["node"].str.split("-").str[:2].str.join("-")
+    df_gen_base.loc[df_gen_base["fuel"].isna(), "fuel"] = (
+        df_gen_base["node"].str.split("-").str[:2].str.join("-")
         + " "
-        + df_gen_2["powerplant"].str.split("_", expand=True)[1]
+        + df_gen_base["powerplant"].str.split("_", expand=True)[1]
     )
 
     ## Create column for technology
-    df_gen_2["technology"] = df_gen_2["powerplant"].str.split("_").str[1]
-    df_gen_2["technology"] = df_gen_2["technology"].str.title()
+    df_gen_base["technology"] = df_gen_base["powerplant"].str.split("_").str[1]
+    df_gen_base["technology"] = df_gen_base["technology"].str.title()
 
     ## Divide Gas into CCGT and OCGT based on max capacity
-    df_gen_2.loc[
-        (df_gen_2["technology"] == "Gas") & (df_gen_2["Max Capacity"].astype(float) > 130),
+    df_gen_base.loc[
+        (df_gen_base["technology"] == "Gas") & (df_gen_base["Max Capacity"].astype(float) > 130),
         "technology",
     ] = "Gas-CCGT"
-    df_gen_2.loc[
-        (df_gen_2["technology"] == "Gas") & (df_gen_2["Max Capacity"].astype(float) <= 130),
+    df_gen_base.loc[
+        (df_gen_base["technology"] == "Gas") & (df_gen_base["Max Capacity"].astype(float) <= 130),
         "technology",
     ] = "Gas-OCGT"
 
     # Create table with aggregated capacity  
-    df_gen_agg_node = df_gen_2[df_gen_2['start_year']<=model_start_year]
+    df_gen_agg_node = df_gen_base[df_gen_base['start_year']<=model_start_year]
     df_gen_agg_node = df_gen_agg_node.groupby(['node', 'technology'], 
                                               as_index=False)['total_capacity'].sum()
     df_gen_agg_node = df_gen_agg_node.pivot(index='node', 
@@ -326,59 +384,59 @@ def generator_table(df, df_dict, model_start_year, custom_nodes, tech_code_dict,
     ).fillna(0).sort_values(by='node').set_index('node').round(2)
 
     # Add region and country code columns
-    df_gen_2['region_code'] = df_gen_2['node'].str[:2]
-    df_gen_2['country_code'] = df_gen_2['node'].str[3:]
+    df_gen_base['region_code'] = df_gen_base['node'].str[:2]
+    df_gen_base['country_code'] = df_gen_base['node'].str[3:]
 
-    df_gen_2['operational_life'] = df_gen_2['technology'].map(op_life_dict)
-    df_gen_2['retirement_year_data'] = (df_gen_2['operational_life'] 
-                                        + df_gen_2['start_year'])
-    df_gen_2['retirement_diff'] = ((df_gen_2['years_of_operation'] 
-                                   - df_gen_2['operational_life'])/
-                                   df_gen_2['operational_life'])
+    df_gen_base['operational_life'] = df_gen_base['technology'].map(op_life_dict)
+    df_gen_base['retirement_year_data'] = (df_gen_base['operational_life'] 
+                                        + df_gen_base['start_year'])
+    df_gen_base['retirement_diff'] = ((df_gen_base['years_of_operation'] 
+                                   - df_gen_base['operational_life'])/
+                                   df_gen_base['operational_life'])
 
     ''' Set retirement year based on years of operation. 
     If (years of operation - operational life) is more than 50% of 
     operational life, set retirement year
     '''
-    df_gen_2.loc[df_gen_2['retirement_diff'] >= 0.5, 
+    df_gen_base.loc[df_gen_base['retirement_diff'] >= 0.5, 
                  'retirement_year_model'] = 2028
-    df_gen_2.loc[(df_gen_2['retirement_diff'] < 0.5) &
-                 (df_gen_2['retirement_diff'] > 0), 
+    df_gen_base.loc[(df_gen_base['retirement_diff'] < 0.5) &
+                 (df_gen_base['retirement_diff'] > 0), 
                  'retirement_year_model'] = 2033
-    df_gen_2.loc[df_gen_2['retirement_diff'] <= 0, 
-                 'retirement_year_model'] = df_gen_2['retirement_year_data']
+    df_gen_base.loc[df_gen_base['retirement_diff'] <= 0, 
+                 'retirement_year_model'] = df_gen_base['retirement_year_data']
 
-    df_gen_2['tech_code'] = df_gen_2['technology'].map(tech_code_dict)
+    df_gen_base['tech_code'] = df_gen_base['technology'].map(tech_code_dict)
 
-    df_gen_2.loc[df_gen_2['node'].str.len() <= 6, 
-                 'node_code'] = (df_gen_2['node'].
+    df_gen_base.loc[df_gen_base['node'].str.len() <= 6, 
+                 'node_code'] = (df_gen_base['node'].
                                  str.split('-').
                                  str[1:].
                                  str.join("") +
                                  'XX')
-    df_gen_2.loc[df_gen_2['node'].str.len() > 6, 
-                 'node_code'] = (df_gen_2['node'].
+    df_gen_base.loc[df_gen_base['node'].str.len() > 6, 
+                 'node_code'] = (df_gen_base['node'].
                                  str.split('-').
                                  str[1:].
                                  str.join("")
                                 )
 
-    df_gen_2 = df_gen_2.loc[~df_gen_2['tech_code'].isna()]
+    df_gen_base = df_gen_base.loc[~df_gen_base['tech_code'].isna()]
     
-    return df_gen_2
+    return df_gen_base
 
-def average_efficiency(df_gen_2):
+def average_efficiency(df_gen_base, avg_csp_eff, avg_urn_eff):
 
     # ### Calculate average InputActivityRatio by node+technology and only by technology
-    df_eff = df_gen_2[['node_code',
+    df_eff = df_gen_base[['node_code',
                        'efficiency',
                        'tech_code']]
     
-    # Change IAR for CSP value taken from PLEXOS to 1.0
-    df_eff.loc[df_eff['tech_code']=='CSP', 'efficiency'] = 1
+    # Change IAR for CSP value taken from PLEXOS
+    df_eff.loc[df_eff['tech_code']=='CSP', 'efficiency'] = avg_csp_eff
     
-    # Change IAR for URN value taken from PLEXOS to 2.2 (45%)
-    df_eff.loc[df_eff['tech_code']=='URN', 'efficiency'] = 0.45
+    # Change IAR for URN value taken from PLEXOS
+    df_eff.loc[df_eff['tech_code']=='URN', 'efficiency'] = avg_urn_eff
     
     # Average efficiency by node and technology
     df_eff_node = df_eff.groupby(['tech_code',
@@ -404,9 +462,7 @@ def average_efficiency(df_gen_2):
 
     return df_eff_node, df_eff_tech
 
-def residual_capacity(df_gen_2, tech_list, df_tech_code, model_start_year, model_end_year,
-                      custom_nodes, df_custom_res_cap, years, output_data_dir, duplicate_techs,
-                      region_name):
+def residual_capacity(df_gen_base, tech_list, df_tech_code, df_custom_res_cap, duplicate_techs):
 
     # ### Calculate residual capacity
     res_cap_cols = [
@@ -417,7 +473,7 @@ def residual_capacity(df_gen_2, tech_list, df_tech_code, model_start_year, model
         "retirement_year_model",
     ]
 
-    df_res_cap = df_gen_2[res_cap_cols]
+    df_res_cap = df_gen_base[res_cap_cols]
 
     for each_year in range(model_start_year, model_end_year+1):
         df_res_cap[str(each_year)] = 0
@@ -482,7 +538,9 @@ def residual_capacity(df_gen_2, tech_list, df_tech_code, model_start_year, model
     
     return df_res_cap, custom_techs if custom_nodes else df_res_cap
 
-def gem_cap(df_gen_2, input_data_dir, model_start_year, tech_code_dict, op_life_dict):
+"""The output of the gem_cap function is currently unused. Implementation is being discussed so kept as standalone
+function for the time being."""
+def gem_cap(df_gen_base, tech_code_dict, op_life_dict):
 
     # ### Calculate planned capacities based on the Global Energy Observatory datasets
         
@@ -505,7 +563,7 @@ def gem_cap(df_gen_2, input_data_dir, model_start_year, tech_code_dict, op_life_
         gen_lat['value'], left_on = 'name', right_index = True).merge(
             gen_long['value'], left_on = 'name', right_index = True)
             
-    gen_locations = pd.merge(gen_locations, df_gen_2[['node', 'country_code', 'node_code', 'powerplant']], 
+    gen_locations = pd.merge(gen_locations, df_gen_base[['node', 'country_code', 'node_code', 'powerplant']], 
                              left_on = 'name', right_on = 'powerplant', how = 'inner')
     
     subcountries = gen_locations.loc[~gen_locations['node_code'].str.contains('XX')]['country_code'].str[:3].unique()
@@ -640,15 +698,15 @@ def gem_cap(df_gen_2, input_data_dir, model_start_year, tech_code_dict, op_life_
     gem_all_retired_agg = gem_all_retired.groupby(['node_code', 'Technology', 'YEAR'], 
                                               as_index=False)['VALUE'].sum()
 
-def activity_master_start(df_gen_2, custom_nodes, nodes_extra_list, years, duplicate_techs, mode_list):
+def activity_master_start(df_gen_base, nodes_extra_list, duplicate_techs, mode_list):
 
     # ### Add input and output activity ratios
 
     # Create master table for activity ratios 
     if custom_nodes:
-        node_list = list(df_gen_2['node_code'].unique()) + custom_nodes
+        node_list = list(df_gen_base['node_code'].unique()) + custom_nodes
     else:
-        node_list = list(df_gen_2['node_code'].unique())
+        node_list = list(df_gen_base['node_code'].unique())
     # Add extra nodes which are not present in 2015 but will be by 2050
     for each_node in nodes_extra_list:
         if len(each_node) <= 6:
@@ -656,7 +714,7 @@ def activity_master_start(df_gen_2, custom_nodes, nodes_extra_list, years, dupli
         else:
             node_list.append("".join(each_node.split('-')[1:]))
 
-    master_fuel_list = list(df_gen_2['tech_code'].unique())
+    master_fuel_list = list(df_gen_base['tech_code'].unique())
     master_fuel_list.append('CCS')
 
     df_ratios = pd.DataFrame(list(itertools.product(node_list,
@@ -671,7 +729,7 @@ def activity_master_start(df_gen_2, custom_nodes, nodes_extra_list, years, dupli
 
     return df_ratios
 
-def activity_output_pwr(df_ratios, thermal_fuel_list_oar, region_name):
+def activity_output_pwr(df_ratios, thermal_fuel_list_oar):
 
     # #### OutputActivityRatio - Power Generation Technologies
     df_oar = df_ratios.copy()
@@ -700,7 +758,7 @@ def activity_output_pwr(df_ratios, thermal_fuel_list_oar, region_name):
     return df_oar, df_oar_base
 
 def activity_input_pwr(df_oar, thermal_fuel_list_iar, renewables_list, 
-                       df_eff_node, df_eff_tech, region_name):
+                       df_eff_node, df_eff_tech):
 
     # #### InputActivityRatio - Power Generation Technologies
     # Copy OAR table with all columns to IAR
@@ -837,8 +895,7 @@ def activity_upstream(df_iar_base, renewables_list, thermal_fuels_list_mining):
     
     return df_oar_upstream, df_oar_int
 
-def activity_transmission(df_oar_base, df, model_start_year, model_end_year, 
-                          df_trn_efficiencies, region_name):
+def activity_transmission(df_oar_base, df_pw_prop, df_trn_efficiencies):
 
     # #### Downstream Activity Ratios
     
@@ -859,7 +916,7 @@ def activity_transmission(df_oar_base, df, model_start_year, model_end_year,
     
     # Build international transmission system from original input data, but for Line rather than Generator:
     int_trn_cols = ["child_class", "child_object", "property", "value"]
-    df_int_trn = df[int_trn_cols]
+    df_int_trn = df_pw_prop[int_trn_cols]
     df_int_trn = df_int_trn[df_int_trn["child_class"] == "Line"]
     
     # For IAR and OAR we can drop the value:
@@ -984,7 +1041,7 @@ def activity_transmission(df_oar_base, df, model_start_year, model_end_year,
 
 def activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, df_oar_trn, 
                         df_int_trn_oar, df_iar_final, df_iar_trn, df_int_trn_iar,
-                        duplicate_techs, output_data_dir):
+                        duplicate_techs):
 
     # #### Output IAR and OAR
 
@@ -1027,7 +1084,8 @@ def activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, df_oar_trn,
     # Add iar for techs not using PLEXOS values 
     df_iar_newTechs = duplicatePlexosTechs(df_iar_final, duplicate_techs)
     for duplicate_tech in duplicate_techs:
-        df_new_iar = newIar(df_iar_newTechs, duplicate_tech)
+        df_new_iar = newIar(df_iar_newTechs, duplicate_tech,new_iar_ccg, 
+                   new_iar_ocg, new_iar_coa, new_iar_default)
         df_iar_final = pd.concat([df_iar_final, df_new_iar])
     
     # Add oar for techs not using PLEXOS values 
@@ -1096,7 +1154,7 @@ def costs_pwr(df_weo_data, costs_dict):
 
     df_costs = df_costs.loc[df_costs['technology'].isin(costs_dict.keys())]
     df_costs['technology_code'] = df_costs['technology'].replace(costs_dict)
-
+    
     return df_costs
 
 def format_transmission_name(df):
@@ -1146,31 +1204,21 @@ def format_transmission_name(df):
 
     return df
 
-def get_transmission_costs():
+def get_transmission_costs(df_trn_lines, df_oar_final):
     '''Gets electrical transmission capital and fixed cost per technology. 
 
     Both the capital costs and fixed cost are written out to avoid having 
     to read in the excel file twice 
     
     Returns: 
-        df_capex: DataFrame with the columns 'TECHNOLOGY' and 'VALUE' 
+        df_trans_capex: DataFrame with the columns 'TECHNOLOGY' and 'VALUE' 
             representing CAPITAL cost in millions of dollars per year. 
-        df_fix: DataFrame with the columns 'TECHNOLOGY' and 'VALUE' 
+        df_trans_fix: DataFrame with the columns 'TECHNOLOGY' and 'VALUE' 
             representing FIXED cost in millions of dollars per year. 
     '''
 
-    # CONFIGURATION PARAMETERS
-
-    config_paths = ConfigPaths()
-    input_data_dir = config_paths.input_data_dir
-
-    # Read in raw data
-    df = pd.read_excel(os.path.join(input_data_dir,
-                                                 "Costs Line expansion.xlsx"),
-                                    sheet_name = 'Lines')
-
     # Drop unneeded columns
-    df = df.drop(
+    df = df_trn_lines.drop(
         [
             "Line",
             "KM distance",
@@ -1199,17 +1247,10 @@ def get_transmission_costs():
     df = df.round({'O&M': 3, 'CAPEX': 3, })
 
     # Separate out fixed and capex and return values 
-    df_capex = df.drop(['O&M'], axis=1)
-    df_capex = df_capex.rename(columns={'CAPEX':'VALUE'})
-    df_fix = df.drop(['CAPEX'], axis=1)
-    df_fix = df_fix.rename(columns={'O&M':'VALUE'})
-
-    return df_capex, df_fix
-
-def costs_transmission(years, df_oar_final, region_name, output_data_dir):
-
-    # Get transmission costs
-    df_trans_capex, df_trans_fix = get_transmission_costs()
+    df_trans_capex = df.drop(['O&M'], axis=1)
+    df_trans_capex = df_trans_capex.rename(columns={'CAPEX':'VALUE'})
+    df_trans_fix = df.drop(['CAPEX'], axis=1)
+    df_trans_fix = df_trans_fix.rename(columns={'O&M':'VALUE'})
 
     df_trans_capex['REGION'] = region_name
     df_trans_capex['YEAR'] = [years] * len(df_trans_capex)
@@ -1228,7 +1269,7 @@ def costs_transmission(years, df_oar_final, region_name, output_data_dir):
     return df_trans_capex, df_trans_fix
     
 def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex, 
-              df_trans_fix, output_data_dir):    
+              df_trans_fix):    
     
     weo_regions_dict = dict([(k, v) 
                              for k, v 
@@ -1241,6 +1282,7 @@ def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex,
     # Create formatted CSVs
     for each_cost in ['Capital', 'O&M']:
         df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
+        
         df_costs_temp.drop(['technology', 'parameter'], 
                            axis = 1, 
                            inplace = True)
@@ -1295,19 +1337,22 @@ def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex,
         df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
 
         if each_cost in ['Capital']:
-            df_costs_final = df_costs_final.merge(df_trans_capex, how='outer')
-            df_costs_final = apply_dtypes(df_costs_final, "CapitalCost")
-            df_costs_final.to_csv(os.path.join(output_data_dir, 
+            df_costs_final_capital = df_costs_final.merge(df_trans_capex, how='outer')
+            df_costs_final_capital = apply_dtypes(df_costs_final_capital, "CapitalCost")
+            df_costs_final_capital.to_csv(os.path.join(output_data_dir, 
                                                "CapitalCost.csv"),
                                   index = None)
+            
         if each_cost in ['O&M']:
-            df_costs_final = df_costs_final.merge(df_trans_fix, how='outer')
-            df_costs_final = apply_dtypes(df_costs_final, "FixedCost")
-            df_costs_final.to_csv(os.path.join(output_data_dir, 
+            df_costs_final_fixed = df_costs_final.merge(df_trans_fix, how='outer')
+            df_costs_final_fixed = apply_dtypes(df_costs_final_fixed, "FixedCost")
+            df_costs_final_fixed.to_csv(os.path.join(output_data_dir, 
                                                "FixedCost.csv"),
                                   index = None)
+            
+    return df_costs_final_capital, df_costs_final_fixed
 
-def capact(df_oar_final, output_data_dir):
+def capact(df_oar_final):
 
     # Create CapacityToActivityUnit csv
     df_capact_final = df_oar_final[['REGION',
@@ -1330,7 +1375,9 @@ def capact(df_oar_final, output_data_dir):
                                         "CapacityToActivityUnit.csv"),
                            index = None)
     
-def activity_transmission_limit(cross_border_trade, df_oar_final, output_data_dir):
+    return df_capact_final
+    
+def activity_transmission_limit(cross_border_trade, df_oar_final):
 
     # Set cross-border trade to 0 if False
     if not cross_border_trade:
@@ -1354,7 +1401,7 @@ def activity_transmission_limit(cross_border_trade, df_oar_final, output_data_di
                                             "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
                                 index = None)
 
-def op_life(tech_code_dict, df_iar_final, df_oar_final, op_life_dict, region_name):
+def op_life(tech_code_dict, df_iar_final, df_oar_final, op_life_dict):
 
     # Create Operational Life data
     tech_code_dict_reverse = dict((v,k) for k,v in tech_code_dict.items())
@@ -1374,20 +1421,22 @@ def op_life(tech_code_dict, df_iar_final, df_oar_final, op_life_dict, region_nam
         
     return op_life_trn, op_life_out
 
-def op_life_transmission(op_life_trn, op_life_out, output_data_dir, region_name):
+def op_life_transmission(op_life_trn, op_life_out, op_life_dict):
     
     # transmission technologies 
     for op_life_tech in op_life_trn:
-        op_life_out.append([region_name, op_life_tech, 60])
+        op_life_out.append([region_name, op_life_tech, op_life_dict.get('TRN')])
         
-    df_op_life_Out = pd.DataFrame(op_life_out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
+    op_life_base = pd.DataFrame(op_life_out, columns = ['REGION', 'TECHNOLOGY', 'VALUE'])
 
-    df_op_life_Out = apply_dtypes(df_op_life_Out, "OperationalLife")
-    df_op_life_Out.to_csv(os.path.join(output_data_dir,
+    op_life_base = apply_dtypes(op_life_base, "OperationalLife")
+    op_life_base.to_csv(os.path.join(output_data_dir,
                                                 "OperationalLife.csv"),
                                     index = None)
+
+    return op_life_base
     
-def cap_investment_constraints(df_iar_final, years, config, output_data_dir, region_name):
+def cap_investment_constraints(df_iar_final, no_investment_techs):
 
     # Create totalAnnualMaxCapacityInvestment data 
 
@@ -1400,7 +1449,7 @@ def cap_investment_constraints(df_iar_final, years, config, output_data_dir, reg
             max_cap_invest_data.append([region_name, tech, year, 0])
 
     # Do not allow investment for all xxxABCxxxxxxx technologies
-    no_investment_techs = config.get('no_invest_technologies')
+    
     if not no_investment_techs:
         no_investment_techs = [] # Change from None type to empty list
     max_cap_invest_techs = list(set(df_iar_final.loc[
@@ -1425,6 +1474,8 @@ def cap_investment_constraints(df_iar_final, years, config, output_data_dir, reg
     df_min_cap_invest.to_csv(os.path.join(output_data_dir, 
                                             'TotalAnnualMinCapacityInvestment.csv'),
                                         index = None)
+    
+    return df_max_cap_invest, df_min_cap_invest
     
 def create_sets(x, df, output_dir, custom_node_elements):
     """Creates a formatted otoole set csv 
@@ -1451,8 +1502,7 @@ def create_sets(x, df, output_dir, custom_node_elements):
                                   index = None
                                  )
     
-def output_sets(custom_nodes, df_oar_final, output_data_dir, custom_techs, years, 
-                mode_list, region_name):
+def output_sets(df_oar_final, custom_techs, mode_list):
 
     # ## Create sets for TECHNOLOGIES, FUELS
     if custom_nodes:
@@ -1499,7 +1549,6 @@ def duplicatePlexosTechs(df_in, techs):
         df_out['TECHNOLOGY'] = [PWRCCGAFGXX02, PWROCGAFGXX02]
     """
     df_out = df_in.copy()
-    # df_out = df_out.loc[df_out['TECHNOLOGY'].str[3:6].isin(techs)]
     df_out = df_out.loc[(df_out['TECHNOLOGY'].str[3:6].isin(techs)) & 
                         ~(df_out['TECHNOLOGY'].str.startswith('MIN'))]
     df_out['TECHNOLOGY'] = df_out['TECHNOLOGY'].str.slice_replace(start=11,
@@ -1541,7 +1590,8 @@ def createPwrTechs(df_in, techs):
     df_out = df_out.drop('tech_suffix', axis = 1)
     return df_out
 
-def newIar(df_in, tech):
+def newIar(df_in, tech, new_iar_ccg, 
+           new_iar_ocg, new_iar_coa, new_iar_default):
     """Replaces the input activity ratio value with a hardcoded value 
 
     Arguments: 
@@ -1559,26 +1609,76 @@ def newIar(df_in, tech):
 
     df_out = df_in.loc[df_in['TECHNOLOGY'].str[3:6] == tech]
     if tech == 'CCG':
-        iar = 0.5
+        iar = new_iar_ccg
     elif tech == 'OCG':
-        iar = 0.35
+        iar = new_iar_ocg
     elif tech == 'COA':
-        iar = 0.33
+        iar = new_iar_coa
     else: 
         logging.warning(f'Default IAR used for new {tech} power plants')
-        iar = 1
+        iar = new_iar_default
     df_out['VALUE'] = round(1/iar, 3)
     return df_out
 
-def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life_dict):
+def custom_nodes_csv(df_custom, tech_list):
+    '''Add custom nodes to the model for each relevant input parameter data csv.
+
+    Args:
+        df : Pandas DataFrame with columns 'From' and 'To' describing the 
+                transmission from and to contries. ie. 
+    
+    Returns: 
+        df_out : 
+
+    '''
+    df_param = pd.DataFrame(list(itertools.product(custom_nodes,
+                                                   tech_list,
+                                                   years)
+                                  ),
+                             columns = ['CUSTOM_NODE',
+                                        'FUEL_TYPE',
+                                        'YEAR']
+                             )
+    df_param['REGION'] = region_name
+    df_custom = df_custom.groupby(['CUSTOM_NODE',
+                                   'FUEL_TYPE',
+                                   'START_YEAR',
+                                   'END_YEAR'],
+                                  as_index=False)['CAPACITY'].sum()
+    df_param = pd.merge(df_param,
+                        df_custom,
+                        how='left',
+                        on=['CUSTOM_NODE',
+                            'FUEL_TYPE'])
+    df_param['TECHNOLOGY'] = ('PWR' +
+                              df_param['FUEL_TYPE'] + 
+                              df_param['CUSTOM_NODE'] +
+                              '01')
+    technologies = df_param['TECHNOLOGY'].unique()
+    df_param.dropna(inplace=True)
+    df_param.drop_duplicates(inplace=True)
+    df_param = df_param.loc[df_param['YEAR'] >= df_param['START_YEAR']]
+    df_param = df_param.loc[df_param['YEAR'] <= df_param['END_YEAR']]
+    df_param['VALUE'] = df_param['CAPACITY'].div(1000)
+    df_param['REGION'] = region_name
+    df_param = df_param[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    df_param = df_param.groupby(['REGION',
+                                 'TECHNOLOGY',
+                                 'YEAR'],
+                                 as_index=False)['VALUE'].sum()
+
+    return df_param, technologies
+
+def user_defined_capacity(tech_capacity, op_life_dict, df_tech_set, 
+                      df_min_cap_invest, df_max_cap_invest, df_res_cap,
+                      df_iar_final, df_oar_final, fuel_set, op_life_base, cap_act_base,
+                      cap_cost_base, df_iar_custom_val, df_oar_custom_val):
     """User-defined capacities are used when a specific technology must be 
-    invested, for a given year and capacity. This is applied hrough the 
+    invested, for a given year and capacity. This is applied through the 
     parameter 'TotalAnnualMinCapacityInvestment'. 
 
     Args:
         region: From config file (e.g. 'GLOBAL')
-        years: From config file (e.g. [2020, 2021, ... 2050])
-        output_data_dir: Output directory set in config file
         tech_capacity: User-defined capacity in config file 
                        (e.g. TRNAGOXXCODXX: [5, 2030])
 
@@ -1603,22 +1703,17 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
             capex_dict[tech] = tech_params[5] # 
         tech_capacity_df = pd.DataFrame(techCapacity,
                                         columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
-        tech_capacity_df['REGION'] = region
+        tech_capacity_df['REGION'] = region_name
         tech_capacity_df = tech_capacity_df[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
         
-        tech_set = pd.read_csv(os.path.join(output_data_dir, 'TECHNOLOGY.csv'))
+        df_tech_set = pd.read_csv(df_tech_set)
 
         for each_tech in list(tech_capacity_df['TECHNOLOGY'].unique()):
-            if each_tech not in list(tech_set['VALUE']):
-                tech_set = pd.concat([tech_set, pd.DataFrame({'VALUE':[each_tech]})])
+            if each_tech not in list(df_tech_set['VALUE']):
+                df_tech_set = pd.concat([df_tech_set, pd.DataFrame({'VALUE':[each_tech]})])
 
-        df_min_cap_inv = pd.read_csv(os.path.join(output_data_dir,
-                                                  'TotalAnnualMinCapacityInvestment.csv'))
-        df_min_cap_inv = pd.concat([df_min_cap_inv, tech_capacity_df])
+        df_min_cap_inv = pd.concat([df_min_cap_invest, tech_capacity_df])
         df_min_cap_inv.drop_duplicates(inplace=True)
-
-        df_max_cap_inv = pd.read_csv(os.path.join(output_data_dir,
-                                                  'TotalAnnualMaxCapacityInvestment.csv'))
         
         df = pd.DataFrame(list(itertools.product(list(tech_capacity_df['TECHNOLOGY'].unique()),
                                                  years)
@@ -1626,7 +1721,7 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                           columns = ['TECHNOLOGY', 
                                      'YEAR']
                           )
-        df['REGION'] = region
+        df['REGION'] = region_name
         df = pd.merge(df, df_min_cap_inv,
                       how='left',
                       on=['REGION', 'TECHNOLOGY', 'YEAR'])
@@ -1649,7 +1744,7 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
         df['VALUE'] = df['TECHNOLOGY'].map(capex_dict)
         
         # Append existing TotalAnnualMaxCapacityInvestment data with MAX_BUILD for TRN
-        df_max_cap_inv = pd.concat([df_max_cap_inv, max_cap_techs_df]).drop_duplicates()
+        df_max_cap_inv = pd.concat([df_max_cap_invest, max_cap_techs_df]).drop_duplicates()
 
         # Print TotalAnnualMaxCapacityInvestment.csv with MAX_BUILD for TRN
         df_max_cap_inv.drop_duplicates(subset=['REGION', 
@@ -1685,13 +1780,12 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                                       >= df_res_cap_ud_final['START_YEAR']]
         df_res_cap_ud_final = df_res_cap_ud_final.loc[df_res_cap_ud_final['YEAR'] 
                                                       <= df_res_cap_ud_final['END_YEAR']]
-        df_res_cap_ud_final['REGION'] = region
+        df_res_cap_ud_final['REGION'] = region_name
         df_res_cap_ud_final = df_res_cap_ud_final[['REGION',
                                                    'TECHNOLOGY',
                                                    'YEAR',
                                                    'VALUE']]
-        df_res_cap = pd.read_csv(os.path.join(output_data_dir,
-                                              'ResidualCapacity.csv'))
+
         df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final])
         df_res_cap.to_csv(os.path.join(output_data_dir,
                                        'ResidualCapacity.csv'),
@@ -1708,16 +1802,12 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
         df_min_cap_inv.to_csv(os.path.join(output_data_dir,
                                         "TotalAnnualMinCapacityInvestment.csv"),
                             index=None)
-        tech_set.drop_duplicates(inplace=True)
-        tech_set.to_csv(os.path.join(output_data_dir,
+        df_tech_set.drop_duplicates(inplace=True)
+        df_tech_set.to_csv(os.path.join(output_data_dir,
                                      "TECHNOLOGY.csv"),
                         index=None)
         
         # Add IAR and OAR for custom technologies
-        df_iar = pd.read_csv(os.path.join(output_data_dir,
-                                                  'InputActivityRatio.csv'))
-        df_oar = pd.read_csv(os.path.join(output_data_dir,
-                                                  'OutputActivityRatio.csv'))
         tech_list = list(tech_capacity_df['TECHNOLOGY'].unique())
         df_iar_custom = pd.DataFrame(list(itertools.product(tech_list,
                                                         [1, 2],
@@ -1754,10 +1844,10 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                         'FUEL'] = ('ELC' + 
                                                    df_oar_custom['TECHNOLOGY'].str[3:8] + 
                                                    '01')
-        df_iar_custom['VALUE'] = 1
-        df_oar_custom['VALUE'] = 0.9
-        df_iar_custom['REGION'] = region
-        df_oar_custom['REGION'] = region
+        df_iar_custom['VALUE'] = df_iar_custom_val
+        df_oar_custom['VALUE'] = df_oar_custom_val
+        df_iar_custom['REGION'] = region_name
+        df_oar_custom['REGION'] = region_name
 
         df_iar_custom = df_iar_custom[['REGION', 
                                        'TECHNOLOGY',
@@ -1772,8 +1862,8 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                        'YEAR', 
                                        'VALUE',]]
         
-        df_iar = pd.concat([df_iar, df_iar_custom])
-        df_oar = pd.concat([df_oar, df_oar_custom])
+        df_iar = pd.concat([df_iar_final, df_iar_custom])
+        df_oar = pd.concat([df_oar_final, df_oar_custom])
         
         df_iar.drop_duplicates(subset=['REGION', 
                                          'TECHNOLOGY',
@@ -1796,30 +1886,30 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
                                    'OutputActivityRatio.csv'),
                       index=None)
         # Add new fuels to FUEL set, if not already present
-        fuel_set = pd.read_csv(os.path.join(output_data_dir, 'FUEL.csv'))
         fuel_list = []
         fuel_list = list(df_iar_custom['FUEL'].unique()) + list(df_oar_custom['FUEL'].unique())
         fuel_list = list(set(fuel_list))
+        
+        fuel_set = pd.read_csv(fuel_set)
+        
         for each_fuel in fuel_list:
             if each_fuel not in list(fuel_set['VALUE']):
-                fuel_set = fuel_set.append(pd.DataFrame({'VALUE':[each_fuel]}))
+                fuel_set = pd.concat([fuel_set, pd.DataFrame({'VALUE':[each_fuel]})])          
 
         fuel_set.to_csv(os.path.join(output_data_dir,
                                      "FUEL.csv"),
                         index=None)
 
-        op_life = pd.read_csv(os.path.join(output_data_dir,
-                                           'OperationalLife.csv'))
         op_life_custom = pd.DataFrame({'TECHNOLOGY': tech_list})
 
         op_life_custom.loc[op_life_custom['TECHNOLOGY'].str.contains('TRN'),
-                           'VALUE'] = 60
-        op_life_custom['REGION'] = region
+                           'VALUE'] = op_life_dict.get('TRN')
+        op_life_custom['REGION'] = region_name
         op_life_custom = op_life_custom[['REGION',
                                          'TECHNOLOGY',
                                          'VALUE']]
 
-        op_life = pd.concat([op_life, op_life_custom])
+        op_life = pd.concat([op_life_base, op_life_custom])
         op_life.drop_duplicates(subset=['REGION', 
                                         'TECHNOLOGY'],
                                 keep='last',
@@ -1827,27 +1917,22 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
         op_life.to_csv(os.path.join(output_data_dir,
                                     'OperationalLife.csv'),
                        index=None)
-        # Add CapacityToActivityUnit for custom technologies
-        cap_act = pd.read_csv(os.path.join(output_data_dir,
-                                           'CapacityToActivityUnit.csv'))
+
         cap_act_custom = pd.DataFrame({'TECHNOLOGY': tech_list})
         cap_act_custom.loc[cap_act_custom['TECHNOLOGY'].str.contains('TRN'),
                            'VALUE'] = 31.536
         cap_act_custom.loc[cap_act_custom['TECHNOLOGY'].str.contains('PWR'),
                            'VALUE'] = 31.536
-        cap_act_custom['REGION'] = region
+        cap_act_custom['REGION'] = region_name
         cap_act_custom = cap_act_custom[['REGION',
                                          'TECHNOLOGY',
                                          'VALUE']]
-        cap_act = pd.concat([cap_act, cap_act_custom])
+        cap_act = pd.concat([cap_act_base, cap_act_custom])
         cap_act.drop_duplicates(inplace=True)
         cap_act.to_csv(os.path.join(output_data_dir,
                                     'CapacityToActivityUnit.csv'),
                        index=None)
         
-        # Add CapitalCost for custom technologies
-        cap_cost = pd.read_csv(os.path.join(output_data_dir,
-                                            'CapitalCost.csv'))
         tech_list = list(tech_capacity_df['TECHNOLOGY'].unique())
         cap_cost_trn = pd.DataFrame(list(itertools.product(tech_list,
                                                            years)),
@@ -1859,84 +1944,29 @@ def user_defined_capacity(region, years, output_data_dir, tech_capacity, op_life
             cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.startswith(each_trn),
                              'VALUE'] = capex_dict[each_trn]
 
-        #        cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('TRN'),
-        #                         'VALUE'] = 700
         cap_cost_trn.loc[cap_cost_trn['TECHNOLOGY'].str.contains('PWRTRN'),
                          'VALUE'] = 300
-        cap_cost_trn['REGION'] = region
+        cap_cost_trn['REGION'] = region_name
         cap_cost_trn = cap_cost_trn[['REGION',
                                      'TECHNOLOGY',
                                      'YEAR',
                                      'VALUE']]
-        cap_cost = pd.concat([cap_cost, cap_cost_trn])
+        cap_cost = pd.concat([cap_cost_base, cap_cost_trn])
         cap_cost.drop_duplicates(subset=['REGION', 'TECHNOLOGY', 'YEAR'],
                                  keep="last",
                                  inplace=True)
         cap_cost.to_csv(os.path.join(output_data_dir,
                                      'CapitalCost.csv'),
                         index=None)
-
-def custom_nodes_csv(custom_nodes, df_custom, region, years, tech_list):
-    '''Add custom nodes to the model for each relevant input parameter data csv.
-
-    Args:
-        df : Pandas DataFrame with columns 'From' and 'To' describing the 
-                transmission from and to contries. ie. 
-    
-    Returns: 
-        df_out : 
-
-    '''
-    df_param = pd.DataFrame(list(itertools.product(custom_nodes,
-                                                   tech_list,
-                                                   years)
-                                  ),
-                             columns = ['CUSTOM_NODE',
-                                        'FUEL_TYPE',
-                                        'YEAR']
-                             )
-    df_param['REGION'] = region
-    df_custom = df_custom.groupby(['CUSTOM_NODE',
-                                   'FUEL_TYPE',
-                                   'START_YEAR',
-                                   'END_YEAR'],
-                                  as_index=False)['CAPACITY'].sum()
-    df_param = pd.merge(df_param,
-                        df_custom,
-                        how='left',
-                        on=['CUSTOM_NODE',
-                            'FUEL_TYPE'])
-    df_param['TECHNOLOGY'] = ('PWR' +
-                              df_param['FUEL_TYPE'] + 
-                              df_param['CUSTOM_NODE'] +
-                              '01')
-    technologies = df_param['TECHNOLOGY'].unique()
-    df_param.dropna(inplace=True)
-    df_param.drop_duplicates(inplace=True)
-    df_param = df_param.loc[df_param['YEAR'] >= df_param['START_YEAR']]
-    df_param = df_param.loc[df_param['YEAR'] <= df_param['END_YEAR']]
-    df_param['VALUE'] = df_param['CAPACITY'].div(1000)
-    df_param['REGION'] = region
-    df_param = df_param[['REGION','TECHNOLOGY','YEAR','VALUE']]
-    df_param = df_param.groupby(['REGION',
-                                 'TECHNOLOGY',
-                                 'YEAR'],
-                                 as_index=False)['VALUE'].sum()
-
-    return df_param, technologies
-
-
-def availability_factor(region, 
-                        years,
-                        output_data_dir,
-                        availability):
+        
+        return df_tech_set
+        
+def availability_factor(availability, tech_set_base):
     
     af_dict = dict(zip(list(availability['technology']),
                        list(availability['value'])))
     
-    df_tech = pd.read_csv(os.path.join(output_data_dir,
-                                       'TECHNOLOGY.csv'))
-    tech_list = [x for x in df_tech['VALUE']
+    tech_list = [x for x in tech_set_base['VALUE']
                  if x.startswith('PWR')]
     df_af_final = pd.DataFrame(list(itertools.product(tech_list,
                                                       years)
@@ -1946,8 +1976,7 @@ def availability_factor(region,
     df_af_final['TECH'] = df_af_final['TECHNOLOGY'].str[3:6]
     df_af_final['VALUE'] = df_af_final['TECH'].map(af_dict)
     df_af_final.dropna(inplace=True)
-    df_af_final['REGION'] = region
-    
+    df_af_final['REGION'] = region_name
     df_af_final = df_af_final[['REGION',
                                'TECHNOLOGY',
                                'YEAR',
