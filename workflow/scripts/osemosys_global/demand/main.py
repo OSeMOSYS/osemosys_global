@@ -12,6 +12,11 @@ from read import (
 from data import get_historical_urban_pop_wb, get_iamc_data, format_for_writing
 from regression import perform_regression
 from projection import perform_node_projections
+from custom import (
+    get_custom_demand_data,
+    import_custom_demand_data,
+    merge_default_custom_data,
+)
 
 
 def main(
@@ -58,6 +63,8 @@ if __name__ == "__main__":
         csv = snakemake.output.csv_files
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
+        custom_nodes = snakemake.params.custom_nodes
+        custom_nodes_data = snakemake.input.custom_nodes
     else:
         file_plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx"
         file_plexos_demand = "resources/data/All_Demand_UTC_2015.csv"
@@ -72,6 +79,8 @@ if __name__ == "__main__":
         csv = "SpecifiedAnnualDemand.csv"
         start_year = 2020
         end_year = 2050
+        custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
+        custom_nodes_data = "resources/data/custom_nodes/specified_annual_demand.csv"
 
     # first bring together original and missing iamc data
     plexos = import_plexos_2015(file_plexos)
@@ -101,5 +110,10 @@ if __name__ == "__main__":
     df = main(**input_data)
 
     df = df[df.YEAR.isin(range(start_year, end_year + 1))]
+
+    if custom_nodes:
+        all_custom = import_custom_demand_data(custom_nodes_data)
+        custom = get_custom_demand_data(all_custom, custom_nodes, start_year, end_year)
+        df = merge_default_custom_data(df, custom)
 
     df.to_csv(csv, index=False)

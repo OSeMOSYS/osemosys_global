@@ -164,6 +164,12 @@ rule variable_costs:
     shell:
         'python workflow/scripts/osemosys_global/variablecosts.py 2> {log}'
 
+def demand_custom_csv() -> str:
+    if config["nodes_to_add"]:
+        return "resources/data/custom_nodes/specified_annual_demand.csv"
+    else:
+        return []
+
 rule demand_projections:
     message:
         "Generating demand data..."
@@ -175,10 +181,12 @@ rule demand_projections:
         iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
         iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
         td_losses = "resources/data/T&D Losses.xlsx",
-	    ember = "resources/data/ember_yearly_electricity_data.csv"
+	    ember = "resources/data/ember_yearly_electricity_data.csv",
+        custom_nodes = demand_custom_csv()
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
+        custom_nodes = config["nodes_to_add"]
     output:
         csv_files = 'results/data/SpecifiedAnnualDemand.csv',
     log:
