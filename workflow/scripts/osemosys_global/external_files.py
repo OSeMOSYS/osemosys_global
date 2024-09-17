@@ -1,19 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  4 15:14:43 2024
-
-@author: maart
-"""
-
 import logging
-
 logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
+
 from pathlib import Path
 from configuration import ConfigPaths
 import os
 import requests
 import sys
-
 
 def download_file(file: str, url: Path | str) -> None:
     """Downloads a file if the file does not already exist"""
@@ -28,7 +20,6 @@ def download_file(file: str, url: Path | str) -> None:
 
     with open(path, "wb") as f:
         f.write(data.content)
-
 
 # CONFIGURATION PARAMETERS
 config_paths = ConfigPaths()

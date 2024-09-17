@@ -1,15 +1,10 @@
 import os
 import pandas as pd
-
-# from osemosys_global.configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
-
-# from OPG_configuration import ConfigFile, ConfigPaths
 import itertools
 
 # LOGGING
 import logging
-
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
 
@@ -136,7 +131,6 @@ def main():
     df_max_capacity = pd.DataFrame(
         out_data, columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"]
     )
-    # df_max_capacity = apply_dtypes(df_max_capacity, "TotalAnnualMaxCapacity")
     df_max_capacity.dropna(inplace=True)
     df_max_capacity.to_csv(
         os.path.join(output_data_dir, "TotalAnnualMaxCapacity.csv"), index=None

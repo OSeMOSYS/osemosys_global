@@ -44,9 +44,6 @@ def main():
     output_data_dir = config_paths.output_data_dir
     emission_penalty = config.get("emission_penalty")  # M$/MT
     emission_limit = config.get("emission_limit")  # MT of CO2-eq.
-    start_year = config.get("startYear")
-    end_year = config.get("endYear")
-    region = config.region_name
 
     # ASSIGN EMISSION ACTIVITY RATIOS
 
@@ -56,7 +53,6 @@ def main():
 
     # ASSIGN EMISSION
 
-    # df_emission = pd.DataFrame([_EMISSION], columns=['VALUE'])
     df_emission = df_ear[["EMISSION"]].drop_duplicates()
     df_emission.rename(columns={"EMISSION": "VALUE"}, inplace=True)
     df_emission.to_csv(Path(output_data_dir, "EMISSION.csv"), index=False)
@@ -66,10 +62,6 @@ def main():
     emissions = list(df_emission["VALUE"])
 
     # ASSIGN EMISSION PENALTY
-
-    # print(df_emission)
-    # print(emissions)
-    # print(emission_penalty)
 
     if emission_penalty:
         df_emission_penalty = get_emission_penalty(emissions, emission_penalty)
@@ -185,8 +177,6 @@ def get_ear(emission):
 
     df_oar = pd.read_csv(Path(output_data_dir, "OutputActivityRatio.csv"))
     df = df_oar.drop(["FUEL", "VALUE"], axis=1)
-    # df = df[(df['TECHNOLOGY'].str.startswith('MIN')) |
-    #        (df['TECHNOLOGY'].str.startswith('PWRCCS'))]
     df = df[
         (df["TECHNOLOGY"].str.startswith("PWR"))
         & ~(df["TECHNOLOGY"].str.startswith("PWRTRN"))
@@ -205,10 +195,7 @@ def get_ear(emission):
     df.loc[df['TECH_CODE'].str.startswith('CCS'),
            'VALUE'] = ccs_co2_factor
     """
-    # techs = pd.Series(df['TECHNOLOGY'].str[3:6])
-    # fuels = techs.map(_TECH_TO_FUEL)
-    # df['VALUE'] = fuels.map(co2_factors)
-
+    
     # Multiply by InputActivityRatio
     df_iar = pd.read_csv(Path(output_data_dir, "InputActivityRatio.csv"))
     df_iar.rename(columns={"VALUE": "IAR"}, inplace=True)
@@ -271,7 +258,6 @@ def get_emission_penalty(emissions, emission_penalty):
         ] = ep_params[4]
 
     df = df.pivot(index=["YEAR"], columns=["EMISSION"], values="VALUE").reset_index()
-    # df = df.interpolate()
 
     # Drop all columns with only NaN
     df.dropna(axis=1, how="all", inplace=True)
@@ -289,7 +275,6 @@ def get_emission_penalty(emissions, emission_penalty):
     df = df[["REGION", "EMISSION", "YEAR", "VALUE"]]
 
     return df
-
 
 def add_emission_limits(emissions, emission_limit):
 

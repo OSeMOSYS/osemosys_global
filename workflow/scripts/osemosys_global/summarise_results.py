@@ -3,7 +3,6 @@ import itertools
 import os
 from pathlib import Path
 from typing import Dict
-# from osemosys_global.configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
 from osemosys_global.visualisation.utils import transform_ts, powerplant_filter
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
@@ -352,7 +351,6 @@ def generation_by_node_summary(input_data: Dict[str,pd.DataFrame], result_data: 
     df_gen_by_node['NODE'] = (df_gen_by_node['TECHNOLOGY'].str[6:11])
     df_gen_by_node = powerplant_filter(df_gen_by_node, country=None)
     df_gen_by_node = df_gen_by_node.loc[df_gen_by_node['FUEL'].str.startswith('ELC')]
-    # df_generation = transform_ts(df_generation)
 
     # GET TIMESLICE DEFINITION
 
@@ -669,12 +667,8 @@ def system_cost_by_node():
     config_paths = ConfigPaths()
     config = ConfigFile('config')
     scenario_results_dir = config_paths.scenario_results_dir
-    #scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/results'
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
-    #scenario_result_summaries_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/result_summaries'
     scenario_data_dir = config_paths.scenario_data_dir
-    #scenario_data_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/workflow/scripts/osemosys_global/../../../results/Indonesia_BA/data'
-    input_data_dir = config_paths.input_data_dir
     
     penalty = config.get('emission_penalty')
     
@@ -756,9 +750,7 @@ def system_cost_by_node():
         each_df = each_df[['TECHNOLOGY',
                            'YEAR',
                            'VALUE']].fillna(0)
-        #each_df.set_index(['TECHNOLOGY', 'YEAR'], inplace=True)
-        #df = df.add(each_df, fill_value=0)
-        
+       
         df = pd.concat([df, each_df])
 
     df = df.groupby(['TECHNOLOGY','YEAR'],
@@ -772,8 +764,6 @@ def system_cost_by_node():
     df = df.groupby(['NODE',
                      'YEAR'],
                     as_index=False)['VALUE'].sum()
-    #df = df[['NODE',
-    #         'VALUE']]
     
     # Summarise UseByTechnologyAnnual for all powerplants
     df_use = pd.read_csv(os.path.join(scenario_results_dir,
@@ -926,14 +916,10 @@ def marginal_costs():
     # CONFIGURATION PARAMETERS
     config_paths = ConfigPaths()
     config = ConfigFile('config')
-    scenario_results_dir = config_paths.scenario_results_dir
     scenario = config.get('scenario')
     scenario_dir = config_paths.scenario_dir
-    #scenario = 'ASEAN_v4_APG_LC'
-    #scenario_results_dir = '/Users/adminuser/Documents/repositories/feo-esmod-osemosys/results/' + scenario
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
-    
-    
+     
     duals = []
     
     with open(os.path.join(scenario_dir,
@@ -1006,8 +992,6 @@ def marginal_costs():
     # Apply timeshift
     timeshift = config.get('timeshift')
     #df_duals_final['HOUR'] = df_duals_final['HOUR'].map(lambda x: apply_timeshift(x, timeshift))    
-    
-    #print(df_duals_final)
 
     return df_duals_final.to_csv(os.path.join(scenario_result_summaries_dir,
                                               'SRMC.csv'),
