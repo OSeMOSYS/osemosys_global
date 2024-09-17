@@ -7,7 +7,7 @@ from typing import Dict, List, Union, Tuple
 import itertools
 from pathlib import Path
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
-from osemosys_global.utils import apply_timeshift, filter_transmission_techs
+from osemosys_global.utils import apply_timeshift
 from osemosys_global.powerplant_data import format_transmission_name
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature

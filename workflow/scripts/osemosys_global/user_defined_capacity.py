@@ -1,7 +1,5 @@
-
 import os
 import pandas as pd
-# from osemosys_global.OPG_configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
 from utils import apply_dtypes
 
@@ -16,8 +14,6 @@ def main():
     config_paths = ConfigPaths()
     config = ConfigFile('config')  
 
-    input_dir = config_paths.input_dir
-    output_data_dir = config_paths.output_data_dir
     scenario_data_dir = config_paths.scenario_data_dir
     region = config.get('region')
     years = range(config.get('startYear'), config.get('endYear') + 1)
@@ -71,4 +67,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    logging.info(f'User-defined capacities sucessfully set')
+    logging.info('User-defined capacities sucessfully set')

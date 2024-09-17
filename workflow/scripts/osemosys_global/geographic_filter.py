@@ -1,14 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # # Filter osemosys_global datapackaged based on user-defined geographic scope
 
 import pandas as pd
 import os
-import yaml
-import shutil
 from pathlib import Path
-# from osemosys_global.configuration import ConfigFile, ConfigPaths
 from configuration import ConfigFile, ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)

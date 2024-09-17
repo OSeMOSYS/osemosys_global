@@ -1,14 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import pandas as pd
 import os
-import shutil
-# from osemosys_global.configuration import ConfigPaths
-from configuration import ConfigFile, ConfigPaths
+from configuration import ConfigPaths
 import logging 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
-
 
 # CONFIGURATION PARAMETERS
 config_paths = ConfigPaths()
