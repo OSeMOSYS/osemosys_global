@@ -103,17 +103,26 @@ rule make_data_dir:
     output: directory('results/data')
     shell: 'mkdir -p {output}'
 
+     
+def powerplant_cap_custom_csv() -> str:
+    if config["nodes_to_add"]:
+        return "resources/data/custom_nodes/residual_capacity.csv"
+    else:
+        return []   
+        
 rule powerplant:
     message:
-        'Generating powerplant data...'
+        "Generating powerplant data..."
     input:
-        'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
-        'resources/data/weo_2020_powerplant_costs.csv',
-        'resources/data/operational_life.csv',
-        'resources/data/naming_convention_tech.csv',
-        'resources/data/Costs Line expansion.xlsx',
-        'resources/data/weo_region_mapping.csv',
-    params: 
+        plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        weo_costs = 'resources/data/weo_2020_powerplant_costs.csv',
+        weo_regions = 'resources/data/weo_region_mapping.csv',
+        default_op_life = 'resources/data/operational_life.csv',
+        naming_convention_tech = 'resources/data/naming_convention_tech.csv',
+        line_data = 'resources/data/Costs Line expansion.xlsx',
+        default_av_factors = 'resources/data/availability_factors.csv',
+        custom_res_cap = powerplant_cap_custom_csv()
+    params:
         trade = config['crossborderTrade'],
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -122,8 +131,8 @@ rule powerplant:
         csv_files = expand('results/data/{output_file}', output_file = power_plant_files)
     log:
         log = 'results/logs/powerplant.log'
-    shell:
-        'python workflow/scripts/osemosys_global/powerplant_data.py 2> {log}'
+    script:
+        "../scripts/osemosys_global/powerplant/main.py"
 
 rule timeslice:
     message:
@@ -181,7 +190,7 @@ rule demand_projections:
         iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
         iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
         td_losses = "resources/data/T&D Losses.xlsx",
-	    ember = "resources/data/ember_yearly_electricity_data.csv",
+        ember = "resources/data/ember_yearly_electricity_data.csv",
         custom_nodes = demand_custom_csv()
     params:
         start_year = config['startYear'],
@@ -203,7 +212,7 @@ rule demand_projection_figures:
         iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
         iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
         iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
-	    ember = "resources/data/ember_yearly_electricity_data.csv"
+        ember = "resources/data/ember_yearly_electricity_data.csv"
     output:
         regression = 'results/figs/regression.png',
         projection = 'results/figs/projection.png'
