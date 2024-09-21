@@ -31,7 +31,8 @@ def perform_node_projections(
 
     proj = _interpolate_yearly_demand(df)
     proj = _get_node_peak_demand_ratio(plexos_demand, proj)
-    return _adjust_with_peak_demand(proj, PEAK_RATIO_FACTOR)
+    # return _adjust_with_peak_demand(proj, PEAK_RATIO_FACTOR)
+    return proj
 
 
 def perform_node_projection_step(
