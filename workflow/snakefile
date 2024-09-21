@@ -40,6 +40,7 @@ rule all:
     message:
         'All rules executed successfully...' 
     input:
+        expand('results/figs/{demand_figure}.png', demand_figure=["regression", "projection"]),
         expand('results/{scenario}/result_summaries/{result_summary}.csv', 
             scenario=config['scenario'], result_summary=result_summaries), 
         expand('results/{scenario}/figures/{result_figure}.html', 
