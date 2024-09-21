@@ -80,6 +80,7 @@ if __name__ == "__main__":
         start_year = 2020
         end_year = 2050
         custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
+        # custom_nodes = []
         custom_nodes_data = "resources/data/custom_nodes/specified_annual_demand.csv"
 
     # first bring together original and missing iamc data
