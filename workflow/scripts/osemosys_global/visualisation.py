@@ -1,14 +1,9 @@
 import pandas as pd
 pd.set_option('mode.chained_assignment', None)
-import plotly as py
 import plotly.express as px
-import plotly.graph_objects as go
-import plotly.io as pio
 import matplotlib.pyplot as plt
 import itertools
 import os
-import sys
-import yaml
 from OPG_configuration import ConfigFile, ConfigPaths
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
@@ -91,8 +86,6 @@ def transform_ts(df):
     config_paths = ConfigPaths()
     config = ConfigFile('config')
     scenario_data_dir = config_paths.scenario_data_dir
-    input_data_dir = config_paths.input_data_dir
-    # years = range(config.get('startYear'), config.get('endYear') + 1)
 
     # GET TECHS TO PLOT
 
@@ -618,7 +611,6 @@ def trade_flow_chord():
     config_paths = ConfigPaths()
 
     # Fix path below to config_paths
-    scenario_results_dir = config_paths.scenario_results_dir
     scenario_result_summaries_dir = config_paths.scenario_result_summaries_dir
     
     df = pd.read_csv(os.path.join(scenario_result_summaries_dir,

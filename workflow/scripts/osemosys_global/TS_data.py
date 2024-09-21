@@ -1,17 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # OSeMOSYS-PLEXOS global model: TS-dependent parameters
-
-# ### Import modules
-
-
 import pandas as pd
 import itertools
 import seaborn as sns
 
 sns.set()
-import urllib
 import os
 
 # from osemosys_global.configuration import ConfigFile, ConfigPaths
@@ -162,10 +153,6 @@ wof_df.name = "WOF"
 
 
 # ### Create 'output' directory if it doesn't exist
-
-
-import os
-
 if not os.path.exists(output_data_dir):
     os.makedirs(output_data_dir)
 
@@ -439,7 +426,6 @@ for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
     capfacs.append(capacity_factor(each))
 capfac_all_df = pd.concat(capfacs).reset_index(drop=True)
 
-# capfac_all_df = apply_dtypes(capfac_all_df, "CapacityFactor")
 capfac_all_df.drop_duplicates(
     subset=["REGION", "TECHNOLOGY", "TIMESLICE", "YEAR"], keep="last", inplace=True
 )

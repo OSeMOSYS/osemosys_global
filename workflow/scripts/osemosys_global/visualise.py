@@ -2,7 +2,6 @@ import pandas as pd
 pd.set_option('mode.chained_assignment', None)
 import plotly.express as px
 import os
-import numpy as np
 import sys 
 from typing import List
 from sklearn.preprocessing import MinMaxScaler
@@ -25,15 +24,6 @@ def main(
 ):
     """Creates system level and country level graphs."""
 
-    # config_paths = ConfigPaths()
-    # config = ConfigFile('config')
-    # scenario_figs_dir = config_paths.scenario_figs_dir
-    # results_by_country = config.get('results_by_country')
-    # cost_line_expansion_xlsx = os.path.join(config_paths.input_data_dir, "Costs Line expansion.xlsx")
-    # input_data = read_csv(config_paths.scenario_data_dir)
-    # result_data = read_csv(config_paths.scenario_results_dir)
-    # years = [config.get('endYear')]
-
     # Check for output directory 
     try:
         os.makedirs(scenario_figs_dir)
@@ -47,7 +37,6 @@ def main(
 
     # If producing by country results, check for folder structure 
     if results_by_country:
-        # countries = config.get('geographic_scope')
         for country in countries:
             try:
                 os.makedirs(os.path.join(scenario_figs_dir, country))
@@ -76,7 +65,6 @@ def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str
     """
 
     df = get_total_capacity_data(data, country=country)
-    # plot_colors = get_color_codes()
     plot_colors = constants.COLORS
 
     if not country: # System level titles
