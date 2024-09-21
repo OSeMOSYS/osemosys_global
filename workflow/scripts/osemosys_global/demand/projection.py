@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 from regression import get_regression_coefficients
-from constants import START_YEAR, END_YEAR, PEAK_RATIO_FACTOR
+from constants import START_YEAR, END_YEAR
 from spatial import get_spatial_mapping_country, get_spatial_mapping_node
 from data import get_nodal_plexos_demand
 
