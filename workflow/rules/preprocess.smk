@@ -181,7 +181,7 @@ rule demand_projections:
         iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
         iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
         td_losses = "resources/data/T&D Losses.xlsx",
-	    ember = "resources/data/ember_yearly_electricity_data.csv",
+        ember = "resources/data/ember_yearly_electricity_data.csv",
         custom_nodes = demand_custom_csv()
     params:
         start_year = config['startYear'],
@@ -203,7 +203,7 @@ rule demand_projection_figures:
         iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
         iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
         iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
-	    ember = "resources/data/ember_yearly_electricity_data.csv"
+        ember = "resources/data/ember_yearly_electricity_data.csv"
     output:
         regression = 'results/figs/regression.png',
         projection = 'results/figs/projection.png'
