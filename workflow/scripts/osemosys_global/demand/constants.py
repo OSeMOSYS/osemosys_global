@@ -13,9 +13,6 @@ POP_COUNTRIES_SOURCE = "IIASA-WiC POP"  # Options are 'IIASA-WiC POP' and 'NCAR'
 GDP_PPP_COUNTRIES_SOURCE = "OECD Env-Growth"  # Options are 'IIASA GDP' and 'OECD Env-Growth'. 'OECD Env-Growth' has more entries.
 URB_COUNTRIES_SOURCE = "NCAR"  #'NCAR' is the only option.
 
-# Peak to total demand ratio
-PEAK_RATIO_FACTOR = 1
-
-# Projection range 
+# Projection range
 START_YEAR = 2010
 END_YEAR = 2100
