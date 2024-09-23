@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 from regression import get_regression_coefficients
-from constants import START_YEAR, END_YEAR, PEAK_RATIO_FACTOR
+from constants import START_YEAR, END_YEAR
 from spatial import get_spatial_mapping_country, get_spatial_mapping_node
 from data import get_nodal_plexos_demand
 
@@ -28,10 +28,8 @@ def perform_node_projections(
     df = perform_node_projection_step(
         lr, plexos, plexos_demand, iamc_gdp, iamc_pop, iamc_urb, td_losses
     )
-
     proj = _interpolate_yearly_demand(df)
     proj = _get_node_peak_demand_ratio(plexos_demand, proj)
-    # return _adjust_with_peak_demand(proj, PEAK_RATIO_FACTOR)
     return proj
 
 
@@ -342,23 +340,3 @@ def _get_node_peak_demand_ratio(
         .set_index("PLEXOS_Nodes")
         .drop(columns={"Share_%_Country_Demand"})
     )
-
-
-def _adjust_with_peak_demand(
-    projection: pd.DataFrame, peak_ratio_factor: float
-) -> pd.DataFrame:
-    """Calculates projected hourly peak demand by using the relative 2015 peak demand as proxy.
-
-    The peak to total demand ratio can be adjusted by changing the peak_ratio_factor.
-    """
-
-    df = projection.copy()
-
-    for year in range(START_YEAR, 2101):  # TODO fix this to END_YEAR
-        df[year] = (
-            df[year] * peak_ratio_factor * df["Ratio_Peak/Total_Demand_2015"] * 1000
-        ).round(2)
-
-    df["Unit"] = "MW"
-
-    return df
