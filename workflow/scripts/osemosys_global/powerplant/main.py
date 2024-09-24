@@ -1,5 +1,3 @@
-"""Creates demand projections"""
-
 import pandas as pd
 import os
 
@@ -113,41 +111,55 @@ def main(
     df_res_cap, custom_techs = res_capacity(gen_table, tech_list, tech_code, 
                                                  custom_res_cap, duplicate_techs)
 
+    # Create master table for activity ratios.
     df_ratios = activity_master_start(gen_table, nodes_extra_list, 
                                       duplicate_techs, mode_list)
     
+    # Set OutputActivitiyRatio for powerplants.
     df_oar, df_oar_base = activity_output_pwr(df_ratios, thermal_fuel_list_oar)  
     
+    # Set InputActivityRatio for powerplants.
     df_iar_base = activity_input_pwr(df_oar, thermal_fuel_list_iar, renewables_list, 
                                      df_eff_node, df_eff_tech)
     
+    # Set OutputActivitiyRatio for upstream and international technologies/fuels.   
     df_oar_upstream, df_oar_int = activity_upstream(df_iar_base, renewables_list, 
                                                     thermal_fuel_list_mining)
 
+    # Set activity ratios for transmission.
     df_iar_trn, df_oar_trn, df_int_trn_oar, df_int_trn_iar = activity_transmission(df_oar_base, 
                                                                                    plexos_prop, 
                                                                                    interface_data)
     
+    # Combine and format activity ratios to output as csv.
     df_oar_final, df_iar_final = activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, 
                                                      df_oar_trn, df_int_trn_oar, df_iar_base, 
                                                      df_iar_trn, df_int_trn_iar, duplicate_techs)
     
+    # Set capital and fixed powerplant costs.
     df_costs = costs_pwr(weo_costs, costs_dict)
     
+    # Set capital and fixed transmission costs.
     df_trans_capex, df_trans_fix = get_transmission_costs(trn_line, df_oar_final)
-
+    
+    # Combine and format costs data to output as csv.
     df_cap_cost_final, df_fix_cost_final = costs_end(weo_regions, df_costs, df_oar_final, 
                                              df_trans_capex, df_trans_fix)
     
+    # Set CapacityToActivityUnit.
     df_capact_final = capact(df_oar_final)
     
+    # Adjust activity limits if cross border trade is not allowed following user config.
     df_crossborder_final = activity_transmission_limit(cross_border_trade, df_oar_final)
  
+    # Set operational life for powerplant technologies.
     df_op_life_trn, df_op_life_out = set_op_life(tech_code_dict, df_iar_final, 
                                        df_oar_final, op_life_dict)
     
+    # Set operational life for transmission.
     df_op_life = set_op_life_transmission(df_op_life_trn, df_op_life_out, op_life_dict)
     
+    # Set annual capacity investment constraints.
     df_max_cap_invest, df_min_cap_invest = cap_investment_constraints(df_iar_final, 
                                                                       no_investment_techs)
     
@@ -162,6 +174,7 @@ def main(
     # Create sets for YEAR, MODE_OF_OPERATION and REGION
     years_set, mode_list_set, regions_set = output_sets(mode_list)
     
+    # Alter output csv's based on user defined capacities following user config.
     if not tech_capacity is None:
         (tech_set, 
          fuel_set, 
@@ -190,6 +203,7 @@ def main(
              df_oar_custom_val
              )
     
+    # Set availability factors.
     df_af_final = availability_factor(availability, tech_set)
 
     # OUTPUT CSV's
@@ -234,6 +248,7 @@ def main(
 
 if __name__ == "__main__":
 
+    # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
     plexos_memb = import_plexos_2015(file_plexos, "memb")
     op_life = import_op_life(file_default_op_life)
@@ -270,5 +285,6 @@ if __name__ == "__main__":
         "custom_res_cap" : custom_res_cap,
         "default_av_factors": availability,
     }
-
+    
+    # CALL MAIN
     main(**input_data)

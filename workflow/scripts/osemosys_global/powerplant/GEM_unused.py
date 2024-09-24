@@ -1,4 +1,4 @@
-"""Function to calculate residual capacity for powerplant technologies."""
+"""Function that calculates existing, planned and to be retired capacities based on GEM for coal and gas. CURRENTLY UNUSED"""
 
 import pandas as pd
 import os

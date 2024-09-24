@@ -163,7 +163,7 @@ else:
     file_line_data = 'resources/data/Costs Line expansion.xlsx'
     file_default_av_factors = 'resources/data/availability_factors.csv'    
     file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv'     
-    start_year = 2020
+    start_year = 2021
     end_year = 2050
     region_name = 'GLOBAL'
     custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]

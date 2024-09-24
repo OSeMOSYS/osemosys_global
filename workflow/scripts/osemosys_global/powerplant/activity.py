@@ -1,4 +1,4 @@
-"""Function to calculate residual capacity for powerplant technologies."""
+"""Function to calculate activity for powerplant technologies."""
 
 import pandas as pd
 import itertools

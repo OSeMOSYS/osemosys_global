@@ -2,8 +2,6 @@
 
 import pandas as pd
 
-from constants import custom_nodes
-
 def import_plexos_2015(f: str, metric: str) -> dict[str, pd.DataFrame]:
     """Imports PLEXOS-World 2015 model file.
     

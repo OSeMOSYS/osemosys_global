@@ -1,4 +1,4 @@
-"""Function to calculate residual capacity for powerplant technologies."""
+"""Function to calculate powerplant technology costs."""
 
 import pandas as pd
 import numpy as np
@@ -6,7 +6,7 @@ from utils import apply_dtypes
 
 def costs_pwr(df_weo_data, costs_dict):
 
-    # ### Costs: Capital, fixed, and variable
+    # ### Costs: Capital, fixed
 
     df_costs = pd.melt(df_weo_data, 
                        id_vars = ['technology', 'weo_region', 'parameter'], 

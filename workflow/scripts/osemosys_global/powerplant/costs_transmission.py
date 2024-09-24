@@ -1,4 +1,4 @@
-"""Function to calculate residual capacity for powerplant technologies."""
+"""Function to calculate transmission costs."""
 
 from data_transmission import format_transmission_name
 

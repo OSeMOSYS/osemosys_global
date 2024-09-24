@@ -1,4 +1,4 @@
-"""Functions to extract relevent data"""
+"""Functions to extract and format relevent data."""
 
 import pandas as pd
 from datetime import datetime

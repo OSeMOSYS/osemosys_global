@@ -1,4 +1,4 @@
-"""Function to calculate residual capacity for powerplant technologies."""
+"""Function to set min and max capacity investment constraints."""
 
 import pandas as pd
 

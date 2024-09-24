@@ -1,4 +1,4 @@
-"""Function to calculate residual capacity for powerplant technologies."""
+"""Functions to set operational life."""
 
 import pandas as pd
 

@@ -1,4 +1,4 @@
-"""Functions to extract and fromat relevent data for tranmissions"""
+"""Functions to extract and format relevent data for tranmission."""
 
 def format_transmission_name(df):
     '''Formats PLEXOS transmission names into OSeMOSYS Global names.
