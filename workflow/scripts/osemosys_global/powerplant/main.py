@@ -104,7 +104,7 @@ def main(
     # return generator_table
     gen_table = set_generator_table(plexos_prop, plexos_memb, 
                                 op_life_dict, tech_code_dict)
-    
+
     # Calculate average technology efficiencies.
     df_eff_node, df_eff_tech = average_efficiency(gen_table, avg_csp_eff, 
                                                   avg_urn_eff)
@@ -112,7 +112,7 @@ def main(
     # Calculate residual capacity.
     df_res_cap, custom_techs = res_capacity(gen_table, tech_list, tech_code, 
                                                  custom_res_cap, duplicate_techs)
-    
+
     df_ratios = activity_master_start(gen_table, nodes_extra_list, 
                                       duplicate_techs, mode_list)
     
@@ -123,7 +123,7 @@ def main(
     
     df_oar_upstream, df_oar_int = activity_upstream(df_iar_base, renewables_list, 
                                                     thermal_fuel_list_mining)
-    
+
     df_iar_trn, df_oar_trn, df_int_trn_oar, df_int_trn_iar = activity_transmission(df_oar_base, 
                                                                                    plexos_prop, 
                                                                                    interface_data)
@@ -142,7 +142,7 @@ def main(
     df_capact_final = capact(df_oar_final)
     
     df_crossborder_final = activity_transmission_limit(cross_border_trade, df_oar_final)
-    
+ 
     df_op_life_trn, df_op_life_out = set_op_life(tech_code_dict, df_iar_final, 
                                        df_oar_final, op_life_dict)
     
@@ -191,7 +191,7 @@ def main(
              )
     
     df_af_final = availability_factor(availability, tech_set)
-    
+
     # OUTPUT CSV's
     
     df_res_cap.to_csv(os.path.join(output_data_dir, "ResidualCapacity.csv"), index=None)

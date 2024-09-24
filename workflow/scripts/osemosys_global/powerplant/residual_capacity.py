@@ -27,9 +27,8 @@ def res_capacity(df_gen_base, tech_list, df_tech_code, df_custom_res_cap, duplic
     ]
 
     df_res_cap = df_gen_base[res_cap_cols]
-
-    for each_year in range(start_year, end_year+1):
-        df_res_cap[str(each_year)] = 0
+    
+    df_res_cap = df_res_cap.reindex(columns=[*df_res_cap.columns.tolist(), *list(range(start_year, end_year+1))], fill_value=0)
 
     df_res_cap = pd.melt(
         df_res_cap,
@@ -38,7 +37,10 @@ def res_capacity(df_gen_base, tech_list, df_tech_code, df_custom_res_cap, duplic
         var_name="model_year",
         value_name="value",
     )
+    
     df_res_cap["model_year"] = df_res_cap["model_year"].astype(int)
+    df_res_cap["value"] = df_res_cap["value"].astype(float)
+    
     df_res_cap.loc[
         (df_res_cap["model_year"] >= df_res_cap["start_year"])
         & (df_res_cap["model_year"] <= df_res_cap["retirement_year_model"]),

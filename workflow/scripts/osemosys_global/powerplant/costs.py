@@ -63,7 +63,7 @@ def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex,
 
     # Create formatted CSVs
     for each_cost in ['Capital', 'O&M']:
-        df_costs_temp = df_costs.loc[df_costs['parameter'].str.contains(each_cost)]
+        df_costs_temp = df_costs.copy().loc[df_costs.copy()['parameter'].str.contains(each_cost)]
         
         df_costs_temp.drop(['technology', 'parameter'], 
                            axis = 1, 
@@ -72,7 +72,8 @@ def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex,
                                        'TECHNOLOGY',
                                        'YEAR'
                                       ]]
-        df_costs_final['YEAR'] = df_costs_final['YEAR'].astype(int)
+        df_costs_final.loc[:,'YEAR'] = df_costs_final['YEAR'].astype(int)
+        
         df_costs_final = df_costs_final.drop_duplicates()
         df_costs_final = (df_costs_final
                           .loc[(df_costs_final['TECHNOLOGY']
@@ -96,17 +97,21 @@ def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex,
         df_costs_final.drop(['technology_code', 'weo_region'], 
                             axis = 1, 
                             inplace = True)
-        df_costs_final = df_costs_final.fillna(-9)
+        df_costs_final = df_costs_final.infer_objects().fillna(-9)
         df_costs_final = pd.pivot_table(df_costs_final, 
                                         index = ['REGION', 'YEAR'], 
                                         columns = 'TECHNOLOGY', 
                                         values = 'value').reset_index()
         df_costs_final = df_costs_final.replace([-9],[np.nan])
 
-        df_costs_final = df_costs_final.interpolate(method = 'linear', 
-                                                    limit_direction='forward').round(2)
-        df_costs_final = df_costs_final.interpolate(method = 'linear', 
-                                                    limit_direction='backward').round(2)
+        for col in df_costs_final.columns:
+            if df_costs_final[col].dtype != 'object':
+                df_costs_final[col] = df_costs_final[col].interpolate(method = 'linear', 
+                                                            limit_direction='forward').round(2)
+                
+                df_costs_final[col] = df_costs_final[col].interpolate(method = 'linear', 
+                                                            limit_direction='backward').round(2)
+
         df_costs_final = pd.melt(df_costs_final, 
                                  id_vars = ['REGION', 'YEAR'], 
                                  value_vars = [x for x in df_costs_final.columns

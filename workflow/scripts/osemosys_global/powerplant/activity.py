@@ -58,7 +58,8 @@ def activity_output_pwr(df_ratios, thermal_fuel_list_oar):
     df_oar = df_ratios.copy()
     mask = df_oar['TECHNOLOGY'].apply(lambda x: x[3:6] in thermal_fuel_list_oar)
     df_oar['FUEL'] = 0
-    df_oar['FUEL'][mask] = 1
+    df_oar.loc[mask, "FUEL"] = 1
+    
     df_oar = df_oar.loc[~((df_oar['MODE_OF_OPERATION'] > 1) &
                           (df_oar['FUEL'] == 0))]
     df_oar['FUEL'] = ('ELC' + 
@@ -88,6 +89,7 @@ def activity_input_pwr(df_oar, thermal_fuel_list_iar, renewables_list,
     df_iar = df_oar.copy()
 
     df_iar['FUEL'] = 0
+    df_iar['FUEL'] = df_iar['FUEL'].astype(str)
 
     # Deal with GAS techs first...  OCG and CCG
     # OCG Mode 1: Domestic GAS

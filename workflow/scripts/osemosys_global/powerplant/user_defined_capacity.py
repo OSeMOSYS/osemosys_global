@@ -72,7 +72,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
         df.loc[(df['YEAR']>=df['FIRST_YEAR']) &
                (df['YEAR']>df['BUILD_YEAR']),
                'VALUE'] = df['MAX_BUILD']
-        df.fillna(0,
+        df.infer_objects().fillna(0,
                   inplace=True)
         max_cap_techs_df = df[['REGION',
                                'TECHNOLOGY',
@@ -93,7 +93,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                                        inplace=True)
         
         # For technologies with start year before model start year, add to ResidualCapacity
-        df_res_cap_ud = df_min_cap_inv.loc[df_min_cap_inv['YEAR'] < min(years)]
+        df_res_cap_ud = df_min_cap_inv.copy().loc[df_min_cap_inv.copy()['YEAR'] < min(years)]
         df_res_cap_ud.rename(columns={'YEAR':'START_YEAR'},
                              inplace=True)
         df_res_cap_ud_final = pd.DataFrame(list(itertools.product(df_res_cap_ud['TECHNOLOGY'].unique(),
@@ -122,7 +122,9 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                                                    'YEAR',
                                                    'VALUE']]
 
-        df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final])
+        
+        df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final 
+                                if not df_res_cap_ud_final.empty else None])
                 
         # For technologies with start year at or after model start year, add to 
         # TotalAnnualMinCapacityInvestment      

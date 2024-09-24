@@ -1,7 +1,6 @@
 """Functions to extract relevent data"""
 
 import pandas as pd
-import numpy as np
 from datetime import datetime
 import itertools
 import logging
@@ -30,7 +29,7 @@ def set_generator_table(plexos_prop: pd.DataFrame, plexos_memb: pd.DataFrame,
                             index="powerplant",
                             columns="property",
                             values="value",
-                            aggfunc=np.sum,
+                            aggfunc='sum',
                             fill_value=0,
                            )
     df_gen["total_capacity"] = (df_gen["Max Capacity"].astype(float)) * (
@@ -59,9 +58,10 @@ def set_generator_table(plexos_prop: pd.DataFrame, plexos_memb: pd.DataFrame,
     )
     
     ## Extract start year from Commission Date
-    df_gen_base["Commission Date"] = (pd.TimedeltaIndex(df_gen_base["Commission Date"].astype(int),
+    df_gen_base["Commission Date"] = (pd.to_timedelta(df_gen_base["Commission Date"].astype(int),
                                                 unit='d') + 
                                datetime(1900, 1, 1))
+    
     df_gen_base["start_year"] = df_gen_base["Commission Date"].dt.year
     df_gen_base.drop("Commission Date", axis=1, inplace=True)
     
@@ -329,5 +329,6 @@ def newIar(df_in, tech, new_iar_ccg,
     else: 
         logging.warning(f'Default IAR used for new {tech} power plants')
         iar = new_iar_default
-    df_out['VALUE'] = round(1/iar, 3)
+    df_out.loc[:,'VALUE'] = round(1/iar, 3)
+    
     return df_out
