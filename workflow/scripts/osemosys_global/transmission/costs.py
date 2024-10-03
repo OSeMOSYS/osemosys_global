@@ -1,13 +1,13 @@
 """Function to calculate transmission costs."""
 
-from data_transmission import format_transmission_name
+import pandas as pd
 
-from constants import(
-    region_name,
-    years
-    )
+from data import(
+    format_transmission_name,
+    get_years)
 
-def get_transmission_costs(df_trn_lines, df_oar_final):
+def get_transmission_costs(df_trn_lines, df_oar_final, cap_cost_base, fix_cost_base,
+                           start_year, end_year, region_name):
     '''Gets electrical transmission capital and fixed cost per technology. 
 
     Both the capital costs and fixed cost are written out to avoid having 
@@ -56,11 +56,11 @@ def get_transmission_costs(df_trn_lines, df_oar_final):
     df_trans_fix = df_trans_fix.rename(columns={'O&M':'VALUE'})
 
     df_trans_capex['REGION'] = region_name
-    df_trans_capex['YEAR'] = [years] * len(df_trans_capex)
+    df_trans_capex['YEAR'] = [get_years(start_year, end_year)] * len(df_trans_capex)
     df_trans_capex = df_trans_capex.explode('YEAR')
 
     df_trans_fix['REGION'] = region_name
-    df_trans_fix['YEAR'] = [years] * len(df_trans_fix)
+    df_trans_fix['YEAR'] = [get_years(start_year, end_year)] * len(df_trans_fix)
     df_trans_fix = df_trans_fix.explode('YEAR')
 
     # Filter out techs that don't have activity ratios 
@@ -69,4 +69,7 @@ def get_transmission_costs(df_trn_lines, df_oar_final):
     df_trans_fix = df_trans_fix.loc[
         df_trans_fix['TECHNOLOGY'].isin(df_oar_final['TECHNOLOGY'])]
     
-    return df_trans_capex, df_trans_fix
+    cap_cost_trn_final = pd.concat([cap_cost_base, df_trans_capex])
+    fix_cost_trn_final = pd.concat([fix_cost_base, df_trans_fix])
+    
+    return cap_cost_trn_final, fix_cost_trn_final

@@ -2,9 +2,13 @@
 
 import pandas as pd
 import numpy as np
+
+from constants import COSTS_DICT
+
 from utils import apply_dtypes
 
-def costs_pwr(df_weo_data, costs_dict):
+
+def costs_pwr(df_weo_data):
 
     # ### Costs: Capital, fixed
 
@@ -45,13 +49,12 @@ def costs_pwr(df_weo_data, costs_dict):
                       )
     df_costs['YEAR'] = df_costs['YEAR'].astype(int)
 
-    df_costs = df_costs.loc[df_costs['technology'].isin(costs_dict.keys())]
-    df_costs['technology_code'] = df_costs['technology'].replace(costs_dict)
+    df_costs = df_costs.loc[df_costs['technology'].isin(COSTS_DICT.keys())]
+    df_costs['technology_code'] = df_costs['technology'].replace(COSTS_DICT)
     
     return df_costs
 
-def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex, 
-              df_trans_fix):    
+def costs_end(df_weo_regions, df_costs, df_oar_final): 
     
     weo_regions_dict = dict([(k, v) 
                              for k, v 
@@ -124,12 +127,12 @@ def costs_end(df_weo_regions, df_costs, df_oar_final, df_trans_capex,
         df_costs_final = df_costs_final[~df_costs_final['VALUE'].isnull()]
 
         if each_cost in ['Capital']:
-            df_costs_final_capital = df_costs_final.merge(df_trans_capex, how='outer')
-            df_costs_final_capital = apply_dtypes(df_costs_final_capital, "CapitalCost")
+            #df_costs_final_capital = df_costs_final.merge(df_trans_capex, how='outer')
+            df_costs_final_capital = apply_dtypes(df_costs_final, "CapitalCost")
 
             
         if each_cost in ['O&M']:
-            df_costs_final_fixed = df_costs_final.merge(df_trans_fix, how='outer')
-            df_costs_final_fixed = apply_dtypes(df_costs_final_fixed, "FixedCost")
+            #df_costs_final_fixed = df_costs_final.merge(df_trans_fix, how='outer')
+            df_costs_final_fixed = apply_dtypes(df_costs_final, "FixedCost")
        
     return df_costs_final_capital, df_costs_final_fixed

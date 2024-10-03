@@ -2,14 +2,12 @@
 
 import pandas as pd
 
-from constants import (
-    region_name,
-    years
-)
+from data import get_years
 
 from utils import apply_dtypes
 
-def cap_investment_constraints(df_iar_final, no_investment_techs):
+def cap_investment_constraints(df_iar_final, no_investment_techs,
+                               start_year, end_year, region_name):
 
     # Create totalAnnualMaxCapacityInvestment data 
 
@@ -18,7 +16,7 @@ def cap_investment_constraints(df_iar_final, no_investment_techs):
         df_iar_final.loc[df_iar_final['TECHNOLOGY'].str.endswith('00')]['TECHNOLOGY'].tolist()))
     max_cap_invest_data = []
     for tech in max_cap_invest_techs:
-        for year in years: 
+        for year in get_years(start_year, end_year): 
             max_cap_invest_data.append([region_name, tech, year, 0])
 
     # Do not allow investment for all xxxABCxxxxxxx technologies
@@ -29,7 +27,7 @@ def cap_investment_constraints(df_iar_final, no_investment_techs):
         df_iar_final['TECHNOLOGY'].str[3:6].isin(no_investment_techs)][
         'TECHNOLOGY'].tolist()))
     for tech in max_cap_invest_techs:
-        for year in years: 
+        for year in get_years(start_year, end_year): 
             max_cap_invest_data.append([region_name, tech, year, 0])
     
     # Save totalAnnualMaxCapacityInvestment

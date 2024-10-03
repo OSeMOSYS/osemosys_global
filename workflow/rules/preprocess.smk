@@ -20,6 +20,24 @@ demand_figures = [
 # output script files
 
 power_plant_files = [
+    'powerplant/CapitalCost.csv',
+    'powerplant/FixedCost.csv',
+    'powerplant/CapacityToActivityUnit.csv',
+    'powerplant/OperationalLife.csv',
+    'powerplant/TotalAnnualMaxCapacityInvestment.csv',
+    'powerplant/TotalAnnualMinCapacityInvestment.csv',
+    'FUEL.csv',
+    'powerplant/InputActivityRatio.csv',
+    'powerplant/OutputActivityRatio.csv',
+    'MODE_OF_OPERATION.csv',
+    'REGION.csv',
+    'powerplant/ResidualCapacity.csv',
+    'powerplant/TECHNOLOGY.csv',
+    'YEAR.csv',
+    'AvailabilityFactor.csv'
+    ]
+
+transmission_files = [
     'CapitalCost.csv',
     'FixedCost.csv',
     'CapacityToActivityUnit.csv',
@@ -27,15 +45,10 @@ power_plant_files = [
     'TotalAnnualMaxCapacityInvestment.csv',
     'TotalAnnualMinCapacityInvestment.csv',
     'TotalTechnologyModelPeriodActivityUpperLimit.csv',
-    'FUEL.csv',
     'InputActivityRatio.csv',
     'OutputActivityRatio.csv',
-    'MODE_OF_OPERATION.csv',
-    'REGION.csv',
     'ResidualCapacity.csv',
     'TECHNOLOGY.csv',
-    'YEAR.csv',
-    'AvailabilityFactor.csv'
     ]
 
 timeslice_files = [
@@ -88,7 +101,8 @@ user_capacity_files = [
 
 check_files = os.listdir('resources/otoole/data')
 generated_files = [
-    power_plant_files, 
+    power_plant_files,
+    transmission_files,
     timeslice_files, 
     variable_cost_files, 
     demand_files, 
@@ -96,7 +110,7 @@ generated_files = [
     max_capacity_files]
 for file_list in generated_files:
     [check_files.remove(csv) for csv in file_list]
-
+    
 # rules
 
 rule make_data_dir:
@@ -123,16 +137,48 @@ rule powerplant:
         default_av_factors = 'resources/data/availability_factors.csv',
         custom_res_cap = powerplant_cap_custom_csv()
     params:
-        trade = config['crossborderTrade'],
         start_year = config['startYear'],
         end_year = config['endYear'],
-        invest_techs = config['no_invest_technologies']
+        region_name = 'GLOBAL',
+        custom_nodes = config['nodes_to_add'],
+        user_defined_capacity = config['user_defined_capacity'],
+        no_investment_techs = config['no_invest_technologies'],
+        output_data_dir = 'results/data',
+        input_data_dir = 'resources/data',
+        powerplant_data_dir = 'results/data/powerplant',
+
     output:
         csv_files = expand('results/data/{output_file}', output_file = power_plant_files)
     log:
         log = 'results/logs/powerplant.log'
     script:
         "../scripts/osemosys_global/powerplant/main.py"
+
+rule transmission:
+    message:
+        "Generating transmission data..."
+    input:
+        rules.powerplant.output.csv_files,
+        plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        default_op_life = 'resources/data/operational_life.csv',
+        line_data = 'resources/data/Costs Line expansion.xlsx',
+    params:
+        trade = config['crossborderTrade'],
+        start_year = config['startYear'],
+        end_year = config['endYear'],
+        region_name = 'GLOBAL',
+        custom_nodes = config['nodes_to_add'],
+        user_defined_capacity_transmission = config['user_defined_capacity_transmission'],
+        no_investment_techs = config['no_invest_technologies'],
+        output_data_dir = 'results/data',
+        input_data_dir = 'resources/data',
+        powerplant_data_dir = 'results/data/powerplant',
+    output:
+        csv_files = expand('results/data/{output_file}', output_file = transmission_files)
+    log:
+        log = 'results/logs/transmission.log'
+    script:
+        "../scripts/osemosys_global/transmission/main.py"
 
 rule timeslice:
     message:
@@ -260,6 +306,7 @@ rule file_check:
         'Generating missing files...'
     input:
         rules.powerplant.output.csv_files,
+        rules.transmission.output.csv_files,
         rules.timeslice.output.csv_files,
         rules.variable_costs.output.csv_files,
         rules.demand_projections.output.csv_files,
@@ -272,5 +319,3 @@ rule file_check:
         log = 'results/logs/file_check.log'
     shell:
         'python workflow/scripts/osemosys_global/file_check.py 2> {log}'
-
-

@@ -2,11 +2,9 @@
 
 import pandas as pd
 
-from constants import (
-    region_name,
-    years,
-    SET_DTYPES
-)
+from data import get_years
+
+from constants import SET_DTYPES
 
 def create_sets(x, df, output_dir, custom_node_elements):
     """Creates a formatted otoole set csv 
@@ -29,10 +27,10 @@ def create_sets(x, df, output_dir, custom_node_elements):
     set_elements_df = pd.DataFrame(set_elements, columns = ['VALUE'])
     return set_elements_df
     
-def output_sets(mode_list):                     
+def output_sets(mode_list, start_year, end_year, region_name):                     
 
     # ## Create set for YEAR, REGION, MODE_OF_OPERATION
-    years_df = pd.DataFrame(years, columns = ['VALUE']).astype(SET_DTYPES["YEAR"])
+    years_df = pd.DataFrame(get_years(start_year, end_year), columns = ['VALUE']).astype(SET_DTYPES["YEAR"])
 
     mode_list_df = pd.DataFrame(mode_list, columns = ['VALUE']).astype(SET_DTYPES["MODE_OF_OPERATION"])
 

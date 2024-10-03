@@ -3,12 +3,10 @@
 import pandas as pd
 import itertools
 
-from constants import(
-    years,
-    region_name
-    )
+from data import get_years
 
-def availability_factor(availability, tech_set_base):
+def availability_factor(availability, tech_set_base,
+                        start_year, end_year, region_name):
     
     af_dict = dict(zip(list(availability['technology']),
                        list(availability['value'])))
@@ -16,7 +14,7 @@ def availability_factor(availability, tech_set_base):
     tech_list = [x for x in tech_set_base['VALUE']
                  if x.startswith('PWR')]
     df_af_final = pd.DataFrame(list(itertools.product(tech_list,
-                                                      years)
+                                                      get_years(start_year, end_year))
                                     ),
                                columns = ['TECHNOLOGY', 'YEAR']
                                )

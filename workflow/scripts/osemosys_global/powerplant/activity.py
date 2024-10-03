@@ -4,24 +4,27 @@ import pandas as pd
 import itertools
 
 from constants import (
-    region_name,
-    custom_nodes,
-    years,
-    new_iar_ccg,
-    new_iar_ocg,
-    new_iar_coa,
-    new_iar_default,
+    NODES_EXTRA_LIST,
+    NEW_IAR_CCG,
+    NEW_IAR_OCG,
+    NEW_IAR_COA,
+    NEW_IAR_DEFAULT,
+    THERMAL_FUEL_LIST_OAR,
+    THERMAL_FUEL_LIST_IAR,
+    THERMAL_FUEL_LIST_MINING,
 )
 
 from data import(
-    createPwrTechs, 
-    duplicatePlexosTechs,
-    newIar
+    create_pwr_techs, 
+    duplicate_plexos_techs,
+    new_iar,
+    get_years
     )
 
 from utils import apply_dtypes
 
-def activity_master_start(df_gen_base, nodes_extra_list, duplicate_techs, mode_list):
+def activity_master_start(df_gen_base, duplicate_techs, mode_list,
+                          custom_nodes, start_year, end_year):
 
     # ### Add input and output activity ratios
 
@@ -31,7 +34,7 @@ def activity_master_start(df_gen_base, nodes_extra_list, duplicate_techs, mode_l
     else:
         node_list = list(df_gen_base['node_code'].unique())
     # Add extra nodes which are not present in 2015 but will be by 2050
-    for each_node in nodes_extra_list:
+    for each_node in NODES_EXTRA_LIST:
         if len(each_node) <= 6:
             node_list.append("".join(each_node.split('-')[1:]) + 'XX')
         else:
@@ -43,141 +46,141 @@ def activity_master_start(df_gen_base, nodes_extra_list, duplicate_techs, mode_l
     df_ratios = pd.DataFrame(list(itertools.product(node_list,
                                                     master_fuel_list,
                                                     mode_list,
-                                                    years)
+                                                    get_years(start_year, end_year))
                                   ),
                              columns = ['node_code', 'tech_code', 'MODE_OF_OPERATION', 'YEAR']
                              )
 
-    df_ratios = createPwrTechs(df_ratios, duplicate_techs)
+    df_ratios = create_pwr_techs(df_ratios, duplicate_techs)
 
     return df_ratios
 
-def activity_output_pwr(df_ratios, thermal_fuel_list_oar):
+def activity_output_pwr(df_ratios, region_name):
 
     # #### OutputActivityRatio - Power Generation Technologies
-    df_oar = df_ratios.copy()
-    mask = df_oar['TECHNOLOGY'].apply(lambda x: x[3:6] in thermal_fuel_list_oar)
-    df_oar['FUEL'] = 0
-    df_oar.loc[mask, "FUEL"] = 1
+    df_pwr_oar_base = df_ratios.copy()
+    mask = df_pwr_oar_base['TECHNOLOGY'].apply(lambda x: x[3:6] in THERMAL_FUEL_LIST_OAR)
+    df_pwr_oar_base['FUEL'] = 0
+    df_pwr_oar_base.loc[mask, "FUEL"] = 1
     
-    df_oar = df_oar.loc[~((df_oar['MODE_OF_OPERATION'] > 1) &
-                          (df_oar['FUEL'] == 0))]
-    df_oar['FUEL'] = ('ELC' + 
-                      df_oar['TECHNOLOGY'].str[6:11] + 
+    df_pwr_oar_base = df_pwr_oar_base.loc[~((df_pwr_oar_base['MODE_OF_OPERATION'] > 1) &
+                          (df_pwr_oar_base['FUEL'] == 0))]
+    df_pwr_oar_base['FUEL'] = ('ELC' + 
+                      df_pwr_oar_base['TECHNOLOGY'].str[6:11] + 
                       '01'
                      )
-    df_oar['VALUE'] = 1
+    df_pwr_oar_base['VALUE'] = 1
     
     # Add 'REGION' column and fill 'GLOBAL' throughout
-    df_oar['REGION'] = region_name
+    df_pwr_oar_base['REGION'] = region_name
     
     # Select columns for final output table
-    df_oar_base = df_oar[['REGION', 
+    df_pwr_oar_final = df_pwr_oar_base[['REGION', 
                      'TECHNOLOGY',
                      'FUEL',                  
                      'MODE_OF_OPERATION',
                      'YEAR', 
                      'VALUE',]]
     
-    return df_oar, df_oar_base
+    # Copy OAR table with all columns to IAR
+    df_pwr_iar_base = df_pwr_oar_base.copy()
+    
+    return df_pwr_oar_final, df_pwr_iar_base
 
-def activity_input_pwr(df_oar, thermal_fuel_list_iar, renewables_list, 
-                       df_eff_node, df_eff_tech):
+def activity_input_pwr(df_pwr_iar_base, renewables_list, df_eff_node, 
+                       df_eff_tech, region_name):
 
     # #### InputActivityRatio - Power Generation Technologies
-    # Copy OAR table with all columns to IAR
-    df_iar = df_oar.copy()
-
-    df_iar['FUEL'] = 0
-    df_iar['FUEL'] = df_iar['FUEL'].astype(str)
+    df_pwr_iar_base['FUEL'] = 0
+    df_pwr_iar_base['FUEL'] = df_pwr_iar_base['FUEL'].astype(str)
 
     # Deal with GAS techs first...  OCG and CCG
     # OCG Mode 1: Domestic GAS
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 1) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(['OCG'])),
-               'FUEL'] = 'GAS'+df_iar['TECHNOLOGY'].str[6:9]
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 1) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(['OCG'])),
+               'FUEL'] = 'GAS'+df_pwr_iar_base['TECHNOLOGY'].str[6:9]
     # OCG Mode 2: International GAS
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 2) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(['OCG'])),
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 2) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(['OCG'])),
                'FUEL'] = 'GASINT'
 
     # CCG Mode 1: Domestic GAS
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 1) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(['CCG'])),
-               'FUEL'] = 'GAS'+df_iar['TECHNOLOGY'].str[6:9]
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 1) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(['CCG'])),
+               'FUEL'] = 'GAS'+df_pwr_iar_base['TECHNOLOGY'].str[6:9]
 
     # CCG Mode 2: International GAS
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 2) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(['CCG'])),
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 2) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(['CCG'])),
                'FUEL'] = 'GASINT'
     
     # CCS Mode 1: Domestic COA
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 1) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(['CCS'])),
-               'FUEL'] = 'COA'+df_iar['TECHNOLOGY'].str[6:9]
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 1) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(['CCS'])),
+               'FUEL'] = 'COA'+df_pwr_iar_base['TECHNOLOGY'].str[6:9]
 
     # CCS Mode 2: International COA
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 2) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(['CCS'])),
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 2) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(['CCS'])),
                'FUEL'] = 'COAINT'
 
     # For non-GAS thermal fuels, domestic fuel input by country in mode 1 and 
     # 'international' fuel input in mode 2
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 1) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(thermal_fuel_list_iar)),
-               'FUEL'] = df_iar['TECHNOLOGY'].str[3:9]
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 1) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(THERMAL_FUEL_LIST_IAR)),
+               'FUEL'] = df_pwr_iar_base['TECHNOLOGY'].str[3:9]
 
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 2) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(thermal_fuel_list_iar)),
-               'FUEL'] = df_iar['TECHNOLOGY'].str[3:6] + 'INT'
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 2) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(THERMAL_FUEL_LIST_IAR)),
+               'FUEL'] = df_pwr_iar_base['TECHNOLOGY'].str[3:6] + 'INT'
 
     # For renewable fuels, input by node in mode 1
-    df_iar.loc[(df_iar['MODE_OF_OPERATION'] == 1) &
-               (df_iar['TECHNOLOGY'].str[3:6].isin(renewables_list)),
-               'FUEL'] = df_iar['TECHNOLOGY'].str[3:11]
+    df_pwr_iar_base.loc[(df_pwr_iar_base['MODE_OF_OPERATION'] == 1) &
+               (df_pwr_iar_base['TECHNOLOGY'].str[3:6].isin(renewables_list)),
+               'FUEL'] = df_pwr_iar_base['TECHNOLOGY'].str[3:11]
 
     # Remove mode 2 when not used
-    df_iar = df_iar.loc[df_iar['FUEL'] != 0]
+    df_pwr_iar_base = df_pwr_iar_base.loc[df_pwr_iar_base['FUEL'] != 0]
 
     # Join efficiency columns: one with node and technology average, and the
     # other with technology average
-    df_iar = df_iar.join(df_eff_node.set_index(['tech_code', 'node_code']), 
+    df_pwr_iar_base = df_pwr_iar_base.join(df_eff_node.set_index(['tech_code', 'node_code']), 
                          on=['tech_code', 'node_code'])
 
-    df_iar = df_iar.join(df_eff_tech.set_index('tech_code'), 
+    df_pwr_iar_base = df_pwr_iar_base.join(df_eff_tech.set_index('tech_code'), 
                          on='tech_code')
 
     # When available, choose node and technology average. Else, 
     # choose technology average
-    df_iar['VALUE'] = df_iar['node_average_iar']
+    df_pwr_iar_base['VALUE'] = df_pwr_iar_base['node_average_iar']
     
-    df_iar.loc[df_iar['TECHNOLOGY'].str.startswith('PWRCCS'),
+    df_pwr_iar_base.loc[df_pwr_iar_base['TECHNOLOGY'].str.startswith('PWRCCS'),
                'tech_average_iar'] = 3
     
-    df_iar.loc[df_iar['VALUE'].isna(),
-               'VALUE'] = df_iar['tech_average_iar']
-    df_iar.drop_duplicates(inplace=True)
+    df_pwr_iar_base.loc[df_pwr_iar_base['VALUE'].isna(),
+               'VALUE'] = df_pwr_iar_base['tech_average_iar']
+    df_pwr_iar_base.drop_duplicates(inplace=True)
 
     # Add 'REGION' column and fill 'GLOBAL' throughout
-    df_iar['REGION'] = region_name
+    df_pwr_iar_base['REGION'] = region_name
 
     # Select columns for final output table
-    df_iar_base = df_iar[['REGION', 
-                           'TECHNOLOGY',
-                           'FUEL',  
-                           'MODE_OF_OPERATION',
-                           'YEAR', 
-                           'VALUE',]]
+    df_pwr_iar_final = df_pwr_iar_base[['REGION', 
+                                        'TECHNOLOGY',
+                                        'FUEL',  
+                                        'MODE_OF_OPERATION',
+                                        'YEAR', 
+                                        'VALUE',]]
     
-    return df_iar_base
+    return df_pwr_iar_final
 
-def activity_upstream(df_iar_base, renewables_list, thermal_fuels_list_mining):
+def activity_upstream(df_pwr_iar_final, renewables_list):
 
     # #### OutputActivityRatios - Upstream
     
     # We have to create a technology to produce every fuel that is input into any of the power technologies:
     
-    df_oar_upstream = df_iar_base.copy()
+    df_oar_upstream = df_pwr_iar_final.copy()
     
     # All mining and resource technologies have an OAR of 1...
     df_oar_upstream['VALUE'] = 1
@@ -187,7 +190,7 @@ def activity_upstream(df_iar_base, renewables_list, thermal_fuels_list_mining):
                'TECHNOLOGY'] = 'RNW'+df_oar_upstream['FUEL']
     
     # If the fuel is a thermal fuel, we need to create the OAR for the mining technology... BUT NOT FOR THE INT FUELS...
-    df_oar_upstream.loc[df_oar_upstream['FUEL'].str[0:3].isin(thermal_fuels_list_mining) & 
+    df_oar_upstream.loc[df_oar_upstream['FUEL'].str[0:3].isin(THERMAL_FUEL_LIST_MINING) & 
                         ~(df_oar_upstream['FUEL'].str[3:6] == "INT"),
                'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL']
     
@@ -220,9 +223,8 @@ def activity_upstream(df_iar_base, renewables_list, thermal_fuels_list_mining):
     
     return df_oar_upstream, df_oar_int
 
-def activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, df_oar_trn, 
-                        df_int_trn_oar, df_iar_final, df_iar_trn, df_int_trn_iar,
-                        duplicate_techs):
+def activity_master_end(df_pwr_oar_final, df_oar_upstream, df_oar_int, 
+                        df_pwr_iar_final, duplicate_techs):
 
     # #### Output IAR and OAR
 
@@ -230,11 +232,9 @@ def activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, df_oar_trn,
     
     df_oar_final = pd.concat(
         [
-            df_oar_base, # If we want to split transmission to different script might have to not used df_oar_final as input to this function.
+            df_pwr_oar_final,
             df_oar_upstream,
             df_oar_int,
-            df_oar_trn,
-            df_int_trn_oar,
         ]
     ).dropna()
     
@@ -246,16 +246,8 @@ def activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, df_oar_trn,
                                  'YEAR', 
                                  'VALUE',]]
     
-    df_iar_final = pd.concat(
-        [
-            df_iar_final,
-            df_iar_trn,
-            df_int_trn_iar,
-        ]
-    ).dropna()
-    
     # Select columns for final output table
-    df_iar_final = df_iar_final[['REGION', 
+    df_iar_final = df_pwr_iar_final[['REGION', 
                                  'TECHNOLOGY',
                                  'FUEL',  
                                  'MODE_OF_OPERATION',
@@ -263,14 +255,14 @@ def activity_master_end(df_oar_base, df_oar_upstream, df_oar_int, df_oar_trn,
                                  'VALUE']]
     
     # Add iar for techs not using PLEXOS values 
-    df_iar_newTechs = duplicatePlexosTechs(df_iar_final, duplicate_techs)
+    df_iar_newTechs = duplicate_plexos_techs(df_iar_final, duplicate_techs)
     for duplicate_tech in duplicate_techs:
-        df_new_iar = newIar(df_iar_newTechs, duplicate_tech,new_iar_ccg, 
-                   new_iar_ocg, new_iar_coa, new_iar_default)
+        df_new_iar = new_iar(df_iar_newTechs, duplicate_tech,NEW_IAR_CCG, 
+                   NEW_IAR_OCG, NEW_IAR_COA, NEW_IAR_DEFAULT)
         df_iar_final = pd.concat([df_iar_final, df_new_iar])
     
     # Add oar for techs not using PLEXOS values 
-    df_oar_newTechs = duplicatePlexosTechs(df_oar_final, duplicate_techs)
+    df_oar_newTechs = duplicate_plexos_techs(df_oar_final, duplicate_techs)
     df_oar_final = pd.concat([df_oar_final, df_oar_newTechs])
 
     df_oar_final.drop_duplicates(subset=['REGION', 
@@ -292,15 +284,8 @@ def capact(df_oar_final):
                                     'TECHNOLOGY'
                                     ]]
     df_capact_final = df_capact_final.drop_duplicates()
-    df_capact_final = (df_capact_final
-                       .loc[(df_capact_final['TECHNOLOGY']
-                             .str.startswith('PWR')
-                             ) | 
-                            (df_capact_final['TECHNOLOGY']
-                             .str.contains('TRN')
-                             )
-                            ]
-                       )
+    df_capact_final = df_capact_final.loc[df_capact_final['TECHNOLOGY'
+                                                          ].str.startswith('PWR')]
 
     df_capact_final['VALUE'] = 31.536
     df_capact_final.drop_duplicates(inplace=True)

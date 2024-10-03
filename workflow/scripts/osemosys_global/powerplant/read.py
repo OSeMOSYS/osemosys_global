@@ -44,20 +44,6 @@ def import_naming_convention_tech(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
-def import_line_data(f: str, metric: str) -> dict[str, pd.DataFrame]:
-    """Imports transmission data from PLEXOS-World.
-    
-    Costs Line expansion.xlsx
-    """
-    if metric.lower() == "interface":
-        sheet_name = "Interface"
-    elif metric.lower() == "lines":
-        sheet_name = "Lines"
-    else:
-        raise NotImplementedError
-
-    return pd.read_excel(f, sheet_name=sheet_name)
-
 def import_afs(f: str) -> pd.DataFrame:
     """Imports default availability factors.
     
@@ -69,19 +55,5 @@ def import_custom_res_cap(f: str) -> pd.DataFrame:
     """Imports residual capacities for custom nodes.
     
     custom_nodes\residual_capacity.csv
-    """
-    return pd.read_csv(f)
-
-def import_tech_set(f: str) -> pd.DataFrame:
-    """Imports list of technologies.
-    
-    TECHNOLOGY.csv
-    """
-    return pd.read_csv(f)
-
-def import_fuel_set(f: str) -> pd.DataFrame:
-    """Imports list of fuels.
-    
-    FUEL.csv
     """
     return pd.read_csv(f)

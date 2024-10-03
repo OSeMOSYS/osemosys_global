@@ -1,18 +1,12 @@
 """Function to calaculate activity related to transmission."""
-
 import pandas as pd
 
-from constants import (
-    region_name,
-    start_year,
-    end_year
-)
-
-from data_transmission import format_transmission_name
+from data import format_transmission_name
 
 from utils import apply_dtypes
 
-def activity_transmission(df_oar_base, df_pw_prop, df_trn_efficiencies):
+def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficiencies,
+                          start_year, end_year, region_name):
 
     # #### Downstream Activity Ratios
     
@@ -26,6 +20,9 @@ def activity_transmission(df_oar_base, df_pw_prop, df_trn_efficiencies):
     df_iar_trn["MODE_OF_OPERATION"] = 1
     # And remove all the duplicate entries
     df_iar_trn.drop_duplicates(keep="first", inplace=True)
+    
+    # Only keep technologies linked to the correct fuel
+    df_iar_trn = df_iar_trn.loc[df_iar_trn['FUEL'].str.contains('ELC')]
     
     # OAR for transmission technologies is IAR, but the fuel is 02 instead of 01:
     df_oar_trn = df_iar_trn.copy()
@@ -154,13 +151,54 @@ def activity_transmission(df_oar_base, df_pw_prop, df_trn_efficiencies):
         df_int_trn_oar, df_trn_efficiencies, how="outer", on="TECHNOLOGY"
     )
     
-    return df_iar_trn, df_oar_trn, df_int_trn_oar, df_int_trn_iar
+    df_oar_trn_final = pd.concat(
+            [
+                df_oar_base,
+                df_oar_trn,
+                df_int_trn_oar,
+            ]
+        ).dropna()
+    
+    # Select columns for final output table
+    df_oar_trn_final = df_oar_trn_final[['REGION', 
+                                 'TECHNOLOGY',
+                                 'FUEL',  
+                                 'MODE_OF_OPERATION',
+                                 'YEAR', 
+                                 'VALUE',]]
+    
+    df_iar_trn_final = pd.concat(
+            [
+                df_iar_base,
+                df_iar_trn,
+                df_int_trn_iar,
+            ]
+        ).dropna()    
+    
+    
+    # Select columns for final output table
+    df_iar_trn_final = df_iar_trn_final[['REGION', 
+                                 'TECHNOLOGY',
+                                 'FUEL',  
+                                 'MODE_OF_OPERATION',
+                                 'YEAR', 
+                                 'VALUE',]]
 
-def activity_transmission_limit(cross_border_trade, df_oar_final):
+    df_oar_trn_final.drop_duplicates(subset=['REGION', 
+                                         'TECHNOLOGY',
+                                         'FUEL',  
+                                         'MODE_OF_OPERATION',
+                                         'YEAR'],
+                                 keep='last',
+                                 inplace=True)
+    
+    return df_iar_trn_final, df_oar_trn_final
+
+def activity_transmission_limit(cross_border_trade, df_oar_trn_final):
 
     # Set cross-border trade to 0 if False
     if not cross_border_trade:
-        df_crossborder_final = df_oar_final[['REGION',
+        df_crossborder_final = df_oar_trn_final[['REGION',
                                             'TECHNOLOGY'
                                             ]]
         df_crossborder_final = df_crossborder_final.drop_duplicates()
@@ -179,3 +217,20 @@ def activity_transmission_limit(cross_border_trade, df_oar_final):
                                         "TotalTechnologyModelPeriodActivityUpperLimit")
     
     return df_crossborder_final
+
+def capact_transmission(df_capact_base, df_oar_trn_final):
+
+    # Create CapacityToActivityUnit csv
+    df_capact_trn_final = df_oar_trn_final[['REGION',
+                                    'TECHNOLOGY'
+                                    ]]
+    df_capact_trn_final = df_capact_trn_final.drop_duplicates()
+    df_capact_trn_final = df_capact_trn_final.loc[df_capact_trn_final['TECHNOLOGY'
+                                                          ].str.startswith('TRN')]
+
+    df_capact_trn_final['VALUE'] = 31.536
+    df_capact_trn_final.drop_duplicates(inplace=True)
+    
+    df_capact_trn_final = pd.concat([df_capact_base, df_capact_trn_final])
+
+    return df_capact_trn_final

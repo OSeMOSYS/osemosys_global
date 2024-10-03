@@ -1,21 +1,15 @@
 """Function to calculate residual capacity for powerplant technologies."""
 
 import pandas as pd
-
-from constants import (
-    start_year,
-    end_year,
-    region_name,
-    custom_nodes,
-)
+import itertools
 
 from data import(
-    createPwrTechs, 
-    custom_nodes_csv
+    create_pwr_techs, 
+    get_years
     )
 
-
-def res_capacity(df_gen_base, tech_list, df_tech_code, df_custom_res_cap, duplicate_techs):
+def res_capacity(df_gen_base, tech_list, df_tech_code, duplicate_techs, 
+                 start_year, end_year, region_name):
 
     # ### Calculate residual capacity
     res_cap_cols = [
@@ -28,7 +22,10 @@ def res_capacity(df_gen_base, tech_list, df_tech_code, df_custom_res_cap, duplic
 
     df_res_cap = df_gen_base[res_cap_cols]
     
-    df_res_cap = df_res_cap.reindex(columns=[*df_res_cap.columns.tolist(), *list(range(start_year, end_year+1))], fill_value=0)
+    df_res_cap = df_res_cap.reindex(columns=
+                                    [*df_res_cap.columns.tolist(), 
+                                     *list(range(start_year, end_year+1))], 
+                                    fill_value=0)
 
     df_res_cap = pd.melt(
         df_res_cap,
@@ -52,7 +49,7 @@ def res_capacity(df_gen_base, tech_list, df_tech_code, df_custom_res_cap, duplic
     )["value"].sum()
 
     # Add column with naming convention
-    df_res_cap = createPwrTechs(df_res_cap, duplicate_techs)
+    df_res_cap = create_pwr_techs(df_res_cap, duplicate_techs)
 
     # Convert total capacity from MW to GW
     df_res_cap['value'] = df_res_cap['value'].div(1000)
@@ -73,15 +70,55 @@ def res_capacity(df_gen_base, tech_list, df_tech_code, df_custom_res_cap, duplic
     # Reorder columns
     df_res_cap = df_res_cap[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
 
-    if custom_nodes:
-        df_res_cap_custom, custom_techs = custom_nodes_csv(df_custom_res_cap, 
-                                                           tech_list)
-        df_res_cap = pd.concat([df_res_cap, df_res_cap_custom])
+    return df_res_cap
 
+def add_custom_res_cap(df_res_cap, df_custom, tech_list, custom_nodes,
+                       start_year, end_year, region_name):
+
+    df_custom_res_cap = pd.DataFrame(list(itertools.product(custom_nodes,
+                                                   tech_list,
+                                                   get_years(start_year, end_year))
+                                  ),
+                             columns = ['CUSTOM_NODE',
+                                        'FUEL_TYPE',
+                                        'YEAR']
+                             )
+    df_custom_res_cap['REGION'] = region_name
+    df_custom = df_custom.groupby(['CUSTOM_NODE',
+                                   'FUEL_TYPE',
+                                   'START_YEAR',
+                                   'END_YEAR'],
+                                  as_index=False)['CAPACITY'].sum()
+    df_custom_res_cap = pd.merge(df_custom_res_cap,
+                        df_custom,
+                        how='left',
+                        on=['CUSTOM_NODE',
+                            'FUEL_TYPE'])
+    df_custom_res_cap['TECHNOLOGY'] = ('PWR' +
+                              df_custom_res_cap['FUEL_TYPE'] + 
+                              df_custom_res_cap['CUSTOM_NODE'] +
+                              '01')
+    technologies = df_custom_res_cap['TECHNOLOGY'].unique()
+    df_custom_res_cap.dropna(inplace=True)
+    df_custom_res_cap.drop_duplicates(inplace=True)
+    df_custom_res_cap = df_custom_res_cap.loc[df_custom_res_cap['YEAR'] >=
+                                              df_custom_res_cap['START_YEAR']]
+    df_custom_res_cap = df_custom_res_cap.loc[df_custom_res_cap['YEAR'] <=
+                                              df_custom_res_cap['END_YEAR']]
+    df_custom_res_cap['VALUE'] = df_custom_res_cap['CAPACITY'].div(1000)
+    df_custom_res_cap['REGION'] = region_name
+    df_custom_res_cap = df_custom_res_cap[['REGION','TECHNOLOGY','YEAR','VALUE']]
+    df_custom_res_cap = df_custom_res_cap.groupby(['REGION',
+                                 'TECHNOLOGY',
+                                 'YEAR'],
+                                 as_index=False)['VALUE'].sum()
+    
+    df_res_cap = pd.concat([df_res_cap, df_custom_res_cap])
+    
     df_res_cap.drop_duplicates(subset=['REGION','TECHNOLOGY','YEAR'],
                                keep='last',
                                inplace=True)
     df_res_cap = df_res_cap.loc[(df_res_cap['TECHNOLOGY'].str.startswith('PWR')) &
                                 (~df_res_cap['TECHNOLOGY'].str.endswith('00'))]
     
-    return df_res_cap, custom_techs if custom_nodes else df_res_cap
+    return df_custom_res_cap, technologies

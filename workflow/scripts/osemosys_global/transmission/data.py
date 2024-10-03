@@ -1,5 +1,8 @@
 """Functions to extract and format relevent data for tranmission."""
 
+def get_years(start: int, end: int) -> range:
+    return range(start, end + 1)
+
 def format_transmission_name(df):
     '''Formats PLEXOS transmission names into OSeMOSYS Global names.
 

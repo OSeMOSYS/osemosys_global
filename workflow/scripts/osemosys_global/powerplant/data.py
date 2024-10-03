@@ -2,19 +2,20 @@
 
 import pandas as pd
 from datetime import datetime
-import itertools
 import logging
 
 from constants import (
-    nodes_extra_list,
-    start_year,
-    region_name,
-    custom_nodes,
-    years
+    NODES_EXTRA_LIST,
+    AVG_CSP_EFF,
+    AVG_URN_EFF
 )
 
+def get_years(start: int, end: int) -> range:
+    return range(start, end + 1)
+
 def set_generator_table(plexos_prop: pd.DataFrame, plexos_memb: pd.DataFrame, 
-                        op_life_dict: dict[str, int], tech_code_dict: dict[str, str]) -> pd.DataFrame:
+                        op_life_dict: dict[str, int], tech_code_dict: dict[str, str],
+                        start_year: int, end_year: int) -> pd.DataFrame:
     """Sets the main generator table derived from the PLEXOS-World model.    
     """
 
@@ -105,7 +106,7 @@ def set_generator_table(plexos_prop: pd.DataFrame, plexos_memb: pd.DataFrame,
         
     nodes_extra_df = pd.DataFrame(columns=['node'])
     
-    nodes_extra_df['node'] = nodes_extra_list
+    nodes_extra_df['node'] = NODES_EXTRA_LIST
 
     df_gen_agg_node = pd.concat(
         [df_gen_agg_node,nodes_extra_df],
@@ -155,7 +156,7 @@ def set_generator_table(plexos_prop: pd.DataFrame, plexos_memb: pd.DataFrame,
     
     return df_gen_base
 
-def average_efficiency(df_gen_base, avg_csp_eff, avg_urn_eff):
+def average_efficiency(df_gen_base):
 
     # ### Calculate average InputActivityRatio by node+technology and only by technology
     df_eff = df_gen_base[['node_code',
@@ -163,10 +164,10 @@ def average_efficiency(df_gen_base, avg_csp_eff, avg_urn_eff):
                        'tech_code']]
     
     # Change IAR for CSP value taken from PLEXOS
-    df_eff.loc[df_eff['tech_code']=='CSP', 'efficiency'] = avg_csp_eff
+    df_eff.loc[df_eff['tech_code']=='CSP', 'efficiency'] = AVG_CSP_EFF
     
     # Change IAR for URN value taken from PLEXOS
-    df_eff.loc[df_eff['tech_code']=='URN', 'efficiency'] = avg_urn_eff
+    df_eff.loc[df_eff['tech_code']=='URN', 'efficiency'] = AVG_URN_EFF
     
     # Average efficiency by node and technology
     df_eff_node = df_eff.groupby(['tech_code',
@@ -192,7 +193,7 @@ def average_efficiency(df_gen_base, avg_csp_eff, avg_urn_eff):
 
     return df_eff_node, df_eff_tech
 
-def createPwrTechs(df_in, techs):
+def create_pwr_techs(df_in, techs):
     """Formats power generation technology name
     
     Adds a 'TECHNOLOGY' column to a dataframe with formatted power 
@@ -226,56 +227,7 @@ def createPwrTechs(df_in, techs):
     df_out = df_out.drop('tech_suffix', axis = 1)
     return df_out
 
-def custom_nodes_csv(df_custom, tech_list):
-    '''Add custom nodes to the model for each relevant input parameter data csv.
-
-    Args:
-        df : Pandas DataFrame with columns 'From' and 'To' describing the 
-                transmission from and to contries. ie. 
-    
-    Returns: 
-        df_out : 
-
-    '''
-    df_param = pd.DataFrame(list(itertools.product(custom_nodes,
-                                                   tech_list,
-                                                   years)
-                                  ),
-                             columns = ['CUSTOM_NODE',
-                                        'FUEL_TYPE',
-                                        'YEAR']
-                             )
-    df_param['REGION'] = region_name
-    df_custom = df_custom.groupby(['CUSTOM_NODE',
-                                   'FUEL_TYPE',
-                                   'START_YEAR',
-                                   'END_YEAR'],
-                                  as_index=False)['CAPACITY'].sum()
-    df_param = pd.merge(df_param,
-                        df_custom,
-                        how='left',
-                        on=['CUSTOM_NODE',
-                            'FUEL_TYPE'])
-    df_param['TECHNOLOGY'] = ('PWR' +
-                              df_param['FUEL_TYPE'] + 
-                              df_param['CUSTOM_NODE'] +
-                              '01')
-    technologies = df_param['TECHNOLOGY'].unique()
-    df_param.dropna(inplace=True)
-    df_param.drop_duplicates(inplace=True)
-    df_param = df_param.loc[df_param['YEAR'] >= df_param['START_YEAR']]
-    df_param = df_param.loc[df_param['YEAR'] <= df_param['END_YEAR']]
-    df_param['VALUE'] = df_param['CAPACITY'].div(1000)
-    df_param['REGION'] = region_name
-    df_param = df_param[['REGION','TECHNOLOGY','YEAR','VALUE']]
-    df_param = df_param.groupby(['REGION',
-                                 'TECHNOLOGY',
-                                 'YEAR'],
-                                 as_index=False)['VALUE'].sum()
-
-    return df_param, technologies
-
-def duplicatePlexosTechs(df_in, techs):
+def duplicate_plexos_techs(df_in, techs):
     """Creates new technologies to replace PLEXOS technolgoies.
     
     New technologies will end in '01', while historical ones end in '00'
@@ -302,7 +254,7 @@ def duplicatePlexosTechs(df_in, techs):
                                                                   repl='01')
     return df_out
 
-def newIar(df_in, tech, new_iar_ccg, 
+def new_iar(df_in, tech, new_iar_ccg, 
            new_iar_ocg, new_iar_coa, new_iar_default):
     """Replaces the input activity ratio value with a hardcoded value 
 
