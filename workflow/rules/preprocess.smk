@@ -81,11 +81,11 @@ user_capacity_files = [
     'TotalAnnualMaxCapacityInvestment'
 ]
 
-full_csvs = (
+GENERATED_CSVS = (
     power_plant_files + timeslice_files + variable_cost_files + demand_files \
     + emission_files + max_capacity_files
 )
-empty_csvs = [x for x in OTOOLE_PARAMS if x not in full_csvs]
+EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
 
 # rules
 
@@ -240,10 +240,11 @@ rule create_missing_csv:
     message:
         "Creating empty parameter data"
     params:
-        out_dir = dir("results/data/")
+        out_dir = "results/data/"
     input:
-        otoole_config = OTOOLE_YAML
+        otoole_config = OTOOLE_YAML,
+        csvs = expand("results/data/{full}.csv", full=GENERATED_CSVS)
     output:
-        csvs = expand("results/data/{empty}.csv", empty=empty_csvs)
+        csvs = expand("results/data/{empty}.csv", empty=EMPTY_CSVS)
     script:
         "../scripts/osemosys_global/create_missing_csvs.py"

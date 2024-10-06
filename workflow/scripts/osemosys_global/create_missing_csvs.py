@@ -18,16 +18,16 @@ def get_otoole_params(otoole_config: str) -> dict[str, dict[str, Any]]:
 def get_empty_df(data: dict[str, Any]) -> pd.DataFrame:
     """Gets empty parameter dataframe with correct indices"""
 
-    indices = data["indices"] + "VALUE"
+    indices = data["indices"] + ["VALUE"]
     return pd.DataFrame(columns=indices)
 
 
 if __name__ == "__main__":
     if "snakemake" in globals():
         otoole_yaml = snakemake.input.otoole_config
-        out_dir = snakemake.params.out_dir
+        out_dir = str(snakemake.params.out_dir)
     else:
-        otoole_yaml = "../../../resources/otoole/config.yaml"
+        otoole_yaml = "resources/otoole/config.yaml"
         out_dir = "results/data"
 
     parameters = get_otoole_params(otoole_yaml)
