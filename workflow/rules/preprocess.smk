@@ -15,35 +15,35 @@ demand_figures = [
 # output script files
 
 power_plant_files = [
-    'powerplant/CapitalCost.csv',
-    'powerplant/FixedCost.csv',
-    'powerplant/CapacityToActivityUnit.csv',
-    'powerplant/OperationalLife.csv',
-    'powerplant/TotalAnnualMaxCapacityInvestment.csv',
-    'powerplant/TotalAnnualMinCapacityInvestment.csv',
-    'FUEL.csv',
-    'powerplant/InputActivityRatio.csv',
-    'powerplant/OutputActivityRatio.csv',
-    'MODE_OF_OPERATION.csv',
-    'REGION.csv',
-    'powerplant/ResidualCapacity.csv',
-    'powerplant/TECHNOLOGY.csv',
-    'YEAR.csv',
-    'AvailabilityFactor.csv'
+    'powerplant/CapitalCost',
+    'powerplant/FixedCost',
+    'powerplant/CapacityToActivityUnit',
+    'powerplant/OperationalLife',
+    'powerplant/TotalAnnualMaxCapacityInvestment',
+    'powerplant/TotalAnnualMinCapacityInvestment',
+    'FUEL',
+    'powerplant/InputActivityRatio',
+    'powerplant/OutputActivityRatio',
+    'MODE_OF_OPERATION',
+    'REGION',
+    'powerplant/ResidualCapacity',
+    'powerplant/TECHNOLOGY',
+    'YEAR',
+    'AvailabilityFactor'
     ]
 
 transmission_files = [
-    'CapitalCost.csv',
-    'FixedCost.csv',
-    'CapacityToActivityUnit.csv',
-    'OperationalLife.csv',
-    'TotalAnnualMaxCapacityInvestment.csv',
-    'TotalAnnualMinCapacityInvestment.csv',
-    'TotalTechnologyModelPeriodActivityUpperLimit.csv',
-    'InputActivityRatio.csv',
-    'OutputActivityRatio.csv',
-    'ResidualCapacity.csv',
-    'TECHNOLOGY.csv',
+    'CapitalCost',
+    'FixedCost',
+    'CapacityToActivityUnit',
+    'OperationalLife',
+    'TotalAnnualMaxCapacityInvestment',
+    'TotalAnnualMinCapacityInvestment',
+    'TotalTechnologyModelPeriodActivityUpperLimit',
+    'InputActivityRatio',
+    'OutputActivityRatio',
+    'ResidualCapacity',
+    'TECHNOLOGY',
     ]
 
 timeslice_files = [
@@ -95,9 +95,10 @@ user_capacity_files = [
 ]
 
 GENERATED_CSVS = (
-    power_plant_files + timeslice_files + variable_cost_files + demand_files \
-    + emission_files + max_capacity_files
+    power_plant_files + transmission_files + timeslice_files + variable_cost_files \
+    + demand_files + emission_files + max_capacity_files
 )
+GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
 EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
 
 # rules
@@ -163,7 +164,7 @@ rule transmission:
         input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',
     output:
-        csv_files = expand('results/data/{output_file}', output_file = transmission_files)
+        csv_files = expand('results/data/{output_file}.csv', output_file = transmission_files)
     log:
         log = 'results/logs/transmission.log'
     script:
