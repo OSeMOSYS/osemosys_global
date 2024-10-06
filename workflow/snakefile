@@ -1,4 +1,5 @@
 import os
+import yaml
 from snakemake.utils import min_version
 min_version("6.0")
 
@@ -6,16 +7,50 @@ min_version("6.0")
 
 configfile: 'config/config.yaml'
 
-# helper files
+# helper functions 
 
-include: 'rules/preprocess.smk'
-include: 'rules/model.smk'
-include: 'rules/postprocess.smk'
-include: 'rules/retrieve.smk'
+def get_otoole_data(otoole_config: str, var: str) -> list[str]:
+    """Gets parameter/result files to be created"""
+
+    assert var in ("param", "result", "set")
+
+    with open(otoole_config) as f:
+        otoole = yaml.safe_load(f)
+
+    results = [x for x in otoole if otoole[x]["type"] == var]
+
+    # no result calcualtions 
+    missing = [
+        "NewStorageCapacity",
+        "NumberOfNewTechnologyUnits",
+        "SalvageValueStorage",
+        "StorageLevelDayTypeStart",
+        "StorageLevelDayTypeFinish",
+        "StorageLevelSeasonStart",
+        "StorageLevelSeasonFinish",
+        "StorageLevelYearStart",
+        "StorageLevelYearFinish",
+        "Trade",
+        "DiscountedOperatingCost",
+        "TotalDiscountedStorageCost",
+        "ModelPeriodEmissions",
+        "StorageLowerLimit",
+    ]
+
+    return [x for x in results if x not in missing]
 
 # constants 
 
-OTOOLE_FILES = os.listdir('resources/otoole/data')
+OTOOLE_YAML = "resources/otoole.yaml"
+OTOOLE_PARAMS = get_otoole_data(OTOOLE_YAML, "param")
+OTOOLE_RESULTS = get_otoole_data(OTOOLE_YAML, "result")
+
+# rules
+
+include: "rules/preprocess.smk"
+include: "rules/model.smk"
+include: "rules/postprocess.smk"
+include: "rules/retrieve.smk"
 
 # handlers 
         
@@ -50,7 +85,7 @@ rule generate_input_data:
     message:
         "Generating input CSV data..."
     input:
-        csv_files = expand('results/{scenario}/data/{csv}', scenario=config['scenario'], csv=OTOOLE_FILES),
+        csv_files = expand('results/{scenario}/data/{csv}', scenario=config['scenario'], csv=OTOOLE_PARAMS),
 
 rule make_dag:
     message:
