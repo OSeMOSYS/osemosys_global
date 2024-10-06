@@ -1,12 +1,7 @@
 import os
-
-# required files  
-
-configfile: 'config/config.yaml'
+import yaml
 
 # model and scenario output files 
-
-osemosys_files = os.listdir('resources/otoole/data')
 
 demand_figures = [
     'South America',
@@ -52,65 +47,59 @@ transmission_files = [
     ]
 
 timeslice_files = [
-    'CapacityFactor.csv',
-    'TIMESLICE.csv',
-    'SpecifiedDemandProfile.csv',
-    'YearSplit.csv',
-    'STORAGE.csv',
-    'TechnologyToStorage.csv',
-    'TechnologyFromStorage.csv',
-    'Conversionls.csv',
-    'Conversionld.csv',
-    'Conversionlh.csv',
-    'SEASON.csv',
-    'DAYTYPE.csv',
-    'DAILYTIMEBRACKET.csv',
-    'CapitalCostStorage.csv',
-    'DaySplit.csv',
-    'ReserveMargin.csv',
-    'ReserveMarginTagTechnology.csv',
-    'ReserveMarginTagFuel.csv'
+    'CapacityFactor',
+    'TIMESLICE',
+    'SpecifiedDemandProfile',
+    'YearSplit',
+    'STORAGE',
+    'TechnologyToStorage',
+    'TechnologyFromStorage',
+    'Conversionls',
+    'Conversionld',
+    'Conversionlh',
+    'SEASON',
+    'DAYTYPE',
+    'DAILYTIMEBRACKET',
+    'CapitalCostStorage',
+    'DaySplit',
+    'ReserveMargin',
+    'ReserveMarginTagTechnology',
+    'ReserveMarginTagFuel'
     ]
 
 variable_cost_files = [
-    'VariableCost.csv'
+    'VariableCost'
     ]
 
 demand_files = [
-    'SpecifiedAnnualDemand.csv'
+    'SpecifiedAnnualDemand'
     ]
 
 emission_files = [
-    'EmissionActivityRatio.csv',
-    'EmissionsPenalty.csv',
-    'EMISSION.csv',
-    'AnnualEmissionLimit.csv'
+    'EmissionActivityRatio',
+    'EmissionsPenalty',
+    'EMISSION',
+    'AnnualEmissionLimit'
 ]
 
 max_capacity_files = [
-    'TotalAnnualMaxCapacity.csv',
-    'TotalTechnologyAnnualActivityUpperLimit.csv',
-    'AccumulatedAnnualDemand.csv',
-#    'TotalTechnologyModelPeriodActivityUpperLimit.csv'
+    'TotalAnnualMaxCapacity',
+    'TotalTechnologyAnnualActivityUpperLimit',
+    'AccumulatedAnnualDemand',
+#    'TotalTechnologyModelPeriodActivityUpperLimit'
 ]
 
 user_capacity_files = [
-    'TotalAnnualMinCapacityInvestment.csv',
-    'TotalAnnualMaxCapacityInvestment.csv'
+    'TotalAnnualMinCapacityInvestment',
+    'TotalAnnualMaxCapacityInvestment'
 ]
 
-check_files = os.listdir('resources/otoole/data')
-generated_files = [
-    power_plant_files,
-    transmission_files,
-    timeslice_files, 
-    variable_cost_files, 
-    demand_files, 
-    emission_files, 
-    max_capacity_files]
-for file_list in generated_files:
-    [check_files.remove(csv) for csv in file_list]
-    
+GENERATED_CSVS = (
+    power_plant_files + timeslice_files + variable_cost_files + demand_files \
+    + emission_files + max_capacity_files
+)
+EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
+
 # rules
 
 rule make_data_dir:
@@ -148,7 +137,7 @@ rule powerplant:
         powerplant_data_dir = 'results/data/powerplant',
 
     output:
-        csv_files = expand('results/data/{output_file}', output_file = power_plant_files)
+        csv_files = expand('results/data/{output_file}.csv', output_file = power_plant_files)
     log:
         log = 'results/logs/powerplant.log'
     script:
@@ -197,7 +186,7 @@ rule timeslice:
         daypart = config['dayparts'],
         seasons = config['seasons'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file=timeslice_files),
+        csv_files = expand('results/data/{output_file}.csv', output_file=timeslice_files),
     log:
         log = 'results/logs/timeslice.log'    
     shell:
@@ -213,7 +202,7 @@ rule variable_costs:
         start_year = config['startYear'],
         end_year = config['endYear'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file=variable_cost_files),
+        csv_files = expand('results/data/{output_file}.csv', output_file=variable_cost_files),
     log:
         log = 'results/logs/variable_costs.log'
     shell:
@@ -278,7 +267,7 @@ rule emissions:
         end_year = config['endYear'],
         emission = config['emission_penalty']
     output: 
-        csv_files = expand('results/data/{output_file}', output_file = emission_files),
+        csv_files = expand('results/data/{output_file}.csv', output_file = emission_files),
     log:
         log = 'results/logs/emissions.log'
     shell:
@@ -295,27 +284,21 @@ rule max_capacity:
         start_year = config['startYear'],
         end_year = config['endYear'],
     output:
-        csv_files = expand('results/data/{output_file}', output_file = max_capacity_files),
+        csv_files = expand('results/data/{output_file}.csv', output_file = max_capacity_files),
     log:
         log = 'results/logs/max_capacity.log'
     shell:
         'python workflow/scripts/osemosys_global/max_capacity.py 2> {log}'
 
-rule file_check:
+rule create_missing_csv:
     message:
-        'Generating missing files...'
+        "Creating empty parameter data"
+    params:
+        out_dir = "results/data/"
     input:
-        rules.powerplant.output.csv_files,
-        rules.transmission.output.csv_files,
-        rules.timeslice.output.csv_files,
-        rules.variable_costs.output.csv_files,
-        rules.demand_projections.output.csv_files,
-        rules.emissions.output.csv_files,
-        rules.max_capacity.output.csv_files,
-        #'resources/data/default_values.csv'
-    output: 
-        expand('results/data/{check_file}', check_file = check_files),
-    log: 
-        log = 'results/logs/file_check.log'
-    shell:
-        'python workflow/scripts/osemosys_global/file_check.py 2> {log}'
+        otoole_config = OTOOLE_YAML,
+        csvs = expand("results/data/{full}.csv", full=GENERATED_CSVS)
+    output:
+        csvs = expand("results/data/{empty}.csv", empty=EMPTY_CSVS)
+    script:
+        "../scripts/osemosys_global/create_missing_csvs.py"

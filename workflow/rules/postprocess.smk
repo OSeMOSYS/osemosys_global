@@ -1,35 +1,6 @@
 import os
 
-# REQUIRED 
-
-configfile: 'config/config.yaml'
-
 # OUTPUT FILES 
-
-result_files = [
-    'AccumulatedNewCapacity.csv',
-    'AnnualEmissions.csv',
-    'AnnualFixedOperatingCost.csv',
-    'AnnualTechnologyEmission.csv',
-    'AnnualTechnologyEmissionByMode.csv',
-    'AnnualVariableOperatingCost.csv',
-    # 'CapitalInvestment.csv',
-    'Demand.csv',
-    'DiscountedTechnologyEmissionsPenalty.csv',
-    'NewCapacity.csv',
-    'ProductionByTechnology.csv',
-    'ProductionByTechnologyAnnual.csv',
-    'RateOfActivity.csv',
-    'RateOfProductionByTechnology.csv',
-    'RateOfProductionByTechnologyByMode.csv',
-    'RateOfUseByTechnology.csv',
-    'RateOfUseByTechnologyByMode.csv',
-    'TotalAnnualTechnologyActivityByMode.csv',
-    'TotalCapacityAnnual.csv',
-    'TotalTechnologyAnnualActivity.csv',
-    'TotalTechnologyModelPeriodActivity.csv',
-    'UseByTechnology.csv'
-]
 
 result_figures = [
     'TotalCapacityAnnual', 
@@ -50,7 +21,7 @@ rule otoole_results:
         datafile = 'results/{scenario}/{scenario}.txt',
         otoole_config = 'results/{scenario}/otoole.yaml',
     output:
-        expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
+        expand('results/{{scenario}}/results/{result_file}.csv', result_file = OTOOLE_RESULTS),
     # conda:
     #     '../envs/otoole.yaml'
     log:
@@ -68,7 +39,7 @@ rule visualisation:
     message:
         'Generating result figures...'
     input:
-        csv_files = expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
+        csv_files = expand('results/{{scenario}}/results/{result_file}.csv', result_file = OTOOLE_RESULTS),
     params:
         input_data = "results/{scenario}/data/",
         result_data = "results/{scenario}/results/",
@@ -88,7 +59,7 @@ rule summarise_results:
     message:
         'Generating summary of results...'
     input:
-        csv_files = expand('results/{{scenario}}/results/{result_file}', result_file = result_files),
+        csv_files = expand('results/{{scenario}}/results/{result_file}.csv', result_file = OTOOLE_RESULTS),
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
