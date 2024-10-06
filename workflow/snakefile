@@ -41,7 +41,7 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
 
 # constants 
 
-OTOOLE_YAML = "resources/otoole/config.yaml"
+OTOOLE_YAML = "resources/otoole.yaml"
 OTOOLE_PARAMS = get_otoole_data(OTOOLE_YAML, "param")
 OTOOLE_RESULTS = get_otoole_data(OTOOLE_YAML, "result")
 

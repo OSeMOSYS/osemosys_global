@@ -23,7 +23,7 @@ rule copy_otoole_confg:
     message:
         'Copying otoole configuration file...'
     input:
-        config='resources/otoole/config.yaml'
+        config=OTOOLE_YAML
     output:
         config='results/{scenario}/otoole.yaml'
     run:
