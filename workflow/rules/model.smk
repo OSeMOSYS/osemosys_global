@@ -1,25 +1,17 @@
 import os
 import shutil
 
-# REQUIRED 
-
-configfile: 'config/config.yaml'
-
-# OUTPUT FILES 
-
-osemosys_files = os.listdir('resources/otoole/data')
-
 # RULES
 
 rule geographic_filter:
     message:
         'Applying geographic filter...'
     input: 
-        csv_files = expand('results/data/{osemosys_file}', osemosys_file = osemosys_files),
+        csv_files = expand('results/data/{csv}.csv', csv = OTOOLE_PARAMS),
     params:
         geographic_scope = config['geographic_scope']
     output:
-        csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
+        csv_files = expand('results/{{scenario}}/data/{csv}.csv', csv = OTOOLE_PARAMS),
     # conda:
     #     '../envs/data_processing.yaml'
     log:
@@ -54,7 +46,7 @@ rule otoole_convert:
         csv_dir = 'results/{scenario}/data/'
     input:
         otoole_config = 'results/{scenario}/otoole.yaml',
-        csv_files = expand('results/{{scenario}}/data/{osemosys_file}', osemosys_file = osemosys_files),
+        csv_files = expand('results/{{scenario}}/data/{csv}.csv', csv = OTOOLE_PARAMS),
     output:
         data_file = 'results/{scenario}/{scenario}.txt'
     log:
