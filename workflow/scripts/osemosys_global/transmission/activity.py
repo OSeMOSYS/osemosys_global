@@ -1,8 +1,8 @@
 """Function to calaculate activity related to transmission."""
+
+from typing import Optional
 import pandas as pd
-
 from data import format_transmission_name
-
 from utils import apply_dtypes
 
 def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficiencies,
@@ -218,19 +218,20 @@ def activity_transmission_limit(cross_border_trade, df_oar_trn_final):
     
     return df_crossborder_final
 
-def capact_transmission(df_capact_base, df_oar_trn_final):
 
-    # Create CapacityToActivityUnit csv
-    df_capact_trn_final = df_oar_trn_final[['REGION',
-                                    'TECHNOLOGY'
-                                    ]]
-    df_capact_trn_final = df_capact_trn_final.drop_duplicates()
-    df_capact_trn_final = df_capact_trn_final.loc[df_capact_trn_final['TECHNOLOGY'
-                                                          ].str.startswith('TRN')]
-
-    df_capact_trn_final['VALUE'] = 31.536
-    df_capact_trn_final.drop_duplicates(inplace=True)
+def create_trn_dist_capacity_activity(*dfs: pd.DataFrame, value: Optional[float] = 31.536, region: Optional[str] = "GLOBAL") -> pd.DataFrame:
+    """Creates tranmission and distribution capacity to activity unit data
     
-    df_capact_trn_final = pd.concat([df_capact_base, df_capact_trn_final])
+    Inputs are any number of dataframes with a TECHNOLOGY colums.
+    """
 
-    return df_capact_trn_final
+    techs = []
+    for df in dfs:
+        temp = df[(df.TECHNOLOGY.str.startswith("TRN")) | (df.TECHNOLOGY.str.startswith("PWRTRN"))]
+        techs += temp.TECHNOLOGY.to_list()
+    
+    data = []
+    for tech in set(techs):
+        data.append([region, tech, value])
+        
+    return pd.DataFrame(data, columns=["REGION", "TECHNOLOGY", "VALUE"])

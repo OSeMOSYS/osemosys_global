@@ -21,7 +21,7 @@ power_plant_files = [
     'powerplant/OperationalLife',
     'powerplant/TotalAnnualMaxCapacityInvestment',
     'powerplant/TotalAnnualMinCapacityInvestment',
-    'FUEL',
+    'powerplant/FUEL',
     'powerplant/InputActivityRatio',
     'powerplant/OutputActivityRatio',
     'MODE_OF_OPERATION',
@@ -44,6 +44,7 @@ transmission_files = [
     'OutputActivityRatio',
     'ResidualCapacity',
     'TECHNOLOGY',
+    'FUEL'
     ]
 
 timeslice_files = [

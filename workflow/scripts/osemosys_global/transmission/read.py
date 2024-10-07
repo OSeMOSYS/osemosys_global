@@ -100,9 +100,6 @@ def import_res_cap_base(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
-def import_tech_set_base(f: str) -> pd.DataFrame:
-    """Imports TECHNOLOGY.csv as output from the Powerplant rule.
-    
-    TECHNOLOGY.csv
-    """
+def import_set_base(f: str) -> pd.DataFrame:
+    """Imports a set csv"""
     return pd.read_csv(f)
