@@ -55,7 +55,16 @@ user_defined_capacity:
   #              first_year_of_expansion, 
   #              build_rate_per_year, 
   #              cost]
-  TRNINDEAINDNE: [0, 2030, "open", 2030, 10, 861]
+  PWRCOAINDWE01: [8, 2000, "open", 2025, 5, 1100]
+
+user_defined_capacity_transmission:
+  # technology: [capacity, 
+  #              first_year, 
+  #              "fixed/open", 
+  #              first_year_of_expansion, 
+  #              build_rate_per_year, 
+  #              cost]
+  TRNINDEAINDNE: [5, 1975, "open", 2030, 10, 861]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 

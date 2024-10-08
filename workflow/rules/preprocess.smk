@@ -15,6 +15,24 @@ demand_figures = [
 # output script files
 
 power_plant_files = [
+    'powerplant/CapitalCost',
+    'powerplant/FixedCost',
+    'powerplant/CapacityToActivityUnit',
+    'powerplant/OperationalLife',
+    'powerplant/TotalAnnualMaxCapacityInvestment',
+    'powerplant/TotalAnnualMinCapacityInvestment',
+    'powerplant/FUEL',
+    'powerplant/InputActivityRatio',
+    'powerplant/OutputActivityRatio',
+    'MODE_OF_OPERATION',
+    'REGION',
+    'powerplant/ResidualCapacity',
+    'powerplant/TECHNOLOGY',
+    'YEAR',
+    'AvailabilityFactor'
+    ]
+
+transmission_files = [
     'CapitalCost',
     'FixedCost',
     'CapacityToActivityUnit',
@@ -22,15 +40,11 @@ power_plant_files = [
     'TotalAnnualMaxCapacityInvestment',
     'TotalAnnualMinCapacityInvestment',
     'TotalTechnologyModelPeriodActivityUpperLimit',
-    'FUEL',
     'InputActivityRatio',
     'OutputActivityRatio',
-    'MODE_OF_OPERATION',
-    'REGION',
     'ResidualCapacity',
     'TECHNOLOGY',
-    'YEAR',
-    'AvailabilityFactor'
+    'FUEL'
     ]
 
 timeslice_files = [
@@ -82,9 +96,10 @@ user_capacity_files = [
 ]
 
 GENERATED_CSVS = (
-    power_plant_files + timeslice_files + variable_cost_files + demand_files \
-    + emission_files + max_capacity_files
+    power_plant_files + transmission_files + timeslice_files + variable_cost_files \
+    + demand_files + emission_files + max_capacity_files
 )
+GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
 EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
 
 # rules
@@ -93,27 +108,68 @@ rule make_data_dir:
     output: directory('results/data')
     shell: 'mkdir -p {output}'
 
+     
+def powerplant_cap_custom_csv() -> str:
+    if config["nodes_to_add"]:
+        return "resources/data/custom_nodes/residual_capacity.csv"
+    else:
+        return []   
+        
 rule powerplant:
     message:
-        'Generating powerplant data...'
+        "Generating powerplant data..."
     input:
-        'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
-        'resources/data/weo_2020_powerplant_costs.csv',
-        'resources/data/operational_life.csv',
-        'resources/data/naming_convention_tech.csv',
-        'resources/data/Costs Line expansion.xlsx',
-        'resources/data/weo_region_mapping.csv',
-    params: 
-        trade = config['crossborderTrade'],
+        plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        weo_costs = 'resources/data/weo_2020_powerplant_costs.csv',
+        weo_regions = 'resources/data/weo_region_mapping.csv',
+        default_op_life = 'resources/data/operational_life.csv',
+        naming_convention_tech = 'resources/data/naming_convention_tech.csv',
+        line_data = 'resources/data/Costs Line expansion.xlsx',
+        default_av_factors = 'resources/data/availability_factors.csv',
+        custom_res_cap = powerplant_cap_custom_csv()
+    params:
         start_year = config['startYear'],
         end_year = config['endYear'],
-        invest_techs = config['no_invest_technologies']
+        region_name = 'GLOBAL',
+        custom_nodes = config['nodes_to_add'],
+        user_defined_capacity = config['user_defined_capacity'],
+        no_investment_techs = config['no_invest_technologies'],
+        output_data_dir = 'results/data',
+        input_data_dir = 'resources/data',
+        powerplant_data_dir = 'results/data/powerplant',
+
     output:
         csv_files = expand('results/data/{output_file}.csv', output_file = power_plant_files)
     log:
         log = 'results/logs/powerplant.log'
-    shell:
-        'python workflow/scripts/osemosys_global/powerplant_data.py 2> {log}'
+    script:
+        "../scripts/osemosys_global/powerplant/main.py"
+
+rule transmission:
+    message:
+        "Generating transmission data..."
+    input:
+        rules.powerplant.output.csv_files,
+        plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        default_op_life = 'resources/data/operational_life.csv',
+        line_data = 'resources/data/Costs Line expansion.xlsx',
+    params:
+        trade = config['crossborderTrade'],
+        start_year = config['startYear'],
+        end_year = config['endYear'],
+        region_name = 'GLOBAL',
+        custom_nodes = config['nodes_to_add'],
+        user_defined_capacity_transmission = config['user_defined_capacity_transmission'],
+        no_investment_techs = config['no_invest_technologies'],
+        output_data_dir = 'results/data',
+        input_data_dir = 'resources/data',
+        powerplant_data_dir = 'results/data/powerplant',
+    output:
+        csv_files = expand('results/data/{output_file}.csv', output_file = transmission_files)
+    log:
+        log = 'results/logs/transmission.log'
+    script:
+        "../scripts/osemosys_global/transmission/main.py"
 
 rule timeslice:
     message:
