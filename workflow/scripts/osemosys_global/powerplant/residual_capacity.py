@@ -8,8 +8,7 @@ from data import(
     get_years
     )
 
-def res_capacity(df_gen_base, tech_list, df_tech_code, duplicate_techs, 
-                 start_year, end_year, region_name):
+def res_capacity(df_gen_base, duplicate_techs, start_year, end_year, region_name):
 
     # ### Calculate residual capacity
     res_cap_cols = [

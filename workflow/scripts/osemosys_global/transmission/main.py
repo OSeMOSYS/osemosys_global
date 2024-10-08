@@ -76,7 +76,7 @@ def main(
 
     # Set operational life for transmission.
     df_op_life_trn_final = set_op_life_transmission(iar_trn, oar_trn, 
-                                                    op_life_dict, op_life_base, region_name)
+                                                    default_op_life, op_life_base, region_name)
     
     # Set annual capacity investment constraints.
     df_max_cap_invest_trn_final = cap_investment_constraints_trn(iar_trn, 
@@ -87,7 +87,7 @@ def main(
                                                                  region_name)
 
     # Alter output csv's based on user defined capacities following user config.
-    if not tech_capacity_trn is None:
+    if tech_capacity_trn is not None:
         (df_max_cap_invest_trn_final, 
          df_min_cap_invest_trn_final, 
          df_res_cap_trn_final, 
@@ -97,7 +97,7 @@ def main(
          df_cap_cost_trn_final
          ) = set_user_defined_capacity_trn(
             tech_capacity_trn, 
-            op_life_dict, 
+            default_op_life, 
             min_cap_invest_base, 
             df_max_cap_invest_trn_final, 
             res_cap_base,
@@ -151,16 +151,14 @@ def main(
 
     tech_set.to_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"), index = None)
     fuel_set.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index = None)
+        
+    df_res_cap_trn_final.to_csv(os.path.join(output_data_dir, 
+                                            'ResidualCapacity.csv'),
+                                        index = None)       
     
-    if not tech_capacity_trn is None:
-        
-        df_res_cap_trn_final.to_csv(os.path.join(output_data_dir, 
-                                                'ResidualCapacity.csv'),
-                                            index = None)       
-        
-        df_min_cap_invest_trn_final.to_csv(os.path.join(output_data_dir, 
-                                                'TotalAnnualMinCapacityInvestment.csv'),
-                                            index = None)
+    df_min_cap_invest_trn_final.to_csv(os.path.join(output_data_dir, 
+                                            'TotalAnnualMinCapacityInvestment.csv'),
+                                        index = None)
 
 if __name__ == "__main__":
     
@@ -188,7 +186,11 @@ if __name__ == "__main__":
         file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
         file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'        
-        file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'        
+        file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'
+        
+    # The below else statement defines variables if the 'transmission/main' script is to be run locally
+    # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
+    # the full workflow need to be defined in the config file. 
 
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
@@ -239,7 +241,7 @@ if __name__ == "__main__":
     
     input_data = {
         "plexos_prop": plexos_prop,
-        "default_op_life": op_life,
+        "default_op_life": op_life_dict,
         "line_data": trn_line,
         "interface_data": trn_interface,
         "iar_base" : iar_base,

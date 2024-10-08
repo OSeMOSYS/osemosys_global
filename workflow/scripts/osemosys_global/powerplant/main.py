@@ -62,7 +62,9 @@ def main(
     weo_costs: pd.DataFrame,
     weo_regions: pd.DataFrame,
     default_op_life: pd.DataFrame,
-    naming_convention_tech: pd.DataFrame,
+    tech_code: pd.DataFrame,
+    tech_list: pd.DataFrame,      
+    tech_code_dict: pd.DataFrame,
     custom_res_cap: pd.DataFrame,
     default_av_factors: pd.DataFrame,
 ):
@@ -70,7 +72,7 @@ def main(
     # CALL FUNCTIONS
     
     # return generator_table
-    gen_table = set_generator_table(plexos_prop, plexos_memb, op_life_dict, 
+    gen_table = set_generator_table(plexos_prop, plexos_memb, default_op_life, 
                                     tech_code_dict, start_year, end_year)
 
     # Calculate average technology efficiencies.
@@ -106,7 +108,7 @@ def main(
  
     # Set operational life for powerplant technologies.
     df_op_life = set_op_life(tech_code_dict, df_iar_final, 
-                             df_oar_final, op_life_dict, region_name)
+                             df_oar_final, default_op_life, region_name)
         
     # Set annual capacity investment constraints.
     df_max_cap_invest, df_min_cap_invest = cap_investment_constraints(df_iar_final, 
@@ -115,9 +117,7 @@ def main(
                                                                       end_year,
                                                                       region_name)
     # Calculate residual capacity.
-    df_res_cap = res_capacity(gen_table, tech_list, tech_code, 
-                              DUPLICATE_TECHS, start_year,
-                              end_year, region_name)
+    df_res_cap = res_capacity(gen_table, DUPLICATE_TECHS, start_year, end_year, region_name)
     
     if custom_nodes:
         
@@ -156,7 +156,7 @@ def main(
          df_cap_cost_final
          ) = set_user_defined_capacity(
              tech_capacity, 
-             op_life_dict, 
+             default_op_life, 
              tech_set, 
              df_min_cap_invest, 
              df_max_cap_invest, 
@@ -175,7 +175,7 @@ def main(
              )
     
     # Set availability factors. Occurs after set_user_defined_capacity as tech_set gets updated.
-    df_af_final = availability_factor(availability, tech_set,
+    df_af_final = availability_factor(default_av_factors, tech_set,
                                       start_year, end_year, region_name)
 
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
@@ -238,6 +238,10 @@ if __name__ == "__main__":
         if custom_nodes:
             file_custom_res_cap = snakemake.input.custom_res_cap
             
+    # The below else statement defines variables if the 'powerplant/main' script is to be run locally
+    # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
+    # the full workflow need to be defined in the config file. 
+            
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
         file_default_op_life = 'resources/data/operational_life.csv'
@@ -289,8 +293,10 @@ if __name__ == "__main__":
         "plexos_memb": plexos_memb,
         "weo_costs": weo_costs,
         "weo_regions": weo_regions,
-        "default_op_life": op_life,
-        "naming_convention_tech": tech_code,
+        "default_op_life": op_life_dict,
+        "tech_code": tech_code,
+        "tech_list": tech_list,        
+        "tech_code_dict": tech_code_dict,
         "custom_res_cap" : custom_res_cap,
         "default_av_factors": availability,
     }
