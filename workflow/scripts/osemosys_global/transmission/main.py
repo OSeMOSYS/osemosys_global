@@ -14,7 +14,7 @@ from read import(
     import_max_cap_invest_base,
     import_min_cap_invest_base,
     import_res_cap_base,
-    import_tech_set_base
+    import_set_base
 )
 
 from constants import(
@@ -25,7 +25,7 @@ from constants import(
 from activity import(
     activity_transmission,
     activity_transmission_limit,
-    capact_transmission
+    create_trn_dist_capacity_activity
     )
 
 from costs import get_transmission_costs
@@ -36,7 +36,7 @@ from investment_constraints import cap_investment_constraints_trn
 
 from user_defined_capacity import set_user_defined_capacity_trn
 
-from sets import create_tech_set_trn
+from sets import create_set_from_iterators, get_unique_fuels, get_unique_technologies
 
 def main(
     plexos_prop: pd.DataFrame,
@@ -53,84 +53,91 @@ def main(
     min_cap_invest_base: pd.DataFrame,
     res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
+    fuel_set_base: pd.DataFrame
 ):
     
     # CALL FUNCTIONS
     
     # Set activity ratios for transmission.
-    df_iar_trn_final, df_oar_trn_final = activity_transmission(iar_base, oar_base, 
+    iar_trn, oar_trn = activity_transmission(iar_base, oar_base, 
                                                                plexos_prop, interface_data,
                                                                start_year, end_year,
                                                                region_name)
 
+
     # Adjust activity limits if cross border trade is not allowed following user config.
-    df_crossborder_final = activity_transmission_limit(cross_border_trade, df_oar_trn_final)
-    
-    # Set CapacityToActivityUnit.
-    df_capact_trn_final = capact_transmission(capact_base, df_oar_trn_final)
+    df_crossborder_final = activity_transmission_limit(cross_border_trade, oar_trn)
     
     # Set capital and fixed transmission costs.
-    df_cap_cost_trn_final, df_fix_cost_trn_final = get_transmission_costs(line_data, df_oar_trn_final,
+    df_cap_cost_trn_final, df_fix_cost_trn_final = get_transmission_costs(line_data, oar_trn,
                                                                     cap_cost_base, fix_cost_base,
                                                                     start_year, end_year,
                                                                     region_name)
 
     # Set operational life for transmission.
-    df_op_life_trn_final = set_op_life_transmission(df_iar_trn_final, df_oar_trn_final, 
+    df_op_life_trn_final = set_op_life_transmission(iar_trn, oar_trn, 
                                                     op_life_dict, op_life_base, region_name)
     
     # Set annual capacity investment constraints.
-    df_max_cap_invest_trn_final = cap_investment_constraints_trn(df_iar_trn_final, 
+    df_max_cap_invest_trn_final = cap_investment_constraints_trn(iar_trn, 
                                                                  max_cap_invest_base, 
                                                                  no_investment_techs, 
                                                                  start_year, 
                                                                  end_year, 
                                                                  region_name)
-    
-    tech_set_trn_final = pd.concat([tech_set, create_tech_set_trn(interface_data)])
 
     # Alter output csv's based on user defined capacities following user config.
     if not tech_capacity_trn is None:
-        (tech_set_trn_final, 
-         df_max_cap_invest_trn_final, 
+        (df_max_cap_invest_trn_final, 
          df_min_cap_invest_trn_final, 
          df_res_cap_trn_final, 
-         df_iar_trn_final,
-         df_oar_trn_final,
+         iar_trn,
+         oar_trn,
          df_op_life_trn_final, 
-         df_capact_trn_final, 
          df_cap_cost_trn_final
          ) = set_user_defined_capacity_trn(
-             tech_capacity_trn, 
-             op_life_dict, 
-             tech_set_trn_final, 
-             min_cap_invest_base, 
-             df_max_cap_invest_trn_final, 
-             res_cap_base,
-             df_iar_trn_final,
-             df_oar_trn_final,
-             df_op_life_trn_final,
-             df_capact_trn_final,
-             df_cap_cost_trn_final,
-             start_year,
-             end_year,
-             region_name,
-             DF_IAR_CUSTOM_VAL, 
-             DF_OAR_CUSTOM_VAL
-             )
+            tech_capacity_trn, 
+            op_life_dict, 
+            min_cap_invest_base, 
+            df_max_cap_invest_trn_final, 
+            res_cap_base,
+            iar_trn,
+            oar_trn,
+            df_op_life_trn_final,
+            df_cap_cost_trn_final,
+            start_year,
+            end_year,
+            region_name,
+            DF_IAR_CUSTOM_VAL, 
+            DF_OAR_CUSTOM_VAL
+            )
 
+    # get new additions to fuel and technology sets
+    exising_techs = tech_set_base.VALUE.to_list()
+    iar_techs = get_unique_technologies(iar_trn)
+    oar_techs = get_unique_technologies(oar_trn)
+    tech_set = create_set_from_iterators(exising_techs, iar_techs, oar_techs)
+    
+    exising_fuels = fuel_set_base.VALUE.to_list()
+    iar_fuels = get_unique_fuels(iar_trn)
+    oar_fuels = get_unique_fuels(oar_trn)
+    fuel_set = create_set_from_iterators(exising_fuels, iar_fuels, oar_fuels)
+    
+    # assign capacity to activity unit to transmission + distribution techs
+    cap_activity_trn = create_trn_dist_capacity_activity(iar_trn, oar_trn)
+    cap_activity = pd.concat([capact_base, cap_activity_trn]).drop_duplicates(subset=["REGION", "TECHNOLOGY"], keep="last")
+    
     # OUTPUT CSV's
     
-    df_oar_trn_final.to_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None)
+    oar_trn.to_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None)
     
-    df_iar_trn_final.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
+    iar_trn.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
     
     df_crossborder_final.to_csv(os.path.join(output_data_dir,
                                             "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
                                 index = None)
     
-    df_capact_trn_final.to_csv(os.path.join(output_data_dir, 
-                                            "CapacityToActivityUnit.csv"), index = None)
+    cap_activity.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
     df_cap_cost_trn_final.to_csv(os.path.join(output_data_dir, "CapitalCost.csv"), index = None)
     
@@ -142,7 +149,8 @@ def main(
                                             'TotalAnnualMaxCapacityInvestment.csv'),
                                         index = None)
 
-    tech_set_trn_final.to_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"), index = None)
+    tech_set.to_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"), index = None)
+    fuel_set.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index = None)
     
     if not tech_capacity_trn is None:
         
@@ -180,6 +188,7 @@ if __name__ == "__main__":
         file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
         file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'        
+        file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'        
 
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
@@ -196,16 +205,17 @@ if __name__ == "__main__":
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
-        file_iar_base = f'{powerplant_data_dir}/InputActivityRatio'
-        file_oar_base = f'{powerplant_data_dir}/OutputActivityRatio'
-        file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit'
-        file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost'
-        file_fix_cost_base = f'{powerplant_data_dir}/FixedCost'
-        file_op_life_base = f'{powerplant_data_dir}/OperationalLife'
+        file_iar_base = f'{powerplant_data_dir}/InputActivityRatio.csv'
+        file_oar_base = f'{powerplant_data_dir}/OutputActivityRatio.csv'
+        file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'
+        file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
+        file_fix_cost_base = f'{powerplant_data_dir}/FixedCost.csv'
+        file_op_life_base = f'{powerplant_data_dir}/OperationalLife.csv'
         file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
         file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
         file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
-        file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'          
+        file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'
+        file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'
 
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
@@ -224,23 +234,25 @@ if __name__ == "__main__":
     max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
     min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
     res_cap_base = import_res_cap_base(file_res_cap_base)  
-    tech_set = import_tech_set_base(file_tech_set)  
+    tech_set_base = import_set_base(file_tech_set)  
+    fuel_set_base = import_set_base(file_tech_set)  
     
     input_data = {
         "plexos_prop": plexos_prop,
         "default_op_life": op_life,
         "line_data": trn_line,
         "interface_data": trn_interface,
-         "iar_base" : iar_base,
-         "oar_base" : oar_base,
-         "capact_base" : capact_base,
-         "cap_cost_base" : cap_cost_base,
-         "fix_cost_base" : fix_cost_base,
-         "op_life_base" : op_life_base,
-         "max_cap_invest_base" : max_cap_invest_base,
-         "min_cap_invest_base" : min_cap_invest_base,
-         "res_cap_base" : res_cap_base, 
-         "tech_set_base" : tech_set,     
+        "iar_base" : iar_base,
+        "oar_base" : oar_base,
+        "capact_base" : capact_base,
+        "cap_cost_base" : cap_cost_base,
+        "fix_cost_base" : fix_cost_base,
+        "op_life_base" : op_life_base,
+        "max_cap_invest_base" : max_cap_invest_base,
+        "min_cap_invest_base" : min_cap_invest_base,
+        "res_cap_base" : res_cap_base, 
+        "tech_set_base" : tech_set_base,
+        "fuel_set_base" : fuel_set_base,  
     }
     
     # CALL MAIN

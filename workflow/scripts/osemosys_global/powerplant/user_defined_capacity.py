@@ -106,8 +106,9 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                                                    'YEAR',
                                                    'VALUE']]
 
-        df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final 
-                                if not df_res_cap_ud_final.empty else None])
+        if not df_res_cap_ud_final.empty:
+            df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final])
+            df_res_cap = df_res_cap.groupby(by=["REGION", "TECHNOLOGY", "YEAR"], as_index=False).sum()
                 
         # For technologies with start year at or after model start year, add to 
         # TotalAnnualMinCapacityInvestment      
@@ -136,25 +137,16 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                                             'MODE_OF_OPERATION',
                                             'YEAR']
                                  )  
-        # IAR in modes 1 and 2 are primary electricity commodity ('ELC*01') in 
-        # node_from and node_to, respectively. 
-        # OAR is the inverse of the above
-        df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,
-                                        'FUEL'] = ('ELC' + 
-                                                   df_iar_custom['TECHNOLOGY'].str[3:8] + 
-                                                   '01')
-        df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,
-                                        'FUEL'] = ('ELC' + 
-                                                   df_iar_custom['TECHNOLOGY'].str[8:13] + 
-                                                   '01')
-        df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,
-                                        'FUEL'] = ('ELC' + 
-                                                   df_oar_custom['TECHNOLOGY'].str[8:13] + 
-                                                   '01')
-        df_oar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,
-                                        'FUEL'] = ('ELC' + 
-                                                   df_oar_custom['TECHNOLOGY'].str[3:8] + 
-                                                   '01')
+
+        df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,'FUEL'] = (
+            df_iar_custom['TECHNOLOGY'].str[3:9])
+        df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,'FUEL'] = (
+            df_iar_custom['TECHNOLOGY'].str[3:6] + "INT")
+        df_oar_custom.loc[df_oar_custom['MODE_OF_OPERATION']==1,'FUEL'] = (
+            'ELC' + df_oar_custom['TECHNOLOGY'].str[6:11] + '01')
+        df_oar_custom.loc[df_oar_custom['MODE_OF_OPERATION']==2,'FUEL'] = (
+            'ELC' + df_oar_custom['TECHNOLOGY'].str[6:11] + '01')
+        
         df_iar_custom['VALUE'] = DF_IAR_CUSTOM_VAL
         df_oar_custom['VALUE'] = DF_OAR_CUSTOM_VAL
         df_iar_custom['REGION'] = region_name

@@ -204,11 +204,11 @@ def main(
     
     tech_set.to_csv(os.path.join(powerplant_data_dir, "TECHNOLOGY.csv"), index = None)
     
+    fuel_set.to_csv(os.path.join(powerplant_data_dir, "FUEL.csv"), index = None)
+    
     # OUTPUT CSV's NOT USED AS INPUT FOR TRANMISSION RULE
     
     df_af_final.to_csv(os.path.join(output_data_dir, 'AvailabilityFactor.csv'), index=None)
-    
-    fuel_set.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index = None)
     
     years_set.to_csv(os.path.join(output_data_dir, "YEAR.csv"), index = None)
     

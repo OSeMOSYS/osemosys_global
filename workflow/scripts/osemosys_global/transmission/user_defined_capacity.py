@@ -5,9 +5,9 @@ import itertools
 
 from data import get_years
 
-def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict, df_tech_set, 
+def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict, 
                                   df_min_cap_invest, df_max_cap_invest, df_res_cap,
-                                  df_iar_final, df_oar_final, op_life_base, cap_act_base,
+                                  df_iar_final, df_oar_final, op_life_base,
                                   cap_cost_base, start_year, end_year, region_name,
                                   df_iar_custom_val, df_oar_custom_val):
     
@@ -31,12 +31,6 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict, df_tech_set,
                                         columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
         tech_capacity_trn_df['REGION'] = region_name
         tech_capacity_trn_df = tech_capacity_trn_df[['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']]
-
-        for each_tech in list(tech_capacity_trn_df['TECHNOLOGY'].unique()):
-            if each_tech not in list(df_tech_set['VALUE']):
-                df_tech_set = pd.concat([df_tech_set, pd.DataFrame({'VALUE':[each_tech]})])
-                
-        df_tech_set.drop_duplicates(inplace=True)
 
         df_min_cap_inv = pd.concat([df_min_cap_invest, tech_capacity_trn_df])
         df_min_cap_inv.drop_duplicates(inplace=True)
@@ -207,16 +201,6 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict, df_tech_set,
                                         'TECHNOLOGY'],
                                 keep='last',
                                 inplace=True)
-
-        cap_act_custom = pd.DataFrame({'TECHNOLOGY': tech_list})
-        cap_act_custom.loc[cap_act_custom['TECHNOLOGY'].str.contains('TRN'),
-                           'VALUE'] = 31.536
-        cap_act_custom['REGION'] = region_name
-        cap_act_custom = cap_act_custom[['REGION',
-                                         'TECHNOLOGY',
-                                         'VALUE']]
-        cap_act = pd.concat([cap_act_base, cap_act_custom])
-        cap_act.drop_duplicates(inplace=True)
         
         # Update CapitalCost with user-defined costs by transmission line
         tech_list = list(tech_capacity_trn_df['TECHNOLOGY'].unique())
@@ -239,6 +223,6 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict, df_tech_set,
                                  keep="last",
                                  inplace=True)
         
-        return(df_tech_set, df_max_cap_inv, df_min_cap_inv, 
-               df_res_cap, df_iar, df_oar, op_life, cap_act, cap_cost)
+        return(df_max_cap_inv, df_min_cap_inv, 
+               df_res_cap, df_iar, df_oar, op_life, cap_cost)
         
