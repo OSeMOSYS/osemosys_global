@@ -153,6 +153,8 @@ rule transmission:
         plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
         default_op_life = 'resources/data/operational_life.csv',
         line_data = 'resources/data/Costs Line expansion.xlsx',
+        gtd_existing = 'resources/data/GTD_existing.csv',
+        gtd_planned = 'resources/data/GTD_planned.csv',
     params:
         trade = config['crossborderTrade'],
         start_year = config['startYear'],

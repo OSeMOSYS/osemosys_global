@@ -16,6 +16,16 @@ def import_plexos_2015(f: str, metric: str) -> dict[str, pd.DataFrame]:
 
     return pd.read_excel(f, sheet_name=sheet_name)
 
+def import_gtd_existing(f: str) -> pd.DataFrame:
+    """Imports existing transmission capacity data from the Global
+    Transmission Database (GTD)."""
+    return pd.read_csv(f, encoding = 'latin1')
+
+def import_gtd_planned(f: str) -> pd.DataFrame:
+    """Imports planned transmission capacity data from the Global
+    Transmission Database (GTD)."""
+    return pd.read_csv(f, encoding = 'latin1')
+
 def import_line_data(f: str, metric: str) -> dict[str, pd.DataFrame]:
     """Imports transmission data from PLEXOS-World.
     
