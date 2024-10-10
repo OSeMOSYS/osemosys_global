@@ -198,10 +198,10 @@ and **N**epal)
 
     ```yaml
     geographic_scope:
-    - 'IND'
-    - 'BGD'
-    - 'BTN'
-    - 'NPL'
+      - 'IND'
+      - 'BGD'
+      - 'BTN'
+      - 'NPL'
     ```
 
 4. Change the model horizon to be from 2020 to 2040. Both numbers are inclusive.
@@ -216,9 +216,9 @@ day. The start number is inclusive, while the end number is exclusive.
 
     ```yaml
     dayparts:
-    D1: [0, 8]
-    D2: [8, 16]
-    D3: [16, 24]
+      D1: [0, 8]
+      D2: [8, 16]
+      D3: [16, 24]
     ```
 
 6. Change the number of seasons to represent 6 equally spaced days. Both numbers
@@ -226,12 +226,12 @@ are inclusive.
 
     ```yaml
     seasons:
-    S1: [1, 2]
-    S2: [3, 4]
-    S3: [5, 6]
-    S4: [7, 8]
-    S5: [9, 10]
-    S6: [11, 12]
+      S1: [1, 2]
+      S2: [3, 4]
+      S3: [5, 6]
+      S4: [7, 8]
+      S5: [9, 10]
+      S6: [11, 12]
     ```
 
     :::{tip}
@@ -251,7 +251,11 @@ are inclusive.
 7. Change the emission penalty to `50` $/T
 
     ```yaml
-    emission_penalty: 50 
+    emission_penalty:
+      - ["CO2", "IND", 2020, 2040, 50]
+      - ["CO2", "BGD", 2020, 2040, 50]
+      - ["CO2", "BTN", 2020, 2040, 50]
+      - ["CO2", "NPL", 2020, 2040, 50]
     ```
 
 8. Run the command `snakemake -j6`
