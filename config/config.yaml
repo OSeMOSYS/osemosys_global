@@ -51,20 +51,22 @@ solver: "cbc" # cbc, cplex, gurobi
 user_defined_capacity:
   # technology: [capacity, 
   #              first_year, 
-  #              "fixed/open", 
   #              first_year_of_expansion, 
   #              build_rate_per_year, 
-  #              cost]
-  PWRCOAINDWE01: [8, 2000, "open", 2025, 5, 1100]
+  #              cost, 
+  #              efficiency]
+  PWRCOAINDWE01: [8, 2000, 2025, 5, 1100, 35]
+  PWRBIOINDWE01: [0, 2020, 2030, 2, 2000, 28]
 
 user_defined_capacity_transmission:
   # technology: [capacity, 
   #              first_year, 
-  #              "fixed/open", 
   #              first_year_of_expansion, 
   #              build_rate_per_year, 
-  #              cost]
-  TRNINDEAINDNE: [5, 1975, "open", 2030, 10, 861]
+  #              cost, 
+  #              efficiency]
+  TRNINDEAINDNE: [5, 1975, 2030, 10, 861, 95]
+  TRNINDNOINDSO: [0, 2020, 2025, 2, 1800, 92]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 

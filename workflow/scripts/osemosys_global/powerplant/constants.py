@@ -109,11 +109,6 @@ NEW_IAR_OCG = 0.35
 NEW_IAR_COA = 0.33
 NEW_IAR_DEFAULT = 1
 
-"""Set iar and oar values for custom transmission entries. I.e. oar of 0.9
-assumes 10% losses. Relevant for the user_defined_capacity function."""
-DF_IAR_CUSTOM_VAL = 1
-DF_OAR_CUSTOM_VAL = 0.9
-
 """Set column name dictionaries for different Global Energy Monitor (gem) input datasets"""
 GEM_COAL_COL = {'Country' : 'Country', 'Capacity (MW)' : 'VALUE', 
                 'Status' : 'Status', 'Year' : 'Year_built',

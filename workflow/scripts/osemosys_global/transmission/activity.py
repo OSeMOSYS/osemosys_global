@@ -22,7 +22,7 @@ def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficienc
     df_iar_trn.drop_duplicates(keep="first", inplace=True)
     
     # Only keep technologies linked to the correct fuel
-    df_iar_trn = df_iar_trn.loc[df_iar_trn['FUEL'].str.contains('ELC')]
+    df_iar_trn = df_iar_trn.loc[df_iar_trn['FUEL'].str.contains('ELC', na = False)]
     
     # OAR for transmission technologies is IAR, but the fuel is 02 instead of 01:
     df_oar_trn = df_iar_trn.copy()

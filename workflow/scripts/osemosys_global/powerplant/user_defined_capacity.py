@@ -8,24 +8,24 @@ from data import get_years
 def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set, 
                       df_min_cap_invest, df_max_cap_invest, df_res_cap,
                       op_life_base, cap_act_base, cap_cost_base, df_iar_final,
-                      df_oar_final, fuel_set, start_year, end_year, region_name, 
-                      DF_IAR_CUSTOM_VAL, DF_OAR_CUSTOM_VAL
+                      df_oar_final, fuel_set, start_year, end_year, region_name,
+                      RENEWABLES_LIST
                       ):
     
     techCapacity = []
-    tech_capacity_dict = {}
     first_year_dict = {}
     build_rate_dict = {}
     capex_dict = {}
     build_year_dict = {}
+    efficiency_dict = {}
 
     for tech, tech_params in tech_capacity.items():
         techCapacity.append([tech, tech_params[0], tech_params[1]])
-        tech_capacity_dict[tech] = tech_params[2] #UNUSED ENTRY
         build_year_dict[tech] = tech_params[1]
-        first_year_dict[tech] = tech_params[3]
-        build_rate_dict[tech] = tech_params[4]
-        capex_dict[tech] = tech_params[5]
+        first_year_dict[tech] = tech_params[2]
+        build_rate_dict[tech] = tech_params[3]
+        capex_dict[tech] = tech_params[4]
+        efficiency_dict[tech] = tech_params[5]       
     tech_capacity_df = pd.DataFrame(techCapacity,
                                     columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
     tech_capacity_df['REGION'] = region_name
@@ -136,17 +136,39 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                                         'YEAR']
                              )  
 
-    df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==1,'FUEL'] = (
-        df_iar_custom['TECHNOLOGY'].str[3:9])
-    df_iar_custom.loc[df_iar_custom['MODE_OF_OPERATION']==2,'FUEL'] = (
-        df_iar_custom['TECHNOLOGY'].str[3:6] + "INT")
-    df_oar_custom.loc[df_oar_custom['MODE_OF_OPERATION']==1,'FUEL'] = (
-        'ELC' + df_oar_custom['TECHNOLOGY'].str[6:11] + '01')
-    df_oar_custom.loc[df_oar_custom['MODE_OF_OPERATION']==2,'FUEL'] = (
-        'ELC' + df_oar_custom['TECHNOLOGY'].str[6:11] + '01')
-    
-    df_iar_custom['VALUE'] = DF_IAR_CUSTOM_VAL
-    df_oar_custom['VALUE'] = DF_OAR_CUSTOM_VAL
+    for each_tech in tech_list:
+        if each_tech[3:6] in RENEWABLES_LIST:
+
+            df_iar_custom.loc[(df_iar_custom['TECHNOLOGY'] == each_tech) & 
+                              (df_iar_custom['MODE_OF_OPERATION']==1),'FUEL'] = (
+                                  df_iar_custom['TECHNOLOGY'].str[3:11])           
+            
+            df_oar_custom.loc[(df_oar_custom['TECHNOLOGY'] == each_tech) & 
+                              (df_oar_custom['MODE_OF_OPERATION']==1),'FUEL'] = (
+                'ELC' + df_oar_custom['TECHNOLOGY'].str[6:11] + '01')
+            
+        else:
+
+            df_iar_custom.loc[(df_iar_custom['TECHNOLOGY'] == each_tech) & 
+                              (df_iar_custom['MODE_OF_OPERATION']==1),'FUEL'] = (
+                                  df_iar_custom['TECHNOLOGY'].str[3:9])
+                                  
+            df_iar_custom.loc[(df_iar_custom['TECHNOLOGY'] == each_tech) & 
+                              (df_iar_custom['MODE_OF_OPERATION']==2),'FUEL'] = (
+                                  df_iar_custom['TECHNOLOGY'].str[3:6] + "INT")
+            
+            df_oar_custom.loc[(df_oar_custom['TECHNOLOGY'] == each_tech) & 
+                              (df_oar_custom['MODE_OF_OPERATION']==1),'FUEL'] = (
+                'ELC' + df_oar_custom['TECHNOLOGY'].str[6:11] + '01')
+            df_oar_custom.loc[(df_oar_custom['TECHNOLOGY'] == each_tech) & 
+                              (df_oar_custom['MODE_OF_OPERATION']==2),'FUEL'] = (
+                'ELC' + df_oar_custom['TECHNOLOGY'].str[6:11] + '01')
+            
+    for each_tech in tech_list:
+        df_iar_custom.loc[df_iar_custom['TECHNOLOGY'] == each_tech,
+                         'VALUE'] = round(1 / (efficiency_dict[each_tech] / 100), 3)
+
+    df_oar_custom['VALUE'] = 1
     df_iar_custom['REGION'] = region_name
     df_oar_custom['REGION'] = region_name
 
@@ -162,6 +184,10 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                                    'MODE_OF_OPERATION',
                                    'YEAR', 
                                    'VALUE',]]
+    
+    # Drop mode 2 for renewable techs
+    df_iar_custom = df_iar_custom.loc[df_iar_custom['FUEL'] != 0]
+    df_oar_custom = df_oar_custom.loc[df_oar_custom['FUEL'] != 0]
     
     df_iar = pd.concat([df_iar_final, df_iar_custom])
     df_oar = pd.concat([df_oar_final, df_oar_custom])

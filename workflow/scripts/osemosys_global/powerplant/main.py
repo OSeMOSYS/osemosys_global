@@ -14,9 +14,7 @@ from read import(
 from constants import(
     DUPLICATE_TECHS,
     MODE_LIST,
-    RENEWABLES_LIST,
-    DF_IAR_CUSTOM_VAL,
-    DF_OAR_CUSTOM_VAL
+    RENEWABLES_LIST
     )
 
 from data import(
@@ -170,8 +168,7 @@ def main(
              start_year,
              end_year,
              region_name,
-             DF_IAR_CUSTOM_VAL, 
-             DF_OAR_CUSTOM_VAL
+             RENEWABLES_LIST
              )
     
     # Set availability factors. Occurs after set_user_defined_capacity as tech_set gets updated.
@@ -253,7 +250,8 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"] 
-        tech_capacity = {'PWRCOAINDWE01': [8, 2000, "open", 2025, 5, 1100]}
+        tech_capacity = {'PWRCOAINDWE01': [8, 2000, 2025, 5, 1100, 35],
+                         'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
         output_data_dir = 'results/data'

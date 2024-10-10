@@ -17,11 +17,6 @@ from read import(
     import_set_base
 )
 
-from constants import(
-    DF_IAR_CUSTOM_VAL,
-    DF_OAR_CUSTOM_VAL
-    )
-
 from activity import(
     activity_transmission,
     activity_transmission_limit,
@@ -107,9 +102,7 @@ def main(
             df_cap_cost_trn_final,
             start_year,
             end_year,
-            region_name,
-            DF_IAR_CUSTOM_VAL, 
-            DF_OAR_CUSTOM_VAL
+            region_name
             )
 
     # get new additions to fuel and technology sets
@@ -200,7 +193,8 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
-        tech_capacity_trn = {'TRNINDEAINDNE': [5, 1975, "open", 2030, 10, 861]}
+        tech_capacity_trn = {'TRNINDEAINDNE': [5, 1975, 2030, 10, 861, 95],
+                             'TRNINDNOINDSO': [0, 2020, 2025, 5, 1800, 92]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]        
         cross_border_trade = True
