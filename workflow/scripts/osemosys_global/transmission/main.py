@@ -5,6 +5,8 @@ from read import(
     import_plexos_2015,
     import_gtd_existing,
     import_gtd_planned,
+    import_gtd_mapping,
+    import_centerpoints,
     import_op_life,
     import_line_data,
     import_iar_base,
@@ -161,6 +163,8 @@ if __name__ == "__main__":
         file_plexos = snakemake.input.plexos
         file_gtd_existing = snakemake.input.gtd_existing
         file_gtd_planned = snakemake.input.gtd_planned
+        file_gtd_mapping = snakemake.input.gtd_mapping
+        file_centerpoints = snakemake.input.centerpoints 
         file_default_op_life = snakemake.input.default_op_life
         file_line_data = snakemake.input.line_data
         start_year = snakemake.params.start_year
@@ -192,7 +196,9 @@ if __name__ == "__main__":
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
         file_gtd_existing = 'resources/data/GTD_existing.csv'
-        file_gtd_planned = 'resources/data/GTD_planned.csv'     
+        file_gtd_planned = 'resources/data/GTD_planned.csv'    
+        file_gtd_mapping = 'resources/data/GTD_region_mapping.csv'  
+        file_centerpoints = 'resources/data/centerpoints.csv'           
         file_default_op_life = 'resources/data/operational_life.csv'
         file_line_data = 'resources/data/Costs Line expansion.xlsx'
         start_year = 2021
@@ -222,7 +228,9 @@ if __name__ == "__main__":
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
     gtd_exist = import_gtd_existing(file_gtd_existing)
-    gtd_plan = import_gtd_planned(file_gtd_planned)    
+    gtd_plan = import_gtd_planned(file_gtd_planned)  
+    gtd_mapping = import_gtd_mapping(file_gtd_mapping)  
+    centerpoints = import_centerpoints(file_centerpoints)  
     op_life = import_op_life(file_default_op_life)
     op_life_dict = dict(zip(list(op_life['tech']),
                             list(op_life['years'])))

@@ -155,6 +155,8 @@ rule transmission:
         line_data = 'resources/data/Costs Line expansion.xlsx',
         gtd_existing = 'resources/data/GTD_existing.csv',
         gtd_planned = 'resources/data/GTD_planned.csv',
+        gtd_mapping = 'resources/data/GTD_region_mapping.csv',
+        centerpoints = 'resources/data/centerpoints.csv'
     params:
         trade = config['crossborderTrade'],
         start_year = config['startYear'],

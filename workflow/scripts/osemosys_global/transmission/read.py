@@ -26,6 +26,16 @@ def import_gtd_planned(f: str) -> pd.DataFrame:
     Transmission Database (GTD)."""
     return pd.read_csv(f, encoding = 'latin1')
 
+def import_gtd_mapping(f: str) -> pd.DataFrame:
+    """Imports the spatial mapping between OG and the Global
+    Transmission Database (GTD)."""
+    return pd.read_csv(f)
+
+def import_centerpoints(f: str) -> pd.DataFrame:
+    """Imports the centerpoints as used to calculate transmission
+    distances for transmission lines."""
+    return pd.read_csv(f)
+
 def import_line_data(f: str, metric: str) -> dict[str, pd.DataFrame]:
     """Imports transmission data from PLEXOS-World.
     
