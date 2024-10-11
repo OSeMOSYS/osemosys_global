@@ -1,5 +1,6 @@
 """Functions to extract and format relevent data for tranmission."""
 import pandas as pd
+import geopy.distance
 
 from sets import get_unique_technologies
 
@@ -86,26 +87,48 @@ def format_gtd_planned(df):
     
     return df
 
-def set_gtd_mapping(df_exist, df_plan, region_mapping_dict, 
-                         USA_TRN_BA_DICT_FROM, USA_TRN_BA_DICT_TO):
+def correct_gtd_line_mapping(df_exist, df_plan, region_mapping_dict, 
+                             CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO):
     
     # Create df with unique transmission technologies from GTD.
     tech_exist = get_unique_technologies(df_exist)
     tech_plan = get_unique_technologies(df_plan)
     tech_trn_list = list(set(tech_exist + tech_plan)) 
-    df = pd.DataFrame(tech_trn_list, columns = ['TECHNOLOGY_gtd'])
+    df = pd.DataFrame(tech_trn_list, columns = ['TECHNOLOGY'])
     
     # Map OG regions to GTD technologies.
-    df['From'], df['To'] = df["TECHNOLOGY_gtd"].str[3:8], df["TECHNOLOGY_gtd"].str[8:13]
+    df['From'], df['To'] = df['TECHNOLOGY'].str[3:8], df['TECHNOLOGY'].str[8:13]
     df['From'], df['To'] = df['From'].map(region_mapping_dict
                                           ), df['To'].map(region_mapping_dict)
     
     # For USA GTD regions that are larger than certain OG regions (MISO, PJM, SWPP),
-    # assign custom OG regions as a best estimate for transmission landing points.
+    # as well as for the Nei Mongol region in China, assign custom OG regions as a 
+    # best estimate for transmission landing points.
     df.loc[df['From'] == 'DUPLICATE', 
-           'From'] = df['TECHNOLOGY_gtd'].map(USA_TRN_BA_DICT_FROM)
+           'From'] = df['TECHNOLOGY'].map(CUSTOM_TRN_BA_DICT_FROM)
     
     df.loc[df['To'] == 'DUPLICATE', 
-           'To'] = df['TECHNOLOGY_gtd'].map(USA_TRN_BA_DICT_TO)
-
+           'To'] = df['TECHNOLOGY'].map(CUSTOM_TRN_BA_DICT_TO)
+    
+    return df
+    
+def calculate_transmission_distances(df_exist, df_plan, region_mapping_dict, 
+                                     CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO, 
+                                     centerpoints_dict):
+    
+    df = correct_gtd_line_mapping(df_exist, df_plan, region_mapping_dict,
+                                  CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO)
+    
+    for row in centerpoints_dict:
+      df.loc[df['From'] == row['region'], 'From_lat'] = row['lat']
+      df.loc[df['From'] == row['region'], 'From_long'] = row['long']
+      
+      df.loc[df['To'] == row['region'], 'To_lat'] = row['lat']
+      df.loc[df['To'] == row['region'], 'To_long'] = row['long']
+    
+    df['distance'] = df.apply(lambda x: geopy.distance.geodesic((x['From_lat'], x['From_long']), 
+                                                          (x['To_lat'], x['To_long'])), axis=1)
+    
+    df['distance'] = df['distance'].astype(str).str.replace(' km', '').astype(float).round(0)
+    
     return df
