@@ -68,6 +68,19 @@ user_defined_capacity_transmission:
   TRNINDEAINDNE: [5, 1975, 2030, 10, 861, 95]
   TRNINDNOINDSO: [0, 2020, 2025, 2, 1800, 92]
 
+transmission_parameters:
+  # technology_group: [Line CAPEX, 
+  #                    Converter pair CAPEX, 
+  #                    Line losses, 
+  #                    AC/DC Converter pair losses, 
+  #                    Fixed O&M costs]
+  # Units are in $2020/MW/KM (Line CAPEX), $2020 (Converter pair CAPEX),
+  # %/1000km (Line losses), % (AC/DC Converter pair losses), 
+  # % of total CAPEX/yr (Fixed O&M costs).
+  HVAC: [779, 95400, 6.75, 0, 3.5]
+  HVDC: [238, 297509, 3.5, 1.3, 3.5]
+  HVDC_subsea: [295, 297509, 3.5, 1.3, 3.5]
+
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
  # specified in the "geographic scope" 

@@ -172,7 +172,8 @@ if __name__ == "__main__":
         region_name = snakemake.params.region_name
         custom_nodes = snakemake.params.custom_nodes
         tech_capacity_trn = snakemake.params.user_defined_capacity_transmission
-        no_investment_techs = snakemake.params.no_investment_techs       
+        no_investment_techs = snakemake.params.no_investment_techs      
+        transmission_parameters = snakemake.params.transmission_parameters           
         cross_border_trade = snakemake.params.trade
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
@@ -208,7 +209,10 @@ if __name__ == "__main__":
         tech_capacity_trn = {'TRNINDEAINDNE': [5, 1975, 2030, 10, 861, 95],
                              'TRNINDNOINDSO': [0, 2020, 2025, 5, 1800, 92]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
-                               "COG", "GEO", "BIO", "PET"]        
+                               "COG", "GEO", "BIO", "PET"]
+        transmission_parameters = {'HVAC': [779, 95400, 6.75, 0, 3.5],
+                                   'HVDC': [238, 297509, 3.5, 1.3, 3.5],
+                                   'HVDC_subsea': [295, 297509, 3.5, 1.3, 3.5]}
         cross_border_trade = True
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
@@ -228,9 +232,15 @@ if __name__ == "__main__":
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
     gtd_exist = import_gtd_existing(file_gtd_existing)
-    gtd_plan = import_gtd_planned(file_gtd_planned)  
+    gtd_plan = import_gtd_planned(file_gtd_planned)
+    
     gtd_mapping = import_gtd_mapping(file_gtd_mapping)  
+    gtd_mapping_dict = dict(zip(gtd_mapping['gtd_region'], 
+                                     gtd_mapping['region']))
+    
     centerpoints = import_centerpoints(file_centerpoints)  
+    centerpoints_dict = centerpoints.to_dict('records')
+    
     op_life = import_op_life(file_default_op_life)
     op_life_dict = dict(zip(list(op_life['tech']),
                             list(op_life['years'])))

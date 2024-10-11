@@ -165,6 +165,7 @@ rule transmission:
         custom_nodes = config['nodes_to_add'],
         user_defined_capacity_transmission = config['user_defined_capacity_transmission'],
         no_investment_techs = config['no_invest_technologies'],
+        transmission_parameters = config['transmission_parameters'],
         output_data_dir = 'results/data',
         input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',

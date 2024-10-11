@@ -132,3 +132,20 @@ def calculate_transmission_distances(df_exist, df_plan, region_mapping_dict,
     df['distance'] = df['distance'].astype(str).str.replace(' km', '').astype(float).round(0)
     
     return df
+
+def set_break_even_distance(trn_param):
+    
+    # Set base non-distance dependent CAPEX costs (converter pair).
+    hvac_cost = trn_param['HVAC'][1]
+    hvdc_cost = trn_param['HVDC'][1]
+    n = 1
+    
+    # Iterate over distance dependent CAPEX costs (line) until the
+    # break-even distance is found after which HVDC is cheaper.
+    while hvdc_cost > hvac_cost:
+        hvac_cost = hvac_cost + trn_param['HVAC'][0]
+        hvdc_cost = hvdc_cost + trn_param['HVDC'][0]
+    
+        n = n + 1
+        
+    return n
