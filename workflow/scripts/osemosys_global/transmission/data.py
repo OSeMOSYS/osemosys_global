@@ -87,17 +87,17 @@ def format_gtd_planned(df):
     
     return df
 
-def correct_gtd_line_mapping(df_exist, df_plan, region_mapping_dict, 
-                             CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO):
+def correct_gtd_data(df_exist, df_plan, region_mapping_dict, 
+                     CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO):
     
     # Create df with unique transmission technologies from GTD.
     tech_exist = get_unique_technologies(df_exist)
     tech_plan = get_unique_technologies(df_plan)
     tech_trn_list = list(set(tech_exist + tech_plan)) 
-    df = pd.DataFrame(tech_trn_list, columns = ['TECHNOLOGY'])
-    
+    df = pd.DataFrame(tech_trn_list, columns = ['TECHNOLOGY_gtd'])
+ 
     # Map OG regions to GTD technologies.
-    df['From'], df['To'] = df['TECHNOLOGY'].str[3:8], df['TECHNOLOGY'].str[8:13]
+    df['From'], df['To'] = df['TECHNOLOGY_gtd'].str[3:8], df['TECHNOLOGY_gtd'].str[8:13]
     df['From'], df['To'] = df['From'].map(region_mapping_dict
                                           ), df['To'].map(region_mapping_dict)
     
@@ -105,19 +105,44 @@ def correct_gtd_line_mapping(df_exist, df_plan, region_mapping_dict,
     # as well as for the Nei Mongol region in China, assign custom OG regions as a 
     # best estimate for transmission landing points.
     df.loc[df['From'] == 'DUPLICATE', 
-           'From'] = df['TECHNOLOGY'].map(CUSTOM_TRN_BA_DICT_FROM)
+           'From'] = df['TECHNOLOGY_gtd'].map(CUSTOM_TRN_BA_DICT_FROM)
     
     df.loc[df['To'] == 'DUPLICATE', 
-           'To'] = df['TECHNOLOGY'].map(CUSTOM_TRN_BA_DICT_TO)
+           'To'] = df['TECHNOLOGY_gtd'].map(CUSTOM_TRN_BA_DICT_TO)
     
-    return df
+    df.set_index('TECHNOLOGY_gtd', inplace = True)
     
-def calculate_transmission_distances(df_exist, df_plan, region_mapping_dict, 
-                                     CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO, 
+    # Create corrected TECHNOLOGY entry
+    df['TECHNOLOGY'] = 'TRN' + df['From'] + df['To']
+
+    # Update original GTD df's with corrected entries
+    df_exist.set_index('TECHNOLOGY', inplace = True)
+    df_exist.update(df)
+    df_exist = df_exist.merge(df[['TECHNOLOGY']], left_index = True, 
+                              right_index = True).reset_index(drop = True)
+    df_exist = df_exist[df_exist['From'] != df_exist['To']]
+    
+    df_plan.set_index('TECHNOLOGY', inplace = True)
+    df_plan.update(df)
+    df_plan = df_plan.merge(df[['TECHNOLOGY']], left_index = True, 
+                            right_index = True).reset_index(drop = True)   
+    df_plan = df_plan[df_plan['From'] != df_plan['To']]
+    
+    # Group corrected GTD entries
+    df_exist = df_exist.groupby(['TECHNOLOGY', 'From', 'To']
+                                ).sum('VALUE').reset_index()
+    
+    df_plan = df_plan.groupby(['TECHNOLOGY', 'From', 'To', 'YEAR']
+                                ).sum('VALUE').reset_index()
+    
+    return df_exist, df_plan
+    
+def calculate_transmission_distances(df_exist_corrected, df_plan_corrected, 
                                      centerpoints_dict):
     
-    df = correct_gtd_line_mapping(df_exist, df_plan, region_mapping_dict,
-                                  CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO)
+    # Create df with unique transmission technologies from corrected GTD data.
+    df = pd.concat([df_exist_corrected[['TECHNOLOGY', 'From', 'To']], 
+                    df_plan_corrected[['TECHNOLOGY', 'From', 'To']]]).drop_duplicates()
     
     for row in centerpoints_dict:
       df.loc[df['From'] == row['region'], 'From_lat'] = row['lat']
@@ -149,3 +174,24 @@ def set_break_even_distance(trn_param):
         n = n + 1
         
     return n
+
+def set_transmission_tech_groups(df_exist_corrected, df_plan_corrected, 
+                                 centerpoints_dict, trn_param, SUBSEA_LINES):
+    
+    break_even_dist = set_break_even_distance(trn_param)
+    df = calculate_transmission_distances(df_exist_corrected, df_plan_corrected, 
+                                          centerpoints_dict)
+    
+    df.loc[df['distance'] >= break_even_dist, 
+           'tech_group'] = 'HVDC'
+    
+    df.loc[df['distance'] < break_even_dist, 
+           'tech_group'] = 'HVAC'
+    
+    df.loc[df['TECHNOLOGY'].isin(SUBSEA_LINES) , 
+           'tech_group'] = 'HVDC_subsea'
+    
+    tech_group_dict = dict(zip(df['TECHNOLOGY'], 
+                               df['tech_group']))
+    
+    return tech_group_dict
