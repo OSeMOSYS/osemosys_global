@@ -22,7 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 def plot_gen_cap(
-    modelled: pd.DataFrame, actual: pd.DataFrame, dataset_name: Optional[str] = None
+    modelled: pd.DataFrame,
+    actual: pd.DataFrame,
+    variable: str,
+    dataset_name: Optional[str] = None,
 ) -> dict[str, tuple[plt.figure, plt.axes]]:
 
     def _join_data(
@@ -42,6 +45,15 @@ def plot_gen_cap(
 
     assert modelled.index.names == actual.index.names
 
+    if variable == "generation":
+        units = "PJ"
+    elif variable == "capacity":
+        units = "GW"
+    else:
+        raise ValueError(
+            f"Variable must be one of ['generation', 'capacity']. Recieved {variable}"
+        )
+
     df = _join_data(modelled, actual, dataset_name).reset_index()
     df["TECH"] = df["TECHNOLOGY"].str[0:3]
     df["COUNTRY"] = df["TECHNOLOGY"].str[3:]
@@ -60,12 +72,14 @@ def plot_gen_cap(
                 .drop(columns=["TECHNOLOGY", "YEAR", "COUNTRY"])
                 .set_index("TECH")
             )
-            title = f"{country} Generation in {year}"
+            title = f"{country} {variable.capitalize()} in {year}"
             if n_rows > 1:
                 ax = axs[i]
             else:
                 ax = axs
-            df_year.plot(kind="bar", ax=ax, rot=45, title=title, xlabel="", ylabel="PJ")
+            df_year.plot(
+                kind="bar", ax=ax, rot=45, title=title, xlabel="", ylabel=units
+            )
 
         data[country] = (fig, axs)
 
@@ -88,7 +102,7 @@ def get_generation_funcs(datasource: str) -> dict[str, callable]:
         case "irena" | "IRENA" | "Irena":
             return {
                 "getter": irena.get_irena_generation,
-                "formatter": irena.format_og_generation,
+                "formatter": irena.format_og_data,
                 "plotter": plot_gen_cap,
             }
         case "ember" | "EMBER" | "Ember":
@@ -112,7 +126,7 @@ def get_capacity_funcs(datasource: str) -> dict[str, callable]:
         case "irena" | "IRENA" | "Irena":
             return {
                 "getter": irena.get_irena_capacity,
-                "formatter": irena.format_og_capacity,
+                "formatter": irena.format_og_data,
                 "plotter": plot_gen_cap,
             }
         case "ember" | "EMBER" | "Ember":
@@ -133,12 +147,12 @@ if __name__ == "__main__":
     if "snakemake" in globals():
         raise NotImplementedError
     else:
-        datasource = "ember"
+        datasource = "irena"
         variable = "capacity"
         result_dir = "results/India/results"
-        data_file = "resources/data/validation/ember.csv"
+        data_file = "resources/data/validation/irena_capacity.csv"
         options = {}
-        # options = {"iso_codes": "resources/data/validation/iso.csv"}
+        options = {"iso_codes": "resources/data/validation/iso.csv"}
 
     csv_results = Path(result_dir)
     validation_results = Path(csv_results, "..", "validation")
@@ -160,10 +174,10 @@ if __name__ == "__main__":
         actual = funcs["getter"](data_file, **options)
         modelled = pd.read_csv(Path(result_dir, f"{og_result}.csv"))
         modelled = funcs["formatter"](modelled)
-    except KeyError:
+    except KeyError as e:
         actual = None
         modelled = None
-        logger.error(f"No validation for {variable} from {datasource}")
+        logger.error(f"No validation for {variable} from {datasource}: \n{e}")
 
     if isinstance(actual, pd.DataFrame) and isinstance(modelled, pd.DataFrame):
         gen = funcs["plotter"](modelled, actual, datasource)

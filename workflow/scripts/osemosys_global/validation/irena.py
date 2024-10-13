@@ -29,6 +29,22 @@ TECHNOLOGY_MAPPER = {
     "Nuclear": "URN",
 }
 
+OG_NAME_MAPPER = {
+    "BIO": "BIO",
+    "CCG": "GAS",
+    "COA": "COA",
+    "CSP": "SPV",
+    "HYD": "HYD",
+    "OCG": "GAS",
+    "OIL": "OIL",
+    "SPV": "SPV",
+    "TRN": None,
+    "URN": "URN",
+    "WON": "WON",
+    "WOF": "WOF",
+    "WAV": "WAV",
+}
+
 ###
 # public functions
 ###
@@ -44,24 +60,13 @@ def get_irena_generation(csv_file: str, iso_codes: str, **kwargs) -> pd.DataFram
     return _format_irena_generation_data(df)
 
 
-def format_og_generation(prod_tech_annual: pd.DataFrame) -> pd.DataFrame:
-    """Formats ProductionByTechnologyAnnual data for irena comparison"""
+def format_og_data(prod_tech_annual: pd.DataFrame) -> pd.DataFrame:
+    """Formats OG results for irena comparison
 
-    name_mapper = {
-        "BIO": "BIO",
-        "CCG": "GAS",
-        "COA": "COA",
-        "CSP": "SPV",
-        "HYD": "HYD",
-        "OCG": "GAS",
-        "OIL": "OIL",
-        "SPV": "SPV",
-        "TRN": None,
-        "URN": "URN",
-        "WON": "WON",
-        "WOF": "WOF",
-        "WAV": "WAV",
-    }
+    Works on:
+    - ProductionByTechnologyAnnual
+    - TotalCapacityAnnual
+    """
 
     df = prod_tech_annual.copy()
 
@@ -71,10 +76,10 @@ def format_og_generation(prod_tech_annual: pd.DataFrame) -> pd.DataFrame:
     df = df[(df.TECHNOLOGY.str.startswith("PWR")) & (df.YEAR < 2023)]
     df["COUNTRY"] = df.TECHNOLOGY.str[6:9]
     df["CODE"] = df.TECHNOLOGY.str[3:6]
-    df["CODE"] = df.CODE.map(name_mapper)
-    df = df.dropna(subset="CODE")
+    df["CODE"] = df.CODE.map(OG_NAME_MAPPER)
+    df = df.dropna(subset="CODE").copy()
     df["TECHNOLOGY"] = df.CODE + df.COUNTRY
-    df = df.drop(columns=["FUEL", "COUNTRY", "CODE"])
+    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
     return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
 
 
@@ -119,9 +124,18 @@ def _read_irena_data(csv_file: str, iso_codes: Optional[str] = None) -> pd.DataF
     return df
 
 
-def _format_irena_capacity_data(eia: pd.DataFrame) -> pd.DataFrame:
+def _format_irena_capacity_data(irena: pd.DataFrame) -> pd.DataFrame:
     """Formats data into otoole compatiable data structure"""
-    raise NotImplementedError
+
+    df = irena.copy()
+
+    df["TECHNOLOGY"] = df.TECHNOLOGY + df.COUNTRY
+    df["REGION"] = "GLOBAL"
+
+    # MW -> GW
+    df["VALUE"] = df.VALUE.div(1000)
+    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
+    return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
 
 
 def _format_irena_generation_data(irena: pd.DataFrame) -> pd.DataFrame:
