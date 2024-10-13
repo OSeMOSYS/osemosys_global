@@ -2,12 +2,6 @@
 
 For each county in the model scope, a figure is generated that will plot 
 capacity, generation, and emissions for any year in 2022 and earlier. 
-
-Capacity comparisons: 
-- EIA International Energy Outlook (https://www.eia.gov/international/overview/world)
-
-Generation comparisons: 
-- EIA International Energy Outlook (https://www.eia.gov/international/overview/world)
 """
 
 import pandas as pd
@@ -22,25 +16,33 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+###
+# plotters
+###
 
-def plot_generation(
-    og: pd.DataFrame, real: pd.DataFrame, dataset_name: Optional[str] = None
+
+def plot_gen_cap(
+    modelled: pd.DataFrame, actual: pd.DataFrame, dataset_name: Optional[str] = None
 ) -> dict[str, tuple[plt.figure, plt.axes]]:
 
     def _join_data(
-        og: pd.DataFrame, real: pd.DataFrame, dataset_name: Optional[str] = None
+        modelled: pd.DataFrame, actual: pd.DataFrame, dataset_name: Optional[str] = None
     ) -> pd.DataFrame:
+
         if not dataset_name:
             dataset_name = "ACTUAL"
-        og = og.rename(columns={"VALUE": "OSeMOSYS"})
-        real = real.rename(columns={"VALUE": dataset_name})
-        df = og.join(real)
+
+        modelled = modelled.rename(columns={"VALUE": "OSeMOSYS"})
+        actual = actual.rename(columns={"VALUE": dataset_name})
+        df = modelled.join(actual)
+
         assert len(df.index.get_level_values("REGION").unique()) == 1
+
         return df.droplevel("REGION")
 
-    assert og.index.names == real.index.names
+    assert modelled.index.names == actual.index.names
 
-    df = _join_data(og, real, dataset_name).reset_index()
+    df = _join_data(modelled, actual, dataset_name).reset_index()
     df["TECH"] = df["TECHNOLOGY"].str[0:3]
     df["COUNTRY"] = df["TECHNOLOGY"].str[3:]
 
@@ -70,57 +72,103 @@ def plot_generation(
     return data
 
 
+###
+# getters
+###
+
+
 def get_generation_funcs(datasource: str) -> dict[str, callable]:
     match datasource:
         case "eia" | "EIA" | "Eia":
             return {
                 "getter": eia.get_eia_generation,
                 "formatter": eia.format_og_generation,
+                "plotter": plot_gen_cap,
             }
         case "irena" | "IRENA" | "Irena":
             return {
                 "getter": irena.get_irena_generation,
                 "formatter": irena.format_og_generation,
+                "plotter": plot_gen_cap,
             }
         case "ember" | "EMBER" | "Ember":
             return {
                 "getter": ember.get_ember_generation,
-                "formatter": ember.format_og_generation,
+                "formatter": ember.format_og_data,
+                "plotter": plot_gen_cap,
             }
         case _:
             raise KeyError
 
+
+def get_capacity_funcs(datasource: str) -> dict[str, callable]:
+    match datasource:
+        case "eia" | "EIA" | "Eia":
+            return {
+                "getter": eia.get_eia_capacity,
+                "formatter": eia.format_og_capacity,
+                "plotter": plot_gen_cap,
+            }
+        case "irena" | "IRENA" | "Irena":
+            return {
+                "getter": irena.get_irena_capacity,
+                "formatter": irena.format_og_capacity,
+                "plotter": plot_gen_cap,
+            }
+        case "ember" | "EMBER" | "Ember":
+            return {
+                "getter": ember.get_ember_capacity,
+                "formatter": ember.format_og_data,
+                "plotter": plot_gen_cap,
+            }
+        case _:
+            raise KeyError
+
+
+###
+# entry point
+###
 
 if __name__ == "__main__":
     if "snakemake" in globals():
         raise NotImplementedError
     else:
         datasource = "ember"
+        variable = "capacity"
         result_dir = "results/India/results"
-        capacity_file = "resources/data/validation/ember.csv"
-        generation_file = "resources/data/validation/ember.csv"
-        # options = {"iso_codes": "resources/data/validation/iso.csv"}
+        data_file = "resources/data/validation/ember.csv"
         options = {}
+        # options = {"iso_codes": "resources/data/validation/iso.csv"}
 
     csv_results = Path(result_dir)
     validation_results = Path(csv_results, "..", "validation")
 
-    # generation validation
+    # get data based on validation variable and datasource
+
+    if variable == "generation":
+        og_result = "ProductionByTechnologyAnnual"
+        funcs = get_generation_funcs(datasource)
+    elif variable == "capacity":
+        og_result = "TotalCapacityAnnual"
+        funcs = get_capacity_funcs(datasource)
+    else:
+        raise NotImplementedError
+
+    # perform the validation
 
     try:
-        funcs = get_generation_funcs(datasource)
-        actual_gen = funcs["getter"](generation_file, **options)
-        og_gen = pd.read_csv(Path(result_dir, "ProductionByTechnologyAnnual.csv"))
-        og_gen = funcs["formatter"](og_gen)
+        actual = funcs["getter"](data_file, **options)
+        modelled = pd.read_csv(Path(result_dir, f"{og_result}.csv"))
+        modelled = funcs["formatter"](modelled)
     except KeyError:
-        actual_gen = None
-        og_gen = None
-        logger.info(f"No generation validation for {datasource}")
+        actual = None
+        modelled = None
+        logger.error(f"No validation for {variable} from {datasource}")
 
-    if isinstance(actual_gen, pd.DataFrame) and isinstance(og_gen, pd.DataFrame):
-        gen = plot_generation(og_gen, actual_gen, datasource)
+    if isinstance(actual, pd.DataFrame) and isinstance(modelled, pd.DataFrame):
+        gen = funcs["plotter"](modelled, actual, datasource)
         for country, (fig, _) in gen.items():
-            p = Path(validation_results, country, "gen")
+            p = Path(validation_results, country, variable)
             if not p.exists():
                 p.mkdir(parents=True)
             f = Path(p, f"{datasource}.png")

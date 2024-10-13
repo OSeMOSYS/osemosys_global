@@ -21,6 +21,22 @@ TECHNOLOGY_MAPPER = {
     "Wind": "WND",
 }
 
+OG_NAME_MAPPER = {
+    "BIO": "BIO",
+    "CCG": "GAS",
+    "COA": "COA",
+    "CSP": "SPV",
+    "HYD": "HYD",
+    "OCG": "GAS",
+    "OIL": "OIL",
+    "SPV": "SPV",
+    "TRN": None,
+    "URN": "URN",
+    "WON": "WND",
+    "WOF": "WND",
+    "WAV": "WAV",
+}
+
 ###
 # public functions
 ###
@@ -36,26 +52,15 @@ def get_ember_generation(csv_file: str, **kwargs) -> pd.DataFrame:
     return _format_ember_generation_data(df)
 
 
-def format_og_generation(prod_tech_annual: pd.DataFrame) -> pd.DataFrame:
-    """Formats ProductionByTechnologyAnnual data for ember comparison"""
+def format_og_data(og: pd.DataFrame) -> pd.DataFrame:
+    """Formats OG results for ember comparison
 
-    name_mapper = {
-        "BIO": "BIO",
-        "CCG": "GAS",
-        "COA": "COA",
-        "CSP": "SPV",
-        "HYD": "HYD",
-        "OCG": "GAS",
-        "OIL": "OIL",
-        "SPV": "SPV",
-        "TRN": None,
-        "URN": "URN",
-        "WON": "WND",
-        "WOF": "WND",
-        "WAV": "WAV",
-    }
+    Works on:
+    - ProductionByTechnologyAnnual
+    - TotalCapacityAnnual
+    """
 
-    df = prod_tech_annual.copy()
+    df = og.copy()
 
     if len(df.columns) == 1:
         df = df.reset_index()
@@ -63,10 +68,10 @@ def format_og_generation(prod_tech_annual: pd.DataFrame) -> pd.DataFrame:
     df = df[(df.TECHNOLOGY.str.startswith("PWR")) & (df.YEAR < 2023)]
     df["COUNTRY"] = df.TECHNOLOGY.str[6:9]
     df["CODE"] = df.TECHNOLOGY.str[3:6]
-    df["CODE"] = df.CODE.map(name_mapper)
+    df["CODE"] = df.CODE.map(OG_NAME_MAPPER)
     df = df.dropna(subset="CODE")
     df["TECHNOLOGY"] = df.CODE + df.COUNTRY
-    df = df.drop(columns=["FUEL", "COUNTRY", "CODE"])
+    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
     return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
 
 
@@ -90,7 +95,15 @@ def _read_ember_data(csv_file: str) -> pd.DataFrame:
 
 def _format_ember_capacity_data(ember: pd.DataFrame) -> pd.DataFrame:
     """Formats data into otoole compatiable data structure"""
-    raise NotImplementedError
+
+    df = ember.copy()
+
+    df = df[(df.Category == "Capacity") & (df.Subcategory == "Fuel")].copy()
+    df["TECHNOLOGY"] = df.Variable.map(TECHNOLOGY_MAPPER)
+    df["TECHNOLOGY"] = df.TECHNOLOGY + df.COUNTRY
+    df["REGION"] = "GLOBAL"
+    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
+    return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
 
 
 def _format_ember_generation_data(ember: pd.DataFrame) -> pd.DataFrame:
