@@ -4,7 +4,6 @@ https://www.irena.org/Data/Downloads/IRENASTAT
 """
 
 import pandas as pd
-from datetime import datetime
 from typing import Optional
 
 ###

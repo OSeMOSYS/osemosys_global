@@ -48,12 +48,12 @@ GENERATION_MAPPER = {
 ###
 
 
-def get_eia_capacity(json_file: str) -> pd.DataFrame:
+def get_eia_capacity(json_file: str, **kwargs) -> pd.DataFrame:
     df = _read_eia_data(json_file)
     return _format_eia_capacity_data(df)
 
 
-def get_eia_generation(json_file: str) -> pd.DataFrame:
+def get_eia_generation(json_file: str, **kwargs) -> pd.DataFrame:
     df = _read_eia_data(json_file)
     return _format_eia_generation_data(df)
 

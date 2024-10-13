@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 from typing import Optional
 from pathlib import Path
 import eia
+import irena
+import ember
 
 import logging
 
@@ -70,10 +72,20 @@ def plot_generation(
 
 def get_generation_funcs(datasource: str) -> dict[str, callable]:
     match datasource:
-        case "eia" | "EIA":
+        case "eia" | "EIA" | "Eia":
             return {
                 "getter": eia.get_eia_generation,
                 "formatter": eia.format_og_generation,
+            }
+        case "irena" | "IRENA" | "Irena":
+            return {
+                "getter": irena.get_irena_generation,
+                "formatter": irena.format_og_generation,
+            }
+        case "ember" | "EMBER" | "Ember":
+            return {
+                "getter": ember.get_ember_generation,
+                "formatter": ember.format_og_generation,
             }
         case _:
             raise KeyError
@@ -83,10 +95,12 @@ if __name__ == "__main__":
     if "snakemake" in globals():
         raise NotImplementedError
     else:
-        datasource = "eia"
+        datasource = "ember"
         result_dir = "results/India/results"
-        capacity_file = "resources/data/validation/eia_capacity.json"
-        generation_file = "resources/data/validation/eia_generation.json"
+        capacity_file = "resources/data/validation/ember.csv"
+        generation_file = "resources/data/validation/ember.csv"
+        # options = {"iso_codes": "resources/data/validation/iso.csv"}
+        options = {}
 
     csv_results = Path(result_dir)
     validation_results = Path(csv_results, "..", "validation")
@@ -95,7 +109,7 @@ if __name__ == "__main__":
 
     try:
         funcs = get_generation_funcs(datasource)
-        actual_gen = funcs["getter"](generation_file)
+        actual_gen = funcs["getter"](generation_file, **options)
         og_gen = pd.read_csv(Path(result_dir, "ProductionByTechnologyAnnual.csv"))
         og_gen = funcs["formatter"](og_gen)
     except KeyError:
