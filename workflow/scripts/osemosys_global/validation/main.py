@@ -94,12 +94,18 @@ def get_emission_funcs(datasource: str) -> dict[str, callable]:
 
 if __name__ == "__main__":
     if "snakemake" in globals():
-        raise NotImplementedError
+        datasource = snakemake.wildcards.datasource
+        variable = snakemake.params.variable
+        result_dir = snakemake.params.result_dir
+        validation_data = snakemake.input.validation_data
+        options = {}
+        if snakemake.input.get("iso_codes"):
+            options["iso_codes"] = snakemake.input.iso_codes
     else:
         datasource = "climatewatch"
         variable = "emissions"
         result_dir = "results/India/results"
-        data_file = "resources/data/validation/climate-watch-emissions.csv"
+        validation_data = "resources/data/validation/climate-watch-emissions.csv"
         options = {}
         # options = {"iso_codes": "resources/data/validation/iso.csv"}
 
@@ -123,7 +129,7 @@ if __name__ == "__main__":
     # perform the validation
 
     try:
-        actual = funcs["getter"](data_file, **options)
+        actual = funcs["getter"](validation_data, **options)
         modelled = pd.read_csv(Path(result_dir, f"{og_result}.csv"))
         modelled = funcs["formatter"](modelled)
     except KeyError as e:
