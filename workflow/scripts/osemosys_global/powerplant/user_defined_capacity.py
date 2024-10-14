@@ -189,8 +189,8 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
     df_iar_custom = df_iar_custom.loc[df_iar_custom['FUEL'] != 0]
     df_oar_custom = df_oar_custom.loc[df_oar_custom['FUEL'] != 0]
     
-    df_iar = pd.concat([df_iar_final, df_iar_custom])
-    df_oar = pd.concat([df_oar_final, df_oar_custom])
+    df_iar = pd.concat([df_iar_final, df_iar_custom]).dropna()
+    df_oar = pd.concat([df_oar_final, df_oar_custom]).dropna()
     
     df_iar.drop_duplicates(subset=['REGION', 
                                      'TECHNOLOGY',
