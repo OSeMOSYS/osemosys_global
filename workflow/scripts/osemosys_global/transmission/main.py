@@ -21,6 +21,20 @@ from read import(
     import_set_base
 )
 
+from constants import(
+    CUSTOM_TRN_BA_DICT_FROM, 
+    CUSTOM_TRN_BA_DICT_TO,
+    CUSTOM_TRN_BA_MISSING,
+    SUBSEA_LINES
+    )
+
+from data import(
+    format_gtd_existing,
+    format_gtd_planned,
+    correct_gtd_data,
+    set_transmission_tech_groups
+    )
+
 from activity import(
     activity_transmission,
     activity_transmission_limit,
@@ -39,9 +53,13 @@ from sets import create_set_from_iterators, get_unique_fuels, get_unique_technol
 
 def main(
     plexos_prop: pd.DataFrame,
-    default_op_life: pd.DataFrame,
+    default_op_life: dict[str, int],
     line_data: pd.DataFrame,
     interface_data: pd.DataFrame,
+    gtd_exist : pd.DataFrame,
+    gtd_planned : pd.DataFrame,
+    gtd_mapping : dict[str, str],
+    centerpoints : list,
     iar_base: pd.DataFrame,
     oar_base: pd.DataFrame,
     capact_base: pd.DataFrame,
@@ -57,6 +75,24 @@ def main(
     
     # CALL FUNCTIONS
     
+    # Correct the input data from the Global Transmission Database (GTD).
+    gtd_exist_corrected, gtd_planned_corrected = correct_gtd_data(gtd_exist, 
+                                                                  gtd_planned, 
+                                                                  gtd_mapping, 
+                                                                  CUSTOM_TRN_BA_DICT_FROM, 
+                                                                  CUSTOM_TRN_BA_DICT_TO,
+                                                                  CUSTOM_TRN_BA_MISSING)
+    
+    # Set capital and fixed transmission costs.
+    df_cap_cost_trn_final, df_fix_cost_trn_final = get_transmission_costs(gtd_exist_corrected, 
+                                                                          gtd_planned_corrected,
+                                                                          cap_cost_base,
+                                                                          fix_cost_base,
+                                                                          centerpoints_dict, 
+                                                                          transmission_parameters, 
+                                                                          start_year, end_year, 
+                                                                          region_name, SUBSEA_LINES)
+    
     # Set activity ratios for transmission.
     iar_trn, oar_trn = activity_transmission(iar_base, oar_base, 
                                                                plexos_prop, interface_data,
@@ -67,11 +103,7 @@ def main(
     # Adjust activity limits if cross border trade is not allowed following user config.
     df_crossborder_final = activity_transmission_limit(cross_border_trade, oar_trn)
     
-    # Set capital and fixed transmission costs.
-    df_cap_cost_trn_final, df_fix_cost_trn_final = get_transmission_costs(line_data, oar_trn,
-                                                                    cap_cost_base, fix_cost_base,
-                                                                    start_year, end_year,
-                                                                    region_name)
+
 
     # Set operational life for transmission.
     df_op_life_trn_final = set_op_life_transmission(iar_trn, oar_trn, 
@@ -93,7 +125,8 @@ def main(
          iar_trn,
          oar_trn,
          df_op_life_trn_final, 
-         df_cap_cost_trn_final
+         df_cap_cost_trn_final,
+         df_fix_cost_trn_final         
          ) = set_user_defined_capacity_trn(
             tech_capacity_trn, 
             default_op_life, 
@@ -104,6 +137,7 @@ def main(
             oar_trn,
             df_op_life_trn_final,
             df_cap_cost_trn_final,
+            df_fix_cost_trn_final,
             start_year,
             end_year,
             region_name
@@ -206,8 +240,8 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
-        tech_capacity_trn = {'TRNINDEAINDNE': [5, 1975, 2030, 10, 861, 95],
-                             'TRNINDNOINDSO': [0, 2020, 2025, 5, 1800, 92]}
+        tech_capacity_trn = {'TRNINDEAINDNE': [5, 1975, 2030, 10, 861, 30, 95],
+                             'TRNINDNOINDSO': [0, 2020, 2025, 5, 1800, 63, 92]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
         transmission_parameters = {'HVAC': [779, 95400, 6.75, 0, 3.5],
@@ -231,8 +265,8 @@ if __name__ == "__main__":
 
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
-    gtd_exist = import_gtd_existing(file_gtd_existing)
-    gtd_plan = import_gtd_planned(file_gtd_planned)
+    gtd_exist = format_gtd_existing(import_gtd_existing(file_gtd_existing))
+    gtd_plan = format_gtd_planned(import_gtd_planned(file_gtd_planned))
     
     gtd_mapping = import_gtd_mapping(file_gtd_mapping)  
     gtd_mapping_dict = dict(zip(gtd_mapping['gtd_region'], 
@@ -264,6 +298,10 @@ if __name__ == "__main__":
         "default_op_life": op_life_dict,
         "line_data": trn_line,
         "interface_data": trn_interface,
+        "gtd_exist" : gtd_exist,
+        "gtd_planned" : gtd_plan,
+        "gtd_mapping" : gtd_mapping_dict,
+        "centerpoints" : centerpoints_dict,
         "iar_base" : iar_base,
         "oar_base" : oar_base,
         "capact_base" : capact_base,

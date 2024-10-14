@@ -8,12 +8,14 @@ from data import get_years
 def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict, 
                                   df_min_cap_invest, df_max_cap_invest, df_res_cap,
                                   df_iar_final, df_oar_final, op_life_base,
-                                  cap_cost_base, start_year, end_year, region_name):
+                                  cap_cost_base, fix_cost_base, start_year, 
+                                  end_year, region_name):
     
     techCapacity_trn = []
     first_year_dict = {}
     build_rate_dict = {}
     capex_dict = {}
+    fix_dict = {}
     build_year_dict = {}
     efficiency_dict = {}
 
@@ -23,7 +25,8 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
         first_year_dict[tech] = tech_params[2]
         build_rate_dict[tech] = tech_params[3]
         capex_dict[tech] = tech_params[4]
-        efficiency_dict[tech] = tech_params[5]       
+        fix_dict[tech] = tech_params[5]        
+        efficiency_dict[tech] = tech_params[6]       
     tech_capacity_trn_df = pd.DataFrame(techCapacity_trn,
                                     columns=['TECHNOLOGY', 'VALUE', 'YEAR'])
     tech_capacity_trn_df['REGION'] = region_name
@@ -220,11 +223,23 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
                                  'TECHNOLOGY',
                                  'YEAR',
                                  'VALUE']]
+    
+    fix_cost_trn = cap_cost_trn.copy()
+    
+    for each_trn in tech_list:
+        fix_cost_trn.loc[fix_cost_trn['TECHNOLOGY'].str.startswith(each_trn),
+                         'VALUE'] = fix_dict[each_trn]
+        
     cap_cost = pd.concat([cap_cost_base, cap_cost_trn])
     cap_cost.drop_duplicates(subset=['REGION', 'TECHNOLOGY', 'YEAR'],
                              keep="last",
                              inplace=True)
     
-    return(df_max_cap_inv, df_min_cap_inv, 
-           df_res_cap, df_iar, df_oar, op_life, cap_cost)
+    fix_cost = pd.concat([fix_cost_base, fix_cost_trn])
+    fix_cost.drop_duplicates(subset=['REGION', 'TECHNOLOGY', 'YEAR'],
+                             keep="last",
+                             inplace=True)
+    
+    return(df_max_cap_inv, df_min_cap_inv, df_res_cap, 
+           df_iar, df_oar, op_life, cap_cost, fix_cost)
     

@@ -13,6 +13,11 @@ SET_DTYPES = {
     "YEAR":int,
 }
 
+"""Set the 'From' OG region to which the residual capacity
+based on the GTD dataset entry should be allocated. E.g. USAMI 
+in the GTD dataset consists of multiple OG regions (e.g. USAME,
+USASW, USASA) but the residual capacity has to be allocated
+to one individual region."""
 CUSTOM_TRN_BA_DICT_FROM = {
     'TRNUSAMIUSAPJ' : 'USASW',
     'TRNUSAMIUSASO' : 'USASA',
@@ -32,6 +37,11 @@ CUSTOM_TRN_BA_DICT_FROM = {
 
 }
 
+"""Set the 'To' OG region to which the residual capacity
+based on the GTD dataset entry should be allocated. E.g. USAMI 
+in the GTD dataset consists of multiple OG regions (e.g. USAME,
+USASW, USASA) but the residual capacity has to be allocated
+to one individual region."""
 CUSTOM_TRN_BA_DICT_TO = {
     'TRNCANMBUSAMI' : 'USAMW',
     'TRNCANMBUSASW' : 'USAMW',
@@ -66,6 +76,29 @@ CUSTOM_TRN_BA_DICT_TO = {
     'TRNCHNNICHNNM' : 'CHNWM',
 }
 
+"""Set the OG transmission technologies that are missing in the 
+GTD dataset."""
+CUSTOM_TRN_BA_MISSING = [
+    'TRNCANONUSAMW',
+    'TRNCHNBECHNEM',
+    'TRNCHNEMCHNWM',
+    'TRNCHNEMMNGXX',
+    'TRNCHNHBCHNWM',
+    'TRNUSAMEUSAMW',
+    'TRNUSAMEUSARW',
+    'TRNUSAMWUSARA',
+    'TRNUSAMWUSARW',
+    'TRNUSAMWUSASN',
+    'TRNUSAMWUSASW',
+    'TRNUSARAUSASS',
+    'TRNUSAREUSARW',
+    'TRNUSAREUSASV',
+    'TRNUSASAUSASN',
+    'TRNUSASAUSASW',
+    'TRNUSASNUSASS',    
+    ]
+
+"""Set transmission pathways that should be based on HVDC_subsea."""
 SUBSEA_LINES = [
     'TRNAREXXINDWE',
     'TRNAREXXIRNXX',

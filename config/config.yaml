@@ -53,7 +53,7 @@ user_defined_capacity:
   #              first_year, 
   #              first_year_of_expansion, 
   #              build_rate_per_year, 
-  #              cost, 
+  #              capex_cost, 
   #              efficiency]
   PWRCOAINDWE01: [8, 2000, 2025, 5, 1100, 35]
   PWRBIOINDWE01: [0, 2020, 2030, 2, 2000, 28]
@@ -63,10 +63,11 @@ user_defined_capacity_transmission:
   #              first_year, 
   #              first_year_of_expansion, 
   #              build_rate_per_year, 
-  #              cost, 
+  #              capex_cost,
+  #              annual_fixed_O&M_cost,
   #              efficiency]
-  TRNINDEAINDNE: [5, 1975, 2030, 10, 861, 95]
-  TRNINDNOINDSO: [0, 2020, 2025, 2, 1800, 92]
+  TRNINDEAINDNE: [5, 1975, 2030, 10, 861, 30, 95]
+  TRNINDNOINDSO: [0, 2020, 2025, 2, 1800, 63, 92]
 
 transmission_parameters:
   # technology_group: [Line CAPEX, 
