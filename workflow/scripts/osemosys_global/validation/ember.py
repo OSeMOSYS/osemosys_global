@@ -52,6 +52,11 @@ def get_ember_generation(csv_file: str, **kwargs) -> pd.DataFrame:
     return _format_ember_generation_data(df)
 
 
+def get_ember_emissions(csv_file: str, **kwargs) -> pd.DataFrame:
+    df = _read_ember_data(csv_file)
+    return _format_ember_emission_data(df)
+
+
 ###
 # private functions
 ###
@@ -100,3 +105,20 @@ def _format_ember_generation_data(ember: pd.DataFrame) -> pd.DataFrame:
     df["VALUE"] = df.VALUE.mul(3.6)
     df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
     return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
+
+
+def _format_ember_emission_data(ember: pd.DataFrame) -> pd.DataFrame:
+    """Formats data into otoole compatiable data structure
+
+    No unit conversion needed, as Ember emissions in mtCO2
+    """
+
+    df = ember.copy()
+
+    df = df[
+        (df.Category == "Power sector emissions") & (df.Subcategory == "Total")
+    ].copy()
+    df["EMISSION"] = df.COUNTRY
+    df["REGION"] = "GLOBAL"
+    df = df[["REGION", "EMISSION", "YEAR", "VALUE"]]
+    return df.groupby(["REGION", "EMISSION", "YEAR"]).sum()

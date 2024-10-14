@@ -4,27 +4,33 @@ import pandas as pd
 from typing import Optional
 import matplotlib.pyplot as plt
 
+def _join_data(
+    modelled: pd.DataFrame, actual: pd.DataFrame, dataset_name: Optional[str] = None
+) -> pd.DataFrame:
+    """Joins modelled and actual data on indices"""
+
+    if not dataset_name:
+        dataset_name = "ACTUAL"
+
+    modelled = modelled.rename(columns={"VALUE": "OSeMOSYS"})
+    actual = actual.rename(columns={"VALUE": dataset_name})
+    df = modelled.join(actual)
+
+    assert len(df.index.get_level_values("REGION").unique()) == 1
+
+    return df.droplevel("REGION")
+
+###
+# plotters
+###
+
 def plot_gen_cap(
     modelled: pd.DataFrame,
     actual: pd.DataFrame,
     variable: str,
     dataset_name: Optional[str] = None,
 ) -> dict[str, tuple[plt.figure, plt.axes]]:
-
-    def _join_data(
-        modelled: pd.DataFrame, actual: pd.DataFrame, dataset_name: Optional[str] = None
-    ) -> pd.DataFrame:
-
-        if not dataset_name:
-            dataset_name = "ACTUAL"
-
-        modelled = modelled.rename(columns={"VALUE": "OSeMOSYS"})
-        actual = actual.rename(columns={"VALUE": dataset_name})
-        df = modelled.join(actual)
-
-        assert len(df.index.get_level_values("REGION").unique()) == 1
-
-        return df.droplevel("REGION")
+    """Plots generation and capacity data"""
 
     assert modelled.index.names == actual.index.names
 
@@ -68,8 +74,49 @@ def plot_gen_cap(
 
     return data
 
-def format_og_data(og: pd.DataFrame, mapper: dict[str, str]) -> pd.DataFrame:
-    """Formats OG results for comparison
+def plot_emissions(
+    modelled: pd.DataFrame,
+    actual: pd.DataFrame,
+    variable: str,
+    dataset_name: Optional[str] = None,
+) -> dict[str, tuple[plt.figure, plt.axes]]:
+    """Plots generation and capacity data"""
+
+    assert modelled.index.names == actual.index.names
+
+    if variable == "emissions":
+        units = "MT"
+    elif variable == "emission_intensity":
+        units = "T/kWh"
+        raise NotImplementedError
+    else:
+        raise ValueError(
+            f"Variable must be one of ['generation', 'capacity']. Recieved {variable}"
+        )
+
+    df = _join_data(modelled, actual, dataset_name).reset_index()
+
+    data = {}
+
+    countries = df.EMISSION.unique() # emission column holds country 
+    for country in countries:
+        df_country = df[df.EMISSION == country].drop(columns=["EMISSION"]).set_index("YEAR")
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+        title = f"{country} {variable.capitalize()}"
+        df_country.plot(
+            kind="bar", ax=ax, rot=45, title=title, xlabel="", ylabel=units
+        )
+
+        data[country] = (fig, ax)
+
+    return data
+
+###
+# formatters
+###
+
+def format_rty_results(og: pd.DataFrame, mapper: dict[str, str]) -> pd.DataFrame:
+    """Formats OG results for comparison on region, tech, year
     
     Mapper is to group different technologies together, to match external 
     dataset aggregation. 
@@ -92,3 +139,20 @@ def format_og_data(og: pd.DataFrame, mapper: dict[str, str]) -> pd.DataFrame:
     df["TECHNOLOGY"] = df.CODE + df.COUNTRY
     df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
     return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
+
+def format_rey_results(og: pd.DataFrame) -> pd.DataFrame:
+    """Formats OG results for comparison on region, emission, year
+    
+    Works on:
+    - AnnualEmissions
+    """
+
+    df = og.copy()
+
+    if len(df.columns) == 1:
+        df = df.reset_index()
+
+    # emission is used to track country
+    df = df[df.YEAR < 2023]
+    df["EMISSION"] = df.EMISSION.str[3:6]
+    return df.set_index(["REGION", "EMISSION", "YEAR"])
