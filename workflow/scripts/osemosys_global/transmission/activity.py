@@ -1,11 +1,52 @@
-"""Function to calaculate activity related to transmission."""
-
+"""Functions to calaculate activity related to transmission."""
 from typing import Optional
 import pandas as pd
-from data import format_transmission_name
+
+from data import(
+    calculate_transmission_distances,
+    get_years,
+    set_transmission_tech_groups
+    )
+
 from utils import apply_dtypes
 
-def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficiencies,
+def set_transmission_losses(df_exist_corrected, df_planned_corrected,
+                            centerpoints_dict, trn_param, SUBSEA_LINES):
+    
+    # Set base df including calculated transmission distances per pathway to set efficiencies.
+    line_efficiency_dict = {}
+    acdc_conv_efficiency_dict = {}
+
+    # Get transmission parameters from config file.
+    for tech, tech_params in trn_param.items():
+        line_efficiency_dict[tech] = tech_params[2]
+        acdc_conv_efficiency_dict[tech] = tech_params[3]
+    
+    # Assign technology groups to individual technologies.
+    tech_group_dict = set_transmission_tech_groups(df_exist_corrected, 
+                                                   df_planned_corrected, 
+                                                   centerpoints_dict, 
+                                                   trn_param, 
+                                                   SUBSEA_LINES)
+    
+    # Set base df including calculated transmission distances per pathway.
+    eff_df = calculate_transmission_distances(df_exist_corrected, df_planned_corrected, 
+                                          centerpoints_dict)[['TECHNOLOGY', 'distance']]
+    
+    # Calculate technology and line specific transmission losses.
+    eff_df['tech_group'] = eff_df['TECHNOLOGY'].map(tech_group_dict)
+    
+    for group in trn_param.keys():
+        eff_df.loc[eff_df['tech_group'] == group, 
+               'VALUE'] = round((eff_df['distance'] / 1000) * line_efficiency_dict[
+                   group] + acdc_conv_efficiency_dict[group],3)
+        
+    # Convert losses into OAR format.
+    eff_df['VALUE'] = 1 - (eff_df['VALUE'] / 100)
+    
+    return eff_df
+
+def activity_transmission(df_iar_base, df_oar_base, df_eff,
                           start_year, end_year, region_name):
 
     # #### Downstream Activity Ratios
@@ -28,69 +69,17 @@ def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficienc
     df_oar_trn = df_iar_trn.copy()
     df_oar_trn["FUEL"] = df_oar_trn["FUEL"].str[0:8] + "02"
     
-    # Build international transmission system from original input data, but for Line rather than Generator:
-    int_trn_cols = ["child_class", "child_object", "property", "value"]
-    df_int_trn = df_pw_prop[int_trn_cols]
-    df_int_trn = df_int_trn[df_int_trn["child_class"] == "Line"]
-    
-    # For IAR and OAR we can drop the value:
-    df_int_trn = df_int_trn.drop(["child_class", "value"], axis=1)
-    
-    # Create MofO column based on property:
+    # Build international transmission system from original input data, but for Line rather than Generator:    
+    # Create MofO column:
+    df_int_trn = df_eff[['TECHNOLOGY']].copy()
     df_int_trn["MODE_OF_OPERATION"] = 1
-    df_int_trn.loc[df_int_trn["property"] == "Min Flow", "MODE_OF_OPERATION"] = 2
+    df_int_trn = pd.concat([df_int_trn, df_int_trn.replace(int(1), int(2))])
     
-    # Use the child_object column to build the technology names:
-    df_int_trn["codes"] = df_int_trn["child_object"].str.split(pat="-")
-    
-    # If there are only two locations, then the node is XX
-    df_int_trn.loc[df_int_trn["codes"].str.len() == 2, "TECHNOLOGY"] = (
-        "TRN" + df_int_trn["codes"].str[0] + "XX" + df_int_trn["codes"].str[1] + "XX"
-    )
-    # If there are four locations, the node is already included
-    df_int_trn.loc[df_int_trn["codes"].str.len() == 4, "TECHNOLOGY"] = (
-        "TRN"
-        + df_int_trn["codes"].str[0]
-        + df_int_trn["codes"].str[1]
-        + df_int_trn["codes"].str[2]
-        + df_int_trn["codes"].str[3]
-    )
-    # If there are three items, and the last item is two characters, then the second item is an XX:
-    df_int_trn.loc[
-        (df_int_trn["codes"].str.len() == 3) & (df_int_trn["codes"].str[2].str.len() == 2),
-        "TECHNOLOGY",
-    ] = (
-        "TRN"
-        + df_int_trn["codes"].str[0]
-        + "XX"
-        + df_int_trn["codes"].str[1]
-        + df_int_trn["codes"].str[2]
-    )
-    # If there are three items, and the last item is three characters, then the last item is an XX:
-    df_int_trn.loc[
-        (df_int_trn["codes"].str.len() == 3) & (df_int_trn["codes"].str[2].str.len() == 3),
-        "TECHNOLOGY",
-    ] = (
-        "TRN"
-        + df_int_trn["codes"].str[0]
-        + df_int_trn["codes"].str[1]
-        + df_int_trn["codes"].str[2]
-        + "XX"
-    )
-    
-    # Set the value (of either IAR or OAR) to 1
+    # Set the value (of either IAR or OAR) to 1 and add default columns.
     df_int_trn["VALUE"] = 1
     df_int_trn["REGION"] = region_name
-    
-    df_int_trn = df_int_trn.drop(["property", "child_object", "codes"], axis=1)
-    df_int_trn["YEAR"] = start_year
-    
-    # add in future years
-    df_int_trn_new = df_int_trn.copy()
-    df_int_trn_new["YEAR"] = [range(start_year + 1, end_year + 1)] * len(df_int_trn_new)
-    df_int_trn_new = df_int_trn_new.explode(column="YEAR")
-    
-    df_int_trn = pd.concat([df_int_trn, df_int_trn_new]).reset_index(drop=True)
+    df_int_trn["YEAR"] = [get_years(start_year, end_year)] * len(df_int_trn)
+    df_int_trn = df_int_trn.explode('YEAR').reset_index(drop = True)
     
     # Now create the input and output activity ratios
     df_int_trn_oar = df_int_trn.copy()
@@ -114,41 +103,10 @@ def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficienc
         "ELC" + df_int_trn_oar["TECHNOLOGY"].str[8:13] + "01"
     )
     
-    # Drop unneeded columns
-    df_trn_efficiencies = df_trn_efficiencies.drop(
-        [
-            "Interface",
-            "KM distance",
-            "HVAC/HVDC/Subsea",
-            "Build Cost ($2010 in $000)",
-            "Build cost + FOM (3.5% of Capex per year)",
-            "Unnamed: 8",
-            "Interface is per MW",
-            "Unnamed: 10",
-            "Unnamed: 11",
-            "Unnamed: 12",
-            "Subsea lines",
-            "Unnamed: 14"
-        ],
-        axis=1,
-    )
-    
-    # Drop NaN values
-    df_trn_efficiencies = df_trn_efficiencies.dropna(subset=["From"])
-    
-    # Create tech column from To and From Codes:
-    df_trn_efficiencies = format_transmission_name(df_trn_efficiencies)
-    
-    # Rename column 'VALUES'
-    df_trn_efficiencies = df_trn_efficiencies.rename(columns={"Losses": "VALUE"})
-    
-    # And adjust OAR values to be output amounts vs. losses:
-    df_trn_efficiencies['VALUE'] = 1.0 - df_trn_efficiencies['VALUE']
-    
-    # and add values into OAR matrix
+    # Add line specific OAR values into matrix.
     df_int_trn_oar = df_int_trn_oar.drop(["VALUE"], axis=1)
     df_int_trn_oar = pd.merge(
-        df_int_trn_oar, df_trn_efficiencies, how="outer", on="TECHNOLOGY"
+        df_int_trn_oar, df_eff[['TECHNOLOGY', 'VALUE']], how="outer", on="TECHNOLOGY"
     )
     
     df_oar_trn_final = pd.concat(
@@ -157,15 +115,7 @@ def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficienc
                 df_oar_trn,
                 df_int_trn_oar,
             ]
-        ).dropna()
-    
-    # Select columns for final output table
-    df_oar_trn_final = df_oar_trn_final[['REGION', 
-                                 'TECHNOLOGY',
-                                 'FUEL',  
-                                 'MODE_OF_OPERATION',
-                                 'YEAR', 
-                                 'VALUE',]]
+        )
     
     df_iar_trn_final = pd.concat(
             [
@@ -173,24 +123,7 @@ def activity_transmission(df_iar_base, df_oar_base, df_pw_prop, df_trn_efficienc
                 df_iar_trn,
                 df_int_trn_iar,
             ]
-        ).dropna()    
-    
-    
-    # Select columns for final output table
-    df_iar_trn_final = df_iar_trn_final[['REGION', 
-                                 'TECHNOLOGY',
-                                 'FUEL',  
-                                 'MODE_OF_OPERATION',
-                                 'YEAR', 
-                                 'VALUE',]]
-
-    df_oar_trn_final.drop_duplicates(subset=['REGION', 
-                                         'TECHNOLOGY',
-                                         'FUEL',  
-                                         'MODE_OF_OPERATION',
-                                         'YEAR'],
-                                 keep='last',
-                                 inplace=True)
+        )
     
     return df_iar_trn_final, df_oar_trn_final
 
@@ -218,8 +151,8 @@ def activity_transmission_limit(cross_border_trade, df_oar_trn_final):
     
     return df_crossborder_final
 
-
-def create_trn_dist_capacity_activity(*dfs: pd.DataFrame, value: Optional[float] = 31.536, region: Optional[str] = "GLOBAL") -> pd.DataFrame:
+def create_trn_dist_capacity_activity(*dfs: pd.DataFrame, value: Optional[float] = 31.536, 
+                                      region: Optional[str] = "GLOBAL") -> pd.DataFrame:
     """Creates tranmission and distribution capacity to activity unit data
     
     Inputs are any number of dataframes with a TECHNOLOGY colums.

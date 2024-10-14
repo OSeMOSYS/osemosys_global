@@ -31,11 +31,11 @@ from constants import(
 from data import(
     format_gtd_existing,
     format_gtd_planned,
-    correct_gtd_data,
-    set_transmission_tech_groups
+    correct_gtd_data
     )
 
 from activity import(
+    set_transmission_losses,
     activity_transmission,
     activity_transmission_limit,
     create_trn_dist_capacity_activity
@@ -49,7 +49,9 @@ from investment_constraints import cap_investment_constraints_trn
 
 from user_defined_capacity import set_user_defined_capacity_trn
 
-from sets import create_set_from_iterators, get_unique_fuels, get_unique_technologies
+from sets import(create_set_from_iterators, 
+                 get_unique_fuels, 
+                 get_unique_technologies)
 
 def main(
     plexos_prop: pd.DataFrame,
@@ -93,18 +95,18 @@ def main(
                                                                           start_year, end_year, 
                                                                           region_name, SUBSEA_LINES)
     
+    # Calculate technology and transmission pathway specific transmission losses.
+    trn_eff = set_transmission_losses(gtd_exist_corrected, gtd_planned_corrected,
+                                      centerpoints_dict, transmission_parameters, SUBSEA_LINES)
+    
     # Set activity ratios for transmission.
     iar_trn, oar_trn = activity_transmission(iar_base, oar_base, 
-                                                               plexos_prop, interface_data,
-                                                               start_year, end_year,
-                                                               region_name)
-
-
+                                             trn_eff, start_year, 
+                                             end_year, region_name)
+    
     # Adjust activity limits if cross border trade is not allowed following user config.
     df_crossborder_final = activity_transmission_limit(cross_border_trade, oar_trn)
     
-
-
     # Set operational life for transmission.
     df_op_life_trn_final = set_op_life_transmission(iar_trn, oar_trn, 
                                                     default_op_life, op_life_base, region_name)
@@ -156,7 +158,8 @@ def main(
     
     # assign capacity to activity unit to transmission + distribution techs
     cap_activity_trn = create_trn_dist_capacity_activity(iar_trn, oar_trn)
-    cap_activity = pd.concat([capact_base, cap_activity_trn]).drop_duplicates(subset=["REGION", "TECHNOLOGY"], keep="last")
+    cap_activity = pd.concat([capact_base, cap_activity_trn]
+                             ).drop_duplicates(subset=["REGION", "TECHNOLOGY"], keep="last")
     
     # OUTPUT CSV's
     
