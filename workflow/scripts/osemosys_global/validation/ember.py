@@ -52,29 +52,6 @@ def get_ember_generation(csv_file: str, **kwargs) -> pd.DataFrame:
     return _format_ember_generation_data(df)
 
 
-def format_og_data(og: pd.DataFrame) -> pd.DataFrame:
-    """Formats OG results for ember comparison
-
-    Works on:
-    - ProductionByTechnologyAnnual
-    - TotalCapacityAnnual
-    """
-
-    df = og.copy()
-
-    if len(df.columns) == 1:
-        df = df.reset_index()
-
-    df = df[(df.TECHNOLOGY.str.startswith("PWR")) & (df.YEAR < 2023)]
-    df["COUNTRY"] = df.TECHNOLOGY.str[6:9]
-    df["CODE"] = df.TECHNOLOGY.str[3:6]
-    df["CODE"] = df.CODE.map(OG_NAME_MAPPER)
-    df = df.dropna(subset="CODE")
-    df["TECHNOLOGY"] = df.CODE + df.COUNTRY
-    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
-    return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
-
-
 ###
 # private functions
 ###

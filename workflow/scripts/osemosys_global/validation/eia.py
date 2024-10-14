@@ -43,6 +43,38 @@ GENERATION_MAPPER = {
     "Other gases fossil fuel": "OTH",
 }
 
+OG_GEN_NAME_MAPPER = {
+    "BIO": "BIO",
+    "CCG": "GAS",
+    "COA": "COA",
+    "CSP": "SPV",
+    "HYD": "HYD",
+    "OCG": "GAS",
+    "OIL": "OIL",
+    "SPV": "SPV",
+    "TRN": None,
+    "URN": "URN",
+    "WON": "WND",
+    "WOF": "WND",
+    "WAV": "WAV",
+}
+
+OG_CAP_NAME_MAPPER = {
+    "BIO": "BIO",
+    "CCG": "FFS",
+    "COA": "FFS",
+    "CSP": "SPV",
+    "HYD": "HYD",
+    "OCG": "FFS",
+    "OIL": "FFS",
+    "SPV": "SPV",
+    "TRN": None,
+    "URN": "URN",
+    "WON": "WND",
+    "WOF": "WND",
+    "WAV": "WAV",
+}
+
 ###
 # public functions
 ###
@@ -58,40 +90,6 @@ def get_eia_generation(json_file: str, **kwargs) -> pd.DataFrame:
     return _format_eia_generation_data(df)
 
 
-def format_og_generation(prod_tech_annual: pd.DataFrame) -> pd.DataFrame:
-    """Formats ProductionByTechnologyAnnual data for eia comparison"""
-
-    name_mapper = {
-        "BIO": "BIO",
-        "CCG": "GAS",
-        "COA": "COA",
-        "CSP": "SPV",
-        "HYD": "HYD",
-        "OCG": "GAS",
-        "OIL": "OIL",
-        "SPV": "SPV",
-        "TRN": None,
-        "URN": "URN",
-        "WON": "WND",
-        "WOF": "WND",
-        "WAV": "WAV",
-    }
-
-    df = prod_tech_annual.copy()
-
-    if len(df.columns) == 1:
-        df = df.reset_index()
-
-    df = df[(df.TECHNOLOGY.str.startswith("PWR")) & (df.YEAR < 2023)]
-    df["COUNTRY"] = df.TECHNOLOGY.str[6:9]
-    df["CODE"] = df.TECHNOLOGY.str[3:6]
-    df["CODE"] = df.CODE.map(name_mapper)
-    df = df.dropna(subset="CODE")
-    df["TECHNOLOGY"] = df.CODE + df.COUNTRY
-    df = df.drop(columns=["FUEL", "COUNTRY", "CODE"])
-    return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
-
-
 ###
 # private functions
 ###
@@ -105,7 +103,12 @@ def _read_eia_data(json_file: str) -> pd.DataFrame:
     df = pd.read_json(json_file)
     df["name"] = df.name.map(lambda x: x.split(", ")[0])
     df = df.explode(column="data")
-    df["year"] = df.data.map(lambda x: datetime.fromtimestamp(x["date"] / 1000).year)
+    # not sure why, but the 'datetime.fromtimestamp(x["date"] / 1000).year' call gives the
+    # next year rather than the correct one. ie. If I call the year 2020, 2021 values are
+    # returned. Thats why the extra '+1' at the end of the lambda
+    df["year"] = df.data.map(
+        lambda x: datetime.fromtimestamp(x["date"] / 1000).year + 1
+    )
     df["VALUE"] = df.data.map(lambda x: x["value"])
     df["VALUE"] = df.VALUE.fillna(0)
     return df.drop(
@@ -114,7 +117,10 @@ def _read_eia_data(json_file: str) -> pd.DataFrame:
 
 
 def _format_eia_capacity_data(eia: pd.DataFrame) -> pd.DataFrame:
-    """Formats data into otoole compatiable data structure"""
+    """Formats data into otoole compatiable data structure
+
+    Note, no unit conversion as capacity is already given in GW
+    """
 
     df = eia.copy()
 
@@ -122,11 +128,18 @@ def _format_eia_capacity_data(eia: pd.DataFrame) -> pd.DataFrame:
         lambda x: x.split(" electricity installed capacity")[0]
     ).map(CAPACITY_MAPPER)
     df["name"] = df.name + df.iso
-    df = df.drop(columns=["iso"])
-    df = df.groupby(["name", "year"], as_index=False).sum()
+    df["VALUE"] = (
+        df.VALUE.replace("NA", 0)
+        .replace("--", 0)
+        .replace("ie", 0)
+        .replace("(s)", 0)
+        .fillna(0)
+        .astype(float)
+    )
     df = df.rename(columns={"name": "TECHNOLOGY", "year": "YEAR"})
     df["REGION"] = "GLOBAL"
-    return df.set_index(["REGION", "TECHNOLOGY", "YEAR"])
+    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
+    return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
 
 
 def _format_eia_generation_data(eia: pd.DataFrame) -> pd.DataFrame:
@@ -147,10 +160,10 @@ def _format_eia_generation_data(eia: pd.DataFrame) -> pd.DataFrame:
         .replace("NA", 0)
         .astype(float)
     )
-    df = df.groupby(["name", "year"], as_index=False).sum()
     df = df.rename(columns={"name": "TECHNOLOGY", "year": "YEAR"})
     df["REGION"] = "GLOBAL"
     # billion kWh -> PJ
     # 1B kWh = 1 TWh * (1PWh / 1000TWh) * (3600sec / hr) = 1 PWs = 1 PJ
     df["VALUE"] = df.VALUE.mul(3.6)
-    return df.set_index(["REGION", "TECHNOLOGY", "YEAR"])
+    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
+    return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()

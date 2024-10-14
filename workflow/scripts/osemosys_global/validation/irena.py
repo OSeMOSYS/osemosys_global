@@ -60,29 +60,6 @@ def get_irena_generation(csv_file: str, iso_codes: str, **kwargs) -> pd.DataFram
     return _format_irena_generation_data(df)
 
 
-def format_og_data(prod_tech_annual: pd.DataFrame) -> pd.DataFrame:
-    """Formats OG results for irena comparison
-
-    Works on:
-    - ProductionByTechnologyAnnual
-    - TotalCapacityAnnual
-    """
-
-    df = prod_tech_annual.copy()
-
-    if len(df.columns) == 1:
-        df = df.reset_index()
-
-    df = df[(df.TECHNOLOGY.str.startswith("PWR")) & (df.YEAR < 2023)]
-    df["COUNTRY"] = df.TECHNOLOGY.str[6:9]
-    df["CODE"] = df.TECHNOLOGY.str[3:6]
-    df["CODE"] = df.CODE.map(OG_NAME_MAPPER)
-    df = df.dropna(subset="CODE").copy()
-    df["TECHNOLOGY"] = df.CODE + df.COUNTRY
-    df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
-    return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
-
-
 ###
 # private functions
 ###
