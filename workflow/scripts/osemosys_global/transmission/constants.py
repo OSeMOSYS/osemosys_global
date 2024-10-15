@@ -13,6 +13,15 @@ SET_DTYPES = {
     "YEAR":int,
 }
 
+"""Set the year at which existing transmission capacity is 
+assumed to be retired."""
+RETIREMENT_YEAR_TRANSMISSION = 2060
+
+"""Set the build year for planned transmission capacity entries
+from the GTD dataset that do not have a expected commissioning 
+year attached."""
+PLANNED_BUILD_YEAR_TRANSMISSION = 2030
+
 """Set the 'From' OG region to which the residual capacity
 based on the GTD dataset entry should be allocated. E.g. USAMI 
 in the GTD dataset consists of multiple OG regions (e.g. USAME,
@@ -34,7 +43,6 @@ CUSTOM_TRN_BA_DICT_FROM = {
     'TRNCHNNMCHNTJ' : 'CHNEM',
     'TRNCHNNMMNGXX' : 'CHNWM',
     'TRNCHNNMRUSSI' : 'CHNEM',
-
 }
 
 """Set the 'To' OG region to which the residual capacity

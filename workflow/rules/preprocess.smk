@@ -124,7 +124,6 @@ rule powerplant:
         weo_regions = 'resources/data/weo_region_mapping.csv',
         default_op_life = 'resources/data/operational_life.csv',
         naming_convention_tech = 'resources/data/naming_convention_tech.csv',
-        line_data = 'resources/data/Costs Line expansion.xlsx',
         default_av_factors = 'resources/data/availability_factors.csv',
         custom_res_cap = powerplant_cap_custom_csv()
     params:
@@ -150,9 +149,7 @@ rule transmission:
         "Generating transmission data..."
     input:
         rules.powerplant.output.csv_files,
-        plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
         default_op_life = 'resources/data/operational_life.csv',
-        line_data = 'resources/data/Costs Line expansion.xlsx',
         gtd_existing = 'resources/data/GTD_existing.csv',
         gtd_planned = 'resources/data/GTD_planned.csv',
         gtd_mapping = 'resources/data/GTD_region_mapping.csv',

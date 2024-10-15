@@ -103,6 +103,10 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
 
     df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final 
                             if not df_res_cap_ud_final.empty else None])
+    
+    # Group residual capacities in case user defined technology entries already exist.
+    df_res_cap = df_res_cap.groupby(['REGION', 'TECHNOLOGY', 'YEAR']
+                                    , as_index = False).sum()
             
     # For technologies with start year at or after model start year, add to 
     # TotalAnnualMinCapacityInvestment      

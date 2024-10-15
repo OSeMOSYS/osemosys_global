@@ -2,20 +2,6 @@
 
 import pandas as pd
 
-def import_plexos_2015(f: str, metric: str) -> dict[str, pd.DataFrame]:
-    """Imports PLEXOS-World 2015 model file.
-    
-    PLEXOS_World_2015_Gold_V1.1.xlsx
-    """
-    if metric.lower() == "memb":
-        sheet_name = "Memberships"
-    elif metric.lower() == "prop":
-        sheet_name = "Properties"
-    else:
-        raise NotImplementedError
-
-    return pd.read_excel(f, sheet_name=sheet_name)
-
 def import_gtd_existing(f: str) -> pd.DataFrame:
     """Imports existing transmission capacity data from the Global
     Transmission Database (GTD)."""
@@ -35,20 +21,6 @@ def import_centerpoints(f: str) -> pd.DataFrame:
     """Imports the centerpoints as used to calculate transmission
     distances for transmission lines."""
     return pd.read_csv(f)
-
-def import_line_data(f: str, metric: str) -> dict[str, pd.DataFrame]:
-    """Imports transmission data from PLEXOS-World.
-    
-    Costs Line expansion.xlsx
-    """
-    if metric.lower() == "interface":
-        sheet_name = "Interface"
-    elif metric.lower() == "lines":
-        sheet_name = "Lines"
-    else:
-        raise NotImplementedError
-
-    return pd.read_excel(f, sheet_name=sheet_name)
 
 def import_op_life(f: str) -> pd.DataFrame:
     """Imports default operational life data.
