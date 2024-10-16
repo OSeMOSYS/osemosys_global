@@ -13,7 +13,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                       ):
     
     techCapacity = []
-    first_year_dict = {}
+    first_year_expansion_dict = {}
     build_rate_dict = {}
     capex_dict = {}
     build_year_dict = {}
@@ -22,7 +22,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
     for tech, tech_params in tech_capacity.items():
         techCapacity.append([tech, tech_params[0], tech_params[1]])
         build_year_dict[tech] = tech_params[1]
-        first_year_dict[tech] = tech_params[2]
+        first_year_expansion_dict[tech] = tech_params[2]
         build_rate_dict[tech] = tech_params[3]
         capex_dict[tech] = tech_params[4]
         efficiency_dict[tech] = tech_params[5]       
@@ -50,7 +50,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
     max_cap_techs_df = pd.merge(max_cap_techs_df, df_min_cap_inv,
                   how='left',
                   on=['REGION', 'TECHNOLOGY', 'YEAR'])
-    max_cap_techs_df['FIRST_YEAR'] = max_cap_techs_df['TECHNOLOGY'].map(first_year_dict)
+    max_cap_techs_df['FIRST_YEAR'] = max_cap_techs_df['TECHNOLOGY'].map(first_year_expansion_dict)
     max_cap_techs_df['BUILD_YEAR'] = max_cap_techs_df['TECHNOLOGY'].map(build_year_dict)
     max_cap_techs_df['MAX_BUILD'] = max_cap_techs_df['TECHNOLOGY'].map(build_rate_dict)
 

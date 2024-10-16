@@ -149,7 +149,7 @@ def main(
             start_year,
             end_year,
             region_name
-            )
+            )  
 
     # get new additions to fuel and technology sets
     exising_techs = tech_set_base.VALUE.to_list()
@@ -245,8 +245,11 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
-        tech_capacity_trn = {'TRNINDEAINDNE': [5, 1975, 2030, 10, 861, 30, 95],
-                             'TRNINDNOINDSO': [0, 2020, 2025, 5, 1800, 63, 92]}
+        tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 861, 30, 95],
+                             'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 861, 30, 95],
+                             'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 861, 30, 95],
+                             'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 900, 32, 92]}
+        
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
         transmission_parameters = {'HVAC': [779, 95400, 6.75, 0, 3.5],
