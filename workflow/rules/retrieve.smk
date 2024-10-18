@@ -22,7 +22,7 @@ def get_external_links() -> dict[str,str]:
         "https://dataverse.harvard.edu/api/access/datafile/6040815",
 
         "ember_yearly_electricity_data.csv" :
-        "https://ember-climate.org/app/uploads/2022/07/yearly_full_release_long_format.csv",
+        "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
         
         "GTD_existing.csv" :
         "https://zenodo.org/records/10870602/files/GTD-v1.1_regional_existing.csv?download=1",
