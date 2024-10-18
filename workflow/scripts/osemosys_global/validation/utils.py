@@ -3,6 +3,8 @@
 import pandas as pd
 from typing import Optional
 import matplotlib.pyplot as plt
+import datetime
+
 
 def _join_data(
     modelled: pd.DataFrame, actual: pd.DataFrame, dataset_name: Optional[str] = None
@@ -20,9 +22,20 @@ def _join_data(
 
     return df.droplevel("REGION")
 
+
+def _get_last_validation_year() -> int:
+    """Gets year to validate data up to.
+
+    Note, this does not guarantee data will be avaialble from the dataset for this year.
+    """
+    # minus 1 as we can not validate current year
+    return datetime.date.today().year - 1
+
+
 ###
 # plotters
 ###
+
 
 def plot_gen_cap(
     modelled: pd.DataFrame,
@@ -74,6 +87,7 @@ def plot_gen_cap(
 
     return data
 
+
 def plot_emissions(
     modelled: pd.DataFrame,
     actual: pd.DataFrame,
@@ -98,28 +112,30 @@ def plot_emissions(
 
     data = {}
 
-    countries = df.EMISSION.unique() # emission column holds country 
+    countries = df.EMISSION.unique()  # emission column holds country
     for country in countries:
-        df_country = df[df.EMISSION == country].drop(columns=["EMISSION"]).set_index("YEAR")
+        df_country = (
+            df[df.EMISSION == country].drop(columns=["EMISSION"]).set_index("YEAR")
+        )
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         title = f"{country} {variable.capitalize()}"
-        df_country.plot(
-            kind="bar", ax=ax, rot=45, title=title, xlabel="", ylabel=units
-        )
+        df_country.plot(kind="bar", ax=ax, rot=45, title=title, xlabel="", ylabel=units)
 
         data[country] = (fig, ax)
 
     return data
 
+
 ###
 # formatters
 ###
 
+
 def format_rty_results(og: pd.DataFrame, mapper: dict[str, str]) -> pd.DataFrame:
     """Formats OG results for comparison on region, tech, year
-    
-    Mapper is to group different technologies together, to match external 
-    dataset aggregation. 
+
+    Mapper is to group different technologies together, to match external
+    dataset aggregation.
 
     Works on:
     - ProductionByTechnologyAnnual
@@ -128,10 +144,12 @@ def format_rty_results(og: pd.DataFrame, mapper: dict[str, str]) -> pd.DataFrame
 
     df = og.copy()
 
+    year = _get_last_validation_year()
+
     if len(df.columns) == 1:
         df = df.reset_index()
 
-    df = df[(df.TECHNOLOGY.str.startswith("PWR")) & (df.YEAR < 2023)]
+    df = df[(df.TECHNOLOGY.str.startswith("PWR")) & (df.YEAR <= year)]
     df["COUNTRY"] = df.TECHNOLOGY.str[6:9]
     df["CODE"] = df.TECHNOLOGY.str[3:6]
     df["CODE"] = df.CODE.map(mapper)
@@ -140,19 +158,22 @@ def format_rty_results(og: pd.DataFrame, mapper: dict[str, str]) -> pd.DataFrame
     df = df[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
     return df.groupby(["REGION", "TECHNOLOGY", "YEAR"]).sum()
 
+
 def format_rey_results(og: pd.DataFrame) -> pd.DataFrame:
     """Formats OG results for comparison on region, emission, year
-    
+
     Works on:
     - AnnualEmissions
     """
 
     df = og.copy()
 
+    year = _get_last_validation_year()
+
     if len(df.columns) == 1:
         df = df.reset_index()
 
     # emission is used to track country
-    df = df[df.YEAR < 2023]
+    df = df[df.YEAR <= year]
     df["EMISSION"] = df.EMISSION.str[3:6]
     return df.set_index(["REGION", "EMISSION", "YEAR"])
