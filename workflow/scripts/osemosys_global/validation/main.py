@@ -133,17 +133,14 @@ if __name__ == "__main__":
         modelled = pd.read_csv(Path(result_dir, f"{og_result}.csv"))
         modelled = funcs["formatter"](modelled)
     except KeyError as e:
-        actual = None
-        modelled = None
         logger.error(f"No validation for {variable} from {datasource}")
         raise KeyError(e)
 
-    if isinstance(actual, pd.DataFrame) and isinstance(modelled, pd.DataFrame):
-        results = funcs["plotter"](modelled, actual, variable, datasource)
-        for country, (fig, _) in results.items():
-            p = Path(validation_results, country, variable)
-            if not p.exists():
-                p.mkdir(parents=True)
-            f = Path(p, f"{datasource}.png")
-            fig.tight_layout()
-            fig.savefig(str(f))
+    results = funcs["plotter"](modelled, actual, variable, datasource)
+    for country, (fig, _) in results.items():
+        p = Path(validation_results, country, variable)
+        if not p.exists():
+            p.mkdir(parents=True)
+        f = Path(p, f"{datasource}.png")
+        fig.tight_layout()
+        fig.savefig(str(f))
