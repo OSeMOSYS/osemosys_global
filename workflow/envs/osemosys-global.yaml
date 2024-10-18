@@ -23,6 +23,7 @@ dependencies:
 
  - pip:
    - wbgapi>=1.0.12
+   - geopy>=2.4.1
    - otoole==1.1.2
    - dash==2.17
    - ../../. # path to setup.py
