@@ -53,9 +53,9 @@ def calculate_emission_intensity(
 
 if __name__ == "__main__":
     if "snakemake" in globals():
-        production_by_technology_annual_csv = snakemake.inputs.production_by_technology
-        annual_emissions_csv = snakemake.inputs.emissions
-        save = snakemake.outputs.save
+        production_by_technology_annual_csv = snakemake.input.production_by_technology
+        annual_emissions_csv = snakemake.input.annual_emissions
+        save = snakemake.output.emission_intensity
     else:
         production_by_technology_annual_csv = (
             "results/India/results/ProductionByTechnologyAnnual.csv"

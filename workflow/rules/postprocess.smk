@@ -72,3 +72,16 @@ rule summarise_results:
         log = 'results/{scenario}/logs/summarise_results.log'
     shell: 
         'python workflow/scripts/osemosys_global/summarise_results.py 2> {log}'
+
+rule calculate_carbon_intensity:
+    message:
+        "Calculating Carbon Intensity..."
+    input:
+        production_by_technology = "results/{scenario}/results/ProductionByTechnologyAnnual.csv",
+        annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
+    output:
+        emission_intensity = "results/{scenario}/results/AnnualEmissionIntensity.csv",
+    log:
+        log = 'results/{scenario}/logs/calcualte_carbon_intensity.log'
+    script: 
+        "../scripts/osemosys_global/carbon_intensity.py"
