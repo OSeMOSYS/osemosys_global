@@ -101,11 +101,10 @@ def plot_emissions(
     if variable == "emissions":
         units = "MT"
     elif variable == "emission_intensity":
-        units = "T/kWh"
-        raise NotImplementedError
+        units = "g/kWh"
     else:
         raise ValueError(
-            f"Variable must be one of ['generation', 'capacity']. Recieved {variable}"
+            f"Variable must be one of ['emissions', 'emission_intensity']. Recieved {variable}"
         )
 
     df = _join_data(modelled, actual, dataset_name).reset_index()

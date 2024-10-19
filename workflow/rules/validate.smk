@@ -8,6 +8,7 @@
 CAPACITY_VALIDATION = ["ember", "irena", "eia"]
 GENERATION_VALIDATION = ["ember", "irena", "eia"]
 EMISSION_VALIDATION = ["ember", "climatewatch"]
+EMISSION_INTENSITY_VALIDATION = ["ember"]
 
 ###
 # capacity
@@ -93,5 +94,26 @@ rule validate_emissions:
         variable="emissions"
     output:
         expand("results/{{scenario}}/validation/{country}/emissions/{{datasource}}.png", country=COUNTRIES)
+    script:
+        "../scripts/osemosys_global/validation/main.py"
+
+###
+# emission intensity
+###
+
+def emission_intensity_validation_data(wildcards):
+    if wildcards.datasource == "ember":
+        return "resources/data/ember_yearly_electricity_data.csv"
+
+rule validate_emission_intensity:
+    message: "Validating emission intensity against {wildcards.datasource}"
+    input:
+        validation_data = emission_intensity_validation_data,
+        og_result = "results/{scenario}/results/AnnualEmissionIntensity.csv"
+    params:
+        result_dir="results/{scenario}/results",
+        variable="emission_intensity"
+    output:
+        expand("results/{{scenario}}/validation/{country}/emission_intensity/{{datasource}}.png", country=COUNTRIES)
     script:
         "../scripts/osemosys_global/validation/main.py"

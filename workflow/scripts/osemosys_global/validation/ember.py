@@ -57,6 +57,11 @@ def get_ember_emissions(csv_file: str, **kwargs) -> pd.DataFrame:
     return _format_ember_emission_data(df)
 
 
+def get_ember_emission_intensity(csv_file: str, **kwargs) -> pd.DataFrame:
+    df = _read_ember_data(csv_file)
+    return _format_ember_emission_intensity_data(df)
+
+
 ###
 # private functions
 ###
@@ -118,6 +123,21 @@ def _format_ember_emission_data(ember: pd.DataFrame) -> pd.DataFrame:
     df = df[
         (df.Category == "Power sector emissions") & (df.Subcategory == "Total")
     ].copy()
+    df["EMISSION"] = df.COUNTRY
+    df["REGION"] = "GLOBAL"
+    df = df[["REGION", "EMISSION", "YEAR", "VALUE"]]
+    return df.groupby(["REGION", "EMISSION", "YEAR"]).sum()
+
+
+def _format_ember_emission_intensity_data(ember: pd.DataFrame) -> pd.DataFrame:
+    """Formats data into otoole compatiable data structure
+
+    No unit conversion needed, as Ember emissions in g/kwh
+    """
+
+    df = ember.copy()
+
+    df = df[(df.Subcategory == "CO2 intensity")].copy()
     df["EMISSION"] = df.COUNTRY
     df["REGION"] = "GLOBAL"
     df = df[["REGION", "EMISSION", "YEAR", "VALUE"]]

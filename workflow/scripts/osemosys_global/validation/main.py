@@ -88,6 +88,18 @@ def get_emission_funcs(datasource: str) -> dict[str, callable]:
             raise KeyError
 
 
+def get_emission_intensity_funcs(datasource: str) -> dict[str, callable]:
+    match datasource:
+        case "ember" | "EMBER" | "Ember":
+            return {
+                "getter": ember.get_ember_emission_intensity,
+                "formatter": format_rey_results,
+                "plotter": plot_emissions,
+            }
+        case _:
+            raise KeyError
+
+
 ###
 # entry point
 ###
@@ -102,8 +114,8 @@ if __name__ == "__main__":
         if snakemake.input.get("iso_codes"):
             options["iso_codes"] = snakemake.input.iso_codes
     else:
-        datasource = "climatewatch"
-        variable = "emissions"
+        datasource = "ember"
+        variable = "emission_intensity"
         result_dir = "results/India/results"
         validation_data = "resources/data/validation/climate-watch-emissions.csv"
         options = {}
@@ -123,8 +135,11 @@ if __name__ == "__main__":
     elif variable == "emissions":
         og_result = "AnnualEmissions"
         funcs = get_emission_funcs(datasource)
+    elif variable == "emission_intensity":
+        og_result = "AnnualEmissionIntensity"
+        funcs = get_emission_intensity_funcs(datasource)
     else:
-        raise NotImplementedError
+        raise NotImplementedError(f"Functions for {variable}")
 
     # perform the validation
 

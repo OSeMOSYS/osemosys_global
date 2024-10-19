@@ -97,6 +97,9 @@ rule all:
             scenario=config['scenario'], country=COUNTRIES, dataset=GENERATION_VALIDATION),
         expand("results/{scenario}/validation/{country}/emissions/{dataset}.png",
             scenario=config['scenario'], country=COUNTRIES, dataset=EMISSION_VALIDATION),
+        expand("results/{scenario}/validation/{country}/emission_intensity/{dataset}.png",
+            scenario=config['scenario'], country=COUNTRIES, dataset=EMISSION_INTENSITY_VALIDATION),
+
 
 rule generate_input_data:
     message:
