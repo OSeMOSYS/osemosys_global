@@ -9,20 +9,22 @@ dependencies:
  - python>=3.9
  - pip>=24.0
 
- - pandas==2.0.3 # otoole req. Relax to 2.2 in upcoming release
+ - pandas>=2.2 
  - urllib3>=2.2
  - matplotlib>=3.8
  - seaborn>=0.13
- - snakemake-minimal>=7.32
+ - snakemake>=8
  - pytest>=8.2
  - scikit-learn>=1.4
  - cartopy>=0.23
  - geopandas>=0.14
  - plotly>=5.22
  - glpk>=5.0
+ - coin-or-cbc>=2.10
 
  - pip:
    - wbgapi>=1.0.12
-   - otoole==1.1.2
+   - otoole>=1.1.3
    - dash==2.17
+   - plac>=1.4 # overwrite snakemake install 
    - ../../. # path to setup.py
