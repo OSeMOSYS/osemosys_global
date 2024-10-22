@@ -11,7 +11,7 @@ def get_transmission_costs(df_exist_corrected, df_planned_corrected,
                            df_pp_capex_base, df_pp_fix_base,
                            centerpoints_dict, trn_param, 
                            start_year, end_year, region_name, 
-                           SUBSEA_LINES):
+                           subsea_lines):
     '''Gets electrical transmission capital and fixed cost per technology. 
 
     Both the capital costs and fixed cost are written out to avoid having 
@@ -38,7 +38,7 @@ def get_transmission_costs(df_exist_corrected, df_planned_corrected,
                                                    df_planned_corrected, 
                                                    centerpoints_dict, 
                                                    trn_param, 
-                                                   SUBSEA_LINES)
+                                                   subsea_lines)
     
     # Set base df including calculated transmission distances per pathway.
     df_capex = calculate_transmission_distances(df_exist_corrected, df_planned_corrected, 

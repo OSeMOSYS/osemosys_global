@@ -6,18 +6,18 @@ from data import get_years
 def res_capacity_transmission(df_exist_corrected, df_plan_corrected, 
                               res_cap_base, op_life_dict, 
                               start_year, end_year, region_name,
-                              RETIREMENT_YEAR_TRANSMISSION, 
-                              PLANNED_BUILD_YEAR_TRANSMISSION):
+                              retirement_year_transmission, 
+                              planned_build_year_transmission):
     
     """Set build year for existing capacities as the differential between assumed 
     retirement year and the set operational life for transmission technologies."""
     df_res_cap_exist = df_exist_corrected.copy()
-    df_res_cap_exist['YEAR'] = RETIREMENT_YEAR_TRANSMISSION - op_life_dict.get('TRN')
+    df_res_cap_exist['YEAR'] = retirement_year_transmission - op_life_dict.get('TRN')
     
     """Set assumed build year for planned capacities from the GTD dataset that do not have 
     a commissioning year attached."""
     df_res_cap_plan = df_plan_corrected.copy()
-    df_res_cap_plan.loc[df_res_cap_plan['YEAR'] == '-', 'YEAR'] = PLANNED_BUILD_YEAR_TRANSMISSION
+    df_res_cap_plan.loc[df_res_cap_plan['YEAR'] == '-', 'YEAR'] = planned_build_year_transmission
     
     # Combine dfs and filter out rows without capacities.
     df_res_cap = pd.concat([df_res_cap_exist, df_res_cap_plan])

@@ -9,7 +9,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                       df_min_cap_invest, df_max_cap_invest, df_res_cap,
                       op_life_base, cap_act_base, cap_cost_base, df_iar_final,
                       df_oar_final, fuel_set, start_year, end_year, region_name,
-                      RENEWABLES_LIST
+                      renewables_list
                       ):
     
     techCapacity = []
@@ -137,7 +137,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
                              )  
 
     for each_tech in tech_list:
-        if each_tech[3:6] in RENEWABLES_LIST:
+        if each_tech[3:6] in renewables_list:
 
             df_iar_custom.loc[(df_iar_custom['TECHNOLOGY'] == each_tech) & 
                               (df_iar_custom['MODE_OF_OPERATION']==1),'FUEL'] = (

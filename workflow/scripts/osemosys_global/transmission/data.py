@@ -41,8 +41,8 @@ def format_gtd_planned(df):
     return df
 
 def correct_gtd_data(df_exist, df_plan, region_mapping_dict, 
-                     CUSTOM_TRN_BA_DICT_FROM, CUSTOM_TRN_BA_DICT_TO,
-                     CUSTOM_TRN_BA_MISSING):
+                     custom_trn_ba_dict_from, custom_trn_ba_dict_to,
+                     custom_trn_ba_missing):
     
     # Create df with unique transmission technologies from GTD.
     tech_exist = get_unique_technologies(df_exist)
@@ -60,10 +60,10 @@ def correct_gtd_data(df_exist, df_plan, region_mapping_dict,
     best estimate for the most important transmission pathway. This pathway will have
     all residual capacity assigned to it."""
     df.loc[df['From'] == 'DUPLICATE', 
-           'From'] = df['TECHNOLOGY_gtd'].map(CUSTOM_TRN_BA_DICT_FROM)
+           'From'] = df['TECHNOLOGY_gtd'].map(custom_trn_ba_dict_from)
     
     df.loc[df['To'] == 'DUPLICATE', 
-           'To'] = df['TECHNOLOGY_gtd'].map(CUSTOM_TRN_BA_DICT_TO)
+           'To'] = df['TECHNOLOGY_gtd'].map(custom_trn_ba_dict_to)
     
     # Sort 'From' and 'To' columns alphabetically for custom entries. 
     for idx,row in df.loc[df['To'] < df['From']].iterrows():
@@ -102,7 +102,7 @@ def correct_gtd_data(df_exist, df_plan, region_mapping_dict,
     within the GTD datasets that are not selected as the pathways to which residual
     capacity should be allocated (defined in the CUSTOM_TRN_BA_DICT_FROM and
     CUSTOM_TRN_BA_DICT_TO constants) also need to be manually added."""
-    df_missing = pd.DataFrame(CUSTOM_TRN_BA_MISSING, columns = ['TECHNOLOGY'])
+    df_missing = pd.DataFrame(custom_trn_ba_missing, columns = ['TECHNOLOGY'])
     df_missing['From'] = df_missing['TECHNOLOGY'].str[3:8]
     df_missing['To'] = df_missing['TECHNOLOGY'].str[8:13]
     df_missing['YEAR'] = '-'
@@ -154,7 +154,7 @@ def set_break_even_distance(trn_param):
     return n
 
 def set_transmission_tech_groups(df_exist_corrected, df_plan_corrected, 
-                                 centerpoints_dict, trn_param, SUBSEA_LINES):
+                                 centerpoints_dict, trn_param, subsea_lines):
     
     # Set the break-even distance.
     break_even_dist = set_break_even_distance(trn_param)
@@ -171,7 +171,7 @@ def set_transmission_tech_groups(df_exist_corrected, df_plan_corrected,
     df.loc[df['distance'] < break_even_dist, 
            'tech_group'] = 'HVAC'
     
-    df.loc[df['TECHNOLOGY'].isin(SUBSEA_LINES) , 
+    df.loc[df['TECHNOLOGY'].isin(subsea_lines) , 
            'tech_group'] = 'HVDC_subsea'
     
     tech_group_dict = dict(zip(df['TECHNOLOGY'], 

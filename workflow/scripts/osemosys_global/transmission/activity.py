@@ -11,7 +11,7 @@ from data import(
 from utils import apply_dtypes
 
 def set_transmission_losses(df_exist_corrected, df_planned_corrected,
-                            centerpoints_dict, trn_param, SUBSEA_LINES):
+                            centerpoints_dict, trn_param, subsea_lines):
     
     # Set base df including calculated transmission distances per pathway to set efficiencies.
     line_efficiency_dict = {}
@@ -27,7 +27,7 @@ def set_transmission_losses(df_exist_corrected, df_planned_corrected,
                                                    df_planned_corrected, 
                                                    centerpoints_dict, 
                                                    trn_param, 
-                                                   SUBSEA_LINES)
+                                                   subsea_lines)
     
     # Set base df including calculated transmission distances per pathway.
     eff_df = calculate_transmission_distances(df_exist_corrected, df_planned_corrected, 

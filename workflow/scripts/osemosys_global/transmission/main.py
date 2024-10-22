@@ -60,7 +60,7 @@ def main(
     gtd_exist : pd.DataFrame,
     gtd_planned : pd.DataFrame,
     gtd_mapping : dict[str, str],
-    centerpoints : list,
+    centerpoints_mapping : list,
     iar_base: pd.DataFrame,
     oar_base: pd.DataFrame,
     capact_base: pd.DataFrame,
@@ -86,17 +86,17 @@ def main(
     
     # Set capital and fixed transmission costs.
     cap_cost_trn, fix_cost_trn = get_transmission_costs(gtd_exist_corrected, 
-                                                                          gtd_planned_corrected,
-                                                                          cap_cost_base,
-                                                                          fix_cost_base,
-                                                                          centerpoints_dict, 
-                                                                          transmission_parameters, 
-                                                                          start_year, end_year, 
-                                                                          region_name, SUBSEA_LINES)
+                                                        gtd_planned_corrected,
+                                                        cap_cost_base,
+                                                        fix_cost_base,
+                                                        centerpoints_mapping, 
+                                                        transmission_parameters, 
+                                                        start_year, end_year, 
+                                                        region_name, SUBSEA_LINES)
     
     # Calculate technology and transmission pathway specific transmission losses.
     eff_trn = set_transmission_losses(gtd_exist_corrected, gtd_planned_corrected,
-                                      centerpoints_dict, transmission_parameters, SUBSEA_LINES)
+                                      centerpoints_mapping, transmission_parameters, SUBSEA_LINES)
     
     # Set activity ratios for transmission.
     iar_trn, oar_trn = activity_transmission(iar_base, oar_base, 
@@ -107,16 +107,15 @@ def main(
     activity_limit_trn = activity_transmission_limit(cross_border_trade, oar_trn)
     
     # Set operational life for transmission.
-    op_life_trn = set_op_life_transmission(iar_trn, oar_trn, 
-                                                    default_op_life, op_life_base, region_name)
+    op_life_trn = set_op_life_transmission(oar_trn, default_op_life, op_life_base, region_name)
     
     # Set annual capacity investment constraints.
     max_cap_invest_trn = cap_investment_constraints_trn(iar_trn, 
-                                                                 max_cap_invest_base, 
-                                                                 no_investment_techs, 
-                                                                 start_year, 
-                                                                 end_year, 
-                                                                 region_name)
+                                                        max_cap_invest_base, 
+                                                        no_investment_techs, 
+                                                        start_year, 
+                                                        end_year, 
+                                                        region_name)
     
     # Set residual capacity.
     res_cap_trn = res_capacity_transmission(gtd_exist_corrected, gtd_planned_corrected, 
@@ -303,7 +302,7 @@ if __name__ == "__main__":
         "gtd_exist" : gtd_exist,
         "gtd_planned" : gtd_plan,
         "gtd_mapping" : gtd_mapping_dict,
-        "centerpoints" : centerpoints_dict,
+        "centerpoints_mapping" : centerpoints_dict,
         "iar_base" : iar_base,
         "oar_base" : oar_base,
         "capact_base" : capact_base,
