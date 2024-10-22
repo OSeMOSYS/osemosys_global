@@ -293,7 +293,7 @@ def _interpolate_yearly_demand(projection: pd.DataFrame) -> pd.DataFrame:
 
     for year in all_years:
         if year not in step_years:
-            df[year] = np.NaN
+            df[year] = np.nan
 
     # Filters columns with numerical dtypes.
     df_interp = df[all_years].copy()
