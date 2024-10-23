@@ -3,7 +3,9 @@ EXTERNAL_FILES = [
     "PLEXOS_World_2015_Gold_V1.1.xlsx",
     "All_Demand_UTC_2015.csv",
     "PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx",
-    "ember_yearly_electricity_data.csv"
+    "ember_yearly_electricity_data.csv",
+    "GTD_existing.csv",
+    "GTD_planned.csv"
 ]
 
 def get_external_links() -> dict[str,str]:
@@ -20,7 +22,13 @@ def get_external_links() -> dict[str,str]:
         "https://dataverse.harvard.edu/api/access/datafile/6040815",
 
         "ember_yearly_electricity_data.csv" :
-        "https://ember-climate.org/app/uploads/2022/07/yearly_full_release_long_format.csv"
+        "https://storage.googleapis.com/emb-prod-bkt-publicdata/public-downloads/yearly_full_release_long_format.csv",
+        
+        "GTD_existing.csv" :
+        "https://zenodo.org/records/10870602/files/GTD-v1.1_regional_existing.csv?download=1",
+        
+        "GTD_planned.csv" :
+        "https://zenodo.org/records/10870602/files/GTD-v1.1_regional_planned.csv?download=1",
     }
 
 rule download_external_files:

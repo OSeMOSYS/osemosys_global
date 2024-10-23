@@ -50,23 +50,43 @@ solver: "cbc" # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, 
-  #              first_year, 
+  #              build_year, 
   #              first_year_of_expansion, 
   #              build_rate_per_year, 
-  #              cost, 
+  #              capex_cost, 
   #              efficiency]
   PWRCOAINDWE01: [8, 2000, 2025, 5, 1100, 35]
   PWRBIOINDWE01: [0, 2020, 2030, 2, 2000, 28]
 
 user_defined_capacity_transmission:
-  # technology: [capacity, 
-  #              first_year, 
-  #              first_year_of_expansion, 
-  #              build_rate_per_year, 
-  #              cost, 
-  #              efficiency]
-  TRNINDEAINDNE: [5, 1975, 2030, 10, 861, 95]
-  TRNINDNOINDSO: [0, 2020, 2025, 2, 1800, 92]
+  # entry: [technology,
+  #         capacity, 
+  #         build_year, 
+  #         first_year_of_expansion, 
+  #         build_rate_per_year, 
+  #         capex_cost,
+  #         annual_fixed_O&M_cost,
+  #         efficiency]
+  trn1: [TRNINDEAINDNE, 5, 1975, 2030, 10, 861, 30, 95]
+  trn2: [TRNINDEAINDNE, 1, 1990, 2030, 10, 861, 30, 95]
+  trn3: [TRNINDEAINDNE, 2, 2035, 2030, 10, 861, 30, 95]
+  trn4: [TRNINDNOINDSO, 0, 2020, 2025, 0.5, 900, 32, 92]
+  # Per technology, only the capacity and build_year
+  # parameters can deviate from each other. For all other
+  # parameters only the last entry will be used.
+
+transmission_parameters:
+  # technology_group: [Line CAPEX, 
+  #                    Converter pair CAPEX, 
+  #                    Line losses, 
+  #                    AC/DC Converter pair losses, 
+  #                    Fixed O&M costs]
+  # Units are in $2020/MW/KM (Line CAPEX), $2020 (Converter pair CAPEX),
+  # %/1000km (Line losses), % (AC/DC Converter pair losses), 
+  # % of total CAPEX/yr (Fixed O&M costs).
+  HVAC: [779, 95400, 6.75, 0, 3.5]
+  HVDC: [238, 297509, 3.5, 1.3, 3.5]
+  HVDC_subsea: [295, 297509, 3.5, 1.3, 3.5]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 

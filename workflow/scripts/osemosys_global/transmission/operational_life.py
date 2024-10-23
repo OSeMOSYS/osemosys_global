@@ -4,13 +4,11 @@ import pandas as pd
 
 from utils import apply_dtypes
 
-def set_op_life_transmission(df_iar_final, df_oar_final, 
-                             op_life_dict, op_life_base,
-                             region_name):
+def set_op_life_transmission(df_oar_final, op_life_dict, 
+                             op_life_base, region_name):
 
     # Create Operational Life data
-    op_life_techs = list(set(list(df_iar_final['TECHNOLOGY'].unique()
-                                  ) + list(df_oar_final['TECHNOLOGY'].unique())))
+    op_life_techs = list(df_oar_final['TECHNOLOGY'].unique())
     
     op_life_trn = [tech for tech in op_life_techs if tech[0:3] == 'TRN']
     
