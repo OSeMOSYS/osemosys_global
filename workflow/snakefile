@@ -45,12 +45,15 @@ OTOOLE_YAML = "resources/otoole.yaml"
 OTOOLE_PARAMS = get_otoole_data(OTOOLE_YAML, "param")
 OTOOLE_RESULTS = get_otoole_data(OTOOLE_YAML, "result")
 
+COUNTRIES = config["geographic_scope"]
+
 # rules
 
 include: "rules/preprocess.smk"
 include: "rules/model.smk"
 include: "rules/postprocess.smk"
 include: "rules/retrieve.smk"
+include: "rules/validate.smk"
 
 # handlers 
         
@@ -71,15 +74,32 @@ if not os.path.isdir(Path('results', 'data')):
 
 # target rules
 
+wildcard_constraints:
+    scenario="[A-Za-z0-9]+"
+
 rule all:
     message:
-        'All rules executed successfully...' 
+        'Running workflow...' 
     input:
+        # demand projections
         expand('results/figs/{demand_figure}.png', demand_figure=["regression", "projection"]),
+
+        # model results 
         expand('results/{scenario}/result_summaries/{result_summary}.csv', 
             scenario=config['scenario'], result_summary=result_summaries), 
         expand('results/{scenario}/figures/{result_figure}.html', 
-            scenario=config['scenario'], result_figure = result_figures)
+            scenario=config['scenario'], result_figure = result_figures),
+
+        # validation results 
+        expand("results/{scenario}/validation/{country}/capacity/{dataset}.png",
+            scenario=config['scenario'], country=COUNTRIES, dataset=CAPACITY_VALIDATION),
+        expand("results/{scenario}/validation/{country}/generation/{dataset}.png",
+            scenario=config['scenario'], country=COUNTRIES, dataset=GENERATION_VALIDATION),
+        expand("results/{scenario}/validation/{country}/emissions/{dataset}.png",
+            scenario=config['scenario'], country=COUNTRIES, dataset=EMISSION_VALIDATION),
+        expand("results/{scenario}/validation/{country}/emission_intensity/{dataset}.png",
+            scenario=config['scenario'], country=COUNTRIES, dataset=EMISSION_INTENSITY_VALIDATION),
+
 
 rule generate_input_data:
     message:
