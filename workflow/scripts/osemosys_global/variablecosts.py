@@ -36,7 +36,6 @@ df_prices = pd.read_excel(
 
 # Read in Technologies
 df_techs = pd.read_csv(os.path.join(output_data_dir,'TECHNOLOGY.csv'))
-df_trn_techs = df_techs.copy()
 years = config.get_years()
 
 region_name = config.region_name
@@ -159,32 +158,6 @@ df_varcost = df_varcost.drop(['TEMPTECH'], axis=1)
 ## BUT THIS IS ALREADY DONE FOR US BY THE MERGE
 #df_techs.dropna(subset = ["VALUE"], inplace=True)
 #print(df_techs)
-'''
-
-
-# Get transmission variable costs 
-
-df_trn_techs = df_trn_techs.loc[
-    (df_trn_techs['VALUE'].str.startswith('TRN')) &
-    (df_trn_techs['VALUE'].str.len() == 13)] # keeps TRNxxxxxxxxxx techs
-
-df_trn_varcosts = df_trn_techs.copy()
-df_trn_varcosts = df_trn_varcosts.rename(columns={'VALUE':'TECHNOLOGY'})
-df_trn_varcosts['REGION'] = region_name
-df_trn_varcosts['YEAR'] = [range(years[0], years[-1] + 1)] * len(df_trn_varcosts)
-df_trn_varcosts['MODE_OF_OPERATION'] = [[1,2] for x in range(len(df_trn_varcosts))]
-df_trn_varcosts = df_trn_varcosts.explode('MODE_OF_OPERATION')
-df_trn_varcosts = df_trn_varcosts.explode('YEAR')
-
-# Hardcode in transmission variable cost parameter following PLEXOS of $4/MWh
-# $4/MWh * 1Wh/3600J * 1000000000 MJ/1PJ * 1M$/$1000000 
-trn_varcost = 4 / 3600
-
-df_trn_varcosts['VALUE'] = round(trn_varcost, 4)
-
-'''
-# Merge with mining variable costs 
-df_varcost = pd.concat([df_varcost, df_trn_varcosts])
 
 # ### Write out variablecost.csv
 
@@ -324,8 +297,6 @@ df_fuel_prices_final = df_fuel_prices_final[['REGION',
                                              'MODE_OF_OPERATION',
                                              'YEAR',
                                              'VALUE']]
-df_fuel_prices_final = pd.concat([df_fuel_prices_final,
-                                  df_trn_varcosts])
 
 df_fuel_prices_final.to_csv(os.path.join(output_data_dir,
                                          'VariableCost.csv'),
