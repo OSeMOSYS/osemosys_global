@@ -9,6 +9,8 @@ from read import(
     import_naming_convention_tech,
     import_afs,
     import_custom_res_cap,
+    import_cmo_forecasts,
+    import_fuel_prices
 )
 
 from constants import(
@@ -38,7 +40,8 @@ from activity import(
 
 from costs import(
     costs_pwr,
-    costs_end
+    costs_end,
+    costs_var_pwr
     )
 
 from operational_life import set_op_life
@@ -65,6 +68,8 @@ def main(
     tech_code_dict: pd.DataFrame,
     custom_res_cap: pd.DataFrame,
     default_av_factors: pd.DataFrame,
+    cmo_forecasts: pd.DataFrame,
+    fuel_prices: pd.DataFrame,
 ):
     
     # CALL FUNCTIONS
@@ -175,6 +180,10 @@ def main(
     df_af_final = availability_factor(default_av_factors, tech_set,
                                       start_year, end_year, region_name)
 
+    # Set variable costs. Occurs after set_user_defined_capacity as tech_set gets updated.    
+    df_var_cost_final = costs_var_pwr(cmo_forecasts, fuel_prices, tech_set,
+                                      start_year, end_year, region_name)
+
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -186,6 +195,8 @@ def main(
     df_cap_cost_final.to_csv(os.path.join(powerplant_data_dir, "CapitalCost.csv"), index = None)
     
     df_fix_cost_final.to_csv(os.path.join(powerplant_data_dir, "FixedCost.csv"), index = None)
+    
+    df_var_cost_final.to_csv(os.path.join(powerplant_data_dir, "VariableCost.csv"), index = None)    
     
     df_capact_final.to_csv(os.path.join(powerplant_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
@@ -222,6 +233,8 @@ if __name__ == "__main__":
         file_weo_costs = snakemake.input.weo_costs
         file_weo_regions = snakemake.input.weo_regions
         file_default_av_factors = snakemake.input.default_av_factors
+        file_cmo_forecasts = snakemake.input.cmo_forecasts     
+        file_fuel_prices = snakemake.input.fuel_prices    
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
@@ -245,7 +258,9 @@ if __name__ == "__main__":
         file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
         file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
         file_weo_regions = 'resources/data/weo_region_mapping.csv'
-        file_default_av_factors = 'resources/data/availability_factors.csv'    
+        file_default_av_factors = 'resources/data/availability_factors.csv'  
+        file_cmo_forecasts = 'resources/data/CMO-April-2020-forecasts.xlsx'          
+        file_fuel_prices = 'resources/data/fuel_prices.csv'          
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
@@ -280,6 +295,8 @@ if __name__ == "__main__":
     weo_regions = import_weo_regions(file_weo_regions)
     
     availability = import_afs(file_default_av_factors)
+    cmo_forecasts = import_cmo_forecasts(file_cmo_forecasts)
+    fuel_prices = import_fuel_prices(file_fuel_prices)
     
     if custom_nodes:
         custom_res_cap = import_custom_res_cap(file_custom_res_cap)
@@ -297,6 +314,8 @@ if __name__ == "__main__":
         "tech_code_dict": tech_code_dict,
         "custom_res_cap" : custom_res_cap,
         "default_av_factors": availability,
+        "cmo_forecasts" : cmo_forecasts,
+        "fuel_prices" : fuel_prices,
     }
     
     # CALL MAIN

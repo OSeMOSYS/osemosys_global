@@ -17,6 +17,7 @@ demand_figures = [
 power_plant_files = [
     'powerplant/CapitalCost',
     'powerplant/FixedCost',
+    'powerplant/VariableCost',
     'powerplant/CapacityToActivityUnit',
     'powerplant/OperationalLife',
     'powerplant/TotalAnnualMaxCapacityInvestment',
@@ -35,6 +36,7 @@ power_plant_files = [
 transmission_files = [
     'CapitalCost',
     'FixedCost',
+    'VariableCost',
     'CapacityToActivityUnit',
     'OperationalLife',
     'TotalAnnualMaxCapacityInvestment',
@@ -68,10 +70,6 @@ timeslice_files = [
     'ReserveMarginTagFuel'
     ]
 
-variable_cost_files = [
-    'VariableCost'
-    ]
-
 demand_files = [
     'SpecifiedAnnualDemand'
     ]
@@ -96,7 +94,7 @@ user_capacity_files = [
 ]
 
 GENERATED_CSVS = (
-    power_plant_files + transmission_files + timeslice_files + variable_cost_files \
+    power_plant_files + transmission_files + timeslice_files \
     + demand_files + emission_files + max_capacity_files
 )
 GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
@@ -125,7 +123,9 @@ rule powerplant:
         default_op_life = 'resources/data/operational_life.csv',
         naming_convention_tech = 'resources/data/naming_convention_tech.csv',
         default_av_factors = 'resources/data/availability_factors.csv',
-        custom_res_cap = powerplant_cap_custom_csv()
+        custom_res_cap = powerplant_cap_custom_csv(),
+        cmo_forecasts = 'resources/data/CMO-April-2020-forecasts.xlsx',
+        fuel_prices = 'resources/data/fuel_prices.csv',
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -195,22 +195,6 @@ rule timeslice:
         log = 'results/logs/timeslice.log'    
     shell:
         'python workflow/scripts/osemosys_global/TS_data.py 2> {log}'
-
-rule variable_costs:
-    message:
-        'Generating variable cost data...'
-    input:
-        'resources/data/CMO-April-2020-forecasts.xlsx',
-        'results/data/TECHNOLOGY.csv',
-    params:
-        start_year = config['startYear'],
-        end_year = config['endYear'],
-    output:
-        csv_files = expand('results/data/{output_file}.csv', output_file=variable_cost_files),
-    log:
-        log = 'results/logs/variable_costs.log'
-    shell:
-        'python workflow/scripts/osemosys_global/variablecosts.py 2> {log}'
 
 def demand_custom_csv() -> str:
     if config["nodes_to_add"]:

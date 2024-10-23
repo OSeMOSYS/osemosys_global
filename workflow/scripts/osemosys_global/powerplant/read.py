@@ -57,3 +57,17 @@ def import_custom_res_cap(f: str) -> pd.DataFrame:
     custom_nodes\residual_capacity.csv
     """
     return pd.read_csv(f)
+
+def import_cmo_forecasts(f: str) -> pd.DataFrame:
+    """Imports CMO forecasts.
+    
+    CMO-April-2020-forecasts.csv
+    """
+    return pd.read_excel(f, header=1, skiprows=83, nrows=6)
+
+def import_fuel_prices(f: str) -> pd.DataFrame:
+    """Imports international and country specific fuel prices.
+    
+    fuel_prices.csv
+    """
+    return pd.read_csv(f)
