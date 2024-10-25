@@ -202,9 +202,15 @@ def main(
                                             'ResidualCapacity.csv'),
                                         index = None)       
     
-    min_cap_invest_trn.to_csv(os.path.join(output_data_dir, 
-                                            'TotalAnnualMinCapacityInvestment.csv'),
-                                        index = None)
+    if tech_capacity_trn is not None:
+        min_cap_invest_trn.to_csv(os.path.join(output_data_dir, 
+                                                'TotalAnnualMinCapacityInvestment.csv'),
+                                            index = None)
+        
+    else:
+        min_cap_invest_base.to_csv(os.path.join(output_data_dir, 
+                                                'TotalAnnualMinCapacityInvestment.csv'),
+                                            index = None)
 
 if __name__ == "__main__":
     
