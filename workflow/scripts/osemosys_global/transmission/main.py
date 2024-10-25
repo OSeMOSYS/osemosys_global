@@ -216,7 +216,6 @@ if __name__ == "__main__":
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
-        custom_nodes = snakemake.params.custom_nodes
         tech_capacity_trn = snakemake.params.user_defined_capacity_transmission
         no_investment_techs = snakemake.params.no_investment_techs      
         transmission_parameters = snakemake.params.transmission_parameters           
@@ -249,7 +248,6 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
-        custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
         tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 861, 30, 95],
                              'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 861, 30, 95],
                              'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 861, 30, 95],
