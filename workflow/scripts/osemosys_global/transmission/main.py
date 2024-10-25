@@ -151,15 +151,15 @@ def main(
             )  
 
     # get new additions to fuel and technology sets
-    exising_techs = tech_set_base.VALUE.to_list()
+    existing_techs = tech_set_base.VALUE.to_list()
     iar_techs = get_unique_technologies(iar_trn)
     oar_techs = get_unique_technologies(oar_trn)
-    tech_set = create_set_from_iterators(exising_techs, iar_techs, oar_techs)
+    tech_set = create_set_from_iterators(existing_techs, iar_techs, oar_techs)
     
-    exising_fuels = fuel_set_base.VALUE.to_list()
+    existing_fuels = fuel_set_base.VALUE.to_list()
     iar_fuels = get_unique_fuels(iar_trn)
     oar_fuels = get_unique_fuels(oar_trn)
-    fuel_set = create_set_from_iterators(exising_fuels, iar_fuels, oar_fuels)
+    fuel_set = create_set_from_iterators(existing_fuels, iar_fuels, oar_fuels)
     
     # assign capacity to activity unit to transmission + distribution techs
     cap_activity_trn = create_trn_dist_capacity_activity(iar_trn, oar_trn)
@@ -301,7 +301,7 @@ if __name__ == "__main__":
     min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
     res_cap_base = import_res_cap_base(file_res_cap_base)  
     tech_set_base = import_set_base(file_tech_set)  
-    fuel_set_base = import_set_base(file_tech_set)  
+    fuel_set_base = import_set_base(file_fuel_set)  
     
     input_data = {
         "default_op_life": op_life_dict,
