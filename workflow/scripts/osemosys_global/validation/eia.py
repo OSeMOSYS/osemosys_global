@@ -129,11 +129,11 @@ def _format_eia_capacity_data(eia: pd.DataFrame) -> pd.DataFrame:
     ).map(CAPACITY_MAPPER)
     df["name"] = df.name + df.iso
     df["VALUE"] = (
-        df.VALUE.replace("NA", 0)
-        .replace("--", 0)
-        .replace("ie", 0)
-        .replace("(s)", 0)
-        .fillna(0)
+        df.VALUE.replace("NA", "0")
+        .replace("--", "0")
+        .replace("ie", "0")
+        .replace("(s)", "0")
+        .fillna("0")
         .astype(float)
     )
     df = df.rename(columns={"name": "TECHNOLOGY", "year": "YEAR"})
