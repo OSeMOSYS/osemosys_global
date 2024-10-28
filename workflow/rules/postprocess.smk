@@ -13,7 +13,8 @@ RESULT_SUMMARIES = [
     "TransmissionCapacity",
     "PowerCapacity",
     "GenerationShares",
-    "NodeCost"
+    "NodeCost",
+    "Metrics"
 ]
 
 rule otoole_results:
@@ -139,3 +140,18 @@ rule calculate_capacity_by_node:
         log = 'results/{scenario}/logs/generation_shares.log'
     script: 
         "../scripts/osemosys_global/summary/capacity.py"
+
+rule calcualte_headline_metrics:
+    message:
+        "Calculating Headline Metrics..."
+    input:
+        annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
+        production_by_technology = "results/{scenario}/results/ProductionByTechnologyAnnual.csv",
+        total_discounted_cost = "results/{scenario}/results/TotalDiscountedCost.csv",
+        demand = "results/{scenario}/results/Demand.csv"
+    output:
+        metrics = "results/{scenario}/result_summaries/Metrics.csv",
+    log:
+        log = 'results/{scenario}/logs/generation_shares.log'
+    script: 
+        "../scripts/osemosys_global/summary/headline.py"
