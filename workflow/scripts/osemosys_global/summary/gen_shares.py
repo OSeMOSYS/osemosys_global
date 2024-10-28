@@ -1,8 +1,4 @@
-"""Calcualtes Renewable Generation
-
-Since emissions are reported at country levels, carbon intensities are also 
-reported at country levels. 
-"""
+"""Calcualtes Renewable Generation"""
 
 import pandas as pd
 from typing import Optional
