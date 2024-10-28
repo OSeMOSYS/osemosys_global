@@ -44,13 +44,6 @@ def import_fix_cost_base(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
-def import_op_life_base(f: str) -> pd.DataFrame:
-    """Imports OperationalLife.csv as output from the Powerplant rule.
-    
-    OperationalLife.csv
-    """
-    return pd.read_csv(f)
-
 def import_max_cap_invest_base(f: str) -> pd.DataFrame:
     """Imports TotalAnnualMaxCapacityInvestment.csv as output from the Powerplant rule.
     

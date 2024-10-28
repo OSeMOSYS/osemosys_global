@@ -8,7 +8,6 @@ from read import(
   #  import_capact_base,
  #   import_cap_cost_base,
  #   import_fix_cost_base,
- #   import_op_life_base,
   #  import_max_cap_invest_base,
  #   import_min_cap_invest_base,
   #  import_res_cap_base,
@@ -48,13 +47,12 @@ from technology_to_from_storage import (set_technology_to_storage,
 
 def main(
     unique_sto_techs: list,
-   # default_op_life: dict[str, int],
+    default_op_life: dict[str, int],
    # iar_base: pd.DataFrame,
   #  oar_base: pd.DataFrame,
   #  capact_base: pd.DataFrame,
  #   cap_cost_base: pd.DataFrame,
  #   fix_cost_base: pd.DataFrame,
-    op_life_base: pd.DataFrame,
  #   max_cap_invest_base: pd.DataFrame,
  #   min_cap_invest_base: pd.DataFrame,
  #   res_cap_base: pd.DataFrame,
@@ -100,8 +98,8 @@ def main(
     # Adjust activity limits if cross border trade is not allowed following user config.
     #activity_limit_trn = activity_transmission_limit(cross_border_trade, oar_trn)
     
-    # Set operational life for transmission.
-    #op_life_trn = set_op_life_transmission(oar_trn, default_op_life, op_life_base, region_name)
+    # Set operational life for storage.
+    op_life_storage = set_op_life_storage(storage_set, default_op_life, region_name)
     
     # Set annual capacity investment constraints.
     #max_cap_invest_trn = cap_investment_constraints_trn(iar_trn, 
@@ -169,7 +167,7 @@ def main(
     
   #  fix_cost_trn.to_csv(os.path.join(output_data_dir, "FixedCost.csv"), index = None)
     
- #   op_life_trn.to_csv(os.path.join(output_data_dir, "OperationalLife.csv"), index = None)
+    op_life_storage.to_csv(os.path.join(output_data_dir, "OperationalLifeStorage.csv"), index = None)
     
  #   max_cap_invest_trn.to_csv(os.path.join(output_data_dir, 
     #                                        'TotalAnnualMaxCapacityInvestment.csv'),
@@ -198,7 +196,7 @@ def main(
 if __name__ == "__main__":
     
     if "snakemake" in globals():
-   #     file_default_op_life = snakemake.input.default_op_life
+        file_default_op_life = snakemake.input.default_op_life
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
@@ -215,7 +213,6 @@ if __name__ == "__main__":
       #  file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'      
      #   file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
       #  file_fix_cost_base = f'{powerplant_data_dir}/FixedCost.csv'
-        file_op_life_base = f'{powerplant_data_dir}/OperationalLife.csv'
       #  file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
       #  file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
       #  file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
@@ -227,7 +224,7 @@ if __name__ == "__main__":
     # the full workflow need to be defined in the config file. 
 
     else:    
-      #  file_default_op_life = 'resources/data/operational_life.csv'
+        file_default_op_life = 'resources/data/operational_life.csv'
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
@@ -250,7 +247,6 @@ if __name__ == "__main__":
      #   file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'
      #   file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
      #   file_fix_cost_base = f'{powerplant_data_dir}/FixedCost.csv'
-        file_op_life_base = f'{powerplant_data_dir}/OperationalLife.csv'
      #   file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
      #   file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
      #   file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
@@ -270,7 +266,6 @@ if __name__ == "__main__":
  #   capact_base = import_capact_base(file_capact_base)
  #   cap_cost_base = import_cap_cost_base(file_cap_cost_base)
  #   fix_cost_base = import_fix_cost_base(file_fix_cost_base)
-  #  op_life_base = import_op_life_base(file_op_life_base)
  #   max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
  #   min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
 #    res_cap_base = import_res_cap_base(file_res_cap_base)  
@@ -285,7 +280,6 @@ if __name__ == "__main__":
     #    "capact_base" : capact_base,
     #    "cap_cost_base" : cap_cost_base,
     #    "fix_cost_base" : fix_cost_base,
-    #    "op_life_base" : op_life_base,
     #    "max_cap_invest_base" : max_cap_invest_base,
     #    "min_cap_invest_base" : min_cap_invest_base,
     #    "res_cap_base" : res_cap_base, 

@@ -4,8 +4,7 @@ import pandas as pd
 
 from utils import apply_dtypes
 
-def set_op_life_storage(storage_set, op_life_dict, 
-                        op_life_base, region_name):
+def set_op_life_storage(storage_set, op_life_dict, region_name):
 
     # Create Operational Life data
     op_life_techs = list(storage_set['VALUE'].unique())
@@ -14,13 +13,10 @@ def set_op_life_storage(storage_set, op_life_dict,
     
     # transmission technologies 
     for op_life_tech in op_life_techs:
-        op_life_out.append([region_name, op_life_tech, op_life_dict.get('TRN')])
+        op_life_out.append([region_name, op_life_tech, op_life_dict.get(op_life_tech[:3])])
         
-    op_life_trn_final = pd.DataFrame(op_life_out, columns = ['REGION', 
-                                                             'TECHNOLOGY', 'VALUE'])
+    op_life_final = pd.DataFrame(op_life_out, columns = ['REGION', 'STORAGE', 'VALUE'])
 
-    op_life_trn_final = apply_dtypes(op_life_trn_final, "OperationalLife")
-    
-    op_life_trn_final = pd.concat([op_life_base, op_life_trn_final])
+    op_life_final = apply_dtypes(op_life_final, "OperationalLife")
 
-    return op_life_trn_final
+    return op_life_final
