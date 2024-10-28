@@ -3,11 +3,10 @@ import os
 
 from read import(
     import_op_life,
- #   import_iar_base,
- #   import_oar_base,
-  #  import_capact_base,
+    import_iar_base,
+    import_oar_base,
+    import_capact_base,
  #   import_cap_cost_base,
- #   import_fix_cost_base,
   #  import_max_cap_invest_base,
  #   import_min_cap_invest_base,
   #  import_res_cap_base,
@@ -24,8 +23,10 @@ from read import(
  #   correct_gtd_data
  #   )
 
-#from activity import(
-#    )
+from activity import(
+    activity_storage,
+    create_storage_capacity_activity
+    )
 
 #from costs import get_transmission_costs
 
@@ -33,7 +34,7 @@ from operational_life import set_op_life_storage
 
 #from investment_constraints import cap_investment_constraints_trn
 
-#from user_defined_capacity import set_user_defined_capacity_trn
+from user_defined_capacity import set_user_defined_capacity_sto
 
 #from residual_capacity import res_capacity_transmission
 
@@ -48,11 +49,10 @@ from technology_to_from_storage import (set_technology_to_storage,
 def main(
     unique_sto_techs: list,
     default_op_life: dict[str, int],
-   # iar_base: pd.DataFrame,
-  #  oar_base: pd.DataFrame,
-  #  capact_base: pd.DataFrame,
+    iar_base: pd.DataFrame,
+    oar_base: pd.DataFrame,
+    capact_base: pd.DataFrame,
  #   cap_cost_base: pd.DataFrame,
- #   fix_cost_base: pd.DataFrame,
  #   max_cap_invest_base: pd.DataFrame,
  #   min_cap_invest_base: pd.DataFrame,
  #   res_cap_base: pd.DataFrame,
@@ -90,10 +90,13 @@ def main(
    # eff_trn = set_transmission_losses(gtd_exist_corrected, gtd_planned_corrected,
     #                                  centerpoints_mapping, transmission_parameters, SUBSEA_LINES)
     
-    # Set activity ratios for transmission.
-    #iar_trn, oar_trn = activity_transmission(iar_base, oar_base, 
-     #                                        eff_trn, start_year, 
-      #                                       end_year, region_name)
+    # Set activity ratios for storage.
+    iar_storage, oar_storage = activity_storage(storage_set, iar_base, oar_base, 
+                                                storage_parameters, start_year, 
+                                                end_year, region_name)
+    
+    # assign capacity to activity unit to storage.
+    cap_activity_storage = create_storage_capacity_activity(storage_set, capact_base)
     
     # Adjust activity limits if cross border trade is not allowed following user config.
     #activity_limit_trn = activity_transmission_limit(cross_border_trade, oar_trn)
@@ -117,55 +120,46 @@ def main(
         #                                    PLANNED_BUILD_YEAR_TRANSMISSION)
 
     # Alter output csv's based on user defined capacities following user config.
-    #if tech_capacity_trn is not None:
-    #    (max_cap_invest_trn, 
+    if tech_capacity_sto is not None:
+        (#max_cap_invest_trn, 
     #     min_cap_invest_trn, 
     #     res_cap_trn, 
      #    iar_trn,
-    #     oar_trn,
+          oar_storage,
      #    op_life_trn, 
-    #     cap_cost_trn,
-    #     fix_cost_trn         
-    #     ) = set_user_defined_capacity_trn(
-      #      tech_capacity_trn, 
+    #     cap_cost_trn,    
+         ) = set_user_defined_capacity_sto(
+            tech_capacity_sto, 
      #       default_op_life, 
      #       min_cap_invest_base, 
     #        max_cap_invest_trn, 
      #       res_cap_trn,
      #       iar_trn,
-     #       oar_trn,
+             oar_storage,
       #      op_life_trn,
      #       cap_cost_trn,
-      #      fix_cost_trn,
       #      start_year,
       #      end_year,
-      #      region_name
-     #       )  
+            region_name
+            )  
 
     # get new additions to technology sets
     new_techs = set_unique_technologies(storage_set)
     tech_set = pd.concat([tech_set_base, new_techs])
-    
-    # assign capacity to activity unit to transmission + distribution techs
- #   cap_activity_trn = create_trn_dist_capacity_activity(iar_trn, oar_trn)
-  #  cap_activity = pd.concat([capact_base, cap_activity_trn]
-  #                           ).drop_duplicates(subset=["REGION", "TECHNOLOGY"], keep="last")
-    
+        
     # OUTPUT CSV's
     
-  #  oar_trn.to_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None)
+    oar_storage.to_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None)
     
-  #  iar_trn.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
+    iar_storage.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
     
   #  activity_limit_trn.to_csv(os.path.join(output_data_dir,
    #                                         "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
   #                              index = None)
     
-  #  cap_activity.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
+    cap_activity_storage.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
   #  cap_cost_trn.to_csv(os.path.join(output_data_dir, "CapitalCost.csv"), index = None)
-    
-  #  fix_cost_trn.to_csv(os.path.join(output_data_dir, "FixedCost.csv"), index = None)
     
     op_life_storage.to_csv(os.path.join(output_data_dir, "OperationalLifeStorage.csv"), index = None)
     
@@ -201,18 +195,17 @@ if __name__ == "__main__":
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
         custom_nodes = snakemake.params.custom_nodes
-     #   tech_capacity_sto = snakemake.params.user_defined_capacity_transmission
+        tech_capacity_sto = snakemake.params.user_defined_capacity_transmission
      #   no_investment_techs = snakemake.params.no_investment_techs      
         storage_parameters = snakemake.params.transmission_parameters           
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
         powerplant_data_dir = snakemake.params.powerplant_data_dir
         transmission_data_dir = snakemake.params.powerplant_data_dir            
-      #  file_iar_base = f'{powerplant_data_dir}/InputActivityRatio.csv'
-      #  file_oar_base = f'{powerplant_data_dir}/OutputActivityRatio.csv'
-      #  file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'      
+        file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
+        file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
+        file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'      
      #   file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
-      #  file_fix_cost_base = f'{powerplant_data_dir}/FixedCost.csv'
       #  file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
       #  file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
       #  file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
@@ -229,24 +222,22 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = ["INDTS"]
-     #   tech_capacity_sto = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 861, 30, 95],
-      #                       'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 861, 30, 95],
-      #                       'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 861, 30, 95],
-     #                        'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 900, 32, 92]}
+        tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 5, 1700, 83],
+                             'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 3000, 78],
+                             'sto3': ['PWRLDSINDNE01' ,1, 2030, 2025, 2, 3000, 78]}
     #    no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
      #                          "COG", "GEO", "BIO", "PET"]
-        storage_parameters = {'SDS': [1, 1],
-                              'LDS': [2, 2]}
+        storage_parameters = {'SDS': [1750, 80],
+                              'LDS': [3500, 75]}
 
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
         transmission_data_dir = 'results/data/transmission'        
-     #   file_iar_base = f'{powerplant_data_dir}/InputActivityRatio.csv'
-     #   file_oar_base = f'{powerplant_data_dir}/OutputActivityRatio.csv'
-     #   file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'
+        file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
+        file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
+        file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'
      #   file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
-     #   file_fix_cost_base = f'{powerplant_data_dir}/FixedCost.csv'
      #   file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
      #   file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
      #   file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
@@ -261,11 +252,10 @@ if __name__ == "__main__":
     op_life_dict = dict(zip(list(op_life['tech']),
                             list(op_life['years'])))
 
-  #  iar_base = import_iar_base(file_iar_base)
-  #  oar_base = import_oar_base(file_oar_base)
- #   capact_base = import_capact_base(file_capact_base)
+    iar_base = import_iar_base(file_iar_base)
+    oar_base = import_oar_base(file_oar_base)
+    capact_base = import_capact_base(file_capact_base)
  #   cap_cost_base = import_cap_cost_base(file_cap_cost_base)
- #   fix_cost_base = import_fix_cost_base(file_fix_cost_base)
  #   max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
  #   min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
 #    res_cap_base = import_res_cap_base(file_res_cap_base)  
@@ -275,11 +265,10 @@ if __name__ == "__main__":
     input_data = {
         "unique_sto_techs" : sto_techs,
         "default_op_life": op_life_dict,
-   #     "iar_base" : iar_base,
-   #     "oar_base" : oar_base,
-    #    "capact_base" : capact_base,
+        "iar_base" : iar_base,
+        "oar_base" : oar_base,
+        "capact_base" : capact_base,
     #    "cap_cost_base" : cap_cost_base,
-    #    "fix_cost_base" : fix_cost_base,
     #    "max_cap_invest_base" : max_cap_invest_base,
     #    "min_cap_invest_base" : min_cap_invest_base,
     #    "res_cap_base" : res_cap_base, 

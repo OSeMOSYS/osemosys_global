@@ -10,14 +10,14 @@ def import_op_life(f: str) -> pd.DataFrame:
     return pd.read_csv(f)
 
 def import_iar_base(f: str) -> pd.DataFrame:
-    """Imports InputActivityRatio.csv as output from the Powerplant rule.
+    """Imports InputActivityRatio.csv as output from the Transmission rule.
     
     InputActivityRatio.csv
     """
     return pd.read_csv(f)
 
 def import_oar_base(f: str) -> pd.DataFrame:
-    """Imports OutputActivityRatio.csv as output from the Powerplant rule.
+    """Imports OutputActivityRatio.csv as output from the Transmission rule.
     
     OutputActivityRatio.csv
     """

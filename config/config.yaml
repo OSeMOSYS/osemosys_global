@@ -75,6 +75,21 @@ user_defined_capacity_transmission:
   # parameters can deviate from each other. For all other
   # parameters only the last entry will be used.
 
+user_defined_capacity_storage:
+  # entry: [technology, 
+  #              capacity, 
+  #              build_year, 
+  #              first_year_of_expansion, 
+  #              build_rate_per_year, 
+  #              capex_cost, 
+  #              roundtrip_efficiency]
+  sto1: [PWRSDSINDEA01, 0, 2020, 2025, 5, 1700, 83]
+  sto2: [PWRLDSINDNE01, 4, 1980, 2025, 2, 3000, 78]
+  sto3: [PWRLDSINDNE01 ,1, 2030, 2025, 2, 3000, 78]
+  # Per technology, only the capacity and build_year
+  # parameters can deviate from each other. For all other
+  # parameters only the last entry will be used.
+
 transmission_parameters:
   # technology_group: [Line CAPEX, 
   #                    Converter pair CAPEX, 
@@ -87,6 +102,13 @@ transmission_parameters:
   HVAC: [779, 95400, 6.75, 0, 3.5]
   HVDC: [238, 297509, 3.5, 1.3, 3.5]
   HVDC_subsea: [295, 297509, 3.5, 1.3, 3.5]
+
+storage_parameters:
+  # technology_group: [CAPEX, 
+  #                    roundtrip_efficiency]
+  # Units are in $2020/MW/KM (Line CAPEX)
+  SDS: [1750, 80]
+  LDS: [3500, 75]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
