@@ -30,10 +30,11 @@ def get_gen_cost(
     costs = total_discounted_cost.copy()
     dem = demand.copy()
 
-    total_cost = costs.VALUE.sum() / 1000
-    total_demand = dem.VALUE.sum()
+    total_cost = costs.VALUE.sum()  # $M
+    total_demand = dem.VALUE.sum()  # PJ
 
-    gen_cost = (total_cost / (total_demand * 0.2778)).round(0)
+    # ($M / PJ) ($1000000 / $M) (1 PJ / 1000 TJ) (1 TJ / 1000 GJ) (1 GJ / 1000 MJ) (3600sec / 1000 hr) = 3.6
+    gen_cost = ((total_cost / total_demand) * 3.6).round(0)
 
     data = ["Cost of electricity", "$/MWh", gen_cost]
     return pd.DataFrame([data], columns=["Metric", "Unit", "Value"])
