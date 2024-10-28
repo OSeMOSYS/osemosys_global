@@ -6,7 +6,6 @@ from read import(
     import_iar_base,
     import_oar_base,
     import_capact_base,
- #   import_cap_cost_base,
   #  import_max_cap_invest_base,
  #   import_min_cap_invest_base,
   #  import_res_cap_base,
@@ -28,7 +27,7 @@ from activity import(
     create_storage_capacity_activity
     )
 
-#from costs import get_transmission_costs
+from costs import set_storage_costs
 
 from operational_life import set_op_life_storage
 
@@ -52,7 +51,6 @@ def main(
     iar_base: pd.DataFrame,
     oar_base: pd.DataFrame,
     capact_base: pd.DataFrame,
- #   cap_cost_base: pd.DataFrame,
  #   max_cap_invest_base: pd.DataFrame,
  #   min_cap_invest_base: pd.DataFrame,
  #   res_cap_base: pd.DataFrame,
@@ -77,14 +75,11 @@ def main(
 
     
     # Set capital and fixed transmission costs.
-  #  cap_cost_trn, fix_cost_trn = get_transmission_costs(gtd_exist_corrected, 
-  #                                                      gtd_planned_corrected,
-  #                                                      cap_cost_base,
-  #                                                      fix_cost_base,
-   #                                                     centerpoints_mapping, 
-    #                                                    transmission_parameters, 
-     #                                                   start_year, end_year, 
-      #                                                  region_name, SUBSEA_LINES)
+    cap_cost_storage = set_storage_costs(storage_set, 
+                                     storage_parameters,
+                                     start_year,
+                                     end_year,
+                                     region_name)
     
     # Calculate technology and transmission pathway specific transmission losses.
    # eff_trn = set_transmission_losses(gtd_exist_corrected, gtd_planned_corrected,
@@ -127,7 +122,7 @@ def main(
      #    iar_trn,
           oar_storage,
      #    op_life_trn, 
-    #     cap_cost_trn,    
+          cap_cost_storage,    
          ) = set_user_defined_capacity_sto(
             tech_capacity_sto, 
      #       default_op_life, 
@@ -135,9 +130,9 @@ def main(
     #        max_cap_invest_trn, 
      #       res_cap_trn,
      #       iar_trn,
-             oar_storage,
+            oar_storage,
       #      op_life_trn,
-     #       cap_cost_trn,
+            cap_cost_storage,
       #      start_year,
       #      end_year,
             region_name
@@ -159,7 +154,7 @@ def main(
     
     cap_activity_storage.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
-  #  cap_cost_trn.to_csv(os.path.join(output_data_dir, "CapitalCost.csv"), index = None)
+    cap_cost_storage.to_csv(os.path.join(output_data_dir, "CapitalCostStorage.csv"), index = None)
     
     op_life_storage.to_csv(os.path.join(output_data_dir, "OperationalLifeStorage.csv"), index = None)
     
@@ -205,7 +200,6 @@ if __name__ == "__main__":
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
         file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'      
-     #   file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
       #  file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
       #  file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
       #  file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
@@ -222,13 +216,13 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = ["INDTS"]
-        tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 5, 1700, 83],
-                             'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 3000, 78],
-                             'sto3': ['PWRLDSINDNE01' ,1, 2030, 2025, 2, 3000, 78]}
+        tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 3, 450, 87],
+                             'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 350, 82],
+                             'sto3': ['PWRLDSINDNE01' ,1, 2030, 2025, 2, 350, 82]}
     #    no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
      #                          "COG", "GEO", "BIO", "PET"]
-        storage_parameters = {'SDS': [1750, 80],
-                              'LDS': [3500, 75]}
+        storage_parameters = {'SDS': [484.5, 85],
+                              'LDS': [379.4, 80]}
 
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
@@ -237,7 +231,6 @@ if __name__ == "__main__":
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
         file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'
-     #   file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
      #   file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
      #   file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
      #   file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
@@ -255,7 +248,6 @@ if __name__ == "__main__":
     iar_base = import_iar_base(file_iar_base)
     oar_base = import_oar_base(file_oar_base)
     capact_base = import_capact_base(file_capact_base)
- #   cap_cost_base = import_cap_cost_base(file_cap_cost_base)
  #   max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
  #   min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
 #    res_cap_base = import_res_cap_base(file_res_cap_base)  
@@ -268,7 +260,6 @@ if __name__ == "__main__":
         "iar_base" : iar_base,
         "oar_base" : oar_base,
         "capact_base" : capact_base,
-    #    "cap_cost_base" : cap_cost_base,
     #    "max_cap_invest_base" : max_cap_invest_base,
     #    "min_cap_invest_base" : min_cap_invest_base,
     #    "res_cap_base" : res_cap_base, 

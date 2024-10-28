@@ -9,7 +9,8 @@ def set_user_defined_capacity_sto(tech_capacity_sto,# op_life_dict,
                                   #df_min_cap_invest, df_max_cap_invest, df_res_cap,
                                   df_oar_base, 
                                   #op_life_base,
-                                 # cap_cost_base, fix_cost_base, start_year, 
+                                  cap_cost_base, 
+                                  #fix_cost_base, start_year, 
                                   #end_year, 
                                   region_name
                                   ):
@@ -127,39 +128,26 @@ def set_user_defined_capacity_sto(tech_capacity_sto,# op_life_dict,
   #                                 keep='last',
   #                                 inplace=True)
 
-    # Add OAR for custom technologies
+    # Update CapitalCost with user-defined efficiencies by storage technology
     df_oar = df_oar_base.copy()
 
     for idx, tech_params in tech_capacity_sto.items():
         df_oar.loc[df_oar['TECHNOLOGY'] == tech_params[0],
                    'VALUE'] = round(1 / (efficiency_dict[idx] / 100), 3)
     
-    # Update CapitalCost with user-defined costs by transmission line
-   # cap_cost_sto = pd.DataFrame(list(itertools.product(tech_list,
-  #                                                     get_years(start_year, end_year))),
-  #                              columns = ['TECHNOLOGY',
-  #                                         'YEAR'])
-    
-    
-  #  for idx, tech_params in tech_capacity_sto.items():
- #       cap_cost_sto.loc[cap_cost_sto['TECHNOLOGY'] == tech_params[0],
- #                        'VALUE'] = capex_dict[idx]
+    # Update CapitalCost with user-defined capex costs by storage technology
+    cap_cost_sto = cap_cost_base.copy()
 
- #   cap_cost_sto['REGION'] = region_name
-  #  cap_cost_sto = cap_cost_sto[['REGION',
- #                                'TECHNOLOGY',
-  #                               'YEAR',
-  #                               'VALUE']]
+    for idx, tech_params in tech_capacity_sto.items():
+        print(tech_params[0])
+        cap_cost_sto.loc[cap_cost_sto['STORAGE'] == 
+                         tech_params[0].replace('PWR', ''),
+                         'VALUE'] = capex_dict[idx]
 
-  #  cap_cost = pd.concat([cap_cost_base, cap_cost_sto])
-   # cap_cost.drop_duplicates(subset=['REGION', 'TECHNOLOGY', 'YEAR'],
-  #                           keep="last",
-  #                           inplace=True)
-    
     return(#df_max_cap_inv, 
            #df_min_cap_inv, 
           # df_res_cap, 
            df_oar, 
           # op_life, 
-          # cap_cost
+           cap_cost_sto
            )

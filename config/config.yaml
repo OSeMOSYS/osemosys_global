@@ -83,9 +83,9 @@ user_defined_capacity_storage:
   #              build_rate_per_year, 
   #              capex_cost, 
   #              roundtrip_efficiency]
-  sto1: [PWRSDSINDEA01, 0, 2020, 2025, 5, 1700, 83]
-  sto2: [PWRLDSINDNE01, 4, 1980, 2025, 2, 3000, 78]
-  sto3: [PWRLDSINDNE01 ,1, 2030, 2025, 2, 3000, 78]
+  sto1: [PWRSDSINDEA01, 0, 2020, 2025, 3, 450, 87]
+  sto2: [PWRLDSINDNE01, 4, 1980, 2025, 2, 350, 82]
+  sto3: [PWRLDSINDNE01 ,1, 2030, 2025, 2, 350, 82]
   # Per technology, only the capacity and build_year
   # parameters can deviate from each other. For all other
   # parameters only the last entry will be used.
@@ -107,8 +107,8 @@ storage_parameters:
   # technology_group: [CAPEX, 
   #                    roundtrip_efficiency]
   # Units are in $2020/MW/KM (Line CAPEX)
-  SDS: [1750, 80]
-  LDS: [3500, 75]
+  SDS: [484.5, 85]
+  LDS: [379.4, 80]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
