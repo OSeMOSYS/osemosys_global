@@ -71,7 +71,7 @@ def get_transmission_costs(df_exist_corrected, df_planned_corrected,
         
         # Variable cost in $/MWh converted to $Million/PJ
         df_var.loc[df_var['tech_group'] == group, 
-                   'VALUE'] = round(var_dict[group] / 0.0000036 / 1000000 , 4)
+                   'VALUE'] = round(var_dict[group] / 3.6 , 4)
                 
         
     df_var['MODE_OF_OPERATION'] = [[1,2] for x in range(len(df_var))]

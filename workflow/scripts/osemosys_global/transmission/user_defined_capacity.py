@@ -248,7 +248,7 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
                          'VALUE'] = fix_dict[idx]
         
         var_cost_trn.loc[var_cost_trn['TECHNOLOGY'].str.startswith(tech_params[0]),
-                         'VALUE'] = round(var_dict[idx] / 0.0000036 / 1000000 , 4)
+                         'VALUE'] = round(var_dict[idx] / 3.6, 4)
         
     var_cost_trn['MODE_OF_OPERATION'] = [[1,2] for x in range(len(var_cost_trn))]
     var_cost_trn = var_cost_trn.explode('MODE_OF_OPERATION')
