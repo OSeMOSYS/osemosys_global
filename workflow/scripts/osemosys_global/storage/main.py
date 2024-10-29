@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-
 from read import(
     import_op_life,
     import_iar_base,
@@ -8,8 +7,8 @@ from read import(
     import_capact_base,
     import_fix_cost_base,
     import_var_cost_base,
-  #  import_max_cap_invest_base,
- #   import_min_cap_invest_base,
+    import_max_cap_invest_base,
+    import_min_cap_invest_base,
   #  import_res_cap_base,
     import_set_base
 )
@@ -36,7 +35,7 @@ from costs import(
     
 from operational_life import set_op_life_storage
 
-#from investment_constraints import cap_investment_constraints_trn
+from investment_constraints import cap_investment_constraints_sto
 
 from user_defined_capacity import set_user_defined_capacity_sto
 
@@ -58,8 +57,8 @@ def main(
     capact_base: pd.DataFrame,
     fix_cost_base: pd.DataFrame,
     var_cost_base: pd.DataFrame,    
- #   max_cap_invest_base: pd.DataFrame,
- #   min_cap_invest_base: pd.DataFrame,
+    max_cap_invest_base: pd.DataFrame,
+    min_cap_invest_base: pd.DataFrame,
  #   res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
     fuel_set_base: pd.DataFrame
@@ -105,19 +104,16 @@ def main(
     # assign capacity to activity unit to storage.
     cap_activity_storage = create_storage_capacity_activity(storage_set, capact_base)
     
-    # Adjust activity limits if cross border trade is not allowed following user config.
-    #activity_limit_trn = activity_transmission_limit(cross_border_trade, oar_trn)
-    
     # Set operational life for storage.
     op_life_storage = set_op_life_storage(storage_set, default_op_life, region_name)
     
     # Set annual capacity investment constraints.
-    #max_cap_invest_trn = cap_investment_constraints_trn(iar_trn, 
-     #                                                   max_cap_invest_base, 
-      #                                                  no_investment_techs, 
-       #                                                 start_year, 
-        #                                                end_year, 
-         #                                               region_name)
+    max_cap_invest_storage = cap_investment_constraints_sto(storage_set, 
+                                                            max_cap_invest_base, 
+                                                            no_investment_techs, 
+                                                            start_year, 
+                                                            end_year, 
+                                                            region_name)
     
     # Set residual capacity.
     #res_cap_trn = res_capacity_transmission(gtd_exist_corrected, gtd_planned_corrected, 
@@ -128,8 +124,8 @@ def main(
 
     # Alter output csv's based on user defined capacities following user config.
     if tech_capacity_sto is not None:
-        (#max_cap_invest_trn, 
-    #     min_cap_invest_trn, 
+        (max_cap_invest_storage, 
+         min_cap_invest_storage, 
     #     res_cap_trn, 
      #    iar_trn,
           oar_storage,
@@ -140,8 +136,8 @@ def main(
          ) = set_user_defined_capacity_sto(
             tech_capacity_sto, 
      #       default_op_life, 
-     #       min_cap_invest_base, 
-    #        max_cap_invest_trn, 
+            min_cap_invest_base, 
+            max_cap_invest_storage, 
      #       res_cap_trn,
      #       iar_trn,
             oar_storage,
@@ -149,8 +145,8 @@ def main(
             cap_cost_storage,
             fix_cost_storage, 
             var_cost_storage,
-      #      start_year,
-      #      end_year,
+            start_year,
+            end_year,
             region_name
             )  
 
@@ -164,10 +160,6 @@ def main(
     
     iar_storage.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
     
-  #  activity_limit_trn.to_csv(os.path.join(output_data_dir,
-   #                                         "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
-  #                              index = None)
-    
     cap_activity_storage.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
     cap_cost_storage.to_csv(os.path.join(output_data_dir, "CapitalCostStorage.csv"), index = None)
@@ -177,9 +169,9 @@ def main(
     
     op_life_storage.to_csv(os.path.join(output_data_dir, "OperationalLifeStorage.csv"), index = None)
     
- #   max_cap_invest_trn.to_csv(os.path.join(output_data_dir, 
-    #                                        'TotalAnnualMaxCapacityInvestment.csv'),
-    #                                    index = None)
+    max_cap_invest_storage.to_csv(os.path.join(output_data_dir, 
+                                            'TotalAnnualMaxCapacityInvestment.csv'),
+                                        index = None)
 
     tech_set.to_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"), index = None)
     storage_set.to_csv(os.path.join(output_data_dir, "STORAGE.csv"), index = None)
@@ -191,15 +183,15 @@ def main(
   #                                          'ResidualCapacity.csv'),
    #                                     index = None)       
     
-   # if tech_capacity_trn is not None:
-   #     min_cap_invest_trn.to_csv(os.path.join(output_data_dir, 
-   #                                             'TotalAnnualMinCapacityInvestment.csv'),
-  #                                          index = None)
+    if tech_capacity_sto is not None:
+        min_cap_invest_storage.to_csv(os.path.join(output_data_dir, 
+                                                'TotalAnnualMinCapacityInvestment.csv'),
+                                            index = None)
         
-  #  else:
-   #     min_cap_invest_base.to_csv(os.path.join(output_data_dir, 
-    #                                            'TotalAnnualMinCapacityInvestment.csv'),
-   #                                         index = None)
+    else:
+        min_cap_invest_base.to_csv(os.path.join(output_data_dir, 
+                                                'TotalAnnualMinCapacityInvestment.csv'),
+                                            index = None)
 
 if __name__ == "__main__":
     
@@ -209,8 +201,8 @@ if __name__ == "__main__":
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
         custom_nodes = snakemake.params.custom_nodes
-        tech_capacity_sto = snakemake.params.user_defined_capacity_transmission
-     #   no_investment_techs = snakemake.params.no_investment_techs      
+        tech_capacity_sto = snakemake.params.user_defined_capacity_storage
+        no_investment_techs = snakemake.params.no_investment_techs      
         storage_parameters = snakemake.params.transmission_parameters           
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
@@ -221,9 +213,9 @@ if __name__ == "__main__":
         file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'  
         file_fix_cost_base = f'{transmission_data_dir}/FixedCost.csv'
         file_var_cost_base = f'{transmission_data_dir}/VariableCost.csv'        
-      #  file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
-      #  file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
-      #  file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
+        file_max_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
+        file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
+      #  file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'        
         file_fuel_set = f'{transmission_data_dir}/FUEL.csv'
         
@@ -240,8 +232,8 @@ if __name__ == "__main__":
         tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 3, 450, 40, 0, 87],
                              'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 350, 19, 0.5, 82],
                              'sto3': ['PWRLDSINDNE01', 1, 2030, 2025, 2, 350, 19, 0.5, 82]}
-    #    no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
-     #                          "COG", "GEO", "BIO", "PET"]
+        no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
+                               "COG", "GEO", "BIO", "PET", "LDS"]
         storage_parameters = {'SDS': [484.5, 44.25, 0, 85],
                               'LDS': [379.4, 20.2, 0.58, 80]}
 
@@ -254,9 +246,9 @@ if __name__ == "__main__":
         file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'
         file_fix_cost_base = f'{transmission_data_dir}/FixedCost.csv'
         file_var_cost_base = f'{transmission_data_dir}/VariableCost.csv'
-     #   file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
-     #   file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
-     #   file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
+        file_max_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
+        file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
+     #   file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'
         file_fuel_set = f'{transmission_data_dir}/FUEL.csv'
 
@@ -273,8 +265,8 @@ if __name__ == "__main__":
     capact_base = import_capact_base(file_capact_base)
     fix_cost_base = import_fix_cost_base(file_fix_cost_base)
     var_cost_base = import_var_cost_base(file_var_cost_base)    
- #   max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
- #   min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
+    max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
+    min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
 #    res_cap_base = import_res_cap_base(file_res_cap_base)  
     tech_set_base = import_set_base(file_tech_set)  
     fuel_set_base = import_set_base(file_fuel_set)  
@@ -287,8 +279,8 @@ if __name__ == "__main__":
         "capact_base" : capact_base,
         "fix_cost_base" : fix_cost_base,
         "var_cost_base" : var_cost_base,
-    #    "max_cap_invest_base" : max_cap_invest_base,
-    #    "min_cap_invest_base" : min_cap_invest_base,
+        "max_cap_invest_base" : max_cap_invest_base,
+        "min_cap_invest_base" : min_cap_invest_base,
     #    "res_cap_base" : res_cap_base, 
         "tech_set_base" : tech_set_base,
         "fuel_set_base" : fuel_set_base,  

@@ -45,14 +45,14 @@ def import_var_cost_base(f: str) -> pd.DataFrame:
     return pd.read_csv(f)
 
 def import_max_cap_invest_base(f: str) -> pd.DataFrame:
-    """Imports TotalAnnualMaxCapacityInvestment.csv as output from the Powerplant rule.
+    """Imports TotalAnnualMaxCapacityInvestment.csv as output from the Transmission rule.
     
     TotalAnnualMaxCapacityInvestment.csv
     """
     return pd.read_csv(f)
 
 def import_min_cap_invest_base(f: str) -> pd.DataFrame:
-    """Imports TotalAnnualMinCapacityInvestment.csv as output from the Powerplant rule.
+    """Imports TotalAnnualMinCapacityInvestment.csv as output from the Transmission rule.
     
     TotalAnnualMinCapacityInvestment.csv
     """

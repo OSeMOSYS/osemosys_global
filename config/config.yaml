@@ -41,6 +41,7 @@ no_invest_technologies:
   - "GEO"
   - "BIO"
   - "PET"
+  - "LDS"
 
 # Result Parameters 
 results_by_country: True
