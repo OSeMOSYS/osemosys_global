@@ -24,21 +24,21 @@ def import_oar_base(f: str) -> pd.DataFrame:
     return pd.read_csv(f)
 
 def import_capact_base(f: str) -> pd.DataFrame:
-    """Imports CapacityToActivityUnit.csv as output from the Powerplant rule.
+    """Imports CapacityToActivityUnit.csv as output from the Transmission rule.
     
     CapacityToActivityUnit.csv
     """
     return pd.read_csv(f)
 
-def import_cap_cost_base(f: str) -> pd.DataFrame:
-    """Imports CapitalCost.csv as output from the Powerplant rule.
+def import_fix_cost_base(f: str) -> pd.DataFrame:
+    """Imports FixedCost.csv as output from the Transmission rule.
     
-    CapitalCost.csv
+    FixedCost.csv
     """
     return pd.read_csv(f)
 
-def import_fix_cost_base(f: str) -> pd.DataFrame:
-    """Imports FixedCost.csv as output from the Powerplant rule.
+def import_var_cost_base(f: str) -> pd.DataFrame:
+    """Imports VariableCost.csv as output from the Transmission rule.
     
     FixedCost.csv
     """

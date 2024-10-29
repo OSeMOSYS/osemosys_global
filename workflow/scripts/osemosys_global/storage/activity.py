@@ -12,7 +12,7 @@ def activity_storage(storage_set, df_iar_base, df_oar_base, storage_param,
     
     # Set baseline technology efficiencies as defined in the config file.
     for tech, tech_params in storage_param.items():
-        efficiency_dict[tech] = tech_params[1]
+        efficiency_dict[tech] = tech_params[3]
     
     years = [get_years(start_year, end_year)]
 
