@@ -61,7 +61,7 @@ def get_transmission_costs(df_exist_corrected, df_planned_corrected,
     df_capex['YEAR'] = [get_years(start_year, end_year)] * len(df_capex)
     df_capex = df_capex.explode('YEAR').reset_index()
 
-    # Set Fixed O&M costs as a function of total CAPEX.
+    # Set Fixed O&M costs as a function of total CAPEX and set default var costs.
     df_fix = df_capex.copy()
     df_var = df_capex.copy()
     
@@ -71,7 +71,8 @@ def get_transmission_costs(df_exist_corrected, df_planned_corrected,
         
         # Variable cost in $/MWh converted to $Million/PJ
         df_var.loc[df_var['tech_group'] == group, 
-                   'VALUE'] = round(var_dict[group] / 3600, 4)
+                   'VALUE'] = round(var_dict[group] / 0.0000036 / 1000000 , 4)
+                
         
     df_var['MODE_OF_OPERATION'] = [[1,2] for x in range(len(df_var))]
     df_var = df_var.explode('MODE_OF_OPERATION')
