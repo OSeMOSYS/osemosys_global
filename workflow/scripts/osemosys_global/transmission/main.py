@@ -13,6 +13,7 @@ from read import(
     import_capact_base,
     import_cap_cost_base,
     import_fix_cost_base,
+    import_var_cost_base,    
     import_op_life_base,
     import_max_cap_invest_base,
     import_min_cap_invest_base,
@@ -68,6 +69,7 @@ def main(
     capact_base: pd.DataFrame,
     cap_cost_base: pd.DataFrame,
     fix_cost_base: pd.DataFrame,
+    var_cost_base: pd.DataFrame,    
     op_life_base: pd.DataFrame,
     max_cap_invest_base: pd.DataFrame,
     min_cap_invest_base: pd.DataFrame,
@@ -86,15 +88,16 @@ def main(
                                                                   CUSTOM_TRN_BA_DICT_TO,
                                                                   CUSTOM_TRN_BA_MISSING)
     
-    # Set capital and fixed transmission costs.
-    cap_cost_trn, fix_cost_trn = get_transmission_costs(gtd_exist_corrected, 
-                                                        gtd_planned_corrected,
-                                                        cap_cost_base,
-                                                        fix_cost_base,
-                                                        centerpoints_mapping, 
-                                                        transmission_parameters, 
-                                                        start_year, end_year, 
-                                                        region_name, SUBSEA_LINES)
+    # Set capital, fixed and variable transmission costs.
+    cap_cost_trn, fix_cost_trn, var_cost_trn = get_transmission_costs(gtd_exist_corrected, 
+                                                                      gtd_planned_corrected,
+                                                                      cap_cost_base,
+                                                                      fix_cost_base,
+                                                                      var_cost_base,
+                                                                      centerpoints_mapping, 
+                                                                      transmission_parameters, 
+                                                                      start_year, end_year, 
+                                                                      region_name, SUBSEA_LINES)
     
     # Calculate technology and transmission pathway specific transmission losses.
     eff_trn = set_transmission_losses(gtd_exist_corrected, gtd_planned_corrected,
@@ -136,7 +139,8 @@ def main(
          oar_trn,
          op_life_trn, 
          cap_cost_trn,
-         fix_cost_trn         
+         fix_cost_trn,
+         var_cost_trn
          ) = set_user_defined_capacity_trn(
             tech_capacity_trn, 
             default_op_life, 
@@ -148,6 +152,7 @@ def main(
             op_life_trn,
             cap_cost_trn,
             fix_cost_trn,
+            var_cost_trn,            
             start_year,
             end_year,
             region_name
@@ -184,6 +189,8 @@ def main(
     cap_cost_trn.to_csv(os.path.join(output_data_dir, "CapitalCost.csv"), index = None)
     
     fix_cost_trn.to_csv(os.path.join(output_data_dir, "FixedCost.csv"), index = None)
+    
+    var_cost_trn.to_csv(os.path.join(output_data_dir, "VariableCost.csv"), index = None)    
     
     op_life_trn.to_csv(os.path.join(output_data_dir, "OperationalLife.csv"), index = None)
     
@@ -232,6 +239,7 @@ if __name__ == "__main__":
         file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'      
         file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
         file_fix_cost_base = f'{powerplant_data_dir}/FixedCost.csv'
+        file_var_cost_base = f'{powerplant_data_dir}/VariableCost.csv'        
         file_op_life_base = f'{powerplant_data_dir}/OperationalLife.csv'
         file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
         file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
@@ -253,16 +261,18 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
-        tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 861, 30, 95],
-                             'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 861, 30, 95],
-                             'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 861, 30, 95],
-                             'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 900, 32, 92]}
+
+        custom_nodes = ["INDTS"]
+        tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 861, 30, 4, 95],
+                             'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 861, 30, 4, 95],
+                             'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 861, 30, 4, 95],
+                             'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 900, 32, 4, 92]}
         
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
-        transmission_parameters = {'HVAC': [779, 95400, 6.75, 0, 3.5],
-                                   'HVDC': [238, 297509, 3.5, 1.3, 3.5],
-                                   'HVDC_subsea': [295, 297509, 3.5, 1.3, 3.5]}
+        transmission_parameters = {'HVAC': [779, 95400, 6.75, 0, 3.5, 4],
+                                   'HVDC': [238, 297509, 3.5, 1.3, 3.5, 4],
+                                   'HVDC_subsea': [295, 297509, 3.5, 1.3, 3.5, 4]}
         cross_border_trade = True
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
@@ -272,6 +282,7 @@ if __name__ == "__main__":
         file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'
         file_cap_cost_base = f'{powerplant_data_dir}/CapitalCost.csv'
         file_fix_cost_base = f'{powerplant_data_dir}/FixedCost.csv'
+        file_var_cost_base = f'{powerplant_data_dir}/VariableCost.csv'        
         file_op_life_base = f'{powerplant_data_dir}/OperationalLife.csv'
         file_max_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
         file_min_cap_invest_base = f'{powerplant_data_dir}/TotalAnnualMinCapacityInvestment.csv'
@@ -301,10 +312,11 @@ if __name__ == "__main__":
     capact_base = import_capact_base(file_capact_base)
     cap_cost_base = import_cap_cost_base(file_cap_cost_base)
     fix_cost_base = import_fix_cost_base(file_fix_cost_base)
+    var_cost_base = import_var_cost_base(file_var_cost_base)    
     op_life_base = import_op_life_base(file_op_life_base)
     max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
     min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
-    res_cap_base = import_res_cap_base(file_res_cap_base)  
+    res_cap_base = import_res_cap_base(file_res_cap_base)
     tech_set_base = import_set_base(file_tech_set)  
     fuel_set_base = import_set_base(file_fuel_set)  
     
@@ -320,6 +332,7 @@ if __name__ == "__main__":
         "capact_base" : capact_base,
         "cap_cost_base" : cap_cost_base,
         "fix_cost_base" : fix_cost_base,
+        "var_cost_base" : var_cost_base,        
         "op_life_base" : op_life_base,
         "max_cap_invest_base" : max_cap_invest_base,
         "min_cap_invest_base" : min_cap_invest_base,

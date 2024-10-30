@@ -68,6 +68,13 @@ def import_fix_cost_base(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
+def import_var_cost_base(f: str) -> pd.DataFrame:
+    """Imports VariableCost.csv as output from the Powerplant rule.
+    
+    VariableCost.csv
+    """
+    return pd.read_csv(f)
+
 def import_op_life_base(f: str) -> pd.DataFrame:
     """Imports OperationalLife.csv as output from the Powerplant rule.
     

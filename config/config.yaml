@@ -67,11 +67,12 @@ user_defined_capacity_transmission:
   #         build_rate_per_year, 
   #         capex_cost,
   #         annual_fixed_O&M_cost,
+  #         variable_O&M_cost,
   #         efficiency]
-  trn1: [TRNINDEAINDNE, 5, 1975, 2030, 10, 861, 30, 95]
-  trn2: [TRNINDEAINDNE, 1, 1990, 2030, 10, 861, 30, 95]
-  trn3: [TRNINDEAINDNE, 2, 2035, 2030, 10, 861, 30, 95]
-  trn4: [TRNINDNOINDSO, 0, 2020, 2025, 0.5, 900, 32, 92]
+  trn1: [TRNINDEAINDNE, 5, 1975, 2030, 10, 861, 30, 4, 95]
+  trn2: [TRNINDEAINDNE, 1, 1990, 2030, 10, 861, 30, 4, 95]
+  trn3: [TRNINDEAINDNE, 2, 2035, 2030, 10, 861, 30, 4, 95]
+  trn4: [TRNINDNOINDSO, 0, 2020, 2025, 0.5, 900, 32, 4, 92]
   # Per technology, only the capacity and build_year
   # parameters can deviate from each other. For all other
   # parameters only the last entry will be used.
@@ -98,13 +99,14 @@ transmission_parameters:
   #                    Converter pair CAPEX, 
   #                    Line losses, 
   #                    AC/DC Converter pair losses, 
-  #                    Fixed O&M costs]
+  #                    Fixed O&M costs, 
+  #                    Variable O&M costs]
   # Units are in $2020/MW/KM (Line CAPEX), $2020 (Converter pair CAPEX),
   # %/1000km (Line losses), % (AC/DC Converter pair losses), 
-  # % of total CAPEX/yr (Fixed O&M costs).
-  HVAC: [779, 95400, 6.75, 0, 3.5]
-  HVDC: [238, 297509, 3.5, 1.3, 3.5]
-  HVDC_subsea: [295, 297509, 3.5, 1.3, 3.5]
+  # % of total CAPEX/yr (Fixed O&M costs), $/MWh (Variable O&M costs).
+  HVAC: [779, 95400, 6.75, 0, 3.5, 4]
+  HVDC: [238, 297509, 3.5, 1.3, 3.5, 4]
+  HVDC_subsea: [295, 297509, 3.5, 1.3, 3.5, 4]
 
 storage_parameters:
   # technology_group: [capex_cost,
