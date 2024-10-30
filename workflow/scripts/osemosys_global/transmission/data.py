@@ -7,6 +7,11 @@ from sets import get_unique_technologies
 def get_years(start: int, end: int) -> range:
     return range(start, end + 1)
 
+def get_years_build_rates(row):
+    row['YEAR'] = get_years(row['START_YEAR'], row['END_YEAR'])
+    
+    return row
+
 def format_gtd_existing(df):
     cols = {'pathway' : 'TECHNOLOGY',
             'from_region' : 'From',
