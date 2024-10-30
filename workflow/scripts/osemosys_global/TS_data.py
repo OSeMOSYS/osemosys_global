@@ -697,7 +697,7 @@ df_rmtt.to_csv(
 # ReserveMarginTagFuel
 df_rmtf = pd.read_csv(os.path.join(output_data_dir, "FUEL.csv"))
 rm_fuels = [
-    x for x in df_rmtf["VALUE"].unique() if x.startswith("ELC") if x.endswith("01")
+    x for x in df_rmtf["VALUE"].astype(str).unique() if x.startswith("ELC") if x.endswith("01")
 ]
 df_rmtf = pd.DataFrame(
     list(itertools.product([region_name], rm_fuels, years, [1])),

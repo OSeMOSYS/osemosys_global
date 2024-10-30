@@ -6,6 +6,7 @@ from read import(
     import_gtd_planned,
     import_gtd_mapping,
     import_centerpoints,
+    import_transmission_build_rates,
     import_op_life,
     import_iar_base,
     import_oar_base,
@@ -58,10 +59,11 @@ from sets import(create_set_from_iterators,
 
 def main(
     default_op_life: dict[str, int],
-    gtd_exist : pd.DataFrame,
-    gtd_planned : pd.DataFrame,
-    gtd_mapping : dict[str, str],
-    centerpoints_mapping : list,
+    gtd_exist: pd.DataFrame,
+    gtd_planned: pd.DataFrame,
+    gtd_mapping: dict[str, str],
+    centerpoints_mapping: list,
+    build_rates: pd.DataFrame, 
     iar_base: pd.DataFrame,
     oar_base: pd.DataFrame,
     capact_base: pd.DataFrame,
@@ -115,6 +117,7 @@ def main(
     # Set annual capacity investment constraints.
     max_cap_invest_trn = cap_investment_constraints_trn(iar_trn, 
                                                         max_cap_invest_base, 
+                                                        build_rates,
                                                         no_investment_techs, 
                                                         start_year, 
                                                         end_year, 
@@ -156,15 +159,15 @@ def main(
             )  
 
     # get new additions to fuel and technology sets
-    exising_techs = tech_set_base.VALUE.to_list()
+    existing_techs = tech_set_base.VALUE.to_list()
     iar_techs = get_unique_technologies(iar_trn)
     oar_techs = get_unique_technologies(oar_trn)
-    tech_set = create_set_from_iterators(exising_techs, iar_techs, oar_techs)
+    tech_set = create_set_from_iterators(existing_techs, iar_techs, oar_techs)
     
-    exising_fuels = fuel_set_base.VALUE.to_list()
+    existing_fuels = fuel_set_base.VALUE.to_list()
     iar_fuels = get_unique_fuels(iar_trn)
     oar_fuels = get_unique_fuels(oar_trn)
-    fuel_set = create_set_from_iterators(exising_fuels, iar_fuels, oar_fuels)
+    fuel_set = create_set_from_iterators(existing_fuels, iar_fuels, oar_fuels)
     
     # assign capacity to activity unit to transmission + distribution techs
     cap_activity_trn = create_trn_dist_capacity_activity(iar_trn, oar_trn)
@@ -219,6 +222,7 @@ if __name__ == "__main__":
         file_gtd_planned = snakemake.input.gtd_planned
         file_gtd_mapping = snakemake.input.gtd_mapping
         file_centerpoints = snakemake.input.centerpoints 
+        file_transmission_build_rates = snakemake.input.transmission_build_rates        
         file_default_op_life = snakemake.input.default_op_life
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
@@ -252,7 +256,8 @@ if __name__ == "__main__":
         file_gtd_existing = 'resources/data/GTD_existing.csv'
         file_gtd_planned = 'resources/data/GTD_planned.csv'    
         file_gtd_mapping = 'resources/data/GTD_region_mapping.csv'  
-        file_centerpoints = 'resources/data/centerpoints.csv'           
+        file_centerpoints = 'resources/data/centerpoints.csv'         
+        file_transmission_build_rates = 'resources/data/transmission_build_rates.csv'         
         file_default_op_life = 'resources/data/operational_life.csv'
         start_year = 2021
         end_year = 2050
@@ -296,6 +301,8 @@ if __name__ == "__main__":
     centerpoints = import_centerpoints(file_centerpoints)  
     centerpoints_dict = centerpoints.to_dict('records')
     
+    build_rates = import_transmission_build_rates(file_transmission_build_rates)
+    
     op_life = import_op_life(file_default_op_life)
     op_life_dict = dict(zip(list(op_life['tech']),
                             list(op_life['years'])))
@@ -311,7 +318,7 @@ if __name__ == "__main__":
     min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
     res_cap_base = import_res_cap_base(file_res_cap_base)
     tech_set_base = import_set_base(file_tech_set)  
-    fuel_set_base = import_set_base(file_tech_set)  
+    fuel_set_base = import_set_base(file_fuel_set)  
     
     input_data = {
         "default_op_life": op_life_dict,
@@ -319,6 +326,7 @@ if __name__ == "__main__":
         "gtd_planned" : gtd_plan,
         "gtd_mapping" : gtd_mapping_dict,
         "centerpoints_mapping" : centerpoints_dict,
+        "build_rates" : build_rates,
         "iar_base" : iar_base,
         "oar_base" : oar_base,
         "capact_base" : capact_base,

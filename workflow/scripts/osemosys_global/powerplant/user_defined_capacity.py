@@ -58,8 +58,7 @@ def set_user_defined_capacity(tech_capacity, op_life_dict, df_tech_set,
     max_cap_techs_df.loc[(max_cap_techs_df['YEAR']>=max_cap_techs_df['FIRST_YEAR']) &
            (max_cap_techs_df['YEAR']>max_cap_techs_df['BUILD_YEAR']),
            'VALUE'] = max_cap_techs_df['MAX_BUILD']
-    max_cap_techs_df.infer_objects().fillna(0,
-              inplace=True)
+    max_cap_techs_df['VALUE'] = max_cap_techs_df['VALUE'].infer_objects(copy=False).fillna(0)
     
     max_cap_techs_df = max_cap_techs_df[['REGION',
                                          'TECHNOLOGY',

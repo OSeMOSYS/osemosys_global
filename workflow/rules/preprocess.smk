@@ -153,7 +153,8 @@ rule transmission:
         gtd_existing = 'resources/data/GTD_existing.csv',
         gtd_planned = 'resources/data/GTD_planned.csv',
         gtd_mapping = 'resources/data/GTD_region_mapping.csv',
-        centerpoints = 'resources/data/centerpoints.csv'
+        centerpoints = 'resources/data/centerpoints.csv',
+        transmission_build_rates = 'resources/data/transmission_build_rates.csv'
     params:
         trade = config['crossborderTrade'],
         start_year = config['startYear'],
