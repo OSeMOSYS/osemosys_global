@@ -4,7 +4,8 @@ import pandas as pd
 
 def set_unique_storage_technologies(ar: pd.DataFrame, sto_techs: list) -> pd.DataFrame():
     ar = [
-        x for x in ar["VALUE"].unique() if x.startswith("ELC") if x.endswith("01")
+        x for x in ar["VALUE"].unique().astype(str) if 
+        x.startswith("ELC") if x.endswith("01")
     ]
     
     data = []

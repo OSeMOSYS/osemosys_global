@@ -2,6 +2,10 @@
 
 import pandas as pd
 
+def import_storage_build_rates(f: str) -> pd.DataFrame:
+    """Imports storage technology and nodal specific user defined max build rates."""
+    return pd.read_csv(f)
+
 def import_op_life(f: str) -> pd.DataFrame:
     """Imports default operational life data.
     

@@ -19,7 +19,7 @@ def cap_investment_constraints_sto(storage_set, max_cap_invest_base,
         data = storage_set.loc[storage_set['VALUE'].str.startswith(tuple(no_invest_techs_sto))]
         
         df_max_cap_invest_sto = pd.DataFrame(
-            list(itertools.product([region_name], data['VALUE'].unique(), years, str(0))), 
+            list(itertools.product([region_name], 'PWR' + data['VALUE'].unique(), years, str(0))), 
             columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"]
         )
         

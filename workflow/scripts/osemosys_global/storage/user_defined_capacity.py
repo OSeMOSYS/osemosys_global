@@ -70,8 +70,9 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
     max_cap_techs_df.loc[(max_cap_techs_df['YEAR']>=max_cap_techs_df['FIRST_YEAR']),
            'VALUE'] = max_cap_techs_df['MAX_BUILD']
         
-    max_cap_techs_df.infer_objects().fillna(0,
-              inplace=True)
+    with pd.option_context("future.no_silent_downcasting", True):
+        max_cap_techs_df['VALUE'] = max_cap_techs_df[
+            'VALUE'].replace(r'^\s*$', 0, regex = True).infer_objects(copy=False)
 
     max_cap_techs_df = max_cap_techs_df[['REGION',
                                          'TECHNOLOGY',

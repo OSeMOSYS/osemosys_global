@@ -1,6 +1,8 @@
 import pandas as pd
 import os
+
 from read import(
+    import_storage_build_rates,
     import_op_life,
     import_iar_base,
     import_oar_base,
@@ -50,6 +52,7 @@ from technology_to_from_storage import (set_technology_to_storage,
                                         )
 
 def main(
+    build_rates: pd.DataFrame,
     unique_sto_techs: list,
     default_op_life: dict[str, int],
     iar_base: pd.DataFrame,
@@ -196,6 +199,7 @@ def main(
 if __name__ == "__main__":
     
     if "snakemake" in globals():
+        file_storage_build_rates = snakemake.input.storage_build_rates 
         file_default_op_life = snakemake.input.default_op_life
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
@@ -203,11 +207,10 @@ if __name__ == "__main__":
         custom_nodes = snakemake.params.custom_nodes
         tech_capacity_sto = snakemake.params.user_defined_capacity_storage
         no_investment_techs = snakemake.params.no_investment_techs      
-        storage_parameters = snakemake.params.transmission_parameters           
+        storage_parameters = snakemake.params.storage_parameters           
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
-        powerplant_data_dir = snakemake.params.powerplant_data_dir
-        transmission_data_dir = snakemake.params.powerplant_data_dir            
+        transmission_data_dir = snakemake.params.transmission_data_dir            
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
         file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'  
@@ -217,13 +220,14 @@ if __name__ == "__main__":
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
       #  file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'        
-        file_fuel_set = f'{transmission_data_dir}/FUEL.csv'
+        file_fuel_set = f'{output_data_dir}/FUEL.csv'
         
     # The below else statement defines variables if the 'transmission/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
     # the full workflow need to be defined in the config file. 
 
     else:    
+        file_storage_build_rates = 'resources/data/storage_build_rates.csv'
         file_default_op_life = 'resources/data/operational_life.csv'
         start_year = 2021
         end_year = 2050
@@ -239,7 +243,6 @@ if __name__ == "__main__":
 
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
-        powerplant_data_dir = 'results/data/powerplant'
         transmission_data_dir = 'results/data/transmission'        
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
@@ -250,11 +253,13 @@ if __name__ == "__main__":
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
      #   file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'
-        file_fuel_set = f'{transmission_data_dir}/FUEL.csv'
+        file_fuel_set = f'{output_data_dir}/FUEL.csv'
 
     # SET INPUT DATA
     
     sto_techs = list(storage_parameters.keys())
+    
+    build_rates = import_storage_build_rates(file_storage_build_rates)
     
     op_life = import_op_life(file_default_op_life)
     op_life_dict = dict(zip(list(op_life['tech']),
@@ -274,6 +279,7 @@ if __name__ == "__main__":
     input_data = {
         "unique_sto_techs" : sto_techs,
         "default_op_life": op_life_dict,
+        "build_rates" : build_rates,
         "iar_base" : iar_base,
         "oar_base" : oar_base,
         "capact_base" : capact_base,

@@ -35,18 +35,35 @@ power_plant_files = [
 
 transmission_files = [
     'CapitalCost',
+    'transmission/VariableCost',
+    'transmission/FixedCost',
+    'transmission/CapacityToActivityUnit',
+    'OperationalLife',
+    'transmission/TotalAnnualMaxCapacityInvestment',
+    'transmission/TotalAnnualMinCapacityInvestment',
+    'TotalTechnologyModelPeriodActivityUpperLimit',
+    'transmission/InputActivityRatio',
+    'transmission/OutputActivityRatio',
+    'ResidualCapacity',
+    'transmission/TECHNOLOGY',
+    'FUEL'
+    ]
+    
+storage_files = [
+    'CapitalCostStorage',
     'FixedCost',
     'VariableCost',
     'CapacityToActivityUnit',
-    'OperationalLife',
+    'OperationalLifeStorage',
     'TotalAnnualMaxCapacityInvestment',
     'TotalAnnualMinCapacityInvestment',
-    'TotalTechnologyModelPeriodActivityUpperLimit',
     'InputActivityRatio',
     'OutputActivityRatio',
-    'ResidualCapacity',
+    #'ResidualCapacity',
     'TECHNOLOGY',
-    'FUEL'
+    'STORAGE',
+    'TechnologyToStorage',
+    'TechnologyFromStorage'
     ]
 
 timeslice_files = [
@@ -54,16 +71,12 @@ timeslice_files = [
     'TIMESLICE',
     'SpecifiedDemandProfile',
     'YearSplit',
-    'STORAGE',
-    'TechnologyToStorage',
-    'TechnologyFromStorage',
     'Conversionls',
     'Conversionld',
     'Conversionlh',
     'SEASON',
     'DAYTYPE',
     'DAILYTIMEBRACKET',
-    'CapitalCostStorage',
     'DaySplit',
     'ReserveMargin',
     'ReserveMarginTagTechnology',
@@ -94,7 +107,7 @@ user_capacity_files = [
 ]
 
 GENERATED_CSVS = (
-    power_plant_files + transmission_files + timeslice_files \
+    power_plant_files + transmission_files + storage_files + timeslice_files \
     + demand_files + emission_files + max_capacity_files
 )
 GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
@@ -167,17 +180,44 @@ rule transmission:
         output_data_dir = 'results/data',
         input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',
+        transmission_data_dir = 'results/data/transmission',
     output:
         csv_files = expand('results/data/{output_file}.csv', output_file = transmission_files)
     log:
         log = 'results/logs/transmission.log'
     script:
         "../scripts/osemosys_global/transmission/main.py"
+        
+rule storage:
+    message:
+        "Generating storage data..."
+    input:
+        rules.transmission.output.csv_files,
+        default_op_life = 'resources/data/operational_life.csv',
+        storage_build_rates = 'resources/data/storage_build_rates.csv'
+    params:
+        start_year = config['startYear'],
+        end_year = config['endYear'],
+        region_name = 'GLOBAL',
+        custom_nodes = config['nodes_to_add'],
+        user_defined_capacity_storage = config['user_defined_capacity_storage'],
+        no_investment_techs = config['no_invest_technologies'],
+        storage_parameters = config['storage_parameters'],
+        output_data_dir = 'results/data',
+        input_data_dir = 'resources/data',
+        transmission_data_dir = 'results/data/transmission',
+    output:
+        csv_files = expand('results/data/{output_file}.csv', output_file = storage_files)
+    log:
+        log = 'results/logs/storage.log'
+    script:
+        "../scripts/osemosys_global/storage/main.py"        
 
 rule timeslice:
     message:
         'Generating timeslice data...'
     input:
+        rules.storage.output.csv_files,
         'resources/data/All_Demand_UTC_2015.csv',
         'resources/data/CSP 2015.csv',
         'resources/data/SolarPV 2015.csv',

@@ -176,29 +176,29 @@ def main(
     
     # OUTPUT CSV's
     
-    oar_trn.to_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None)
+    oar_trn.to_csv(os.path.join(transmission_data_dir, "OutputActivityRatio.csv"), index=None)
     
-    iar_trn.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
+    iar_trn.to_csv(os.path.join(transmission_data_dir, "InputActivityRatio.csv"), index=None)
     
     activity_limit_trn.to_csv(os.path.join(output_data_dir,
                                             "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
                                 index = None)
     
-    cap_activity.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
+    cap_activity.to_csv(os.path.join(transmission_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
     cap_cost_trn.to_csv(os.path.join(output_data_dir, "CapitalCost.csv"), index = None)
     
-    fix_cost_trn.to_csv(os.path.join(output_data_dir, "FixedCost.csv"), index = None)
+    fix_cost_trn.to_csv(os.path.join(transmission_data_dir, "FixedCost.csv"), index = None)
     
-    var_cost_trn.to_csv(os.path.join(output_data_dir, "VariableCost.csv"), index = None)    
+    var_cost_trn.to_csv(os.path.join(transmission_data_dir, "VariableCost.csv"), index = None)    
     
     op_life_trn.to_csv(os.path.join(output_data_dir, "OperationalLife.csv"), index = None)
     
-    max_cap_invest_trn.to_csv(os.path.join(output_data_dir, 
+    max_cap_invest_trn.to_csv(os.path.join(transmission_data_dir, 
                                             'TotalAnnualMaxCapacityInvestment.csv'),
                                         index = None)
 
-    tech_set.to_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"), index = None)
+    tech_set.to_csv(os.path.join(transmission_data_dir, "TECHNOLOGY.csv"), index = None)
     fuel_set.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index = None)
         
     res_cap_trn.to_csv(os.path.join(output_data_dir, 
@@ -206,12 +206,12 @@ def main(
                                         index = None)       
     
     if tech_capacity_trn is not None:
-        min_cap_invest_trn.to_csv(os.path.join(output_data_dir, 
+        min_cap_invest_trn.to_csv(os.path.join(transmission_data_dir, 
                                                 'TotalAnnualMinCapacityInvestment.csv'),
                                             index = None)
         
     else:
-        min_cap_invest_base.to_csv(os.path.join(output_data_dir, 
+        min_cap_invest_base.to_csv(os.path.join(transmission_data_dir, 
                                                 'TotalAnnualMinCapacityInvestment.csv'),
                                             index = None)
 
@@ -233,7 +233,8 @@ if __name__ == "__main__":
         cross_border_trade = snakemake.params.trade
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
-        powerplant_data_dir = snakemake.params.powerplant_data_dir        
+        powerplant_data_dir = snakemake.params.powerplant_data_dir  
+        transmission_data_dir = snakemake.params.transmission_data_dir 
         file_iar_base = f'{powerplant_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{powerplant_data_dir}/OutputActivityRatio.csv'
         file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'      
@@ -277,6 +278,7 @@ if __name__ == "__main__":
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
+        transmission_data_dir = 'results/data/transmission'
         file_iar_base = f'{powerplant_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{powerplant_data_dir}/OutputActivityRatio.csv'
         file_capact_base = f'{powerplant_data_dir}/CapacityToActivityUnit.csv'
