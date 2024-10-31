@@ -57,6 +57,8 @@ user_defined_capacity:
   #              efficiency]
   PWRCOAINDWE01: [8, 2000, 2025, 5, 1100, 35]
   PWRBIOINDWE01: [0, 2020, 2030, 2, 2000, 28]
+  # Units are in GW (capacity/build_rate_per_year), m$/GW (capex_cost), 
+  # % (efficiency).
 
 user_defined_capacity_transmission:
   # entry: [technology,
@@ -67,13 +69,15 @@ user_defined_capacity_transmission:
   #         capex_cost,
   #         annual_fixed_O&M_cost,
   #         efficiency]
-  trn1: [TRNINDEAINDNE, 5, 1975, 2030, 10, 861, 30, 95]
-  trn2: [TRNINDEAINDNE, 1, 1990, 2030, 10, 861, 30, 95]
-  trn3: [TRNINDEAINDNE, 2, 2035, 2030, 10, 861, 30, 95]
-  trn4: [TRNINDNOINDSO, 0, 2020, 2025, 0.5, 900, 32, 92]
+  trn1: [TRNINDEAINDNE, 5, 1975, 2030, 10, 350, 13, 95]
+  trn2: [TRNINDEAINDNE, 1, 1990, 2030, 10, 350, 13, 95]
+  trn3: [TRNINDEAINDNE, 2, 2035, 2030, 10, 350, 13, 95]
+  trn4: [TRNINDNOINDSO, 0, 2020, 2025, 0.5, 620, 24, 92]
   # Per technology, only the capacity and build_year
   # parameters can deviate from each other. For all other
   # parameters only the last entry will be used.
+  # Units are in GW (capacity/build_rate_per_year), m$/GW (capex_cost/annual_fixed_O&M_cost), 
+  # % (efficiency).
 
 transmission_parameters:
   # technology_group: [Line CAPEX, 
