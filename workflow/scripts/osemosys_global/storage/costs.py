@@ -73,7 +73,7 @@ def set_storage_operating_costs(storage_set, storage_param,
     
     for tech, tech_params in storage_param.items():
         df_var_storage.loc[df_var_storage['TECHNOLOGY'].str.startswith(tech),
-                   'VALUE'] = round(var_dict[tech] / 0.0000036 / 1000000 , 4)
+                   'VALUE'] = round(var_dict[tech] / 3.6 , 4)
         
     df_var_storage['TECHNOLOGY'] = 'PWR' + df_var_storage['TECHNOLOGY']
         

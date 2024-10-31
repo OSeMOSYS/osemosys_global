@@ -264,7 +264,7 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
-        custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"] 
+        custom_nodes = [] 
         tech_capacity = {'PWRCOAINDWE01': [8, 2000, 2025, 5, 1100, 35],
                          'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 

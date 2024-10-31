@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 
+#os.chdir(r'C:\Users\maart\Github\osemosys_global\workflow\scripts\osemosys_global\storage')
+
 from read import(
     import_storage_build_rates,
     import_op_life,
@@ -50,6 +52,8 @@ from sets import(set_unique_storage_technologies,
 from technology_to_from_storage import (set_technology_to_storage,
                                         set_technology_from_storage
                                         )
+
+#os.chdir(r'C:\Users\maart\Github\osemosys_global')
 
 def main(
     build_rates: pd.DataFrame,
@@ -112,7 +116,8 @@ def main(
     
     # Set annual capacity investment constraints.
     max_cap_invest_storage = cap_investment_constraints_sto(storage_set, 
-                                                            max_cap_invest_base, 
+                                                            max_cap_invest_base,
+                                                            build_rates,
                                                             no_investment_techs, 
                                                             start_year, 
                                                             end_year, 
@@ -232,7 +237,7 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
-        custom_nodes = ["INDTS"]
+        custom_nodes = []
         tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 3, 450, 40, 0, 87],
                              'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 350, 19, 0.5, 82],
                              'sto3': ['PWRLDSINDNE01', 1, 2030, 2025, 2, 350, 19, 0.5, 82]}

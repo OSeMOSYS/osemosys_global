@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 
+#os.chdir(r'C:\Users\maart\Github\osemosys_global\workflow\scripts\osemosys_global\transmission')
+
 from read import(
     import_gtd_existing,
     import_gtd_planned,
@@ -56,6 +58,8 @@ from residual_capacity import res_capacity_transmission
 from sets import(create_set_from_iterators, 
                  get_unique_fuels, 
                  get_unique_technologies)
+
+#os.chdir(r'C:\Users\maart\Github\osemosys_global')
 
 def main(
     default_op_life: dict[str, int],
@@ -263,7 +267,7 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
 
-        custom_nodes = ["INDTS"]
+        custom_nodes = []
         tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 861, 30, 4, 95],
                              'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 861, 30, 4, 95],
                              'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 861, 30, 4, 95],
