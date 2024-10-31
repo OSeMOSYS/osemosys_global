@@ -54,7 +54,7 @@ def get_transmission_costs(df_exist_corrected, df_planned_corrected,
     for group in trn_param.keys():
         df_capex.loc[df_capex['tech_group'] == group, 
                      'VALUE'] = (converter_capex_dict[group] + (
-                         line_capex_dict[group] * df_capex['distance'])) / 100
+                         line_capex_dict[group] * df_capex['distance'])) / 1000
 
     # Add missing columns to df.
     df_capex['REGION'] = region_name
@@ -67,7 +67,7 @@ def get_transmission_costs(df_exist_corrected, df_planned_corrected,
     
     for group in trn_param.keys():
         df_fix.loc[df_fix['tech_group'] == group, 
-                     'VALUE'] = df_fix['VALUE'] * (fom_dict[group] / 100)
+                     'VALUE'] = df_fix['VALUE'] * (fom_dict[group] / 1000)
         
         # Variable cost in $/MWh converted to $Million/PJ
         df_var.loc[df_var['tech_group'] == group, 
