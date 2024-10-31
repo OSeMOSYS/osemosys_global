@@ -262,12 +262,12 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
-        custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
-        tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 861, 30, 4, 95],
-                             'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 861, 30, 4, 95],
-                             'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 861, 30, 4, 95],
-                             'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 900, 32, 4, 92]}
-        
+        custom_nodes = []
+        tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 350, 13, 4, 95],
+                             'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 350, 13, 4, 95],
+                             'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 350, 13, 4, 95],
+                             'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 620, 24, 4, 92]}
+
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
         transmission_parameters = {'HVAC': [779, 95400, 6.75, 0, 3.5, 4],
