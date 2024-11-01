@@ -6,6 +6,7 @@ import itertools
 from data import get_years
 
 def set_user_defined_capacity_sto(tech_capacity_sto,
+                                  storage_param,
                                   # op_life_dict, 
                                   min_cap_invest_base, 
                                   max_cap_invest_base, 
@@ -28,6 +29,7 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
     var_dict = {}    
     build_year_dict = {}
     efficiency_dict = {}
+    duration_dict = {}    
 
     for idx, tech_params in tech_capacity_sto.items():
         techCapacity_sto.append([idx, tech_params[0], tech_params[1], tech_params[2]])
@@ -38,6 +40,10 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
         fom_dict[idx] = tech_params[6]
         var_dict[idx] = tech_params[7]        
         efficiency_dict[idx] = tech_params[8]
+        
+    # Set baseline duration as defined in the config file.
+    for tech, tech_params in storage_param.items():
+        duration_dict[tech] = tech_params[4]
                 
     tech_capacity_sto_df = pd.DataFrame(techCapacity_sto,
                                     columns=['idx', 'TECHNOLOGY', 'VALUE', 'YEAR'])
@@ -147,25 +153,34 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
     
     # Update CapitalCostStorage with user-defined capex costs by storage technology
     df_cap_cost_sto = cap_cost_sto_base.copy()
-
+    
+    ''' Sets capital cost by taking the defined capital cost (m$/GW) divided by the storage 
+    duration (=Storage Capacity (GWh)/Storage Power Rating (GW)) to get to GWh values followed 
+    by the conversion to PJ (1 GWh = 0.0036 PJ).'''
     for idx, tech_params in tech_capacity_sto.items():
-        df_cap_cost_sto.loc[df_cap_cost_sto['STORAGE'] == 
+          df_cap_cost_sto.loc[df_cap_cost_sto['STORAGE'] == 
                          tech_params[0].replace('PWR', ''),
-                         'VALUE'] = capex_dict[idx]
+                         'VALUE'] = capex_dict[idx] / duration_dict[tech_params[0][3:6]] / 0.0036
         
     # Update FixedCost with user-defined fixed costs by storage technology
     df_fix_cost = fix_cost_base.copy()
 
+    ''' Sets fixed cost by taking the defined fixed cost (m$/GW/yr) divided by the storage 
+    duration (=Storage Capacity (GWh)/Storage Power Rating (GW)) to mimic fixed costs for storage
+    as capacities are set in GWh/PJ terms.'''
     for idx, tech_params in tech_capacity_sto.items():
         df_fix_cost.loc[df_fix_cost['TECHNOLOGY'] == tech_params[0],
-                   'VALUE'] = fom_dict[idx]
+                   'VALUE'] = fom_dict[idx] / duration_dict[tech_params[0][3:6]]
         
     # Update VariableCosts with user-defined variable costs by storage technology
     df_var_cost = var_cost_base.copy()
 
+    ''' Sets variable cost by taking the defined variable cost ($/MWh) divided by the storage 
+    duration (=Storage Capacity (GWh)/Storage Power Rating (GW)) to mimic variable costs for storage
+    as capacities are set in GWh/PJ terms.'''
     for idx, tech_params in tech_capacity_sto.items():
         df_var_cost.loc[df_var_cost['TECHNOLOGY'] == tech_params[0],
-                   'VALUE'] = round(var_dict[idx] / 0.0000036 / 1000000 , 4)   
+                   'VALUE'] = round(var_dict[idx] / duration_dict[tech_params[0][3:6]] / 3.6 , 4)
         
     return(df_max_cap_inv, 
            df_min_cap_inv, 

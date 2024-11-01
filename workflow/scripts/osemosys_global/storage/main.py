@@ -1,8 +1,6 @@
 import pandas as pd
 import os
 
-#os.chdir(r'C:\Users\maart\Github\osemosys_global\workflow\scripts\osemosys_global\storage')
-
 from read import(
     import_storage_build_rates,
     import_op_life,
@@ -52,8 +50,6 @@ from sets import(set_unique_storage_technologies,
 from technology_to_from_storage import (set_technology_to_storage,
                                         set_technology_from_storage
                                         )
-
-#os.chdir(r'C:\Users\maart\Github\osemosys_global')
 
 def main(
     build_rates: pd.DataFrame,
@@ -143,6 +139,7 @@ def main(
           var_cost_storage
          ) = set_user_defined_capacity_sto(
             tech_capacity_sto, 
+            storage_parameters,
      #       default_op_life, 
             min_cap_invest_base, 
             max_cap_invest_storage, 
@@ -238,13 +235,13 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = []
-        tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 3, 450, 40, 0, 87],
-                             'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 350, 19, 0.5, 82],
-                             'sto3': ['PWRLDSINDNE01', 1, 2030, 2025, 2, 350, 19, 0.5, 82]}
+        tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 3, 1800, 40, 0, 87],
+                             'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 3400, 19, 0.5, 82],
+                             'sto3': ['PWRLDSINDNE01', 1, 2030, 2025, 2, 3400, 19, 0.5, 82]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET", "LDS"]
-        storage_parameters = {'SDS': [484.5, 44.25, 0, 85],
-                              'LDS': [379.4, 20.2, 0.58, 80]}
+        storage_parameters = {'SDS': [1938, 44.25, 0, 85, 4],
+                              'LDS': [3794, 20.2, 0.58, 80, 10]}
 
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
