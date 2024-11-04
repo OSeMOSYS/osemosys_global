@@ -164,7 +164,7 @@ def main(
     oar_storage.to_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None)
     
     iar_storage.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
-    
+
     cap_activity_storage.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
     cap_cost_storage.to_csv(os.path.join(output_data_dir, "CapitalCostStorage.csv"), index = None)

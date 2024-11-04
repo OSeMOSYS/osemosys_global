@@ -294,7 +294,8 @@ rule emissions:
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
-        emission = config['emission_penalty']
+        emission = config['emission_penalty'],
+        storage_parameters = config['storage_parameters']
     output: 
         csv_files = expand('results/data/{output_file}.csv', output_file = emission_files),
     log:
