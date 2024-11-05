@@ -44,7 +44,7 @@ transmission_files = [
     'TotalTechnologyModelPeriodActivityUpperLimit',
     'transmission/InputActivityRatio',
     'transmission/OutputActivityRatio',
-    'ResidualCapacity',
+    'transmission/ResidualCapacity',
     'transmission/TECHNOLOGY',
     'FUEL'
     ]
@@ -59,7 +59,8 @@ storage_files = [
     'TotalAnnualMinCapacityInvestment',
     'InputActivityRatio',
     'OutputActivityRatio',
-    #'ResidualCapacity',
+    'ResidualCapacity',
+    'ResidualStorageCapacity',
     'TECHNOLOGY',
     'STORAGE',
     'TechnologyToStorage',
@@ -194,7 +195,9 @@ rule storage:
     input:
         rules.transmission.output.csv_files,
         default_op_life = 'resources/data/operational_life.csv',
-        storage_build_rates = 'resources/data/storage_build_rates.csv'
+        storage_build_rates = 'resources/data/storage_build_rates.csv',
+        gesdb_project_data = 'resources/data/GESDB_Project_Data.json',
+        gesdb_regional_mapping = 'resources/data/GESDB_region_mapping.csv',
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],

@@ -7,12 +7,12 @@ from data import get_years
 
 def set_user_defined_capacity_sto(tech_capacity_sto,
                                   storage_param,
-                                  # op_life_dict, 
+                                  op_life_dict, 
                                   min_cap_invest_base, 
                                   max_cap_invest_base, 
-                                  #df_res_cap,
+                                  res_cap_base,
+                                  res_cap_sto_base,
                                   df_oar_base, 
-                                  #op_life_base,
                                   cap_cost_sto_base, 
                                   fix_cost_base, 
                                   var_cost_base,
@@ -96,42 +96,60 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
                                    inplace=True)
         
     # For technologies with start year before model start year, add to ResidualCapacity
-  #  df_res_cap_ud = df_min_cap_inv.copy().loc[df_min_cap_inv.copy()['YEAR'] < min(get_years(start_year, end_year))]
-  #  df_res_cap_ud.rename(columns={'YEAR':'START_YEAR'},
-  #                       inplace=True)
- #   df_res_cap_ud_final = pd.DataFrame(list(itertools.product(df_res_cap_ud['TECHNOLOGY'].unique(),
-  #                                                            get_years(start_year, end_year))
-   #                                         ),
-  #                                     columns = ['TECHNOLOGY',
-  #                                                'YEAR']
-  #                                     )
-   # df_res_cap_ud_final = pd.merge(df_res_cap_ud_final,
-  #                                 df_res_cap_ud,
-  #                                 how='left',
-  #                                 on=['TECHNOLOGY'])
+    df_res_cap_ud = df_min_cap_inv.copy().loc[df_min_cap_inv.copy()['YEAR'] < min(get_years(start_year, end_year))]
+    df_res_cap_ud.rename(columns={'YEAR':'START_YEAR'},
+                         inplace=True)
+    df_res_cap_ud_final = pd.DataFrame(list(itertools.product(df_res_cap_ud['TECHNOLOGY'].unique(),
+                                                              get_years(start_year, end_year))
+                                            ),
+                                       columns = ['TECHNOLOGY',
+                                                  'YEAR']
+                                       )
+    df_res_cap_ud_final = pd.merge(df_res_cap_ud_final,
+                                   df_res_cap_ud,
+                                   how='left',
+                                   on=['TECHNOLOGY'])
     
-  #  df_res_cap_ud_final['TECH'] = df_res_cap_ud_final['TECHNOLOGY'].str[3:6]
-  #  df_res_cap_ud_final.loc[df_res_cap_ud_final['TECHNOLOGY'].str.contains('TRN'),
- #                           'TECH'] = 'TRN'
-  #  df_res_cap_ud_final['OP_LIFE'] = df_res_cap_ud_final['TECH'].map(op_life_dict)
-  #  df_res_cap_ud_final['END_YEAR'] = (df_res_cap_ud_final['OP_LIFE'] 
-  #                                     + df_res_cap_ud_final['START_YEAR'])
-  #  df_res_cap_ud_final = df_res_cap_ud_final.loc[df_res_cap_ud_final['YEAR'] 
-  #                                                >= df_res_cap_ud_final['START_YEAR']]
-  #  df_res_cap_ud_final = df_res_cap_ud_final.loc[df_res_cap_ud_final['YEAR'] 
-  #                                                <= df_res_cap_ud_final['END_YEAR']]
-  #  df_res_cap_ud_final['REGION'] = region_name
-  #  df_res_cap_ud_final = df_res_cap_ud_final[['REGION',
-  #                                             'TECHNOLOGY',
-  #                                             'YEAR',
-  #                                             'VALUE']]
-
-   # df_res_cap = pd.concat([df_res_cap, df_res_cap_ud_final 
-  #                          if not df_res_cap_ud_final.empty else None])
+    df_res_cap_ud_final['TECH'] = df_res_cap_ud_final['TECHNOLOGY'].str[3:6]
+    df_res_cap_ud_final['OP_LIFE'] = df_res_cap_ud_final['TECH'].map(op_life_dict)
+    df_res_cap_ud_final['END_YEAR'] = (df_res_cap_ud_final['OP_LIFE'] 
+                                       + df_res_cap_ud_final['START_YEAR'])
+    df_res_cap_ud_final = df_res_cap_ud_final.loc[df_res_cap_ud_final['YEAR'] 
+                                                  >= df_res_cap_ud_final['START_YEAR']]
+    df_res_cap_ud_final = df_res_cap_ud_final.loc[df_res_cap_ud_final['YEAR'] 
+                                                  <= df_res_cap_ud_final['END_YEAR']]
+    df_res_cap_ud_final['REGION'] = region_name
+    df_res_cap_ud_final = df_res_cap_ud_final[['REGION',
+                                               'TECHNOLOGY',
+                                               'YEAR',
+                                               'VALUE']]
+    
+    df_res_cap = pd.concat([res_cap_base, df_res_cap_ud_final 
+                            if not df_res_cap_ud_final.empty else None])
 
     # Group residual capacities in case user defined technology entries already exist.
-  #  df_res_cap = df_res_cap.groupby(['REGION', 'TECHNOLOGY', 'YEAR']
-  #                                  , as_index = False).sum()
+    df_res_cap = df_res_cap.groupby(['REGION', 'TECHNOLOGY', 'YEAR']
+                                    , as_index = False).sum()
+    
+    # Do the same for ResidualStorageCapacity
+    df_res_cap_sto_ud_final = df_res_cap_ud_final.copy().rename(
+        columns = {'TECHNOLOGY' : 'STORAGE'}).astype({'VALUE' : float})
+    
+    df_res_cap_sto_ud_final['STORAGE'] = df_res_cap_sto_ud_final[
+        'STORAGE'].str.replace('PWR', '', regex=True)
+    
+    for tech, duration in duration_dict.items():
+        df_res_cap_sto_ud_final.loc[df_res_cap_sto_ud_final[
+            'STORAGE'].str.startswith(tech), 'VALUE'] = df_res_cap_sto_ud_final.loc[
+                df_res_cap_sto_ud_final['STORAGE'].str.startswith(tech), 'VALUE'] * \
+                    duration / 277.777778
+                    
+    df_res_sto_cap = pd.concat([res_cap_sto_base, df_res_cap_sto_ud_final 
+                            if not df_res_cap_sto_ud_final.empty else None])
+
+    # Group residual capacities in case user defined technology entries already exist.
+    df_res_sto_cap = df_res_sto_cap.groupby(['REGION', 'STORAGE', 'YEAR']
+                                    , as_index = False).sum()                    
 
     # For technologies with start year at or after model start year, add to 
     # TotalAnnualMinCapacityInvestment      
@@ -184,9 +202,9 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
         
     return(df_max_cap_inv, 
            df_min_cap_inv, 
-          # df_res_cap, 
+           df_res_cap,
+           df_res_sto_cap,
            df_oar, 
-          # op_life, 
            df_cap_cost_sto,
            df_fix_cost,
            df_var_cost

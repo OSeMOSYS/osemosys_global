@@ -4,6 +4,8 @@ import os
 from read import(
     import_storage_build_rates,
     import_op_life,
+    import_GESDB_project_data,
+    import_GESDB_regional_mapping,
     import_iar_base,
     import_oar_base,
     import_capact_base,
@@ -11,19 +13,19 @@ from read import(
     import_var_cost_base,
     import_max_cap_invest_base,
     import_min_cap_invest_base,
-  #  import_res_cap_base,
+    import_res_cap_base,
     import_set_base
 )
 
-#from constants import(
-
- #   )
-
-#from data import(
- #   format_gtd_existing,
- #   format_gtd_planned,
- #   correct_gtd_data
- #   )
+from constants import(
+    GESDB_TECH_MAP,
+    DURATION_TYPE,
+    BUILD_YEAR,
+    RETIREMENT_YEAR,
+    INACTIVE_VARS,
+    ACTIVE_VARS,
+    NEW_VARS
+    )
 
 from activity import(
     activity_storage,
@@ -41,7 +43,7 @@ from investment_constraints import cap_investment_constraints_sto
 
 from user_defined_capacity import set_user_defined_capacity_sto
 
-#from residual_capacity import res_capacity_transmission
+from residual_capacity import res_capacity_storage
 
 from sets import(set_unique_storage_technologies, 
                  set_unique_storage_technologies_custom_nodes, 
@@ -55,6 +57,8 @@ def main(
     build_rates: pd.DataFrame,
     unique_sto_techs: list,
     default_op_life: dict[str, int],
+    gesdb_data: pd.DataFrame,
+    gesdb_mapping: pd.DataFrame,
     iar_base: pd.DataFrame,
     oar_base: pd.DataFrame,
     capact_base: pd.DataFrame,
@@ -62,7 +66,7 @@ def main(
     var_cost_base: pd.DataFrame,    
     max_cap_invest_base: pd.DataFrame,
     min_cap_invest_base: pd.DataFrame,
- #   res_cap_base: pd.DataFrame,
+    res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
     fuel_set_base: pd.DataFrame
 ):
@@ -119,34 +123,35 @@ def main(
                                                             end_year, 
                                                             region_name)
     
-    # Set residual capacity.
-    #res_cap_trn = res_capacity_transmission(gtd_exist_corrected, gtd_planned_corrected, 
-     #                                       res_cap_base, op_life_dict, 
-      #                                      start_year, end_year, region_name,
-       #                                     RETIREMENT_YEAR_TRANSMISSION, 
-        #                                    PLANNED_BUILD_YEAR_TRANSMISSION)
+    # Set residual capacity ('PWR') and residual capacity storage.
+    res_cap, res_cap_storage = res_capacity_storage(gesdb_data, gesdb_mapping,
+                                                    res_cap_base, op_life_dict,
+                                                    storage_parameters,
+                                                    GESDB_TECH_MAP, DURATION_TYPE,
+                                                    BUILD_YEAR, RETIREMENT_YEAR,
+                                                    INACTIVE_VARS, ACTIVE_VARS,
+                                                    NEW_VARS, start_year,
+                                                    end_year, region_name)
 
     # Alter output csv's based on user defined capacities following user config.
     if tech_capacity_sto is not None:
         (max_cap_invest_storage, 
          min_cap_invest_storage, 
-    #     res_cap_trn, 
-     #    iar_trn,
-          oar_storage,
-     #    op_life_trn, 
-          cap_cost_storage,
-          fix_cost_storage, 
-          var_cost_storage
+         res_cap,
+         res_cap_storage,
+         oar_storage,
+         cap_cost_storage,
+         fix_cost_storage, 
+         var_cost_storage
          ) = set_user_defined_capacity_sto(
             tech_capacity_sto, 
             storage_parameters,
-     #       default_op_life, 
+            default_op_life, 
             min_cap_invest_base, 
             max_cap_invest_storage, 
-     #       res_cap_trn,
-     #       iar_trn,
+            res_cap,
+            res_cap_storage,
             oar_storage,
-      #      op_life_trn,
             cap_cost_storage,
             fix_cost_storage, 
             var_cost_storage,
@@ -184,9 +189,11 @@ def main(
     tech_to_storage.to_csv(os.path.join(output_data_dir, "TechnologyToStorage.csv"), index=None)
     tech_from_storage.to_csv(os.path.join(output_data_dir, "TechnologyFromStorage.csv"), index=None)
         
-   # res_cap_trn.to_csv(os.path.join(output_data_dir, 
-  #                                          'ResidualCapacity.csv'),
-   #                                     index = None)       
+    res_cap.to_csv(os.path.join(output_data_dir, 'ResidualCapacity.csv'), 
+                           index = None)   
+  
+    res_cap_storage.to_csv(os.path.join(output_data_dir, 'ResidualStorageCapacity.csv'), 
+                           index = None)       
     
     if tech_capacity_sto is not None:
         min_cap_invest_storage.to_csv(os.path.join(output_data_dir, 
@@ -203,6 +210,8 @@ if __name__ == "__main__":
     if "snakemake" in globals():
         file_storage_build_rates = snakemake.input.storage_build_rates 
         file_default_op_life = snakemake.input.default_op_life
+        file_gesdb_project_data = snakemake.input.gesdb_project_data
+        file_gesdb_regional_mapping = snakemake.input.gesdb_regional_mapping        
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
@@ -220,7 +229,7 @@ if __name__ == "__main__":
         file_var_cost_base = f'{transmission_data_dir}/VariableCost.csv'        
         file_max_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
-      #  file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
+        file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'        
         file_fuel_set = f'{output_data_dir}/FUEL.csv'
         
@@ -231,13 +240,15 @@ if __name__ == "__main__":
     else:    
         file_storage_build_rates = 'resources/data/storage_build_rates.csv'
         file_default_op_life = 'resources/data/operational_life.csv'
+        file_gesdb_project_data = 'resources/data/GESDB_Project_Data.json'
+        file_gesdb_regional_mapping = 'resources/data/GESDB_region_mapping.csv'        
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = []
-        tech_capacity_sto = {'sto1': ['PWRSDSINDEA01', 0, 2020, 2025, 3, 1800, 40, 0, 87],
-                             'sto2': ['PWRLDSINDNE01', 4, 1980, 2025, 2, 3400, 19, 0.5, 82],
-                             'sto3': ['PWRLDSINDNE01', 1, 2030, 2025, 2, 3400, 19, 0.5, 82]}
+        tech_capacity_sto = {'sto1': ['PWRSDSINDWE01', 2, 2010, 2025, 3, 1800, 40, 0, 87],
+                             'sto2': ['PWRLDSINDNE01', 4, 1985, 2025, 2, 3400, 19, 0.5, 82],
+                             'sto3': ['PWRLDSINDNE01', 1, 2015, 2025, 2, 3400, 19, 0.5, 82]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET", "LDS"]
         storage_parameters = {'SDS': [1938, 44.25, 0, 85, 4],
@@ -253,7 +264,7 @@ if __name__ == "__main__":
         file_var_cost_base = f'{transmission_data_dir}/VariableCost.csv'
         file_max_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
-     #   file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
+        file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'
         file_fuel_set = f'{output_data_dir}/FUEL.csv'
 
@@ -266,7 +277,10 @@ if __name__ == "__main__":
     op_life = import_op_life(file_default_op_life)
     op_life_dict = dict(zip(list(op_life['tech']),
                             list(op_life['years'])))
-
+    
+    gesdb_project_data = import_GESDB_project_data(file_gesdb_project_data)
+    gesdb_regional_mapping = import_GESDB_regional_mapping(file_gesdb_regional_mapping)
+    
     iar_base = import_iar_base(file_iar_base)
     oar_base = import_oar_base(file_oar_base)
     capact_base = import_capact_base(file_capact_base)
@@ -274,13 +288,15 @@ if __name__ == "__main__":
     var_cost_base = import_var_cost_base(file_var_cost_base)    
     max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
     min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
-#    res_cap_base = import_res_cap_base(file_res_cap_base)  
+    res_cap_base = import_res_cap_base(file_res_cap_base)  
     tech_set_base = import_set_base(file_tech_set)  
     fuel_set_base = import_set_base(file_fuel_set)  
     
     input_data = {
         "unique_sto_techs" : sto_techs,
         "default_op_life": op_life_dict,
+        "gesdb_data": gesdb_project_data,
+        "gesdb_mapping" : gesdb_regional_mapping,
         "build_rates" : build_rates,
         "iar_base" : iar_base,
         "oar_base" : oar_base,
@@ -289,7 +305,7 @@ if __name__ == "__main__":
         "var_cost_base" : var_cost_base,
         "max_cap_invest_base" : max_cap_invest_base,
         "min_cap_invest_base" : min_cap_invest_base,
-    #    "res_cap_base" : res_cap_base, 
+        "res_cap_base" : res_cap_base, 
         "tech_set_base" : tech_set_base,
         "fuel_set_base" : fuel_set_base,  
     }

@@ -205,9 +205,8 @@ def main(
     tech_set.to_csv(os.path.join(transmission_data_dir, "TECHNOLOGY.csv"), index = None)
     fuel_set.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index = None)
         
-    res_cap_trn.to_csv(os.path.join(output_data_dir, 
-                                            'ResidualCapacity.csv'),
-                                        index = None)       
+    res_cap_trn.to_csv(os.path.join(transmission_data_dir, 'ResidualCapacity.csv'),
+                       index = None)       
     
     if tech_capacity_trn is not None:
         min_cap_invest_trn.to_csv(os.path.join(transmission_data_dir, 

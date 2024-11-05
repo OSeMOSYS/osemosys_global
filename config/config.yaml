@@ -89,8 +89,8 @@ user_defined_capacity_storage:
   #         annual_fixed_O&M_cost, 
   #         variable_O&M_cost, 
   #         roundtrip_efficiency]
-  sto1: [PWRSDSINDEA01, 0, 2020, 2025, 3, 1800, 40, 0, 87]
-  sto2: [PWRLDSINDNE01, 4, 1980, 2025, 2, 3400, 19, 0.5, 82]
+  sto1: [PWRSDSINDWE01, 2, 2010, 2025, 3, 1800, 40, 0, 87]
+  sto2: [PWRLDSINDNE01, 4, 1985, 2025, 2, 3400, 19, 0.5, 82]
   sto3: [PWRLDSINDNE01, 1, 2030, 2025, 2, 3400, 19, 0.5, 82]
   # Per technology, only the capacity and build_year
   # parameters can deviate from each other. For all other

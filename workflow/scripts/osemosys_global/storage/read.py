@@ -13,6 +13,22 @@ def import_op_life(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
+def import_GESDB_project_data(f: str) -> pd.DataFrame:
+    """Imports project data from the Global Energy Storage Database (GESDB, 
+    U.S. DOE/Sandia).
+    
+    GESDB_Project_data.json
+    """
+    return pd.read_json(f)
+
+def import_GESDB_regional_mapping(f: str) -> pd.DataFrame:
+    """Imports the regional mapping from the Global Energy Storage Database
+    (GESDB, U.S. DOE/Sandia).
+    
+    GESDB_Project_data.json
+    """
+    return pd.read_csv(f)
+    
 def import_iar_base(f: str) -> pd.DataFrame:
     """Imports InputActivityRatio.csv as output from the Transmission rule.
     
@@ -63,7 +79,7 @@ def import_min_cap_invest_base(f: str) -> pd.DataFrame:
     return pd.read_csv(f)
 
 def import_res_cap_base(f: str) -> pd.DataFrame:
-    """Imports ResidualCapacity.csv as output from the Powerplant rule.
+    """Imports ResidualCapacity.csv as output from the Transmission rule.
     
     ResidualCapacity.csv
     """
