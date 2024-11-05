@@ -63,6 +63,7 @@ storage_files = [
     'ResidualStorageCapacity',
     'TECHNOLOGY',
     'STORAGE',
+    'StorageLevelStart',
     'TechnologyToStorage',
     'TechnologyFromStorage'
     ]

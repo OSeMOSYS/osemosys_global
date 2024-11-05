@@ -53,6 +53,8 @@ from technology_to_from_storage import (set_technology_to_storage,
                                         set_technology_from_storage
                                         )
 
+from storage_level import set_storage_level_start
+
 def main(
     build_rates: pd.DataFrame,
     unique_sto_techs: list,
@@ -124,14 +126,16 @@ def main(
                                                             region_name)
     
     # Set residual capacity ('PWR') and residual capacity storage.
-    res_cap, res_cap_storage = res_capacity_storage(gesdb_data, gesdb_mapping,
-                                                    res_cap_base, op_life_dict,
+    res_cap, res_cap_storage = res_capacity_storage(gesdb_data, gesdb_mapping, 
+                                                    res_cap_base, op_life_dict, 
                                                     storage_parameters,
                                                     GESDB_TECH_MAP, DURATION_TYPE,
                                                     BUILD_YEAR, RETIREMENT_YEAR,
                                                     INACTIVE_VARS, ACTIVE_VARS,
                                                     NEW_VARS, start_year,
                                                     end_year, region_name)
+    
+    storage_level_start = set_storage_level_start(storage_set, region_name)
 
     # Alter output csv's based on user defined capacities following user config.
     if tech_capacity_sto is not None:
@@ -193,7 +197,10 @@ def main(
                            index = None)   
   
     res_cap_storage.to_csv(os.path.join(output_data_dir, 'ResidualStorageCapacity.csv'), 
-                           index = None)       
+                           index = None)   
+
+    storage_level_start.to_csv(os.path.join(output_data_dir, 'StorageLevelStart.csv'), 
+                           index = None)      
     
     if tech_capacity_sto is not None:
         min_cap_invest_storage.to_csv(os.path.join(output_data_dir, 
