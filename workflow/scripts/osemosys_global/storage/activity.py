@@ -24,7 +24,7 @@ def activity_storage(storage_set, df_iar_base, df_oar_base, storage_param,
     df_storage_iar = df_storage_iar.explode('YEAR').reset_index(drop = True)
     df_storage_iar["VALUE"] = 1
     df_storage_iar["TECHNOLOGY"] = "PWR" + df_storage_iar["TECHNOLOGY"]  
-    df_storage_iar["FUEL"] = "ELC" + df_storage_iar["TECHNOLOGY"].str[3:8] + "01"
+    df_storage_iar["FUEL"] = "ELC" + df_storage_iar["TECHNOLOGY"].str[6:13]
     df_storage_iar = df_storage_iar[
         ["REGION", "TECHNOLOGY", "FUEL", "MODE_OF_OPERATION", "YEAR", "VALUE"]
     ]
@@ -43,7 +43,7 @@ def activity_storage(storage_set, df_iar_base, df_oar_base, storage_param,
                            'VALUE'] = round(1 / (efficiency_dict[each_tech] / 100), 3)
 
     df_storage_oar["TECHNOLOGY"] = "PWR" + df_storage_oar["TECHNOLOGY"] 
-    df_storage_oar["FUEL"] = "ELC" + df_storage_oar["TECHNOLOGY"].str[3:8] + "01"
+    df_storage_oar["FUEL"] = "ELC" + df_storage_oar["TECHNOLOGY"].str[6:13]
     df_storage_oar = df_storage_oar[
         ["REGION", "TECHNOLOGY", "FUEL", "MODE_OF_OPERATION", "YEAR", "VALUE"]
     ]
