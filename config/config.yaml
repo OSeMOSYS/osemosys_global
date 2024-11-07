@@ -41,6 +41,7 @@ no_invest_technologies:
   - "GEO"
   - "BIO"
   - "PET"
+  - "LDS"
 
 # Result Parameters 
 results_by_country: True
@@ -77,8 +78,25 @@ user_defined_capacity_transmission:
   # Per technology, only the capacity and build_year
   # parameters can deviate from each other. For all other
   # parameters only the last entry will be used.
+
+user_defined_capacity_storage:
+  # entry: [technology, 
+  #         capacity, 
+  #         build_year, 
+  #         first_year_of_expansion, 
+  #         build_rate_per_year, 
+  #         capex_cost, 
+  #         annual_fixed_O&M_cost, 
+  #         variable_O&M_cost, 
+  #         roundtrip_efficiency]
+  sto1: [PWRSDSINDWE01, 2, 2010, 2025, 3, 1800, 40, 0, 87]
+  sto2: [PWRLDSINDNE01, 4, 1985, 2025, 2, 3400, 19, 0.5, 82]
+  sto3: [PWRLDSINDNE01, 1, 2030, 2025, 2, 3400, 19, 0.5, 82]
+  # Per technology, only the capacity and build_year
+  # parameters can deviate from each other. For all other
+  # parameters only the last entry will be used.
   # Units are in GW (capacity/build_rate_per_year), m$/GW (capex_cost/annual_fixed_O&M_cost), 
-  # % (efficiency).
+  # $/MWh (variable_O&M_cost), % (roundtrip_efficiency).
 
 transmission_parameters:
   # technology_group: [Line CAPEX, 
@@ -87,12 +105,23 @@ transmission_parameters:
   #                    AC/DC Converter pair losses, 
   #                    Fixed O&M costs, 
   #                    Variable O&M costs]
-  # Units are in $2020/MW/KM (Line CAPEX), $2020 (Converter pair CAPEX),
+  # Units are in $2020/MW/KM (Line CAPEX), $2020/MW (Converter pair CAPEX),
   # %/1000km (Line losses), % (AC/DC Converter pair losses), 
   # % of total CAPEX/yr (Fixed O&M costs), $/MWh (Variable O&M costs).
   HVAC: [779, 95400, 6.75, 0, 3.5, 4]
   HVDC: [238, 297509, 3.5, 1.3, 3.5, 4]
   HVDC_subsea: [295, 297509, 3.5, 1.3, 3.5, 4]
+
+storage_parameters:
+  # technology_group: [capex_cost,
+  #                    annual_fixed_O&M_cost,
+  #                    variable_O&M_cost,
+  #                    roundtrip_efficiency,
+  #                    duration]
+  # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
+  # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
+  SDS: [1938, 44.25, 0, 85, 4]
+  LDS: [3794, 20.2, 0.58, 80, 10]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 

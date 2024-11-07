@@ -44,10 +44,12 @@ def main():
     output_data_dir = config_paths.output_data_dir
     emission_penalty = config.get("emission_penalty")  # M$/MT
     emission_limit = config.get("emission_limit")  # MT of CO2-eq.
-
+    storage_techs = config.get("storage_parameters").keys()
+    storage_techs = ['PWR' + stor for stor in storage_techs]
+    
     # ASSIGN EMISSION ACTIVITY RATIOS
 
-    df_ear = get_ear(_EMISSION)
+    df_ear = get_ear(_EMISSION, storage_techs)
     df_ear.to_csv(Path(output_data_dir, "EmissionActivityRatio.csv"), index=False)
     logging.info("Successfully generated emission activity ratio")
 
@@ -148,7 +150,7 @@ def get_co2_emission_factors():
     return df.set_index(df.index).to_dict()["co2_eq"]
 
 
-def get_ear(emission):
+def get_ear(emission, storage_techs):
     """Creates emission activity ratio dataframe.
 
     This function reads in an existing input activity ratio parameter file
@@ -217,7 +219,10 @@ def get_ear(emission):
     df["VALUE"] = df["VALUE"].round(4)
     # Final EmissionActivityRatio dataframe
     df = df[["REGION", "TECHNOLOGY", "EMISSION", "MODE_OF_OPERATION", "YEAR", "VALUE"]]
-
+    
+    # Filter out storage techs
+    df = df[~df["TECHNOLOGY"].str.startswith(tuple(storage_techs))]
+    
     return df
 
 
