@@ -1,8 +1,6 @@
 import pandas as pd
 import os
 
-#os.chdir(r'C:\Users\maart\Github\osemosys_global\workflow\scripts\osemosys_global\powerplant')
-
 from read import(
     import_plexos_2015,
     import_weo_regions,
@@ -63,8 +61,6 @@ from sets import(
 from user_defined_capacity import set_user_defined_capacity
 
 from availability import availability_factor
-
-#os.chdir(r'C:\Users\maart\Github\osemosys_global')
 
 def main(
     plexos_prop: pd.DataFrame,
