@@ -149,7 +149,33 @@ powerplant_build_rates:
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
-  RM1: [15, 2030, 2050]
+  RM1: [10, 2025, 2029]
+  RM2: [15, 2030, 2050]
+  
+reserve_margin_technologies:
+# TECHNOLOGY: PERCENTAGE,
+# Specify the share of capacity (%) per technology that can contribute to the
+# reserve margin. Technologies that are not listed are excluded from contributing.
+  BIO : 90
+  CCG : 90
+  COA : 90
+  COG : 50
+  CSP : 30
+  GEO : 90
+  HYD : 30
+  OCG : 90
+  OIL : 90
+  OTH : 90
+  PET : 90
+  SPV : 0
+  URN : 90
+  WAS : 90
+  WAV : 10
+  WOF : 10
+  WON : 10
+  TRN : 10
+  SDS : 69
+  LDS : 77
 
 emission_limit:
 # - [EMISSION, COUNTRY, YEAR, VALUE]

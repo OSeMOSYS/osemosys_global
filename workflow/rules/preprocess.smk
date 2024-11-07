@@ -82,6 +82,9 @@ timeslice_files = [
     'DAYTYPE',
     'DAILYTIMEBRACKET',
     'DaySplit',
+    ]
+
+reserves_files = [
     'ReserveMargin',
     'ReserveMarginTagTechnology',
     'ReserveMarginTagFuel'
@@ -112,7 +115,7 @@ user_capacity_files = [
 
 GENERATED_CSVS = (
     power_plant_files + transmission_files + storage_files + timeslice_files \
-    + demand_files + emission_files + max_capacity_files
+    + reserves_files + demand_files + emission_files + max_capacity_files
 )
 GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
 EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
@@ -242,6 +245,25 @@ rule timeslice:
         log = 'results/logs/timeslice.log'    
     shell:
         'python workflow/scripts/osemosys_global/TS_data.py 2> {log}'
+        
+rule reserves:
+    message:
+        'Generating reserves data...'
+    input:
+        rules.storage.output.csv_files,
+    params:
+        start_year = config['startYear'],
+        end_year = config['endYear'],
+        region_name = 'GLOBAL',
+        output_data_dir = 'results/data',
+        reserve_margin = config['reserve_margin'],
+        reserve_margin_technologies = config['reserve_margin_technologies']
+    output:
+        csv_files = expand('results/data/{output_file}.csv', output_file=reserves_files),
+    log:
+        log = 'results/logs/reserves.log'    
+    script:
+        "../scripts/osemosys_global/reserves/main.py"       
 
 def demand_custom_csv() -> str:
     if config["nodes_to_add"]:
