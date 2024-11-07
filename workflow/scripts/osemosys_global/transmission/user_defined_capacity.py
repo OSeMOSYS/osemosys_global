@@ -8,13 +8,14 @@ from data import get_years
 def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict, 
                                   df_min_cap_invest, df_max_cap_invest, df_res_cap,
                                   df_iar_final, df_oar_final, op_life_base,
-                                  cap_cost_base, fix_cost_base, start_year, 
-                                  end_year, region_name):
+                                  cap_cost_base, fix_cost_base, var_cost_base, 
+                                  start_year, end_year, region_name):
     
     techCapacity_trn = []
     first_year_expansion_dict = {}
     build_rate_dict = {}
     capex_dict = {}
+    var_dict = {}
     fix_dict = {}
     build_year_dict = {}
     efficiency_dict = {}
@@ -26,7 +27,8 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
         build_rate_dict[idx] = tech_params[4]
         capex_dict[idx] = tech_params[5]
         fix_dict[idx] = tech_params[6]
-        efficiency_dict[idx] = tech_params[7]
+        var_dict[idx] = tech_params[7]        
+        efficiency_dict[idx] = tech_params[8]
                 
     tech_capacity_trn_df = pd.DataFrame(techCapacity_trn,
                                     columns=['idx', 'TECHNOLOGY', 'VALUE', 'YEAR'])
@@ -59,8 +61,9 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
     max_cap_techs_df.loc[(max_cap_techs_df['YEAR']>=max_cap_techs_df['FIRST_YEAR']),
            'VALUE'] = max_cap_techs_df['MAX_BUILD']
         
-    max_cap_techs_df.infer_objects().fillna(0,
-              inplace=True)
+    with pd.option_context("future.no_silent_downcasting", True):
+        max_cap_techs_df['VALUE'] = max_cap_techs_df[
+            'VALUE'].replace(r'^\s*$', 0, regex = True).infer_objects(copy=False)
 
     max_cap_techs_df = max_cap_techs_df[['REGION',
                                          'TECHNOLOGY',
@@ -239,10 +242,17 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
                                  'VALUE']]
     
     fix_cost_trn = cap_cost_trn.copy()
+    var_cost_trn = cap_cost_trn.copy()
     
     for idx, tech_params in tech_capacity_trn.items():
         fix_cost_trn.loc[fix_cost_trn['TECHNOLOGY'].str.startswith(tech_params[0]),
                          'VALUE'] = fix_dict[idx]
+        
+        var_cost_trn.loc[var_cost_trn['TECHNOLOGY'].str.startswith(tech_params[0]),
+                         'VALUE'] = round(var_dict[idx] / 3.6, 4)
+        
+    var_cost_trn['MODE_OF_OPERATION'] = [[1,2] for x in range(len(var_cost_trn))]
+    var_cost_trn = var_cost_trn.explode('MODE_OF_OPERATION')
 
     cap_cost = pd.concat([cap_cost_base, cap_cost_trn])
     cap_cost.drop_duplicates(subset=['REGION', 'TECHNOLOGY', 'YEAR'],
@@ -254,5 +264,10 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
                              keep="last",
                              inplace=True)
     
+    var_cost = pd.concat([var_cost_base, var_cost_trn])
+    var_cost.drop_duplicates(subset=['REGION', 'TECHNOLOGY', 'MODE_OF_OPERATION', 'YEAR'],
+                             keep="last",
+                             inplace=True)
+    
     return(df_max_cap_inv, df_min_cap_inv, df_res_cap, 
-           df_iar, df_oar, op_life, cap_cost, fix_cost)
+           df_iar, df_oar, op_life, cap_cost, fix_cost, var_cost)

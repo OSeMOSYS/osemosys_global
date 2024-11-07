@@ -455,110 +455,6 @@ def add_storage(region_name,
 
 demand_nodes = list(set(list(sp_demand_df_final["FUEL"].str[3:8])))
 
-# Create SET STORAGE
-storage_set = [("BAT" + x + "01") for x in demand_nodes if x[:3] in geographic_scope]
-df_storage_set = pd.DataFrame(storage_set, columns=["VALUE"])
-df_storage_set.to_csv(os.path.join(output_data_dir, "STORAGE.csv"), index=None)
-# Add storage technologies to SET TECHNOLOGY
-storage_techs = [
-    ("PWRBAT" + x + "01") for x in demand_nodes if x[:3] in geographic_scope
-]
-df_storage_techs = pd.DataFrame(storage_techs, columns=["VALUE"])
-
-wait_time = 0
-while not os.path.exists(os.path.join(output_data_dir, "TECHNOLOGY.csv")):
-    time.sleep(5)
-    wait_time += 1
-    if wait_time > 20:
-        break
-
-set_techonology = pd.read_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"))
-set_technology = pd.concat([set_techonology, df_storage_techs])
-set_technology.to_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"), index=None)
-time.sleep(10)
-# Add InputActivityRatio and OutputActivityRatio
-# InputActivityRatio
-df_storage_iar = pd.DataFrame(
-    list(itertools.product([region_name], storage_techs, years, [1])),
-    columns=["REGION", "TECHNOLOGY", "YEAR", "MODE_OF_OPERATION"],
-)
-df_storage_iar["VALUE"] = 1
-df_storage_iar["FUEL"] = "ELC" + df_storage_iar["TECHNOLOGY"].str[6:11] + "01"
-df_storage_iar = df_storage_iar[
-    ["REGION", "TECHNOLOGY", "FUEL", "MODE_OF_OPERATION", "YEAR", "VALUE"]
-]
-
-wait_time = 0
-while not os.path.exists(os.path.join(output_data_dir, "InputActivityRatio.csv")):
-    time.sleep(5)
-    wait_time += 1
-    if wait_time > 20:
-        break
-df_iar = pd.read_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"))
-df_iar = pd.concat([df_iar, df_storage_iar])
-df_iar.to_csv(os.path.join(output_data_dir, "InputActivityRatio.csv"), index=None)
-time.sleep(20)
-
-# OutputActivityRatio
-df_storage_oar = pd.DataFrame(
-    list(itertools.product([region_name], storage_techs, years, [2])),
-    columns=["REGION", "TECHNOLOGY", "YEAR", "MODE_OF_OPERATION"],
-)
-df_storage_oar["VALUE"] = 1
-df_storage_oar["FUEL"] = "ELC" + df_storage_oar["TECHNOLOGY"].str[6:11] + "01"
-df_storage_oar = df_storage_oar[
-    ["REGION", "TECHNOLOGY", "FUEL", "MODE_OF_OPERATION", "YEAR", "VALUE"]
-]
-
-wait_time = 0
-while not os.path.exists(os.path.join(output_data_dir, "OutputActivityRatio.csv")):
-    time.sleep(5)
-    wait_time += 1
-    if wait_time > 20:
-        break
-df_oar = pd.read_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"))
-df_oar = pd.concat([df_oar, df_storage_oar])
-df_oar.to_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None)
-time.sleep(20)
-
-# Create TechnologyToStorage and TechnologyFromStorage
-
-df_tech_storage = pd.DataFrame(
-    columns=["REGION", "TECHNOLOGY", "STORAGE", "MODE_OF_OPERATION"]
-)
-
-for each_node in [x for x in demand_nodes if x[:3] in geographic_scope]:
-    df_ts_temp = pd.DataFrame(
-        list(
-            itertools.product(
-                [region_name],
-                ["PWRBAT" + each_node + "01"],
-                ["BAT" + each_node + "01"],
-                [1, 2],
-            )
-        ),
-        columns=["REGION", "TECHNOLOGY", "STORAGE", "MODE_OF_OPERATION"],
-    )
-    df_tech_storage = pd.concat([df_tech_storage, df_ts_temp])
-
-df_ttos = df_tech_storage.copy()
-df_tfroms = df_tech_storage.copy()
-
-
-# TechnologyToStorage
-
-df_ttos.loc[df_ttos["MODE_OF_OPERATION"] == 1, "VALUE"] = 1.0
-df_ttos.loc[df_ttos["MODE_OF_OPERATION"] == 2, "VALUE"] = 0.0
-df_ttos["VALUE"] = df_ttos["VALUE"].astype(float)
-df_ttos.to_csv(os.path.join(output_data_dir, "TechnologyToStorage.csv"), index=None)
-
-# TechnologyFromStorage
-
-df_tfroms.loc[df_tfroms["MODE_OF_OPERATION"] == 1, "VALUE"] = 0.0
-df_tfroms.loc[df_tfroms["MODE_OF_OPERATION"] == 2, "VALUE"] = 1.0
-df_tfroms["VALUE"] = df_tfroms["VALUE"].astype(float)
-df_tfroms.to_csv(os.path.join(output_data_dir, "TechnologyFromStorage.csv"), index=None)
-
 # Create Conversionls, Conversionld, and Conversionlh
 
 # Conversionls
@@ -613,40 +509,6 @@ df_daysplit = df_daysplit[["DAILYTIMEBRACKET", "YEAR", "VALUE"]]
 df_daysplit["VALUE"] = df_daysplit["VALUE"].round(4)
 df_daysplit.to_csv(os.path.join(output_data_dir, "DaySplit.csv"), index=None)
 
-# CapitalCostStorage
-storage_set = [("BAT" + x + "01") for x in demand_nodes if x[:3] in geographic_scope]
-df_cap_cost_storage = pd.DataFrame(
-    list(itertools.product(storage_set, years)), columns=["STORAGE", "YEAR"]
-)
-df_cap_cost_storage["STORAGE_TYPE"] = df_cap_cost_storage["STORAGE"].str[:3]
-storage_costs = pd.read_csv(os.path.join(input_data_dir, "storage_costs.csv"))
-
-storage_costs_df = pd.DataFrame(
-    list(
-        itertools.product(
-            storage_costs["STORAGE_TYPE"].unique(),
-            list(range(storage_costs["YEAR"].min(), storage_costs["YEAR"].max() + 1)),
-        )
-    ),
-    columns=["STORAGE_TYPE", "YEAR"],
-)
-storage_costs_df = storage_costs_df.merge(
-    storage_costs, how="left", on=["STORAGE_TYPE", "YEAR"]
-)
-storage_costs_df = storage_costs_df.interpolate()
-df_cap_cost_storage = df_cap_cost_storage.merge(
-    storage_costs_df, how="left", on=["STORAGE_TYPE", "YEAR"]
-)
-df_cap_cost_storage["VALUE"] = df_cap_cost_storage["VALUE"].mul(1e6 / 3600)
-df_cap_cost_storage["REGION"] = region_name
-df_cap_cost_storage = df_cap_cost_storage[["REGION", "STORAGE", "YEAR", "VALUE"]]
-df_cap_cost_storage.to_csv(
-    os.path.join(output_data_dir, "CapitalCostStorage.csv"), index=None
-)
-
-# CapacityToActivityUnit for Storage
-
-
 # ReserveMargin
 
 if reserve_margin:
@@ -697,7 +559,7 @@ df_rmtt.to_csv(
 # ReserveMarginTagFuel
 df_rmtf = pd.read_csv(os.path.join(output_data_dir, "FUEL.csv"))
 rm_fuels = [
-    x for x in df_rmtf["VALUE"].unique() if x.startswith("ELC") if x.endswith("01")
+    x for x in df_rmtf["VALUE"].astype(str).unique() if x.startswith("ELC") if x.endswith("01")
 ]
 df_rmtf = pd.DataFrame(
     list(itertools.product([region_name], rm_fuels, years, [1])),

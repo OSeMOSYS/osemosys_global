@@ -22,6 +22,10 @@ def import_centerpoints(f: str) -> pd.DataFrame:
     distances for transmission lines."""
     return pd.read_csv(f)
 
+def import_transmission_build_rates(f: str) -> pd.DataFrame:
+    """Imports transmission pathway specific user defined max build rates."""
+    return pd.read_csv(f)
+
 def import_op_life(f: str) -> pd.DataFrame:
     """Imports default operational life data.
     
@@ -61,6 +65,13 @@ def import_fix_cost_base(f: str) -> pd.DataFrame:
     """Imports FixedCost.csv as output from the Powerplant rule.
     
     FixedCost.csv
+    """
+    return pd.read_csv(f)
+
+def import_var_cost_base(f: str) -> pd.DataFrame:
+    """Imports VariableCost.csv as output from the Powerplant rule.
+    
+    VariableCost.csv
     """
     return pd.read_csv(f)
 

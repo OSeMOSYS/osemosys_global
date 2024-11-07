@@ -20,4 +20,4 @@ def create_set_from_iterators(*args: list[str] | set[str]) -> pd.DataFrame:
     
     data = list(set(data))
     
-    return pd.Series(data, name="VALUE").to_frame()
+    return pd.Series(data, name="VALUE").to_frame().sort_values(['VALUE'])

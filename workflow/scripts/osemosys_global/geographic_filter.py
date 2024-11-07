@@ -95,6 +95,12 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
                     df = df.loc[~(df['VALUE'].str[3:8].isin(remove_nodes) | 
                                 df['VALUE'].str[6:11].isin(remove_nodes) | 
                                 df['VALUE'].str[8:13].isin(remove_nodes))]
+                    
+            if str(each_csv).split('/')[-1] == 'STORAGE.csv':
+                df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope)]
+        
+                if remove_nodes:
+                    df = df.loc[~df['VALUE'].str[3:8].isin(remove_nodes)]
         
     df.to_csv(os.path.join(os.path.join(scenario_data_dir, each_csv.name)), index = None)
 
