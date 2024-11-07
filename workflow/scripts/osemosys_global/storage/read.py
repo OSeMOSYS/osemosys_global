@@ -85,6 +85,20 @@ def import_res_cap_base(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
+def import_op_life_base(f: str) -> pd.DataFrame:
+    """Imports OperationalLife.csv as output from the Transmission rule.
+    
+    OperationalLife.csv
+    """
+    return pd.read_csv(f)
+
+def import_cap_cost_base(f: str) -> pd.DataFrame:
+    """Imports CapitalCost.csv as output from the Transmission rule.
+    
+    CapitalCost.csv
+    """
+    return pd.read_csv(f)
+
 def import_set_base(f: str) -> pd.DataFrame:
     """Imports a set csv"""
     return pd.read_csv(f)

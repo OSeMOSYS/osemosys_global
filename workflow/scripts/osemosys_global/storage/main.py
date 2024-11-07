@@ -9,8 +9,10 @@ from read import(
     import_iar_base,
     import_oar_base,
     import_capact_base,
+    import_cap_cost_base,
     import_fix_cost_base,
     import_var_cost_base,
+    import_op_life_base,
     import_max_cap_invest_base,
     import_min_cap_invest_base,
     import_res_cap_base,
@@ -64,8 +66,10 @@ def main(
     iar_base: pd.DataFrame,
     oar_base: pd.DataFrame,
     capact_base: pd.DataFrame,
+    cap_cost_base: pd.DataFrame,
     fix_cost_base: pd.DataFrame,
     var_cost_base: pd.DataFrame,    
+    op_life_base: pd.DataFrame,
     max_cap_invest_base: pd.DataFrame,
     min_cap_invest_base: pd.DataFrame,
     res_cap_base: pd.DataFrame,
@@ -90,11 +94,12 @@ def main(
 
     
     # Set capital costs for storage.
-    cap_cost_storage = set_storage_capex_costs(storage_set, 
-                                               storage_parameters,
-                                               start_year,
-                                               end_year,
-                                               region_name)
+    cap_cost, cap_cost_storage = set_storage_capex_costs(storage_set, 
+                                                         storage_parameters,
+                                                         cap_cost_base,
+                                                         start_year,
+                                                         end_year,
+                                                         region_name)
     
     # Set fixed and variable operating costs for storage.
     fix_cost_storage, var_cost_storage = set_storage_operating_costs(storage_set,
@@ -114,7 +119,8 @@ def main(
     cap_activity_storage = create_storage_capacity_activity(storage_set, capact_base)
     
     # Set operational life for storage.
-    op_life_storage = set_op_life_storage(storage_set, default_op_life, region_name)
+    op_life, op_life_storage = set_op_life_storage(storage_set, default_op_life, 
+                                                   op_life_base, region_name)
     
     # Set annual capacity investment constraints.
     max_cap_invest_storage = cap_investment_constraints_sto(storage_set, 
@@ -144,6 +150,7 @@ def main(
          res_cap,
          res_cap_storage,
          oar_storage,
+         cap_cost,
          cap_cost_storage,
          fix_cost_storage, 
          var_cost_storage
@@ -156,6 +163,7 @@ def main(
             res_cap,
             res_cap_storage,
             oar_storage,
+            cap_cost,
             cap_cost_storage,
             fix_cost_storage, 
             var_cost_storage,
@@ -177,11 +185,13 @@ def main(
     cap_activity_storage.to_csv(os.path.join(output_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
     cap_cost_storage.to_csv(os.path.join(output_data_dir, "CapitalCostStorage.csv"), index = None)
+    cap_cost.to_csv(os.path.join(output_data_dir, "CapitalCost.csv"), index = None)
     
     fix_cost_storage.to_csv(os.path.join(output_data_dir, "FixedCost.csv"), index = None)
     var_cost_storage.to_csv(os.path.join(output_data_dir, "VariableCost.csv"), index = None)
     
     op_life_storage.to_csv(os.path.join(output_data_dir, "OperationalLifeStorage.csv"), index = None)
+    op_life.to_csv(os.path.join(output_data_dir, "OperationalLife.csv"), index = None)
     
     max_cap_invest_storage.to_csv(os.path.join(output_data_dir, 
                                             'TotalAnnualMaxCapacityInvestment.csv'),
@@ -231,9 +241,11 @@ if __name__ == "__main__":
         transmission_data_dir = snakemake.params.transmission_data_dir            
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
-        file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'  
+        file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv' 
+        file_cap_cost_base = f'{transmission_data_dir}/CapitalCost.csv'             
         file_fix_cost_base = f'{transmission_data_dir}/FixedCost.csv'
-        file_var_cost_base = f'{transmission_data_dir}/VariableCost.csv'        
+        file_var_cost_base = f'{transmission_data_dir}/VariableCost.csv'   
+        file_op_life_base = f'{transmission_data_dir}/OperationalLife.csv'          
         file_max_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
         file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
@@ -267,8 +279,10 @@ if __name__ == "__main__":
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
         file_capact_base = f'{transmission_data_dir}/CapacityToActivityUnit.csv'
+        file_cap_cost_base = f'{transmission_data_dir}/CapitalCost.csv'        
         file_fix_cost_base = f'{transmission_data_dir}/FixedCost.csv'
         file_var_cost_base = f'{transmission_data_dir}/VariableCost.csv'
+        file_op_life_base = f'{transmission_data_dir}/OperationalLife.csv'        
         file_max_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMaxCapacityInvestment.csv'
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
         file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
@@ -291,8 +305,10 @@ if __name__ == "__main__":
     iar_base = import_iar_base(file_iar_base)
     oar_base = import_oar_base(file_oar_base)
     capact_base = import_capact_base(file_capact_base)
+    cap_cost_base = import_cap_cost_base(file_cap_cost_base)    
     fix_cost_base = import_fix_cost_base(file_fix_cost_base)
-    var_cost_base = import_var_cost_base(file_var_cost_base)    
+    var_cost_base = import_var_cost_base(file_var_cost_base)
+    op_life_base = import_op_life_base(file_op_life_base)       
     max_cap_invest_base = import_max_cap_invest_base(file_max_cap_invest_base)
     min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
     res_cap_base = import_res_cap_base(file_res_cap_base)  
@@ -308,8 +324,10 @@ if __name__ == "__main__":
         "iar_base" : iar_base,
         "oar_base" : oar_base,
         "capact_base" : capact_base,
+        "cap_cost_base" : cap_cost_base,        
         "fix_cost_base" : fix_cost_base,
         "var_cost_base" : var_cost_base,
+        "op_life_base" : op_life_base,
         "max_cap_invest_base" : max_cap_invest_base,
         "min_cap_invest_base" : min_cap_invest_base,
         "res_cap_base" : res_cap_base, 

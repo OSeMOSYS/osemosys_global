@@ -12,7 +12,8 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
                                   max_cap_invest_base, 
                                   res_cap_base,
                                   res_cap_sto_base,
-                                  df_oar_base, 
+                                  df_oar_base,
+                                  cap_cost_base,
                                   cap_cost_sto_base, 
                                   fix_cost_base, 
                                   var_cost_base,
@@ -174,11 +175,24 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
     
     ''' Sets capital cost by taking the defined capital cost (m$/GW) divided by the storage 
     duration (=Storage Capacity (GWh)/Storage Power Rating (GW)) to get to GWh values followed 
-    by the conversion to PJ (1 GWh = 0.0036 PJ).'''
+    by the conversion to PJ (1 GWh = 0.0036 PJ). The resulting costs are divided by 2 to split
+    the costs of the overall technology between the charging/discharging component ('PWR') and
+    the storage component.'''
     for idx, tech_params in tech_capacity_sto.items():
           df_cap_cost_sto.loc[df_cap_cost_sto['STORAGE'] == 
                          tech_params[0].replace('PWR', ''),
-                         'VALUE'] = capex_dict[idx] / duration_dict[tech_params[0][3:6]] / 0.0036
+                         'VALUE'] = capex_dict[idx] / duration_dict[
+                             tech_params[0][3:6]] / 0.0036 / 2
+    
+    # Update CapitalCost with user-defined capex costs by storage technology
+    df_cap_cost = cap_cost_base.copy()
+    
+    ''' Sets capital cost by taking the defined capital cost (m$/GW) divided by 2 to split
+    the costs of the overall technology between the charging/discharging component ('PWR') and
+    the storage component.'''
+    for idx, tech_params in tech_capacity_sto.items():
+          df_cap_cost.loc[df_cap_cost['TECHNOLOGY'] == tech_params[0],
+                         'VALUE'] = capex_dict[idx] / 2
         
     # Update FixedCost with user-defined fixed costs by storage technology
     df_fix_cost = fix_cost_base.copy()
@@ -205,6 +219,7 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
            df_res_cap,
            df_res_sto_cap,
            df_oar, 
+           df_cap_cost, 
            df_cap_cost_sto,
            df_fix_cost,
            df_var_cost

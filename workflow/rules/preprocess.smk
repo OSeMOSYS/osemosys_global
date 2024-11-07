@@ -34,11 +34,11 @@ power_plant_files = [
     ]
 
 transmission_files = [
-    'CapitalCost',
+    'transmission/CapitalCost',
     'transmission/VariableCost',
     'transmission/FixedCost',
     'transmission/CapacityToActivityUnit',
-    'OperationalLife',
+    'transmission/OperationalLife',
     'transmission/TotalAnnualMaxCapacityInvestment',
     'transmission/TotalAnnualMinCapacityInvestment',
     'TotalTechnologyModelPeriodActivityUpperLimit',
@@ -50,10 +50,12 @@ transmission_files = [
     ]
     
 storage_files = [
+    'CapitalCost',
     'CapitalCostStorage',
     'FixedCost',
     'VariableCost',
     'CapacityToActivityUnit',
+    'OperationalLife',    
     'OperationalLifeStorage',
     'TotalAnnualMaxCapacityInvestment',
     'TotalAnnualMinCapacityInvestment',

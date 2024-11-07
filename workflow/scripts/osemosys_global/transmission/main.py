@@ -1,8 +1,6 @@
 import pandas as pd
 import os
 
-#os.chdir(r'C:\Users\maart\Github\osemosys_global\workflow\scripts\osemosys_global\transmission')
-
 from read import(
     import_gtd_existing,
     import_gtd_planned,
@@ -58,8 +56,6 @@ from residual_capacity import res_capacity_transmission
 from sets import(create_set_from_iterators, 
                  get_unique_fuels, 
                  get_unique_technologies)
-
-#os.chdir(r'C:\Users\maart\Github\osemosys_global')
 
 def main(
     default_op_life: dict[str, int],
@@ -190,13 +186,13 @@ def main(
     
     cap_activity.to_csv(os.path.join(transmission_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
-    cap_cost_trn.to_csv(os.path.join(output_data_dir, "CapitalCost.csv"), index = None)
+    cap_cost_trn.to_csv(os.path.join(transmission_data_dir, "CapitalCost.csv"), index = None)
     
     fix_cost_trn.to_csv(os.path.join(transmission_data_dir, "FixedCost.csv"), index = None)
     
     var_cost_trn.to_csv(os.path.join(transmission_data_dir, "VariableCost.csv"), index = None)    
     
-    op_life_trn.to_csv(os.path.join(output_data_dir, "OperationalLife.csv"), index = None)
+    op_life_trn.to_csv(os.path.join(transmission_data_dir, "OperationalLife.csv"), index = None)
     
     max_cap_invest_trn.to_csv(os.path.join(transmission_data_dir, 
                                             'TotalAnnualMaxCapacityInvestment.csv'),

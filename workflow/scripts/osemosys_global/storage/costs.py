@@ -7,8 +7,8 @@ from data import(
     )
 
 def set_storage_capex_costs(storage_set, storage_param, 
-                            start_year, end_year, 
-                            region_name):
+                            cap_cost_base, start_year, 
+                            end_year, region_name):
 
     capex_dict = {}
     duration_dict = {}
@@ -26,16 +26,34 @@ def set_storage_capex_costs(storage_set, storage_param,
         columns=["REGION", "STORAGE", "YEAR"]
     )
     
+    # CapitalCost
+    df_cap_cost = pd.DataFrame(
+        list(itertools.product([region_name], 'PWR' + storage_set['VALUE'].unique(), years)), 
+        columns=["REGION", "TECHNOLOGY", "YEAR"]
+    )
+        
     df_cap_cost_storage = df_cap_cost_storage.explode('YEAR').reset_index(drop = True)
+    df_cap_cost = df_cap_cost.explode('YEAR').reset_index(drop = True)
     
     ''' Sets capital cost by taking the defined capital cost (m$/GW) divided by the storage 
     duration (=Storage Capacity (GWh)/Storage Power Rating (GW)) to get to GWh values followed 
-    by the conversion to PJ (1 GWh = 0.0036 PJ).'''
+    by the conversion to PJ (1 GWh = 0.0036 PJ). The resulting costs are divided by 2 to split
+    the costs of the overall technology between the charging/discharging component ('PWR') and
+    the storage component.'''
     for tech, tech_params in storage_param.items():
         df_cap_cost_storage.loc[df_cap_cost_storage['STORAGE'].str.startswith(tech),
-                   'VALUE'] = capex_dict[tech] / duration_dict[tech] / 0.0036
+                   'VALUE'] = capex_dict[tech] / duration_dict[tech] / 0.0036 / 2
+        
+    ''' Sets capital cost by taking the defined capital cost (m$/GW) divided by 2 to split
+    the costs of the overall technology between the charging/discharging component ('PWR') and
+    the storage component.'''
+    for tech, tech_params in storage_param.items():
+        df_cap_cost.loc[df_cap_cost['TECHNOLOGY'].str[3:6] == tech,
+                   'VALUE'] = capex_dict[tech] / 2
     
-    return df_cap_cost_storage
+    df_cap_cost = pd.concat([cap_cost_base, df_cap_cost])
+    
+    return df_cap_cost, df_cap_cost_storage
 
 def set_storage_operating_costs(storage_set, storage_param,
                                 fom_base, var_base,
