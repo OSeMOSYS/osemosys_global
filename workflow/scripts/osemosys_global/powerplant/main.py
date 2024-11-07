@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 
+#os.chdir(r'C:\Users\maart\Github\osemosys_global\workflow\scripts\osemosys_global\powerplant')
+
 from read import(
     import_plexos_2015,
     import_weo_regions,
@@ -16,7 +18,12 @@ from read import(
 from constants import(
     DUPLICATE_TECHS,
     MODE_LIST,
-    RENEWABLES_LIST
+    RENEWABLES_LIST,
+    CMO_DATA_YEAR,
+    BIOMASS_VAR_COSTS,
+    NUCLEAR_VAR_COSTS,
+    WASTE_VAR_COSTS,
+    INT_COST_FACTOR
     )
 
 from data import(
@@ -56,6 +63,8 @@ from sets import(
 from user_defined_capacity import set_user_defined_capacity
 
 from availability import availability_factor
+
+#os.chdir(r'C:\Users\maart\Github\osemosys_global')
 
 def main(
     plexos_prop: pd.DataFrame,
@@ -181,8 +190,11 @@ def main(
                                       start_year, end_year, region_name)
 
     # Set variable costs. Occurs after set_user_defined_capacity as tech_set gets updated.    
-    df_var_cost_final = costs_var_pwr(cmo_forecasts, fuel_prices, tech_set,
-                                      start_year, end_year, region_name)
+    df_var_cost_final = costs_var_pwr(fuel_prices, tech_set,
+                                      start_year, end_year, region_name,
+                                      cmo_forecasts, CMO_DATA_YEAR, 
+                                      BIOMASS_VAR_COSTS, NUCLEAR_VAR_COSTS, 
+                                      WASTE_VAR_COSTS, INT_COST_FACTOR)
 
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
@@ -259,7 +271,7 @@ if __name__ == "__main__":
         file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
         file_weo_regions = 'resources/data/weo_region_mapping.csv'
         file_default_av_factors = 'resources/data/availability_factors.csv'  
-        file_cmo_forecasts = 'resources/data/CMO-April-2020-forecasts.xlsx'          
+        file_cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx'          
         file_fuel_prices = 'resources/data/fuel_prices.csv'          
         start_year = 2021
         end_year = 2050

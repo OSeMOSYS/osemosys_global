@@ -8,6 +8,21 @@ AVG_CSP_EFF = 1
 Relevant for the 'average_efficiency' function."""
 AVG_URN_EFF = 0.45
 
+"""Set the year for which data is taken to calculate 
+fuel prices/variable costs if to be retrieved from the 
+World Bank Commodity Price Forecasts (CMO)."""
+CMO_DATA_YEAR = 2023
+
+'''Set default variable cost for techs that do not exist in CMO 
+in m$/PJ ($/GJ).'''
+BIOMASS_VAR_COSTS = 10
+NUCLEAR_VAR_COSTS = 2
+WASTE_VAR_COSTS = 10
+
+'''Set the cost factor that scales fuel prices from domestic costs to 
+international costs with assumed costs for transportation and shipping.'''
+INT_COST_FACTOR = 1.3
+
 """Technologies that will have 00 and 01 suffixes to represent PLEXOS 
    historical values and future values. Relevant for the 'residual_capacity' 
    and activity functions."""

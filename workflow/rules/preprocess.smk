@@ -124,7 +124,7 @@ rule powerplant:
         naming_convention_tech = 'resources/data/naming_convention_tech.csv',
         default_av_factors = 'resources/data/availability_factors.csv',
         custom_res_cap = powerplant_cap_custom_csv(),
-        cmo_forecasts = 'resources/data/CMO-April-2020-forecasts.xlsx',
+        cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx',
         fuel_prices = 'resources/data/fuel_prices.csv',
     params:
         start_year = config['startYear'],
