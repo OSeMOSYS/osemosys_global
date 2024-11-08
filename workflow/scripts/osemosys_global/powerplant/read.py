@@ -24,6 +24,13 @@ def import_res_limit(f: str) -> pd.DataFrame:
     """
     return pd.read_excel(f, sheet_name = 'Properties')
 
+def import_build_rates(f: str) -> pd.DataFrame:
+    """Imports user defined build rates for powerplant technologies.
+    
+    powerplant_build_rates.csv
+    """
+    return pd.read_csv(f)
+
 def import_weo_regions(f: str) -> pd.DataFrame:
     """Imports WEO to OG region mapping.
     

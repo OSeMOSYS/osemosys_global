@@ -4,6 +4,7 @@ import os
 from read import(
     import_plexos_2015,
     import_res_limit,
+    import_build_rates,
     import_weo_regions,
     import_weo_costs,
     import_op_life,
@@ -56,7 +57,8 @@ from operational_life import set_op_life
 
 from investment_constraints import(
     cap_investment_constraints,
-    set_renewable_limits
+    set_renewable_limits,
+    set_build_rates
     )
 
 from sets import(
@@ -72,6 +74,7 @@ def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
     res_limit: pd.DataFrame,
+    build_rates: pd.DataFrame,
     weo_costs: pd.DataFrame,
     weo_regions: pd.DataFrame,
     default_op_life: pd.DataFrame,
@@ -204,7 +207,11 @@ def main(
                                            custom_nodes, custom_res_potentials,
                                            df_res_cap, start_year, 
                                            end_year, region_name)
-
+    
+    # Add user defined build rates to TotalAnnualMaxCapacityInvestment
+    df_max_cap_invest = set_build_rates(build_rates, tech_set, df_max_cap_invest, 
+                                        df_max_capacity, start_year, end_year, region_name)
+    
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -254,6 +261,7 @@ if __name__ == "__main__":
     if "snakemake" in globals():
         file_plexos = snakemake.input.plexos
         file_res_limit = snakemake.input.res_limit
+        file_build_rates = snakemake.input.build_rates
         file_default_op_life = snakemake.input.default_op_life
         file_naming_convention_tech = snakemake.input.naming_convention_tech
         file_weo_costs = snakemake.input.weo_costs
@@ -282,6 +290,7 @@ if __name__ == "__main__":
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
         file_res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
+        file_build_rates = 'resources/data/powerplant_build_rates.csv'        
         file_default_op_life = 'resources/data/operational_life.csv'
         file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
         file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
@@ -310,6 +319,7 @@ if __name__ == "__main__":
     plexos_memb = import_plexos_2015(file_plexos, "memb")
     
     res_limit = import_res_limit(file_res_limit)
+    build_rates = import_build_rates(file_build_rates)
     
     op_life = import_op_life(file_default_op_life)
     
@@ -341,6 +351,7 @@ if __name__ == "__main__":
         "plexos_prop": plexos_prop,
         "plexos_memb": plexos_memb,
         "res_limit" : res_limit,
+        "build_rates" : build_rates,
         "weo_costs": weo_costs,
         "weo_regions": weo_regions,
         "default_op_life": op_life_dict,

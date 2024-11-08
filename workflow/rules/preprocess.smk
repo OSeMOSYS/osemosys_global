@@ -145,6 +145,7 @@ rule powerplant:
     input:
         plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
         res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
+        build_rates = 'resources/data/powerplant_build_rates.csv',        
         weo_costs = 'resources/data/weo_2020_powerplant_costs.csv',
         weo_regions = 'resources/data/weo_region_mapping.csv',
         default_op_life = 'resources/data/operational_life.csv',

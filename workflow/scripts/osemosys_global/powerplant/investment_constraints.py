@@ -1,6 +1,6 @@
-"""Function to set min and max capacity investment constraints."""
-
+"""Functions to set powerplant investment constraints."""
 import pandas as pd
+import itertools
 
 from data import(
     get_years,
@@ -95,12 +95,12 @@ def set_renewable_limits(res_limits, tech_code_dict,
         for year in years:
             out_data.append([region_name, tech, year, max_capacity])
 
-    df_max_capacity = pd.DataFrame(
+    df_max_cap_investacity = pd.DataFrame(
         out_data, columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"]
     )
-    df_max_capacity.dropna(inplace=True)
+    df_max_cap_investacity.dropna(inplace=True)
     
-    return df_max_capacity
+    return df_max_cap_investacity
 
 def cap_investment_constraints(df_iar_final, no_investment_techs,
                                start_year, end_year, region_name):
@@ -127,13 +127,68 @@ def cap_investment_constraints(df_iar_final, no_investment_techs,
             max_cap_invest_data.append([region_name, tech, year, 0])
     
     # Save totalAnnualMaxCapacityInvestment
-    df_max_cap_invest = pd.DataFrame(max_cap_invest_data,
+    df_max_cap_invest_invest = pd.DataFrame(max_cap_invest_data,
                                     columns = ['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']
                                     )
-    df_max_cap_invest = apply_dtypes(df_max_cap_invest, "TotalAnnualMaxCapacityInvestment")
+    df_max_cap_invest_invest = apply_dtypes(df_max_cap_invest_invest, "TotalAnnualMaxCapacityInvestment")
 
     df_min_cap_invest = pd.DataFrame(columns = ['REGION', 'TECHNOLOGY', 'YEAR', 'VALUE']
                                     )
     df_min_cap_invest = apply_dtypes(df_min_cap_invest, "TotalAnnualMinCapacityInvestment")
 
-    return df_max_cap_invest, df_min_cap_invest
+    return df_max_cap_invest_invest, df_min_cap_invest
+
+def set_build_rates(build_rates, tech_set, max_cap_invest, 
+                    max_cap, start_year, end_year, region_name):
+    
+    years = get_years(start_year, end_year)
+    
+    max_build_df = build_rates.loc[
+        build_rates.index.repeat(
+            build_rates["END_YEAR"] + 1 - build_rates["START_YEAR"])]
+    
+    max_build_df["YEAR"] = (
+        max_build_df.groupby(level=0).cumcount() + max_build_df["START_YEAR"]
+    )
+    
+    max_build_df = max_build_df.reset_index(drop=True)
+    max_build_df = max_build_df[["TYPE", "METHOD", "MAX_BUILD", "YEAR", "COUNTRY"]]
+    max_build_df["TYPE"] = max_build_df["TYPE"].str[0:3]
+    # Create a list of powerplant technologies
+    pwr_tech_list = [x for x in list(tech_set["VALUE"]) if x.startswith("PWR")]
+
+    # Create scaffold dataframe with all powerplant technologies for all years
+    df_techs = pd.DataFrame(
+        list(itertools.product(pwr_tech_list, years)), columns=["TECHNOLOGY", "YEAR"]
+    )
+
+    # Filter out technologies for which a max. capacity investment has already
+    # been set
+    max_cap_inv_techs = list(max_cap_invest["TECHNOLOGY"].unique())
+    df_techs = df_techs[~(df_techs["TECHNOLOGY"].isin(max_cap_inv_techs))]
+
+    # Create dataframe of max capacity by technology
+    df_max_cap_invest = max_cap.loc[max_cap["TECHNOLOGY"].str.startswith("PWR")]
+
+    df_max_cap_invest = pd.merge(
+        left=df_techs, right=df_max_cap_invest, on=["TECHNOLOGY", "YEAR"], how="left"
+    )
+    df_max_cap_invest["REGION"] = region_name
+    df_max_cap_invest["TYPE"] = df_max_cap_invest["TECHNOLOGY"].str[3:6]
+    df_max_cap_invest["COUNTRY"] = df_max_cap_invest["TECHNOLOGY"].str[6:9]
+    df_max_cap_invest = pd.merge(
+        left=df_max_cap_invest, right=max_build_df, on=["TYPE", "COUNTRY", "YEAR"], how="left"
+    )
+    df_max_cap_invest.loc[df_max_cap_invest["METHOD"].isin(["ABS"]), "VALUE"] = df_max_cap_invest[
+        "MAX_BUILD"
+    ]
+    df_max_cap_invest.dropna(inplace=True)
+    df_max_cap_invest.loc[df_max_cap_invest["METHOD"].isin(["PCT"]), "VALUE"] = (
+        df_max_cap_invest["VALUE"] * df_max_cap_invest["MAX_BUILD"] / 100
+    )
+
+    df_max_cap_invest = df_max_cap_invest[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
+    df_max_cap_invest = pd.concat([max_cap_invest, df_max_cap_invest], ignore_index=True)
+    df_max_cap_invest["VALUE"] = df_max_cap_invest["VALUE"].astype(float).round(3)
+    
+    return df_max_cap_invest
