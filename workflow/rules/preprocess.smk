@@ -30,7 +30,8 @@ power_plant_files = [
     'powerplant/ResidualCapacity',
     'powerplant/TECHNOLOGY',
     'YEAR',
-    'AvailabilityFactor'
+    'AvailabilityFactor',
+    'TotalAnnualMaxCapacity'
     ]
 
 transmission_files = [
@@ -102,7 +103,6 @@ emission_files = [
 ]
 
 max_capacity_files = [
-    'TotalAnnualMaxCapacity',
     'TotalTechnologyAnnualActivityUpperLimit',
     'AccumulatedAnnualDemand',
 #    'TotalTechnologyModelPeriodActivityUpperLimit'
@@ -131,19 +131,27 @@ def powerplant_cap_custom_csv() -> str:
     if config["nodes_to_add"]:
         return "resources/data/custom_nodes/residual_capacity.csv"
     else:
-        return []   
+        return []
+        
+def powerplant_res_potentials_custom_csv() -> str:
+    if config["nodes_to_add"]:
+        return "resources/data/custom_nodes/RE_potentials.csv"
+    else:
+        return []
         
 rule powerplant:
     message:
         "Generating powerplant data..."
     input:
         plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
         weo_costs = 'resources/data/weo_2020_powerplant_costs.csv',
         weo_regions = 'resources/data/weo_region_mapping.csv',
         default_op_life = 'resources/data/operational_life.csv',
         naming_convention_tech = 'resources/data/naming_convention_tech.csv',
         default_av_factors = 'resources/data/availability_factors.csv',
         custom_res_cap = powerplant_cap_custom_csv(),
+        custom_res_potentials = powerplant_res_potentials_custom_csv(),
         cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx',
         fuel_prices = 'resources/data/fuel_prices.csv',
     params:
@@ -335,7 +343,6 @@ rule max_capacity:
     message: 
         'Generating capacity limits...'
     input:
-        'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
         'results/data/ResidualCapacity.csv',
         'results/data/SpecifiedAnnualDemand.csv'
     params:

@@ -144,6 +144,13 @@ GEM_GAS_DICT = {'CC' : 'CCG',
                 'ST' : 'OCG',
                 'AFC' : 'CCG'}
 
+"""Set technology dictionary to match with OSeMOSYS global technologies"""
+PW2050_TECH_DICT = {'Hydro' : 'HYD', 
+                    'Solar|CSP' : 'CSP',
+                    'Solar|PV' : 'SPV',
+                    'Wind|Onshore' : 'WON',
+                    'Wind|Offshore' : 'WOF'}
+
 SET_DTYPES = {
     "DAILYTIMEBRACKET": int,
     "EMISSION":str,

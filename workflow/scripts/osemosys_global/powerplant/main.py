@@ -3,12 +3,14 @@ import os
 
 from read import(
     import_plexos_2015,
+    import_res_limit,
     import_weo_regions,
     import_weo_costs,
     import_op_life,
     import_naming_convention_tech,
     import_afs,
     import_custom_res_cap,
+    import_custom_res_potentials,
     import_cmo_forecasts,
     import_fuel_prices
 )
@@ -21,7 +23,8 @@ from constants import(
     BIOMASS_VAR_COSTS,
     NUCLEAR_VAR_COSTS,
     WASTE_VAR_COSTS,
-    INT_COST_FACTOR
+    INT_COST_FACTOR,
+    PW2050_TECH_DICT
     )
 
 from data import(
@@ -51,7 +54,10 @@ from costs import(
 
 from operational_life import set_op_life
 
-from investment_constraints import cap_investment_constraints
+from investment_constraints import(
+    cap_investment_constraints,
+    set_renewable_limits
+    )
 
 from sets import(
     create_sets,
@@ -65,6 +71,7 @@ from availability import availability_factor
 def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
+    res_limit: pd.DataFrame,
     weo_costs: pd.DataFrame,
     weo_regions: pd.DataFrame,
     default_op_life: pd.DataFrame,
@@ -191,6 +198,12 @@ def main(
                                       cmo_forecasts, CMO_DATA_YEAR, 
                                       BIOMASS_VAR_COSTS, NUCLEAR_VAR_COSTS, 
                                       WASTE_VAR_COSTS, INT_COST_FACTOR)
+    
+    # Set total max capacity (potential - residuals) for renewable technologies.
+    df_max_capacity = set_renewable_limits(res_limit, PW2050_TECH_DICT,
+                                           custom_nodes, custom_res_potentials,
+                                           df_res_cap, start_year, 
+                                           end_year, region_name)
 
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
@@ -224,6 +237,10 @@ def main(
     
     # OUTPUT CSV's NOT USED AS INPUT FOR TRANMISSION RULE
     
+    df_max_capacity.to_csv(os.path.join(output_data_dir, 
+                                        "TotalAnnualMaxCapacity.csv"), 
+                           index = None)
+    
     df_af_final.to_csv(os.path.join(output_data_dir, 'AvailabilityFactor.csv'), index=None)
     
     years_set.to_csv(os.path.join(output_data_dir, "YEAR.csv"), index = None)
@@ -236,6 +253,7 @@ if __name__ == "__main__":
     
     if "snakemake" in globals():
         file_plexos = snakemake.input.plexos
+        file_res_limit = snakemake.input.res_limit
         file_default_op_life = snakemake.input.default_op_life
         file_naming_convention_tech = snakemake.input.naming_convention_tech
         file_weo_costs = snakemake.input.weo_costs
@@ -255,6 +273,7 @@ if __name__ == "__main__":
         
         if custom_nodes:
             file_custom_res_cap = snakemake.input.custom_res_cap
+            file_custom_res_potentials = snakemake.input.custom_res_potentials
             
     # The below else statement defines variables if the 'powerplant/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
@@ -262,6 +281,7 @@ if __name__ == "__main__":
             
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
+        file_res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
         file_default_op_life = 'resources/data/operational_life.csv'
         file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
         file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
@@ -282,11 +302,15 @@ if __name__ == "__main__":
         powerplant_data_dir = 'results/data/powerplant'
         
         if custom_nodes:
-            file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv' 
+            file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv'
+            file_custom_res_potentials = 'resources/data/custom_nodes/RE_potentials.csv' 
 
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
     plexos_memb = import_plexos_2015(file_plexos, "memb")
+    
+    res_limit = import_res_limit(file_res_limit)
+    
     op_life = import_op_life(file_default_op_life)
     
     op_life_dict = dict(zip(list(op_life['tech']),
@@ -308,12 +332,15 @@ if __name__ == "__main__":
     
     if custom_nodes:
         custom_res_cap = import_custom_res_cap(file_custom_res_cap)
+        custom_res_potentials = import_custom_res_potentials(file_custom_res_potentials)
     else:
         custom_res_cap = []
+        custom_res_potentials = []
     
     input_data = {
         "plexos_prop": plexos_prop,
         "plexos_memb": plexos_memb,
+        "res_limit" : res_limit,
         "weo_costs": weo_costs,
         "weo_regions": weo_regions,
         "default_op_life": op_life_dict,

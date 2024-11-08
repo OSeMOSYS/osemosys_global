@@ -21,8 +21,6 @@ def set_reserve_margin_technologies(margins_technologies,
                 if x.startswith("TRN")
                 ]
     
-    '''Check if generator/storage tech is added to the config to 
-    contribute to reserves and develop outputs.'''
         else:
             rm_techs = [
                 x
