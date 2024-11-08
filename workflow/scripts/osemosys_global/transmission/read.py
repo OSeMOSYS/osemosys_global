@@ -96,6 +96,14 @@ def import_min_cap_invest_base(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
+def import_model_period_activity_upper_limit_base(f: str) -> pd.DataFrame:
+    """Imports TotalTechnologyModelPeriodActivityUpperLimit.csv as output from the 
+    Powerplant rule.
+    
+    TotalTechnologyModelPeriodActivityUpperLimit.csv
+    """
+    return pd.read_csv(f)
+
 def import_res_cap_base(f: str) -> pd.DataFrame:
     """Imports ResidualCapacity.csv as output from the Powerplant rule.
     

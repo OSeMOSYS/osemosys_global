@@ -31,7 +31,10 @@ power_plant_files = [
     'powerplant/TECHNOLOGY',
     'YEAR',
     'AvailabilityFactor',
-    'TotalAnnualMaxCapacity'
+    'TotalAnnualMaxCapacity',
+    'TotalTechnologyAnnualActivityUpperLimit',
+    'powerplant/TotalTechnologyModelPeriodActivityUpperLimit'
+    
     ]
 
 transmission_files = [
@@ -103,9 +106,7 @@ emission_files = [
 ]
 
 max_capacity_files = [
-    'TotalTechnologyAnnualActivityUpperLimit',
     'AccumulatedAnnualDemand',
-#    'TotalTechnologyModelPeriodActivityUpperLimit'
 ]
 
 user_capacity_files = [
@@ -145,6 +146,7 @@ rule powerplant:
     input:
         plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
         res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
+        fuel_limit = 'resources/data/fuel_limits.csv',
         build_rates = 'resources/data/powerplant_build_rates.csv',        
         weo_costs = 'resources/data/weo_2020_powerplant_costs.csv',
         weo_regions = 'resources/data/weo_region_mapping.csv',

@@ -4,6 +4,7 @@ import os
 from read import(
     import_plexos_2015,
     import_res_limit,
+    import_fuel_limit,
     import_build_rates,
     import_weo_regions,
     import_weo_costs,
@@ -44,7 +45,9 @@ from activity import(
     activity_input_pwr,
     activity_upstream,
     activity_master_end,
-    capact
+    capact,
+    set_annual_activity_upper_limit,
+    set_model_period_activity_upper_limit
     )
 
 from costs import(
@@ -74,6 +77,7 @@ def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
     res_limit: pd.DataFrame,
+    fuel_limit: pd.DataFrame,
     build_rates: pd.DataFrame,
     weo_costs: pd.DataFrame,
     weo_regions: pd.DataFrame,
@@ -115,6 +119,10 @@ def main(
                                                      df_oar_int, df_pwr_iar_final, 
                                                      DUPLICATE_TECHS)
     
+    # Set TotalTechnologyAnnualActivityUpperLimit based on user defined fuel limits.
+    df_annual_activity_upper_limit = set_annual_activity_upper_limit(fuel_limit,  start_year, 
+                                                                     end_year, region_name)
+        
     # Set capital and fixed powerplant costs.
     df_costs = costs_pwr(weo_costs)
     
@@ -212,6 +220,10 @@ def main(
     df_max_cap_invest = set_build_rates(build_rates, tech_set, df_max_cap_invest, 
                                         df_max_capacity, start_year, end_year, region_name)
     
+    # Set TotalTechnologyAnnualActivityUpperLimit based on user defined fuel limits.
+    df_model_period_activity_upper_limit = set_model_period_activity_upper_limit(tech_set,
+                                                                                 region_name)
+    
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -238,6 +250,9 @@ def main(
                                             'TotalAnnualMinCapacityInvestment.csv'),
                                         index = None)
     
+    df_model_period_activity_upper_limit.to_csv(os.path.join(
+        powerplant_data_dir, "TotalTechnologyModelPeriodActivityUpperLimit.csv"), index=None)
+    
     tech_set.to_csv(os.path.join(powerplant_data_dir, "TECHNOLOGY.csv"), index = None)
     
     fuel_set.to_csv(os.path.join(powerplant_data_dir, "FUEL.csv"), index = None)
@@ -247,6 +262,9 @@ def main(
     df_max_capacity.to_csv(os.path.join(output_data_dir, 
                                         "TotalAnnualMaxCapacity.csv"), 
                            index = None)
+    
+    df_annual_activity_upper_limit.to_csv(os.path.join(
+        output_data_dir, "TotalTechnologyAnnualActivityUpperLimit.csv"), index=None)
     
     df_af_final.to_csv(os.path.join(output_data_dir, 'AvailabilityFactor.csv'), index=None)
     
@@ -261,6 +279,7 @@ if __name__ == "__main__":
     if "snakemake" in globals():
         file_plexos = snakemake.input.plexos
         file_res_limit = snakemake.input.res_limit
+        file_fuel_limit = snakemake.input.fuel_limit
         file_build_rates = snakemake.input.build_rates
         file_default_op_life = snakemake.input.default_op_life
         file_naming_convention_tech = snakemake.input.naming_convention_tech
@@ -290,6 +309,7 @@ if __name__ == "__main__":
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
         file_res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
+        file_fuel_limit = 'resources/data/fuel_limits.csv'
         file_build_rates = 'resources/data/powerplant_build_rates.csv'        
         file_default_op_life = 'resources/data/operational_life.csv'
         file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
@@ -319,6 +339,7 @@ if __name__ == "__main__":
     plexos_memb = import_plexos_2015(file_plexos, "memb")
     
     res_limit = import_res_limit(file_res_limit)
+    fuel_limit = import_fuel_limit(file_fuel_limit)
     build_rates = import_build_rates(file_build_rates)
     
     op_life = import_op_life(file_default_op_life)
@@ -351,6 +372,7 @@ if __name__ == "__main__":
         "plexos_prop": plexos_prop,
         "plexos_memb": plexos_memb,
         "res_limit" : res_limit,
+        "fuel_limit" : fuel_limit,
         "build_rates" : build_rates,
         "weo_costs": weo_costs,
         "weo_regions": weo_regions,

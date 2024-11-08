@@ -127,7 +127,8 @@ def activity_transmission(df_iar_base, df_oar_base, df_eff,
     
     return df_iar_trn_final, df_oar_trn_final
 
-def activity_transmission_limit(cross_border_trade, df_oar_trn_final):
+def activity_transmission_limit(cross_border_trade, df_oar_trn_final, 
+                                df_model_period_activity_upper_limit_base):
 
     # Set cross-border trade to 0 if False
     if not cross_border_trade:
@@ -148,6 +149,9 @@ def activity_transmission_limit(cross_border_trade, df_oar_trn_final):
 
     df_crossborder_final = apply_dtypes(df_crossborder_final, 
                                         "TotalTechnologyModelPeriodActivityUpperLimit")
+    
+    df_crossborder_final = pd.concat([df_model_period_activity_upper_limit_base, 
+                                      df_crossborder_final])
     
     return df_crossborder_final
 

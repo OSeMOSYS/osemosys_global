@@ -15,133 +15,15 @@ def main():
     config_paths = ConfigPaths()
     config = ConfigFile("config")
 
-    input_dir = config_paths.input_dir
     output_data_dir = config_paths.output_data_dir
     region = config.region_name
     years = config.get_years()
     remove_nodes = config.get("nodes_to_remove")
-    max_build = config.get("powerplant_build_rates")
-    max_fuel = config.get("fuel_limits")
     calibration = config.get("calibration")
     re_targets = config.get("re_targets")
     
-    apply_build_rates(region, years, output_data_dir, input_dir, max_build)
-    apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel)
     apply_calibration(region, years, output_data_dir, calibration)
     apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes)
-
-def apply_build_rates(region, years, output_data_dir, input_dir, max_build):
-    max_build_df = pd.read_csv(
-        os.path.join(input_dir, "data", "powerplant_build_rates.csv")
-    )
-    max_build_df = max_build_df.loc[
-        max_build_df.index.repeat(
-            max_build_df["END_YEAR"] + 1 - max_build_df["START_YEAR"]
-        )
-    ]
-    max_build_df["YEAR"] = (
-        max_build_df.groupby(level=0).cumcount() + max_build_df["START_YEAR"]
-    )
-    max_build_df = max_build_df.reset_index(drop=True)
-    max_build_df = max_build_df[["TYPE", "METHOD", "MAX_BUILD", "YEAR", "COUNTRY"]]
-    max_build_df["TYPE"] = max_build_df["TYPE"].str[0:3]
-    # Create a list of powerplant technologies
-    tech_set = pd.read_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"))
-    pwr_tech_list = [x for x in list(tech_set["VALUE"]) if x.startswith("PWR")]
-
-    # Create scaffold dataframe with all powerplant technologies for all years
-    df_techs = pd.DataFrame(
-        list(itertools.product(pwr_tech_list, years)), columns=["TECHNOLOGY", "YEAR"]
-    )
-
-    # Filter out technologies for which a max. capacity investment has already
-    # been set
-    df_max_cap_inv = pd.read_csv(
-        os.path.join(output_data_dir, "TotalAnnualMaxCapacityInvestment.csv")
-    )
-    max_cap_inv_techs = list(df_max_cap_inv["TECHNOLOGY"].unique())
-    df_techs = df_techs[~(df_techs["TECHNOLOGY"].isin(max_cap_inv_techs))]
-
-    # Create dataframe of max capacity by technology
-    if os.path.isfile(os.path.join(output_data_dir, "TotalAnnualMaxCapacity.csv")):
-        df_max_cap = pd.read_csv(
-            os.path.join(output_data_dir, "TotalAnnualMaxCapacity.csv")
-        )
-        df_max_cap = df_max_cap.loc[df_max_cap["TECHNOLOGY"].str.startswith("PWR")]
-    else:
-        df_max_cap = pd.DataFrame(columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"])
-    df_max_cap = pd.merge(
-        left=df_techs, right=df_max_cap, on=["TECHNOLOGY", "YEAR"], how="left"
-    )
-    df_max_cap["REGION"] = region
-    df_max_cap["TYPE"] = df_max_cap["TECHNOLOGY"].str[3:6]
-    df_max_cap["COUNTRY"] = df_max_cap["TECHNOLOGY"].str[6:9]
-    df_max_cap = pd.merge(
-        left=df_max_cap, right=max_build_df, on=["TYPE", "COUNTRY", "YEAR"], how="left"
-    )
-    df_max_cap.loc[df_max_cap["METHOD"].isin(["ABS"]), "VALUE"] = df_max_cap[
-        "MAX_BUILD"
-    ]
-    df_max_cap.dropna(inplace=True)
-    df_max_cap.loc[df_max_cap["METHOD"].isin(["PCT"]), "VALUE"] = (
-        df_max_cap["VALUE"] * df_max_cap["MAX_BUILD"] / 100
-    )
-
-    df_max_cap = df_max_cap[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
-    df_max_cap = pd.concat([df_max_cap_inv, df_max_cap], ignore_index=True)
-    df_max_cap["VALUE"] = df_max_cap["VALUE"].astype(float).round(3)
-    df_max_cap.to_csv(
-        os.path.join(output_data_dir, "TotalAnnualMaxCapacityInvestment.csv"),
-        index=None,
-    )
-
-
-def apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel):
-
-    mf_df = pd.read_csv(os.path.join(input_dir, "data", "fuel_limits.csv"))
-    mf_df["TECHNOLOGY"] = "MIN" + mf_df["FUEL"] + mf_df["COUNTRY"]
-    mf_df = mf_df[["TECHNOLOGY", "YEAR", "VALUE"]]
-
-    tech_list = mf_df["TECHNOLOGY"].unique()
-    mf_df_final = pd.DataFrame(
-        list(itertools.product(tech_list, years)), columns=["TECHNOLOGY", "YEAR"]
-    )
-    mf_df_final = pd.merge(mf_df_final, mf_df, how="left", on=["TECHNOLOGY", "YEAR"])
-    mf_df_final["VALUE"] = mf_df_final["VALUE"].astype(float)
-    for each_tech in tech_list:
-        mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"] = (
-            mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"]
-            .interpolate()
-            .round(0)
-        )
-
-    mf_df_final["REGION"] = region
-    mf_df_final = mf_df_final[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
-    mf_df_final.dropna(inplace=True)
-    mf_df_final.to_csv(
-        os.path.join(output_data_dir, "TotalTechnologyAnnualActivityUpperLimit.csv"),
-        index=None,
-    )
-
-    # Model Period Activity Upper Limit for 'MINCOA***01'
-    min_tech_df = pd.read_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"))
-    min_tech = [
-        x
-        for x in min_tech_df["VALUE"].unique()
-        if x.startswith("MINCOA")
-        if x.endswith("01")
-    ]
-    min_tech_df_final = pd.DataFrame(columns=["REGION", "TECHNOLOGY", "VALUE"])
-    min_tech_df_final["TECHNOLOGY"] = min_tech
-    min_tech_df_final["REGION"] = region
-    min_tech_df_final["VALUE"] = 0
-    min_tech_df_final.to_csv(
-        os.path.join(
-            output_data_dir, "TotalTechnologyModelPeriodActivityUpperLimit.csv"
-        ),
-        index=None,
-    )
-
 
 def apply_calibration(region, years, output_data_dir, calibration):
 
