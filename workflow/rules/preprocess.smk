@@ -33,8 +33,8 @@ power_plant_files = [
     'AvailabilityFactor',
     'TotalAnnualMaxCapacity',
     'TotalTechnologyAnnualActivityUpperLimit',
-    'powerplant/TotalTechnologyModelPeriodActivityUpperLimit'
-    
+    'powerplant/TotalTechnologyModelPeriodActivityUpperLimit',
+    'AccumulatedAnnualDemand'
     ]
 
 transmission_files = [
@@ -105,9 +105,9 @@ emission_files = [
     'AnnualEmissionLimit'
 ]
 
-max_capacity_files = [
-    'AccumulatedAnnualDemand',
-]
+#max_capacity_files = [
+#    'AccumulatedAnnualDemand',
+#]
 
 user_capacity_files = [
     'TotalAnnualMinCapacityInvestment',
@@ -116,7 +116,7 @@ user_capacity_files = [
 
 GENERATED_CSVS = (
     power_plant_files + transmission_files + storage_files + timeslice_files \
-    + reserves_files + demand_files + emission_files + max_capacity_files
+    + reserves_files + demand_files + emission_files# + max_capacity_files
 )
 GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
 EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
@@ -127,6 +127,35 @@ rule make_data_dir:
     output: directory('results/data')
     shell: 'mkdir -p {output}'
 
+def demand_custom_csv() -> str:
+    if config["nodes_to_add"]:
+        return "resources/data/custom_nodes/specified_annual_demand.csv"
+    else:
+        return []
+
+rule demand_projections:
+    message:
+        "Generating demand data..."
+    input:
+        plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx",
+        plexos_demand = "resources/data/All_Demand_UTC_2015.csv",
+        iamc_gdp ="resources/data/iamc_db_GDPppp_Countries.xlsx",
+        iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
+        iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
+        iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
+        td_losses = "resources/data/T&D Losses.xlsx",
+        ember = "resources/data/ember_yearly_electricity_data.csv",
+        custom_nodes = demand_custom_csv()
+    params:
+        start_year = config['startYear'],
+        end_year = config['endYear'],
+        custom_nodes = config["nodes_to_add"]
+    output:
+        csv_files = 'results/data/SpecifiedAnnualDemand.csv',
+    log:
+        log = 'results/logs/demand_projections.log'
+    script:
+        "../scripts/osemosys_global/demand/main.py"
      
 def powerplant_cap_custom_csv() -> str:
     if config["nodes_to_add"]:
@@ -144,6 +173,7 @@ rule powerplant:
     message:
         "Generating powerplant data..."
     input:
+        rules.demand_projections.output.csv_files,
         plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
         res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
         fuel_limit = 'resources/data/fuel_limits.csv',
@@ -162,8 +192,10 @@ rule powerplant:
         end_year = config['endYear'],
         region_name = 'GLOBAL',
         custom_nodes = config['nodes_to_add'],
+        remove_nodes = config['nodes_to_remove'],
         user_defined_capacity = config['user_defined_capacity'],
         no_investment_techs = config['no_invest_technologies'],
+        res_targets = config['re_targets'],
         output_data_dir = 'results/data',
         input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',
@@ -276,36 +308,6 @@ rule reserves:
     script:
         "../scripts/osemosys_global/reserves/main.py"       
 
-def demand_custom_csv() -> str:
-    if config["nodes_to_add"]:
-        return "resources/data/custom_nodes/specified_annual_demand.csv"
-    else:
-        return []
-
-rule demand_projections:
-    message:
-        "Generating demand data..."
-    input:
-        plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx",
-        plexos_demand = "resources/data/All_Demand_UTC_2015.csv",
-        iamc_gdp ="resources/data/iamc_db_GDPppp_Countries.xlsx",
-        iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
-        iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
-        iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
-        td_losses = "resources/data/T&D Losses.xlsx",
-        ember = "resources/data/ember_yearly_electricity_data.csv",
-        custom_nodes = demand_custom_csv()
-    params:
-        start_year = config['startYear'],
-        end_year = config['endYear'],
-        custom_nodes = config["nodes_to_add"]
-    output:
-        csv_files = 'results/data/SpecifiedAnnualDemand.csv',
-    log:
-        log = 'results/logs/demand_projections.log'
-    script:
-        "../scripts/osemosys_global/demand/main.py"
-
 rule demand_projection_figures:
     message:
         "Generating demand figures..."
@@ -342,21 +344,21 @@ rule emissions:
     shell:
         'python workflow/scripts/osemosys_global/emissions.py 2> {log}'
 
-rule max_capacity:
-    message: 
-        'Generating capacity limits...'
-    input:
-        'results/data/ResidualCapacity.csv',
-        'results/data/SpecifiedAnnualDemand.csv'
-    params:
-        start_year = config['startYear'],
-        end_year = config['endYear'],
-    output:
-        csv_files = expand('results/data/{output_file}.csv', output_file = max_capacity_files),
-    log:
-        log = 'results/logs/max_capacity.log'
-    shell:
-        'python workflow/scripts/osemosys_global/max_capacity.py 2> {log}'
+#rule max_capacity:
+#    message: 
+#        'Generating capacity limits...'
+#    input:
+#        'results/data/ResidualCapacity.csv',
+#        'results/data/SpecifiedAnnualDemand.csv'
+#    params:
+#        start_year = config['startYear'],
+#        end_year = config['endYear'],
+#    output:
+#        csv_files = expand('results/data/{output_file}.csv', output_file = max_capacity_files),
+#    log:
+#        log = 'results/logs/max_capacity.log'
+#    shell:
+#        'python workflow/scripts/osemosys_global/max_capacity.py 2> {log}'
 
 rule create_missing_csv:
     message:

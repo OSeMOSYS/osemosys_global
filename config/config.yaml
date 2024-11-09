@@ -21,6 +21,7 @@ timeshift: 0 # value between -11 and 12
 # Spatial Parameters 
 geographic_scope:
   - "IND"
+  - "MMR"  
 
 crossborderTrade: True
 
@@ -201,4 +202,5 @@ re_targets:
 # where "IND" is the country code; 2030, 2040 are the start and end years
 # respectively; and 30 is the target between the start and end years (inclusive)
 # in %
- - ["IND", 2030, 2040, 30]
+  T01: ["IND", 2030, 2040, 30]
+  T02: ["MMR", 2041, 2050, 80]

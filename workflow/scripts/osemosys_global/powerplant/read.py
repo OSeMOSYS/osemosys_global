@@ -101,3 +101,10 @@ def import_fuel_prices(f: str) -> pd.DataFrame:
     fuel_prices.csv
     """
     return pd.read_csv(f)
+
+def import_specified_annual_demand(f: str) -> pd.DataFrame:
+    """Imports SpecifiedAnnualDemand.csv as output from the demand_projections rule.
+    
+    SpecifiedAnnualDemand.csv
+    """
+    return pd.read_csv(f)

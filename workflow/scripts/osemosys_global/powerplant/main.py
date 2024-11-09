@@ -14,7 +14,8 @@ from read import(
     import_custom_res_cap,
     import_custom_res_potentials,
     import_cmo_forecasts,
-    import_fuel_prices
+    import_fuel_prices,
+    import_specified_annual_demand,
 )
 
 from constants import(
@@ -73,6 +74,8 @@ from user_defined_capacity import set_user_defined_capacity
 
 from availability import availability_factor
 
+from renewable_targets import apply_re_targets
+
 def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
@@ -89,6 +92,7 @@ def main(
     default_av_factors: pd.DataFrame,
     cmo_forecasts: pd.DataFrame,
     fuel_prices: pd.DataFrame,
+    annual_demand: pd.DataFrame,
 ):
     
     # CALL FUNCTIONS
@@ -224,6 +228,16 @@ def main(
     df_model_period_activity_upper_limit = set_model_period_activity_upper_limit(tech_set,
                                                                                  region_name)
     
+    # Set OAR, FUEL and AccumulatedAnnualDemand based on user defined RES generation targets.
+    fuel_set, df_oar_final, df_accumulated_annual_demand = apply_re_targets(res_targets, 
+                                                                            remove_nodes, 
+                                                                            df_oar_final, 
+                                                                            fuel_set, 
+                                                                            annual_demand, 
+                                                                            start_year, 
+                                                                            end_year, 
+                                                                            region_name)
+    
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -266,6 +280,10 @@ def main(
     df_annual_activity_upper_limit.to_csv(os.path.join(
         output_data_dir, "TotalTechnologyAnnualActivityUpperLimit.csv"), index=None)
     
+    df_accumulated_annual_demand.to_csv(os.path.join(output_data_dir, 
+                                                     "AccumulatedAnnualDemand.csv"), 
+                                        index=None)
+    
     df_af_final.to_csv(os.path.join(output_data_dir, 'AvailabilityFactor.csv'), index=None)
     
     years_set.to_csv(os.path.join(output_data_dir, "YEAR.csv"), index = None)
@@ -287,16 +305,19 @@ if __name__ == "__main__":
         file_weo_regions = snakemake.input.weo_regions
         file_default_av_factors = snakemake.input.default_av_factors
         file_cmo_forecasts = snakemake.input.cmo_forecasts     
-        file_fuel_prices = snakemake.input.fuel_prices    
+        file_fuel_prices = snakemake.input.fuel_prices      
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
         custom_nodes = snakemake.params.custom_nodes
+        remove_nodes = snakemake.params.remove_nodes
         tech_capacity = snakemake.params.user_defined_capacity
         no_investment_techs = snakemake.params.no_investment_techs
+        res_targets = snakemake.params.res_targets
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
-        powerplant_data_dir = snakemake.params.powerplant_data_dir    
+        powerplant_data_dir = snakemake.params.powerplant_data_dir  
+        file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'  
         
         if custom_nodes:
             file_custom_res_cap = snakemake.input.custom_res_cap
@@ -317,18 +338,22 @@ if __name__ == "__main__":
         file_weo_regions = 'resources/data/weo_region_mapping.csv'
         file_default_av_factors = 'resources/data/availability_factors.csv'  
         file_cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx'          
-        file_fuel_prices = 'resources/data/fuel_prices.csv'          
+        file_fuel_prices = 'resources/data/fuel_prices.csv'
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = [] 
+        remove_nodes = []
         tech_capacity = {'PWRCOAINDWE01': [8, 2000, 2025, 5, 1100, 35],
                          'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
+        res_targets = {'T01': ["IND", 2030, 2040, 30],
+                       'T02': ["MMR", 2041, 2050, 80]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
+        file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'
         
         if custom_nodes:
             file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv'
@@ -360,6 +385,7 @@ if __name__ == "__main__":
     availability = import_afs(file_default_av_factors)
     cmo_forecasts = import_cmo_forecasts(file_cmo_forecasts)
     fuel_prices = import_fuel_prices(file_fuel_prices)
+    specified_annual_demand = import_specified_annual_demand(file_specified_annual_demand)
     
     if custom_nodes:
         custom_res_cap = import_custom_res_cap(file_custom_res_cap)
@@ -384,6 +410,7 @@ if __name__ == "__main__":
         "default_av_factors": availability,
         "cmo_forecasts" : cmo_forecasts,
         "fuel_prices" : fuel_prices,
+        "annual_demand" : specified_annual_demand
     }
     
     # CALL MAIN
