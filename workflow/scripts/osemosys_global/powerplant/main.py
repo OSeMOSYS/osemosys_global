@@ -74,7 +74,10 @@ from user_defined_capacity import set_user_defined_capacity
 
 from availability import availability_factor
 
-from renewable_targets import apply_re_targets
+from renewable_targets import(
+    apply_re_pct_targets,
+    apply_re_abs_targets,
+    )
 
 def main(
     plexos_prop: pd.DataFrame,
@@ -229,15 +232,13 @@ def main(
                                                                                  region_name)
     
     # Set OAR, FUEL and AccumulatedAnnualDemand based on user defined RES generation targets.
-    fuel_set, df_oar_final, df_accumulated_annual_demand = apply_re_targets(res_targets, 
-                                                                            remove_nodes, 
-                                                                            df_oar_final, 
-                                                                            fuel_set, 
-                                                                            annual_demand, 
-                                                                            start_year, 
-                                                                            end_year, 
-                                                                            region_name)
-    
+    fuel_set, df_oar_final, df_accumulated_annual_demand = apply_re_pct_targets(res_targets, 
+                                                                                remove_nodes, 
+                                                                                df_oar_final,
+                                                                                RENEWABLES_LIST,
+                                                                                fuel_set, 
+                                                                                annual_demand,
+                                                                                region_name)
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -348,8 +349,11 @@ if __name__ == "__main__":
                          'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
-        res_targets = {'T01': ["IND", 2030, 2040, 30],
-                       'T02': ["MMR", 2041, 2050, 80]}
+        res_targets = {'T01': ["IND", [], "PCT", 2030, 2040, 80],
+                       'T02': ["IND", ['WOF'], "PCT", 2025, 2045, 30],
+                       'T03': ["IND", ['SPV'], "ABS", 2025, 2045, 30],
+                      # 'T04': ["MMR", [], "PCT", 2041, 2050, 80]
+                      }
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
