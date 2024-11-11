@@ -5,7 +5,8 @@ EXTERNAL_FILES = [
     "PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx",
     "ember_yearly_electricity_data.csv",
     "GTD_existing.csv",
-    "GTD_planned.csv"
+    "GTD_planned.csv",
+    "CMO-October-2024-Forecasts.xlsx"
 ]
 
 def get_external_links() -> dict[str,str]:
@@ -29,6 +30,9 @@ def get_external_links() -> dict[str,str]:
         
         "GTD_planned.csv" :
         "https://zenodo.org/records/10870602/files/GTD-v1.1_regional_planned.csv?download=1",
+
+        "CMO-October-2024-Forecasts.xlsx" : 
+        "https://thedocs.worldbank.org/en/doc/1c533d236291c53757b147f8acb8a82f-0050012024/related/CMO-October-2024-Forecasts.xlsx"
     }
 
 rule download_external_files:
