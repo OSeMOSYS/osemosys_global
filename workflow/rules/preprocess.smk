@@ -17,7 +17,6 @@ demand_figures = [
 power_plant_files = [
     'powerplant/CapitalCost',
     'powerplant/FixedCost',
-    'powerplant/VariableCost',
     'powerplant/CapacityToActivityUnit',
     'powerplant/OperationalLife',
     'powerplant/TotalAnnualMaxCapacityInvestment',
@@ -164,17 +163,35 @@ rule powerplant:
     script:
         "../scripts/osemosys_global/powerplant/main.py"
 
+rule powerplant_var_costs:
+    message:
+        "Generating powerplant variable costs..."
+    input:
+        cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx',
+        fuel_prices = 'resources/data/fuel_prices.csv',
+        regions = "results/data/REGION.csv",
+        years = "results/data/YEAR.csv",
+        technologies = "results/data/powerplant/TECHNOLOGY.csv",
+        fuel_limits = "resources/data/fuel_limits.csv",
+    output:
+        var_costs = 'results/data/powerplant/VariableCost.csv'
+    log:
+        log = 'results/logs/powerplant.log'
+    script:
+        "../scripts/osemosys_global/powerplant/variable_costs.py"
+
 rule transmission:
     message:
         "Generating transmission data..."
     input:
         rules.powerplant.output.csv_files,
+        rules.powerplant_var_costs.output,
         default_op_life = 'resources/data/operational_life.csv',
         gtd_existing = 'resources/data/GTD_existing.csv',
         gtd_planned = 'resources/data/GTD_planned.csv',
         gtd_mapping = 'resources/data/GTD_region_mapping.csv',
         centerpoints = 'resources/data/centerpoints.csv',
-        transmission_build_rates = 'resources/data/transmission_build_rates.csv'
+        transmission_build_rates = 'resources/data/transmission_build_rates.csv',
     params:
         trade = config['crossborderTrade'],
         start_year = config['startYear'],
