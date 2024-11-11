@@ -198,11 +198,19 @@ calibration:
 #  OCG1: [50, "IND", 2021]
 
 re_targets:
-# E.g. - ["IND", 2030, 2040, 30]
-# where "IND" is the country code; 2030, 2040 are the start and end years
-# respectively; and 30 is the target between the start and end years (inclusive)
-# in %
+# TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]
+# E.g. TO1: ["IND", [], "PCT", 2030, 2040, 60]
+# E.g. TO2: ["INDSO", ['WOF', 'WON'], "PCT", 2025, 2045, 15]
+# E.g. TO3: ["INDSO", ['WOF'], "ABS", 2040, 2050, 200]
+# Targets can be set in absolute terms ("ABS", VALUE = GW) or in relative terms 
+# ("PCT", VALUE = %) where targets in relative terms represent the share of generation.
+# For "PCT", targets can be set at national (e.g. "IND") and nodal levels (e.g. "INDSO")
+# whereas "ABS" can only be set at nodal levels. For "PCT", a single technology can 
+# be set for the target (e.g. ["WOF"]) a technology subset can be set (e.g. ['WOF', 'WON'])
+# or the TECHNOLOGY list can be left empty (e.g. []) as such that all renewable
+# technologies contribute to the target. For "ABS", only one technology can be 
+# selected per target. Note that a combination of targets can be set that affect
+# the same countries/nodes/technologies. This can be computationally intensive.
   T01: ["IND", [], "PCT", 2030, 2040, 60]
-  T02: ["IND", ['WOF'], "PCT", 2025, 2045, 10]
-  T03: ["IND", ['SPV'], "ABS", 2025, 2045, 30]  
-  #T04: ["MMR", [], "PCT", 2041, 2050, 80]
+  T02: ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15]
+  T03: ["INDSO", ['WOF'], "ABS", 2040, 2050, 200]  

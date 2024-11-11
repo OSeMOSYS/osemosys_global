@@ -239,6 +239,11 @@ def main(
                                                                                 fuel_set, 
                                                                                 annual_demand,
                                                                                 region_name)
+    
+    # Set TotalAnnualMinCapacity based on user defined RES capacity targets.
+    df_total_annual_min_capacity = apply_re_abs_targets(res_targets, remove_nodes, 
+                                                        tech_set, region_name)
+    
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -283,6 +288,10 @@ def main(
     
     df_accumulated_annual_demand.to_csv(os.path.join(output_data_dir, 
                                                      "AccumulatedAnnualDemand.csv"), 
+                                        index=None)
+    
+    df_total_annual_min_capacity.to_csv(os.path.join(output_data_dir, 
+                                                     "TotalAnnualMinCapacity.csv"), 
                                         index=None)
     
     df_af_final.to_csv(os.path.join(output_data_dir, 'AvailabilityFactor.csv'), index=None)
@@ -349,10 +358,9 @@ if __name__ == "__main__":
                          'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
-        res_targets = {'T01': ["IND", [], "PCT", 2030, 2040, 80],
-                       'T02': ["IND", ['WOF'], "PCT", 2025, 2045, 30],
-                       'T03': ["IND", ['SPV'], "ABS", 2025, 2045, 30],
-                      # 'T04': ["MMR", [], "PCT", 2041, 2050, 80]
+        res_targets = {'T01': ["IND", [], "PCT", 2030, 2040, 60],
+                       'T02': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
+                       'T03': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
                       }
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'

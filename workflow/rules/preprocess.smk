@@ -34,7 +34,8 @@ power_plant_files = [
     'TotalAnnualMaxCapacity',
     'TotalTechnologyAnnualActivityUpperLimit',
     'powerplant/TotalTechnologyModelPeriodActivityUpperLimit',
-    'AccumulatedAnnualDemand'
+    'AccumulatedAnnualDemand',
+    'TotalAnnualMinCapacity'
     ]
 
 transmission_files = [
