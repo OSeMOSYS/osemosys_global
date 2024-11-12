@@ -21,7 +21,6 @@ timeshift: 0 # value between -11 and 12
 # Spatial Parameters 
 geographic_scope:
   - "IND"
- # - "MMR"  
 
 crossborderTrade: True
 
@@ -183,7 +182,8 @@ emission_limit:
 # where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
 # when that constraint must be adhered to. All years between multiple emission 
 # constraints will be interpolated.
- - ["CO2", "IND", 2040, 1]
+# - ["CO2", "IND", 2040, 1]
+ - ["CO2", "IND", "LINEAR", 2040, 1] # 'POINT', 'LINEAR', 'RAPID', 'DELAYED'
 
 fuel_limits:
 # FUEL: [VALUE, COUNTRY/INTERNATIONAL, YEAR]

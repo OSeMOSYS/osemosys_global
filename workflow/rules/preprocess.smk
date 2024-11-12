@@ -331,19 +331,25 @@ rule emissions:
     message:
         'Generating emission data...'
     input:
-        'resources/data/emission_factors.csv',
-        'results/data/InputActivityRatio.csv',
+        ember = 'resources/data/ember_yearly_electricity_data.csv',    
+        emissions_factors = 'resources/data/emission_factors.csv',
+        iar = 'results/data/InputActivityRatio.csv',
+        oar = 'results/data/OutputActivityRatio.csv',
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
-        emission = config['emission_penalty'],
+        region_name = 'GLOBAL',
+        output_data_dir = 'results/data',
+        input_data_dir = 'resources/data',
+        emission_penalty = config['emission_penalty'],
+        emission_limit = config['emission_limit'],
         storage_parameters = config['storage_parameters']
     output: 
         csv_files = expand('results/data/{output_file}.csv', output_file = emission_files),
     log:
         log = 'results/logs/emissions.log'
-    shell:
-        'python workflow/scripts/osemosys_global/emissions.py 2> {log}'
+    script:
+        "../scripts/osemosys_global/emissions/main.py"   
 
 #rule max_capacity:
 #    message: 
