@@ -20,6 +20,7 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
     results = [x for x in otoole if otoole[x]["type"] == var]
 
     # no result calcualtions 
+    # or if no result present (ie. no storage runs)
     missing = [
         "NewStorageCapacity",
         "NumberOfNewTechnologyUnits",

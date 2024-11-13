@@ -42,7 +42,7 @@ CapitalCostStorage:
     indices: [REGION,STORAGE,YEAR]
     type: param
     dtype: float
-    default: 2000
+    default: 0.001
 Conversionld:
     indices: [TIMESLICE,DAYTYPE]
     type: param
@@ -142,7 +142,7 @@ OperationalLifeStorage:
     indices: [REGION,STORAGE]
     type: param
     dtype: float
-    default: 10
+    default: 1
 OutputActivityRatio:
     indices: [REGION,TECHNOLOGY,FUEL,MODE_OF_OPERATION,YEAR]
     type: param
@@ -332,6 +332,11 @@ AnnualVariableOperatingCost:
     type: result
     dtype: float
     default: 0
+CapitalInvestmentStorage:
+    indices: [REGION, STORAGE, YEAR]
+    type: result
+    dtype: float
+    default: 0
 CapitalInvestment:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
@@ -342,8 +347,19 @@ Demand:
     type: result
     dtype: float
     default: 0
+DiscountedCapitalInvestmentStorage:
+    short_name: DiscountedCapitalInvestStorage
+    indices: [REGION, STORAGE, YEAR]
+    type: result
+    dtype: float
+    default: 0
 DiscountedCapitalInvestment:
     indices: [REGION, TECHNOLOGY, YEAR]
+    type: result
+    dtype: float
+    default: 0
+DiscountedCostByStorage:
+    indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
@@ -359,6 +375,11 @@ DiscountedOperationalCost:
     default: 0
 DiscountedSalvageValue:
     indices: [REGION, TECHNOLOGY, YEAR]
+    type: result
+    dtype: float
+    default: 0
+DiscountedSalvageValueStorage:
+    indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
