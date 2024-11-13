@@ -61,9 +61,10 @@ def import_custom_res_cap(f: str) -> pd.DataFrame:
 def import_cmo_forecasts(f: str) -> pd.DataFrame:
     """Imports CMO forecasts.
     
-    CMO-April-2020-forecasts.csv
+    CMO-October-2024-Forecasts.csv
     """
-    return pd.read_excel(f, header=1, skiprows=83, nrows=6)
+    return pd.read_excel(f, header=1, skiprows=(
+        [i for i in range(1, 3)] + [j for j in range(4, 25)]), nrows=5)
 
 def import_fuel_prices(f: str) -> pd.DataFrame:
     """Imports international and country specific fuel prices.

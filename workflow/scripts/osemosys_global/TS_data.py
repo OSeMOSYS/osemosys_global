@@ -34,7 +34,6 @@ geographic_scope = config.get("geographic_scope")
 seasons = config.get("seasons")
 daytype = config.get("daytype")
 dayparts = config.get("dayparts")
-reserve_margin = config.get("reserve_margin")
 
 # Check for custom nodes directory
 try:
@@ -509,61 +508,4 @@ df_daysplit = df_daysplit[["DAILYTIMEBRACKET", "YEAR", "VALUE"]]
 df_daysplit["VALUE"] = df_daysplit["VALUE"].round(4)
 df_daysplit.to_csv(os.path.join(output_data_dir, "DaySplit.csv"), index=None)
 
-# ReserveMargin
-
-if reserve_margin:
-    df_rm = pd.DataFrame(years, columns=["YEAR"])
-    for rm, rm_params in reserve_margin.items():
-        df_rm.loc[df_rm["YEAR"].between(rm_params[1], rm_params[2]), "VALUE"] = (
-            1 + rm_params[0] / 100
-        )
-
-    df_rm = df_rm.interpolate()
-    df_rm["REGION"] = region_name
-    df_rm = df_rm[["REGION", "YEAR", "VALUE"]]
-else:
-    df_rm = pd.DataFrame(columns=["REGION", "YEAR", "VALUE"])
-df_rm.to_csv(os.path.join(output_data_dir, "ReserveMargin.csv"), index=None)
-
-# ReserveMarginTagTechnology
-df_rmtt = pd.read_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"))
-reserve_margin_techs = [
-    "COA",
-    "COG",
-    "OCG",
-    "CCG",
-    "PET",
-    "URN",
-    "OIL",
-    "OTH",
-    "BIO",
-    "HYD",
-    "GEO",
-    "SPV",
-    "WON",
-]
-rm_techs = [
-    x
-    for x in df_rmtt["VALUE"].unique()
-    if x.startswith("PWR")
-    if x[3:6] in reserve_margin_techs
-]
-df_rmtt = pd.DataFrame(
-    list(itertools.product([region_name], rm_techs, years, [1])),
-    columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"],
-)
-df_rmtt.to_csv(
-    os.path.join(output_data_dir, "ReserveMarginTagTechnology.csv"), index=None
-)
-
-# ReserveMarginTagFuel
-df_rmtf = pd.read_csv(os.path.join(output_data_dir, "FUEL.csv"))
-rm_fuels = [
-    x for x in df_rmtf["VALUE"].astype(str).unique() if x.startswith("ELC") if x.endswith("01")
-]
-df_rmtf = pd.DataFrame(
-    list(itertools.product([region_name], rm_fuels, years, [1])),
-    columns=["REGION", "FUEL", "YEAR", "VALUE"],
-)
-df_rmtf.to_csv(os.path.join(output_data_dir, "ReserveMarginTagFuel.csv"), index=None)
 logging.info("Time Slicing Completed")

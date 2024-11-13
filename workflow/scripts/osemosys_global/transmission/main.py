@@ -267,7 +267,7 @@ if __name__ == "__main__":
                              'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 350, 13, 4, 95],
                              'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 350, 13, 4, 95],
                              'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 620, 24, 4, 92]}
-        
+
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
         transmission_parameters = {'HVAC': [779, 95400, 6.75, 0, 3.5, 4],
