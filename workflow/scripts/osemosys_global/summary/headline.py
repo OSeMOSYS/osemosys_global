@@ -46,42 +46,22 @@ def _filter_pwr_techs(production_by_technology: pd.DataFrame) -> pd.DataFrame:
 
     return df[
         (df.index.get_level_values("TECHNOLOGY").str.startswith("PWR"))
+        & ~(df.index.get_level_values("TECHNOLOGY").str.startswith("PWRLDS"))
+        & ~(df.index.get_level_values("TECHNOLOGY").str.startswith("PWRSDS"))
         & ~(df.index.get_level_values("TECHNOLOGY").str.contains("TRN"))
     ]
 
 
-def _filter_rnw_techs(production_by_technology: pd.DataFrame) -> pd.DataFrame:
+def _filter_techs(
+    production_by_technology: pd.DataFrame, carriers: list[str]
+) -> pd.DataFrame:
 
     df = production_by_technology.copy()
     df["tech"] = df.index.get_level_values("TECHNOLOGY").str[0:6]
 
-    rnw_techs = [f"PWR{x}" for x in RENEWABLES]
+    techs = [f"PWR{x}" for x in carriers]
 
-    df = df[df.tech.isin(rnw_techs)]
-
-    return df["VALUE"].to_frame()
-
-
-def _filter_fossil_techs(production_by_technology: pd.DataFrame) -> pd.DataFrame:
-
-    df = production_by_technology.copy()
-    df["tech"] = df.index.get_level_values("TECHNOLOGY").str[0:6]
-
-    fossil_techs = [f"PWR{x}" for x in FOSSIL]
-
-    df = df[df.tech.isin(fossil_techs)]
-
-    return df["VALUE"].to_frame()
-
-
-def _filter_clean_techs(production_by_technology: pd.DataFrame) -> pd.DataFrame:
-
-    df = production_by_technology.copy()
-    df["tech"] = df.index.get_level_values("TECHNOLOGY").str[0:6]
-
-    clean_techs = [f"PWR{x}" for x in CLEAN]
-
-    df = df[df.tech.isin(clean_techs)]
+    df = df[df.tech.isin(techs)]
 
     return df["VALUE"].to_frame()
 
@@ -89,9 +69,9 @@ def _filter_clean_techs(production_by_technology: pd.DataFrame) -> pd.DataFrame:
 def get_gen_shares(production_by_technology: pd.DataFrame) -> pd.DataFrame:
 
     gen_total = _filter_pwr_techs(production_by_technology).VALUE.sum()
-    rnw_total = _filter_rnw_techs(production_by_technology).VALUE.sum()
-    fsl_total = _filter_fossil_techs(production_by_technology).VALUE.sum()
-    cln_total = _filter_clean_techs(production_by_technology).VALUE.sum()
+    rnw_total = _filter_techs(production_by_technology, RENEWABLES).VALUE.sum()
+    fsl_total = _filter_techs(production_by_technology, FOSSIL).VALUE.sum()
+    cln_total = _filter_techs(production_by_technology, CLEAN).VALUE.sum()
 
     rnw_share = round((rnw_total / gen_total) * 100, 0)
     fsl_share = round((fsl_total / gen_total) * 100, 0)

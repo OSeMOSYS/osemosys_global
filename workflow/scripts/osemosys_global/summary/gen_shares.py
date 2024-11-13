@@ -4,9 +4,11 @@ import pandas as pd
 from typing import Optional
 from constants import CLEAN, RENEWABLES, FOSSIL
 
+# do not include storage in generation share calcualtion 
+EXCLUDE = ["LDS", "SDS"]
 
 def _get_gen_by_node(
-    production: pd.DataFrame, carriers: Optional[list[str]] = None
+    production: pd.DataFrame, include: Optional[list[str]] = None, exclude: Optional[list[str]] = None
 ) -> pd.DataFrame:
 
     df = production.copy()
@@ -16,8 +18,11 @@ def _get_gen_by_node(
     df["TECH"] = df.index.get_level_values("TECHNOLOGY").str[3:6]
     df["NODE"] = df.index.get_level_values("TECHNOLOGY").str[6:11]
 
-    if carriers:
-        df = df[df.TECH.isin(carriers)]
+    if exclude:
+        df = df[~df.TECH.isin(exclude)].copy()
+
+    if include:
+        df = df[df.TECH.isin(include)].copy()
 
     return (
         df.reset_index()[["REGION", "NODE", "YEAR", "VALUE"]]
@@ -35,10 +40,10 @@ def calc_generation_shares(production_by_technology: pd.DataFrame) -> pd.DataFra
         & ~(df.index.get_level_values("TECHNOLOGY").str.contains("TRN"))
     ]
 
-    total = _get_gen_by_node(df).rename(columns={"VALUE": "TOTAL"})
-    clean = _get_gen_by_node(df, CLEAN).rename(columns={"VALUE": "CLEAN"})
-    renewable = _get_gen_by_node(df, RENEWABLES).rename(columns={"VALUE": "RENEWABLE"})
-    fossil = _get_gen_by_node(df, FOSSIL).rename(columns={"VALUE": "FOSSIL"})
+    total = _get_gen_by_node(df, exclude=EXCLUDE).rename(columns={"VALUE": "TOTAL"})
+    clean = _get_gen_by_node(df, include=CLEAN).rename(columns={"VALUE": "CLEAN"})
+    renewable = _get_gen_by_node(df, include=RENEWABLES).rename(columns={"VALUE": "RENEWABLE"})
+    fossil = _get_gen_by_node(df, include=FOSSIL).rename(columns={"VALUE": "FOSSIL"})
 
     shares = (
         total.join(clean, how="outer")
