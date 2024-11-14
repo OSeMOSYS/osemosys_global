@@ -178,12 +178,17 @@ reserve_margin_technologies:
   LDS : 77
 
 emission_limit:
-# - [EMISSION, COUNTRY, YEAR, VALUE]
+# - [EMISSION, COUNTRY, TYPE, YEAR, VALUE]
 # where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
 # when that constraint must be adhered to. All years between multiple emission 
-# constraints will be interpolated.
-# - ["CO2", "IND", 2040, 1]
- - ["CO2", "IND", "LINEAR", 2040, 1] # 'POINT', 'LINEAR', 'RAPID', 'DELAYED'
+# constraints will be interpolated if TYPE is set to "LINEAR". If "POINT" is used
+# it means that a singular year value is set without interpolation occuring in
+# previous target years. A combination of TYPE targets can be set per EMISSION and
+# COUNTRY yet only a single target per YEAR.
+ - ["CO2", "IND", "POINT", 2048, 0]
+ - ["CO2", "IND", "LINEAR", 2040, 1]
+ - ["CO2", "IND", "LINEAR", 2028, 400]
+ - ["CO2", "IND", "POINT", 2030, 300]
 
 fuel_limits:
 # FUEL: [VALUE, COUNTRY/INTERNATIONAL, YEAR]

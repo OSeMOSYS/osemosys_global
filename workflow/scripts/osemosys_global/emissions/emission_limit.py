@@ -2,90 +2,115 @@
 
 import pandas as pd
 import itertools
+import numpy as np
 
 from data import get_years
 
-def add_emission_limits(emissions, emission_limit, start_year, 
-                        end_year, region_name):
-
+def add_emission_limits(emissions, emission_limit, ember, 
+                        start_year, end_year, region_name):
+    
+    # Set empty AnnualEmissionLimit df.
+    annual_emission_limit = pd.DataFrame(
+        columns=["REGION", "EMISSION", "YEAR", "VALUE"]
+    ) 
+    
+    # Check if emission limits exist.
     if emission_limit:
         emissions_list = list(emissions["VALUE"])
         years = get_years(start_year, end_year)
+        
+        # Order emission limits based on emission type, country and year entries.
+        emission_limit_ordered = pd.DataFrame()
+        
+        for el_params in emission_limit:
+            param = pd.DataFrame([el_params], columns = ['EMISSION', 'COUNTRY', 'TYPE', 
+                                                         'YEAR', 'VALUE'])
+            if emission_limit_ordered.empty:
+                emission_limit_ordered = param
+                
+            else:
+                emission_limit_ordered = pd.concat([emission_limit_ordered, param])
+            
+        emission_limit_ordered = emission_limit_ordered.sort_values(
+            by = ['EMISSION', 'COUNTRY', 'YEAR']).reset_index(drop = True)
 
-        # GENERATE DATA
-    
-        # Create dataframe template
-        df = pd.DataFrame(
+        # Create dataframe template for adding limits.
+        template = pd.DataFrame(
             list(itertools.product(emissions_list, years)), columns=["EMISSION", "YEAR"]
         )
-    
-        for el_params in emission_limit:
-            df.loc[
-                (df["YEAR"] == el_params[3])
-                & (df["EMISSION"].isin([el_params[0] + el_params[1]])),
-                "VALUE",
-            ] = el_params[4]
-    
-        df = df.pivot(index=["YEAR"], columns=["EMISSION"], values="VALUE").reset_index()
 
-        # Drop all columns with only NaN
-        df.dropna(axis=1, how="all", inplace=True)
-        df = df.interpolate()
-        # Melt to get 'COUNTRY' column and remove all rows with NaN
-        df = pd.melt(
-            df,
-            id_vars=["YEAR"],
-            value_vars=[x for x in df.columns if x not in ["YEAR"]],
-            var_name="EMISSION",
-            value_name="VALUE",
-        )
-    
-        df.dropna(axis=0, inplace=True)
-        df["REGION"] = region_name
-        
-        df = df[["REGION", "EMISSION", "YEAR", "VALUE"]]
+        # Loop through emissions       
+        for emission in emission_limit_ordered['EMISSION'].unique():
+            # Loop through countries
+            for country in emission_limit_ordered['COUNTRY'].unique():
+                prev_data_year = ''
+                prev_data_value = ''
 
-    else:
-        
-        df = pd.DataFrame(
-            columns=["REGION", "EMISSION", "YEAR", "VALUE"]
-        )
-    return df
+                # Set input limits for given country and emission
+                limits = emission_limit_ordered.loc[(emission_limit_ordered[
+                    'COUNTRY'] == country) & (emission_limit_ordered[
+                        'EMISSION'] == emission)]
+                
+                # Filter template df for given country and emission
+                data = template.copy().loc[template["EMISSION"].isin(
+                    [emission + country])]
+                     
+                # Loop through limits per country
+                for idx, row in limits.iterrows():
+                    data_type = row.TYPE
+                    data_year = row.YEAR
+                    data_value = row.VALUE
+                    
+                    # Check if a limit for earlier years is set
+                    if prev_data_year == '':
+                        # If not check if limit type is LINEAR. If TRUE, set historic
+                        # emission values to be able to set a linear relationship in absence
+                        # of previous year entries.
+                        if data_type == 'LINEAR':
+                            ember_data = ember.copy().loc[
+                                (ember["EMISSION"].isin([emission + country]))]
+                            # Check if year for country specific EMBER data exists in horizon.
+                            for year in ember_data["YEAR"].unique():
+                                if year in data["YEAR"].values:
+                                    # Set baseline year data for LINEAR
+                                    data.loc[(data["YEAR"] == year),"VALUE"] = ember_data.loc[
+                                        (ember_data["YEAR"] == year)]['VALUE'].iloc[0]
 
-"""
+                        # Set baseline year data for POINT
+                        data.loc[(data["YEAR"] == data_year),"VALUE"] = data_value     
+                    
+                    else:
+                        # If previous targets exist check if limit type is LINEAR. 
+                        # If TRUE, only set target for target data year. If FALSE,
+                        # set VALUE for all years between previous target year + 1 and 
+                        # the current target year.
+                        if data_type == 'LINEAR':
+                            data.loc[(data["YEAR"] == data_year),"VALUE"] = data_value
+                        else:
+                            data.loc[data["YEAR"].between(prev_data_year, data_year)
+                                     ,"VALUE"] = prev_data_value
+                            
+                            data.loc[(data["YEAR"] == data_year),"VALUE"] = data_value
+                  
+                    prev_data_year = data_year
+                    prev_data_value = data_value
+                    
+                # Once done with a given country reset previous year limits.
+                prev_data_year = ''
+                prev_data_value = ''
+                
+                # Interpolate values for LINEAR targets.
+                data['VALUE'] = data['VALUE'].interpolate()
+      
+                # Format df
+                data.dropna(axis=0, inplace=True)
+                data["REGION"] = region_name
+                data = data[["REGION", "EMISSION", "YEAR", "VALUE"]]
+                
+                if annual_emission_limit.empty:
+                    annual_emission_limit = data
+                    
+                else:
+                    annual_emission_limit = pd.concat([annual_emission_limit, data])
 
-el_years = {}
-years = list(range(start_year, 
-                   end_year+1))
-if not emission_limit is None:
-    for el_params in emission_limit:
-        el_years[el_params[0]] = el_params[1]
-
-    if len(el_years) > 1:
-        el_years_max =  max(el_years)
-    else:
-        el_years_max = int(end_year) 
-
-    df = pd.DataFrame(list(range(min(el_years),
-                                el_years_max + 1)),
-                    columns=['YEAR'])
-    df.sort_values(by=['YEAR'],
-                inplace=True)
-    df['VALUE'] = df['YEAR'].map(el_years)
-    df['VALUE'].interpolate(inplace=True)
-    df['VALUE'] = df['VALUE'].round(0)
-    df = df[df['YEAR'].isin(years)]
-    
-    df['EMISSION'] = emission
-    df['REGION'] = region
-
-    df = df[['REGION',
-            'EMISSION',
-            'YEAR',
-            'VALUE']]
-else:
-    df = pd.DataFrame(columns=['REGION',
-                               'EMISSION',
-                               'YEAR',
-                               'VALUE'])
-"""
+    return annual_emission_limit

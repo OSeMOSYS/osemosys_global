@@ -16,10 +16,10 @@ def _format_ember_emission_data(ember: pd.DataFrame) -> pd.DataFrame:
     df = df[
         (df.Category == "Power sector emissions") & (df.Subcategory == "Total")
     ].copy()
-    df["EMISSION"] = df.COUNTRY
+    df["EMISSION"] = "CO2" + df.COUNTRY
     df["REGION"] = "GLOBAL"
     df = df[["REGION", "EMISSION", "YEAR", "VALUE"]]
-    return df.groupby(["REGION", "EMISSION", "YEAR"]).sum()
+    return df.groupby(["REGION", "EMISSION", "YEAR"]).sum().reset_index()
 
 def get_co2_emission_factors(emission_factors):
     """Gets co2 emission factors for diferent fuels.

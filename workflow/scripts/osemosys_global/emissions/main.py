@@ -22,6 +22,9 @@ from emission_penalty import get_emission_penalty
 
 from emission_limit import add_emission_limits
 
+# Logging formatting
+logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
+
 def main(
         ember: pd.DataFrame,
         emission_factors: pd.DataFrame,
@@ -39,15 +42,17 @@ def main(
     
     # Set EMISSION set.
     df_emissions_set = set_unique_emissions(df_emission_activity_ratio)
-    
+
     # Set user defined emission penalties.
     df_emission_penalty = get_emission_penalty(df_emissions_set, emission_penalty, 
                                                start_year, end_year, region_name)
+
     
     # Set user defined emission limits.
     df_annual_emission_limit = add_emission_limits(df_emissions_set, emission_limit, 
-                                               start_year, end_year, region_name)
-    
+                                                   ember, start_year, end_year, 
+                                                   region_name)
+
     # OUTPUT CSV's
     df_emission_activity_ratio.to_csv(os.path.join(output_data_dir, "EmissionActivityRatio.csv"), 
                            index = None)
@@ -92,7 +97,10 @@ if __name__ == "__main__":
         file_iar_base = f'{output_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{output_data_dir}/OutputActivityRatio.csv'
         emission_penalty = [["CO2", "IND", 2020, 2050, 2.1]]
-        emission_limit = [["CO2", "IND", "LINEAR", 2040, 1]]
+        emission_limit = [["CO2", "IND", "POINT", 2048, 0],
+                          ["CO2", "IND", "LINEAR", 2040, 1],
+                          ["CO2", "IND", "LINEAR", 2028, 400],
+                          ["CO2", "IND", "POINT", 2030, 300]]
         storage_parameters = {'SDS': [1938, 44.25, 0, 85, 4],
                               'LDS': [3794, 20.2, 0.58, 80, 10]}
 
