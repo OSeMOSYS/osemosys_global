@@ -7,7 +7,7 @@ def apply_calibration(calibration, oar_df, accumulated_annual_demand_df, fuel_se
         & ~(oar_df["TECHNOLOGY"].str.startswith("PWRTRN"))
     ]
 
-    if not calibration is None:
+    if calibration:
         for cal, cal_params in calibration.items():
 
             if cal[0:3] in ["GAS"]:
@@ -68,11 +68,15 @@ def apply_calibration(calibration, oar_df, accumulated_annual_demand_df, fuel_se
         cal_dem_final.drop_duplicates(inplace=True)
         cal_dem_final.dropna(inplace=True)
         
-        accumulated_annual_demand_df = pd.concat([accumulated_annual_demand_df, 
-                                                  cal_dem_final])
+        if accumulated_annual_demand_df.empty:
+            accumulated_annual_demand_df = cal_dem_final
+            
+        else:
+            accumulated_annual_demand_df = pd.concat([accumulated_annual_demand_df, 
+                                                      cal_dem_final])
 
         cal_fuels = list(cal_dem_final["FUEL"].unique())
         fuel_set = list(fuel_set["VALUE"].unique()) + cal_fuels
         fuel_set = pd.DataFrame(fuel_set, columns=["VALUE"])
         
-        return fuel_set, oar_df, accumulated_annual_demand_df
+    return fuel_set, oar_df, accumulated_annual_demand_df

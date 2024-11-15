@@ -371,7 +371,7 @@ if __name__ == "__main__":
                        'T02': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
                        'T03': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
                       }
-        calibration = {'OCG1': [50, "IND", 2021]}
+        calibration = {}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
