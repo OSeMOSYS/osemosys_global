@@ -18,22 +18,21 @@ def apply_re_pct_targets(re_targets, remove_nodes, oar_df, renewables_list,
     type_dict = {}
     first_year_dict = {}
     final_year_dict = {}
-    value_dict = {}
-
-    # Get transmission parameters from config file.
-    for target, target_params in re_targets.items():
-        node_dict[target] = target_params[0]
-        target_techs_dict[target] = target_params[1]
-        type_dict[target] = target_params[2]
-        first_year_dict[target] = target_params[3]
-        final_year_dict[target] = target_params[4]
-        value_dict[target] = target_params[5]
-    
+    value_dict = {}    
     accumulated_annual_demand = pd.DataFrame(columns = ["REGION", "FUEL", 
                                                         "YEAR", "VALUE"])
     
     # Check if any targets are defined.
     if not re_targets is None:
+        # Get transmission parameters from config file.
+        for target, target_params in re_targets.items():
+            node_dict[target] = target_params[0]
+            target_techs_dict[target] = target_params[1]
+            type_dict[target] = target_params[2]
+            first_year_dict[target] = target_params[3]
+            final_year_dict[target] = target_params[4]
+            value_dict[target] = target_params[5]
+        
         # Per entry check if they are relative targets ('PCT').
         for target in re_targets.keys():
             if type_dict[target] == 'PCT':
@@ -154,20 +153,20 @@ def apply_re_abs_targets(re_targets, remove_nodes,
     first_year_dict = {}
     final_year_dict = {}
     value_dict = {}
-
-    # Get transmission parameters from config file.
-    for target, target_params in re_targets.items():
-        node_dict[target] = target_params[0]
-        target_techs_dict[target] = target_params[1]
-        type_dict[target] = target_params[2]
-        first_year_dict[target] = target_params[3]
-        final_year_dict[target] = target_params[4]
-        value_dict[target] = target_params[5]
         
     total_annual_min_capacity = pd.DataFrame(columns = ["REGION", "TECHNOLOGY", 
                                                         "YEAR", "VALUE"])
     # Check if any targets are defined.
     if not re_targets is None:
+        # Get transmission parameters from config file.
+        for target, target_params in re_targets.items():
+            node_dict[target] = target_params[0]
+            target_techs_dict[target] = target_params[1]
+            type_dict[target] = target_params[2]
+            first_year_dict[target] = target_params[3]
+            final_year_dict[target] = target_params[4]
+            value_dict[target] = target_params[5]
+
         # Per entry check if they are absolute targets ('ABS').
         for target in re_targets.keys():
             if type_dict[target] == 'ABS':
