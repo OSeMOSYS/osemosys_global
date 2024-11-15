@@ -1,33 +1,10 @@
-import os
 import pandas as pd
-from configuration import ConfigFile, ConfigPaths
 
-# LOGGING
-import logging
-logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+def apply_calibration(calibration, oar_df, accumulated_annual_demand_df, fuel_set):
 
-
-def main():
-    """Creates capacity limits on renewable technologies."""
-
-    # CONFIGURATION PARAMETERS
-    config_paths = ConfigPaths()
-    config = ConfigFile("config")
-
-    output_data_dir = config_paths.output_data_dir
-    region = config.region_name
-    years = config.get_years()
-    calibration = config.get("calibration")
-    
-    apply_calibration(region, years, output_data_dir, calibration)
-
-def apply_calibration(region, years, output_data_dir, calibration):
-
-    oar_df = pd.read_csv(os.path.join(output_data_dir, "OutputActivityRatio.csv"))
     cal_df = oar_df.loc[
         (oar_df["TECHNOLOGY"].str.startswith("PWR"))
         & ~(oar_df["TECHNOLOGY"].str.startswith("PWRTRN"))
-        & ~(oar_df["TECHNOLOGY"].str.startswith("PWRBAT"))
     ]
 
     if not calibration is None:
@@ -86,30 +63,16 @@ def apply_calibration(region, years, output_data_dir, calibration):
         cal_df_final = cal_df[[x for x in cal_df.columns if x not in ["DEMAND"]]]
         oar_df = pd.concat([oar_df, cal_df_final])
 
-        oar_df.to_csv(
-            os.path.join(output_data_dir, "OutputActivityRatio.csv"), index=None
-        )
-
         cal_dem_df = cal_df[["REGION", "FUEL", "YEAR", "DEMAND"]]
         cal_dem_final = cal_dem_df.rename(columns={"DEMAND": "VALUE"})
         cal_dem_final.drop_duplicates(inplace=True)
         cal_dem_final.dropna(inplace=True)
-        cal_dem_final.to_csv(
-            os.path.join(output_data_dir, "AccumulatedAnnualDemand.csv"), index=None
-        )
+        
+        accumulated_annual_demand_df = pd.concat([accumulated_annual_demand_df, 
+                                                  cal_dem_final])
 
         cal_fuels = list(cal_dem_final["FUEL"].unique())
-
-        fuel_list_df = pd.read_csv(os.path.join(output_data_dir, "FUEL.csv"))
-        fuel_list = list(fuel_list_df["VALUE"].unique()) + cal_fuels
-        fuel_list_df_final = pd.DataFrame(fuel_list, columns=["VALUE"])
-        fuel_list_df_final.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index=None)
-    else:
-        cal_dem_final = pd.DataFrame(columns=["REGION", "FUEL", "YEAR", "VALUE"])
-        cal_dem_final.to_csv(
-            os.path.join(output_data_dir, "AccumulatedAnnualDemand.csv"), index=None
-        )
-
-if __name__ == "__main__":
-    main()
-    logging.info("Max capacity limits sucessfully set")
+        fuel_set = list(fuel_set["VALUE"].unique()) + cal_fuels
+        fuel_set = pd.DataFrame(fuel_set, columns=["VALUE"])
+        
+        return fuel_set, oar_df, accumulated_annual_demand_df

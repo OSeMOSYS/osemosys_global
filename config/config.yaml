@@ -133,19 +133,6 @@ nodes_to_remove:
 #- "AAAXX" where AAA is a 3-letter country code, and XX is a 2-letter 
 # sub-national code
 
-powerplant_build_rates:
- # [TECHNOLOGY, COUNTRY, METHOD, VALUE, START_YEAR, END_YEAR]
- # where TECHNOLOGY_TYPE is, for example, all coal powerplants and is in the 
- # format COA.
- # COUNTRY is the 3-letter country code. E.g. "IND" for "Indonesia" 
- # METHOD specifies how the build rate is applied: absolute ("ABS" or as a 
- # percentage ("PCT") of the maximum capacity for a TECHNOLOGY_TYPE.
- # VALUE is the value - either absolute or percentage - by which the capacity 
- # of the associated TECHNOLOGY can increase. It is applied from the START_YEAR 
- # to the END_YEAR.
- # E.g. - ["SPV", "IND", "ABS", 0, 2020, 2025] 
-  - ["SPV", "IND", "PCT", 25, 2020, 2025] 
-
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
@@ -190,17 +177,11 @@ emission_limit:
  - ["CO2", "IND", "LINEAR", 2028, 400]
  - ["CO2", "IND", "POINT", 2030, 300]
 
-fuel_limits:
-# FUEL: [VALUE, COUNTRY/INTERNATIONAL, YEAR]
-# Where FUEL is the fuel on which a limit is being applied (e.g. COA), VALUE is
-# the value in Petajoules (PJ), COUNTRY/INTERNATIONAL specific which domestic 
-# fuel (e.g. IND) or international fuel ("INT") the limit is being applied to, 
-# and YEAR is the year for which the limit is applied. All years between multiple 
-# fuel extraction constraints will be interpolated.
-
-
 calibration:
-#  OCG1: [50, "IND", 2021]
+# TECHNOLOGY: [VALUE, COUNTRY, YEAR]
+# where VALUE is percentage (%) availability of a given technology. This can be used
+# to constrain power plant output (generation).
+  OCG1: [50, "IND", 2021]
 
 re_targets:
 # TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]

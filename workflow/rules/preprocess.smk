@@ -106,10 +106,6 @@ emission_files = [
     'AnnualEmissionLimit'
 ]
 
-#max_capacity_files = [
-#    'AccumulatedAnnualDemand',
-#]
-
 user_capacity_files = [
     'TotalAnnualMinCapacityInvestment',
     'TotalAnnualMaxCapacityInvestment'
@@ -197,6 +193,7 @@ rule powerplant:
         user_defined_capacity = config['user_defined_capacity'],
         no_investment_techs = config['no_invest_technologies'],
         res_targets = config['re_targets'],
+        calibration = config['calibration'],
         output_data_dir = 'results/data',
         input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',
@@ -350,22 +347,6 @@ rule emissions:
         log = 'results/logs/emissions.log'
     script:
         "../scripts/osemosys_global/emissions/main.py"   
-
-#rule max_capacity:
-#    message: 
-#        'Generating capacity limits...'
-#    input:
-#        'results/data/ResidualCapacity.csv',
-#        'results/data/SpecifiedAnnualDemand.csv'
-#    params:
-#        start_year = config['startYear'],
-#        end_year = config['endYear'],
-#    output:
-#        csv_files = expand('results/data/{output_file}.csv', output_file = max_capacity_files),
-#    log:
-#        log = 'results/logs/max_capacity.log'
-#    shell:
-#        'python workflow/scripts/osemosys_global/max_capacity.py 2> {log}'
 
 rule create_missing_csv:
     message:

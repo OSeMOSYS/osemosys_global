@@ -79,6 +79,8 @@ from renewable_targets import(
     apply_re_abs_targets,
     )
 
+from calibration import apply_calibration
+
 def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
@@ -240,6 +242,12 @@ def main(
                                                                                 annual_demand,
                                                                                 region_name)
     
+    # Set OAR, FUEL and AccumulatedAnnualDemand after calibration.
+    fuel_set, df_oar_final, df_accumulated_annual_demand = apply_calibration(calibration, 
+                                                                             df_oar_final, 
+                                                                             df_accumulated_annual_demand, 
+                                                                             fuel_set)
+    
     # Set TotalAnnualMinCapacity based on user defined RES capacity targets.
     df_total_annual_min_capacity = apply_re_abs_targets(res_targets, remove_nodes, 
                                                         tech_set, region_name)
@@ -324,6 +332,7 @@ if __name__ == "__main__":
         tech_capacity = snakemake.params.user_defined_capacity
         no_investment_techs = snakemake.params.no_investment_techs
         res_targets = snakemake.params.res_targets
+        calibration = snakemake.params.calibration
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
         powerplant_data_dir = snakemake.params.powerplant_data_dir  
@@ -362,6 +371,7 @@ if __name__ == "__main__":
                        'T02': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
                        'T03': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
                       }
+        calibration = {'OCG1': [50, "IND", 2021]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
