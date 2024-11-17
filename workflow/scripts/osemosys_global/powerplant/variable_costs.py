@@ -105,14 +105,64 @@ def get_static_fuel_price(
     )
 
 
-def expand_cmo_data(cmo: pd.DataFrame, years: list[int]) -> pd.DataFrame:
-    """Expands CMO data to match user defined years"""
-    df = cmo.copy()
+def expand_cmo_data(
+    cmo: pd.DataFrame,
+    years: list[int],
+    countries: list[str],
+    international_cost_multiplier: Optional[int | float] = None,
+) -> pd.DataFrame:
+    """Expands CMO data to match user defined years and all countries"""
+
+    df_template = cmo.copy()
 
     for year in years:
-        df[str(year)] = df["VALUE"]
+        df_template[str(year)] = df_template["VALUE"]
+    df_template = df_template.drop(columns="VALUE").set_index(
+        ["FUEL", "COUNTRY", "UNIT", "ENERGY_CONTENT"]
+    )
 
-    return df.drop(columns="VALUE").reset_index(drop=True)
+    df_international = df_template.copy()
+    if international_cost_multiplier:
+        df_international = df_international.mul(international_cost_multiplier)
+
+    df_country = df_template.copy().droplevel("COUNTRY")
+    df_country["COUNTRY"] = countries * len(df_country)
+    df_country = df_country.explode("COUNTRY")
+    df_country = df_country.reset_index().set_index(
+        ["FUEL", "COUNTRY", "UNIT", "ENERGY_CONTENT"]
+    )
+
+    return pd.concat([df_international, df_country]).reset_index()
+
+
+def expand_merged_data(costs: pd.DataFrame, modelled_years: list[int]) -> pd.DataFrame:
+    """Expands cmo/user merged data to interpolate values over all model years"""
+
+    df = costs.copy()
+    df["YEAR"] = df.YEAR.astype(int)
+
+    # get year bounds as interpolation can use years outside model scope
+    min_year = min(min(modelled_years), min(costs.YEAR.astype(int)))
+    max_year = max(max(modelled_years), max(costs.YEAR.astype(int)))
+
+    df = df.set_index(["FUEL", "COUNTRY", "YEAR"])
+
+    # new index parameters
+    fules = df.index.get_level_values("FUEL").unique()
+    years = range(min_year, max_year + 1)
+    countries = df.index.get_level_values("COUNTRY").unique()
+
+    # interpolate over years
+    idx = pd.MultiIndex.from_product(
+        [fules, countries, years], names=["FUEL", "COUNTRY", "YEAR"]
+    )
+    df = df.reindex(idx)
+    df = df.groupby(level=["FUEL", "COUNTRY"])["VALUE"].apply(
+        lambda x: x.interpolate(method="linear", limit_direction="both")
+    )
+
+    # drop level to get rid of the grouping key
+    return df.droplevel([0, 1]).reset_index()
 
 
 def get_user_fuel_years(user_fuel_prices: pd.DataFrame) -> list[int]:
@@ -250,152 +300,34 @@ def assign_international_limits(
     return df
 
 
-def _get_cmo_template(
-    costs: pd.DataFrame,
-    fuels: list[str],
-    countries: list[str],
-    years: list[int],
-    suffix: Optional[str] = None,
+def get_mining_data(
+    costs: pd.DataFrame, mining_fuels: list[str], region: str
 ) -> pd.DataFrame:
-    """Gets variable costs defined by cmo template
-
-    ie. This will parse the costs data for only international prices
-    """
-
-    # get year bounds as interpolation can use years outside model scope
-    min_year = min(min(years), min(costs.YEAR.astype(int)))
-    max_year = max(max(years), max(costs.YEAR.astype(int)))
-
-    df = costs[costs.FUEL.isin(fuels)].copy()
-
-    df = (
-        df[df.COUNTRY == "INT"]
-        .copy()
-        .drop(columns="COUNTRY")
-        .set_index(["FUEL", "YEAR"])
-    )
-    fuel = df.index.get_level_values("FUEL").unique().tolist()
-    idx = pd.MultiIndex.from_product(
-        [fuel, range(min_year, max_year + 1)], names=["FUEL", "YEAR"]
-    )
-    df = df.reindex(idx)
-    df = df.interpolate(method="linear", limit_direction="both").reset_index()
-    df["COUNTRY"] = [countries] * len(df)
-    df = df.explode("COUNTRY")
-    if suffix:
-        df["TECHNOLOGY"] = suffix + df.FUEL + df.COUNTRY
-    else:
-        df["TECHNOLOGY"] = df.FUEL + df.COUNTRY
-
-    # filter on years within actual model
-    df = df[df.YEAR.isin(years)].copy()
-
-    return df[["TECHNOLOGY", "YEAR", "VALUE"]]
-
-
-def _get_user_template(
-    costs: pd.DataFrame,
-    fuels: list[str],
-    years: list[int],
-    suffix: Optional[str] = None,
-) -> pd.DataFrame:
-    """Gets variable costs defined by user
-
-    ie. This will parse the costs data for only domestic prices
-    """
-
-    # get year bounds as interpolation can use years outside model scope
-    min_year = min(min(years), min(costs.YEAR.astype(int)))
-    max_year = max(max(years), max(costs.YEAR.astype(int)))
-
-    df = costs[(costs.FUEL.isin(fuels)) & (costs.COUNTRY != "INT")].copy()
-
-    if suffix:
-        df["TECHNOLOGY"] = suffix + df.FUEL + df.COUNTRY
-    else:
-        df["TECHNOLOGY"] = df.FUEL + df.COUNTRY
-
-    df = df.drop(columns=["COUNTRY", "FUEL"]).set_index(["TECHNOLOGY", "YEAR"])
-    techs = df.index.get_level_values("TECHNOLOGY").unique().tolist()
-    idx = pd.MultiIndex.from_product(
-        [techs, range(min_year, max_year + 1)], names=["TECHNOLOGY", "YEAR"]
-    )
-    df = df.reindex(idx)
-    df = df.interpolate(method="linear", limit_direction="both").reset_index()
-
-    # filter on years within actual model
-    df = df[df.YEAR.isin(years)].copy()
-
-    return df[["TECHNOLOGY", "YEAR", "VALUE"]]
-
-
-def get_domestic_mining_data(
-    costs: pd.DataFrame,
-    mining_fuels: list[str],
-    countries: list[str],
-    years: list[int],
-    region: str,
-) -> pd.DataFrame:
-    """Gets domestic mining data (ie. operates on mode 1)
-
-    Logic is:
-    - Assigns data for all regions based on international data
-    - Gets user defined data
-    - Joins dataframes, replacing international data with user provided data if avail
-    """
+    """Gets mining data (ie. operates on mode 1)"""
 
     df = costs.copy()
-    df["YEAR"] = df.YEAR.astype(int)
 
-    cmo = _get_cmo_template(df, mining_fuels, countries, years, "MIN")
-    user = _get_user_template(df, mining_fuels, years, "MIN")
-    final = pd.concat([user, cmo]).drop_duplicates(keep="first")
+    df = df[df.FUEL.isin(mining_fuels)].copy()
+
+    df["TECHNOLOGY"] = "MIN" + df.FUEL + df.COUNTRY
 
     # format data
 
-    final["REGION"] = region
-    final["MODE_OF_OPERATION"] = 1
+    df["REGION"] = region
+    df["MODE_OF_OPERATION"] = 1
 
-    return final.set_index(["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"])
-
-
-def get_international_mining_data(
-    costs: pd.DataFrame,
-    mining_fuels: list[str],
-    countries: list[str],
-    years: list[int],
-    region: str,
-    multiplier: float,
-    fuel_limits: pd.DataFrame,
-) -> pd.DataFrame:
-    """Gets domestic mining data (ie. operates on mode 2)"""
-
-    df = get_domestic_mining_data(
-        costs, mining_fuels, countries, years, region
-    ).reset_index()
-    df["MODE_OF_OPERATION"] = 2
-    df["VALUE"] = df.VALUE.mul(multiplier)
-
-    df = assign_international_limits(df, fuel_limits)
-
-    return df.set_index(["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"])
+    return df[["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR", "VALUE"]].set_index(
+        ["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"]
+    )
 
 
-def get_domestic_renewable_data(
+def get_renewable_data(
     costs: pd.DataFrame,
     renewable_fuels: list[str],
     nodes: list[str],
-    years: list[int],
     region: str,
 ) -> pd.DataFrame:
-    """Gets domestic mining data (ie. operates on mode 1)
-
-    Logic is:
-    - Assigns data for all regions based on international data
-    - Gets user defined data
-    - Joins dataframes, replacing international data with user provided data if avail
-    - Explodes country data based on node (ie. all nodes within a counrty have same price)
-    """
+    """Gets renewable data (ie. operates on mode 1)"""
 
     def _get_country_nodes_mapper(nodes: list[str]) -> dict[str, list[str]]:
         country = [x[:3] for x in nodes]
@@ -412,27 +344,29 @@ def get_domestic_renewable_data(
         return data
 
     df = costs.copy()
-    df["YEAR"] = df.YEAR.astype(int)
-    countries_nodes = _get_country_nodes_mapper(nodes)
-    countries = countries_nodes.keys()
 
-    cmo = _get_cmo_template(df, renewable_fuels, countries, years, "RNW")
-    user = _get_user_template(df, renewable_fuels, years, "RNW")
-    final = pd.concat([user, cmo]).drop_duplicates(keep="first")
+    df = df[df.FUEL.isin(renewable_fuels)].copy()
+
+    countries_nodes = _get_country_nodes_mapper(nodes)
 
     # format data
-    final["COUNTRY"] = final.TECHNOLOGY.str[6:]
-    final["NODE"] = final.COUNTRY.map(countries_nodes)
-    final = final.dropna(subset="NODE").explode("NODE")
+    df["NODE"] = df.COUNTRY.map(countries_nodes)
+    df = df.dropna(subset="NODE").explode("NODE")
 
-    final.TECHNOLOGY = final.TECHNOLOGY + final.NODE
+    # situation with no user defined renewable var costs
+    if df.empty:
+        return pd.DataFrame(
+            columns=["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR", "VALUE"]
+        ).set_index(["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"])
 
-    final = final.drop(columns=["COUNTRY", "NODE"])
+    df["TECHNOLOGY"] = "RNW" + df.FUEL + df.COUNTRY + df.NODE
 
-    final["REGION"] = region
-    final["MODE_OF_OPERATION"] = 1
+    df = df.drop(columns=["COUNTRY", "NODE", "FUEL"])
 
-    return final.set_index(["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"])
+    df["REGION"] = region
+    df["MODE_OF_OPERATION"] = 1
+
+    return df.set_index(["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"])
 
 
 def main(
@@ -450,6 +384,13 @@ def main(
 ) -> pd.DataFrame:
     """Creates variable cost data"""
 
+    # scaffolding information
+    countries = get_countries_from_techs(technologies)
+    nodes = get_nodes_from_techs(technologies)
+    y = years.unique().tolist()
+    r = regions.unique().tolist()[0]  # only one region
+
+    # international markets data
     cmo = calculate_cmo_forecasts(cmo_forecasts, cmo_data_year)
 
     # Add in other fuels that use same fuel as CMO
@@ -469,17 +410,14 @@ def main(
     cmo = pd.concat([cmo, cog, oth, pet, bio, was, nuc])
 
     # assign cmo data the same years as user defined prices
+    # note cost multipler must be applied here, as we do not want to modify
+    # the user defined data with the multiplier
     user_years = get_user_fuel_years(user_fuel_prices)
-    cmo = expand_cmo_data(cmo, user_years)
+    cmo = expand_cmo_data(cmo, user_years, countries, international_cost_factor)
 
     # combine cmo and user data
+    # user data is used wherever possible, with cmo to fill in gaps
     df = merge_cmo_user(cmo, user_fuel_prices)
-
-    # scaffolding information
-    countries = get_countries_from_techs(technologies)
-    nodes = get_nodes_from_techs(technologies)
-    y = years.unique().tolist()
-    r = regions.unique().tolist()[0]  # only one region
 
     mining_fuels = MINING_FUELS
     renewable_fuels = RENEWABLE_FUELS
@@ -489,14 +427,13 @@ def main(
 
     # process cost data
     df = apply_energy_content(df)
+    df = expand_merged_data(df, years)
 
-    mining_domestic = get_domestic_mining_data(df, mining_fuels, countries, y, r)
-    mining_international = get_international_mining_data(
-        df, mining_fuels, countries, y, r, international_cost_factor, fuel_limits
-    )
-    renewable_domestic = get_domestic_renewable_data(df, renewable_fuels, nodes, y, r)
+    mining_data = get_mining_data(df, mining_fuels, r)
+    renewable_data = get_renewable_data(df, renewable_fuels, nodes, r)
 
-    var_costs = pd.concat([mining_domestic, mining_international, renewable_domestic])
+    var_costs = pd.concat([mining_data, renewable_data])
+    var_costs = var_costs[var_costs.index.get_level_values("YEAR").isin(y)]
     var_costs = filter_var_cost_technologies(var_costs, technologies)
     return var_costs.round(3)
 
