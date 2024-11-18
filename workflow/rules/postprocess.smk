@@ -76,7 +76,7 @@ rule calculate_carbon_intensity:
     message:
         "Calculating Carbon Intensity..."
     input:
-        production_by_technology = "results/{scenario}/results/ProductionByTechnologyAnnual.csv",
+        demand = "results/{scenario}/results/Demand.csv",
         annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
     output:
         emission_intensity = "results/{scenario}/result_summaries/AnnualEmissionIntensity.csv",
