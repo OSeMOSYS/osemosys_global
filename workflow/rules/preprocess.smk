@@ -199,7 +199,6 @@ rule transmission:
     input:
         rules.powerplant.output.csv_files,
         'results/data/powerplant/VariableCost.csv',
-        'results/data/powerplant/ModelPeriodActivityUpperLimit.csv',
         default_op_life = 'resources/data/operational_life.csv',
         gtd_existing = 'resources/data/GTD_existing.csv',
         gtd_planned = 'resources/data/GTD_planned.csv',

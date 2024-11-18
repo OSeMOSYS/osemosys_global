@@ -19,7 +19,6 @@ from read import(
     import_min_cap_invest_base,
     import_res_cap_base,
     import_set_base,
-    import_period_limit
 )
 
 from constants import(
@@ -77,7 +76,6 @@ def main(
     res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
     fuel_set_base: pd.DataFrame,
-    model_period_limit: pd.DataFrame
 ):
     
     # CALL FUNCTIONS
@@ -112,10 +110,6 @@ def main(
     
     # Adjust activity limits if cross border trade is not allowed following user config.
     activity_limit_trn = activity_transmission_limit(cross_border_trade, oar_trn)
-    if activity_limit_trn.empty:
-        activity_limit = model_period_limit.copy()
-    else:
-        activity_limit = pd.concat([activity_limit_trn, model_period_limit])
     
     # Set operational life for transmission.
     op_life_trn = set_op_life_transmission(oar_trn, default_op_life, op_life_base, region_name)
@@ -186,7 +180,7 @@ def main(
     
     iar_trn.to_csv(os.path.join(transmission_data_dir, "InputActivityRatio.csv"), index=None)
     
-    activity_limit.to_csv(os.path.join(output_data_dir,
+    activity_limit_trn.to_csv(os.path.join(output_data_dir,
                                             "TotalTechnologyModelPeriodActivityUpperLimit.csv"),
                                 index = None)
     
@@ -252,7 +246,6 @@ if __name__ == "__main__":
         file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'        
         file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'
-        file_model_period_activity = f'{powerplant_data_dir}/ModelPeriodActivityUpperLimit.csv'
         
     # The below else statement defines variables if the 'transmission/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
@@ -297,7 +290,6 @@ if __name__ == "__main__":
         file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'
         file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'
-        file_model_period_activity = f'{powerplant_data_dir}/ModelPeriodActivityUpperLimit.csv'
 
     # SET INPUT DATA
     gtd_exist = format_gtd_existing(import_gtd_existing(file_gtd_existing))
@@ -328,7 +320,6 @@ if __name__ == "__main__":
     res_cap_base = import_res_cap_base(file_res_cap_base)
     tech_set_base = import_set_base(file_tech_set)  
     fuel_set_base = import_set_base(file_fuel_set)
-    model_period_limit = import_period_limit(file_model_period_activity)
     
     input_data = {
         "default_op_life": op_life_dict,
@@ -348,8 +339,7 @@ if __name__ == "__main__":
         "min_cap_invest_base" : min_cap_invest_base,
         "res_cap_base" : res_cap_base, 
         "tech_set_base" : tech_set_base,
-        "fuel_set_base" : fuel_set_base,  
-        "model_period_limit" : model_period_limit
+        "fuel_set_base" : fuel_set_base,
     }
     
     # CALL MAIN
