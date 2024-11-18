@@ -10,10 +10,16 @@ RESULT_FIGURES = [
 RESULT_SUMMARIES = [
     "TradeFlows",
     "AnnualEmissionIntensity",
-    "TransmissionCapacity",
-    "PowerCapacity",
-    "GenerationShares",
-    "NodeCost",
+    "PowerCapacityNode",
+    "TransmissionCapacityNode",
+    "PowerCapacityCountry",
+    "TransmissionCapacityCountry",
+    "GenerationSharesNode",
+    "GenerationSharesCountry",
+    "PowerCostNode",
+    "TotalCostNode",
+    "PowerCostCountry",
+    "TotalCostCountry",
     "Metrics"
 ]
 
@@ -58,7 +64,7 @@ rule visualisation:
 
 rule calculate_trade_flows:
     message: 
-        "Calculating Hourly Trade Flows"
+        "Calculating Hourly Trade Flows..."
     params:
         seasons = config["seasons"],
         dayparts = config["dayparts"],
@@ -85,14 +91,17 @@ rule calculate_carbon_intensity:
     script: 
         "../scripts/osemosys_global/summary/carbon_intensity.py"
 
-rule calculate_cost_by_node:
+rule calculate_costs:
     message:
-        "Calculating Cost by Node..."
+        "Calculating Costs..."
     input:
         discounted_cost_by_technology = "results/{scenario}/results/DiscountedCostByTechnology.csv",
         demand = "results/{scenario}/results/Demand.csv",
     output:
-        node_cost = "results/{scenario}/result_summaries/NodeCost.csv",
+        node_pwr_cost = "results/{scenario}/result_summaries/PowerCostNode.csv",
+        country_pwr_cost = "results/{scenario}/result_summaries/PowerCostCountry.csv",
+        node_cost = "results/{scenario}/result_summaries/TotalCostNode.csv",
+        country_cost = "results/{scenario}/result_summaries/TotalCostCountry.csv",
     log:
         log = 'results/{scenario}/logs/node_cost.log'
     script: 
@@ -115,7 +124,7 @@ rule calculate_generation_shares:
 
 rule calculate_capacity:
     message:
-        "Calculating Capacity by Node..."
+        "Calculating Capacities..."
     input:
         total_capacity = "results/{scenario}/results/TotalCapacityAnnual.csv",
     output:

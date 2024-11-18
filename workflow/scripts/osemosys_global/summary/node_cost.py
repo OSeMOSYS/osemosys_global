@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 
 
-def get_tech_cost_per_node(discounted_cost_tech: pd.DataFrame) -> pd.DataFrame:
+def get_tech_cost(discounted_cost_tech: pd.DataFrame, country: bool) -> pd.DataFrame:
     """Only of power generation technologies"""
 
     df = discounted_cost_tech.copy()
@@ -14,39 +14,57 @@ def get_tech_cost_per_node(discounted_cost_tech: pd.DataFrame) -> pd.DataFrame:
         & ~(df.index.get_level_values("TECHNOLOGY").str.contains("TRN"))
     ]
 
-    df["NODE"] = df.index.get_level_values("TECHNOLOGY").str[6:11]
+    if country:
+        r = "COUNTRY"
+        df[r] = df.index.get_level_values("TECHNOLOGY").str[6:9]
+    else:
+        r = "NODE"
+        df[r] = df.index.get_level_values("TECHNOLOGY").str[6:11]
 
     return (
-        df.reset_index()[["REGION", "NODE", "YEAR", "VALUE"]]
-        .groupby(["REGION", "NODE", "YEAR"])
+        df.reset_index()[["REGION", r, "YEAR", "VALUE"]]
+        .groupby(["REGION", r, "YEAR"])
         .sum()
     )
 
-def get_storage_cost_per_node(discounted_cost_storage: pd.DataFrame) -> pd.DataFrame:
+def get_storage_cost(discounted_cost_storage: pd.DataFrame, country: bool) -> pd.DataFrame:
 
     df = discounted_cost_storage.copy()
-    df["NODE"] = df.index.get_level_values("STORAGE").str[3:8]
+    
+    if country:
+        r = "COUNTRY"
+        df[r] = df.index.get_level_values("STORAGE").str[3:6]
+    else:
+        r = "NODE"
+        df[r] = df.index.get_level_values("STORAGE").str[3:8]
+    
     return (
-        df.reset_index()[["REGION", "NODE", "YEAR", "VALUE"]]
-        .groupby(["REGION", "NODE", "YEAR"])
+        df.reset_index()[["REGION", r, "YEAR", "VALUE"]]
+        .groupby(["REGION", r, "YEAR"])
         .sum()
     )
 
-def get_demand_per_node(demand: pd.DataFrame) -> pd.DataFrame:
+def get_demand(demand: pd.DataFrame, country: bool) -> pd.DataFrame:
 
     df = demand.copy()
 
     df = df[df.index.get_level_values("FUEL").str.startswith("ELC")]
-    df["NODE"] = df.index.get_level_values("FUEL").str[3:8]
+    
+    if country:
+        r = "COUNTRY"
+        df[r] = df.index.get_level_values("FUEL").str[3:6]
+    else:
+        r = "NODE"
+        df[r] = df.index.get_level_values("FUEL").str[3:8]
 
     return (
-        df.reset_index()[["REGION", "NODE", "YEAR", "VALUE"]]
-        .groupby(["REGION", "NODE", "YEAR"])
+        df.reset_index()[["REGION", r, "YEAR", "VALUE"]]
+        .groupby(["REGION", r, "YEAR"])
         .sum()
     )
 
 
-def get_pwr_cost_per_node(demand: pd.DataFrame, cost: pd.DataFrame) -> pd.DataFrame:
+def get_pwr_cost(demand: pd.DataFrame, cost: pd.DataFrame) -> pd.DataFrame:
     """Gets power generation cost per node in $/MWh"""
 
     # ($M / PJ) (1PJ / 1000 TJ) (1TJ / 1000 GJ) (1GJ / 1000 MJ) ($1000000 / $M) (3600sec / hr)
@@ -60,13 +78,19 @@ if __name__ == "__main__":
             snakemake.input.discounted_cost_by_technology
         )
         demand_csv = snakemake.input.demand
-        save = snakemake.output.node_cost
+        power_cost_node_csv = snakemake.output.node_pwr_cost
+        power_cost_country_csv = snakemake.output.country_pwr_cost
+        total_cost_node_csv = snakemake.output.node_cost
+        total_cost_country_csv = snakemake.output.country_cost
     else:
         discounted_cost_by_technology_csv = (
             "results/India/results/DiscountedCostByTechnology.csv"
         )
         demand_csv = "results/India/results/Demand.csv"
-        save = "results/India/results/NodeCost.csv"
+        power_cost_node_csv = "results/India/result_summaries/NodePowerCost.csv"
+        power_cost_country_csv = "results/India/result_summaries/CountryPowerCost.csv"
+        total_cost_node_csv = "results/India/result_summaries/NodeCost.csv"
+        total_cost_country_csv = "results/India/result_summaries/CountryCost.csv"
 
     discounted_cost_by_technology = pd.read_csv(
         discounted_cost_by_technology_csv, index_col=[0, 1, 2]
@@ -87,13 +111,25 @@ if __name__ == "__main__":
             columns=["REGION", "STORAGE", "YEAR", "VALUE"]
         ).set_index(["REGION", "STORAGE", "YEAR"])
 
-    tech_cost = get_tech_cost_per_node(discounted_cost_by_technology)
-    storage_cost = get_storage_cost_per_node(discounted_cost_by_storage)
-    
+
+    # node level metrics 
+
+    tech_cost = get_tech_cost(discounted_cost_by_technology, country=False)
+    storage_cost = get_storage_cost(discounted_cost_by_storage, country=False)
     cost = tech_cost.add(storage_cost, fill_value=0)
+    demand = get_demand(demand_raw, country=False)
+    pwr_cost = get_pwr_cost(demand, cost)
+
+    pwr_cost.to_csv(power_cost_node_csv, index=True)
+    cost.to_csv(total_cost_node_csv, index=True)
+
+    # country level metrics 
     
-    demand = get_demand_per_node(demand_raw)
+    tech_cost = get_tech_cost(discounted_cost_by_technology, country=True)
+    storage_cost = get_storage_cost(discounted_cost_by_storage, country=True)
+    cost = tech_cost.add(storage_cost, fill_value=0)
+    demand = get_demand(demand_raw, country=True)
+    pwr_cost = get_pwr_cost(demand, cost)
 
-    df = get_pwr_cost_per_node(demand, cost)
-
-    df.to_csv(save, index=True)
+    pwr_cost.to_csv(power_cost_country_csv, index=True)
+    cost.to_csv(total_cost_country_csv, index=True)
