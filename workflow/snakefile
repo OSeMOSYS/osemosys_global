@@ -32,7 +32,6 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
         "StorageLevelYearStart",
         "StorageLevelYearFinish",
         "Trade",
-        "DiscountedOperatingCost",
         "TotalDiscountedStorageCost",
         "ModelPeriodEmissions",
         "StorageLowerLimit",
