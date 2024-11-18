@@ -171,7 +171,6 @@ rule powerplant_var_costs:
         regions = "results/data/REGION.csv",
         years = "results/data/YEAR.csv",
         technologies = "results/data/powerplant/TECHNOLOGY.csv",
-        fuel_limits = "resources/data/fuel_limits.csv",
     output:
         var_costs = 'results/data/powerplant/VariableCost.csv'
     log:
@@ -185,9 +184,10 @@ rule fuel_limits:
     input:
         region_csv = "results/data/REGION.csv",
         technology_csv = "results/data/powerplant/TECHNOLOGY.csv",
+        year_csv = "results/data/powerplant/TECHNOLOGY.csv",
         fuel_limit_csv = "resources/data/fuel_limits.csv",
     output:
-        model_period_limit_csv = 'results/data/powerplant/ModelPeriodActivityUpperLimit.csv'
+        activity_upper_limit_csv = 'results/data/TotalTechnologyAnnualActivityUpperLimit.csv'
     log:
         log = 'results/logs/powerplant_fuel_limits.log'
     script:

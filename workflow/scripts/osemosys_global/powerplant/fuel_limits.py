@@ -4,6 +4,37 @@ import pandas as pd
 from typing import Optional
 
 
+"""
+
+def apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel):
+
+    mf_df = pd.read_csv(os.path.join(input_dir, "data", "fuel_limits.csv"))
+    mf_df["TECHNOLOGY"] = "MIN" + mf_df["FUEL"] + mf_df["COUNTRY"]
+    mf_df = mf_df[["TECHNOLOGY", "YEAR", "VALUE"]]
+
+    tech_list = mf_df["TECHNOLOGY"].unique()
+    mf_df_final = pd.DataFrame(
+        list(itertools.product(tech_list, years)), columns=["TECHNOLOGY", "YEAR"]
+    )
+    mf_df_final = pd.merge(mf_df_final, mf_df, how="left", on=["TECHNOLOGY", "YEAR"])
+    mf_df_final["VALUE"] = mf_df_final["VALUE"].astype(float)
+    for each_tech in tech_list:
+        mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"] = (
+            mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"]
+            .interpolate()
+            .round(0)
+        )
+
+    mf_df_final["REGION"] = region
+    mf_df_final = mf_df_final[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
+    mf_df_final.dropna(inplace=True)
+    mf_df_final.to_csv(
+        os.path.join(output_data_dir, "TotalTechnologyAnnualActivityUpperLimit.csv"),
+        index=None,
+    )
+"""
+
+
 def import_fuel_limits(f: str) -> pd.DataFrame:
     """Imports contry level fuel limits.
 
@@ -21,7 +52,9 @@ def import_set(f: str) -> pd.Series:
         return pd.Series(s)
 
 
-def get_template_fuel_limit(regions: pd.Series, techs: pd.Series) -> pd.Series:
+def get_template_fuel_limit(
+    regions: pd.Series, techs: pd.Series, years: pd.Series
+) -> pd.Series:
 
     r = regions.unique().tolist()
     t = (
@@ -29,8 +62,9 @@ def get_template_fuel_limit(regions: pd.Series, techs: pd.Series) -> pd.Series:
         .unique()
         .tolist()
     )
+    y = years.unique().tolist()
 
-    idx = pd.MultiIndex.from_product([r, t], names=["REGION", "TECHNOLOGY"])
+    idx = pd.MultiIndex.from_product([r, t, y], names=["REGION", "TECHNOLOGY", "YEAR"])
     s = pd.Series(index=idx).fillna(0)
     s.name = "VALUE"
 
@@ -46,24 +80,37 @@ def get_user_fuel_limits(
     r = r[0]
 
     if fuel_limits.empty:
-        s = pd.Series(index=["REGION", "TECHNOLOGY"])
+        s = pd.Series(index=["REGION", "TECHNOLOGY", "YEAR"])
         s.name = "VALUE"
         return s
 
+    # format limits dataframe
     limits = fuel_limits.copy()
     limits = limits[limits.VALUE > 0.001].copy()  # assume these are zero
-
-    # not sure what the year column represents?
-    limits = limits.drop(columns="YEAR").drop_duplicates(
-        subset=["FUEL", "COUNTRY"], keep="last"
-    )
-
     limits["TECHNOLOGY"] = "MIN" + limits.FUEL + limits.COUNTRY
+    limits = limits[["TECHNOLOGY", "YEAR", "VALUE"]].set_index(["TECHNOLOGY", "YEAR"])
 
-    s = limits[["TECHNOLOGY", "VALUE"]].copy()
-    s["REGION"] = r
+    techs = limits.index.get_level_values("TECHNOLOGY").unique()
 
-    return s.set_index(["REGION", "TECHNOLOGY"]).squeeze()
+    dfs = []
+
+    # need to interpolate each tehnology seperatly, as same years are not guaranteed
+    for tech in techs:
+        df = limits.loc[tech]
+        idx = pd.Index(range(min(df.index), max(df.index) + 1))
+        df = df.reindex(idx)
+        df["VALUE"] = df.VALUE.interpolate(
+            method="linear", limit_direction="both"
+        ).round(1)
+        df = df.reset_index().rename(columns={"index": "YEAR"})
+        df["TECHNOLOGY"] = tech
+        dfs.append(df[["TECHNOLOGY", "YEAR", "VALUE"]])
+
+    final = pd.concat(dfs)
+
+    final["REGION"] = r
+
+    return final.set_index(["REGION", "TECHNOLOGY", "YEAR"]).squeeze()
 
 
 def merge_template_user_limits(
@@ -78,20 +125,23 @@ if __name__ == "__main__":
         technology_csv = snakemake.input.technology_csv
         fuel_limit_csv = snakemake.input.fuel_limit_csv
         region_csv = snakemake.input.region_csv
-        model_period_limit_csv = snakemake.output.model_period_limit_csv
+        years_csv = snakemake.input.year_csv
+        activity_upper_limit_csv = snakemake.output.annual_limit_csv
     else:
         technology_csv = "results/India/data/TECHNOLOGY.csv"
         fuel_limit_csv = "resources/data/fuel_limits.csv"
         region_csv = "results/India/data/REGION.csv"
-        model_period_limit_csv = ""
+        years_csv = "results/India/data/YEAR.csv"
+        activity_upper_limit_csv = ""
 
     regions = import_set(region_csv)
     techs = import_set(technology_csv)
+    years = import_set(years_csv)
     fuel_limits = import_fuel_limits(fuel_limit_csv)
 
-    template = get_template_fuel_limit(regions, techs)
+    template = get_template_fuel_limit(regions, techs, years)
     user_limits = get_user_fuel_limits(regions, fuel_limits)
 
-    model_period_limit = merge_template_user_limits(template, user_limits)
+    activity_upper_limit = merge_template_user_limits(template, user_limits)
 
-    model_period_limit.to_csv(model_period_limit_csv, index=True)
+    activity_upper_limit.to_csv(activity_upper_limit_csv, index=True)
