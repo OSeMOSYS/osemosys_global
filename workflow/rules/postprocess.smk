@@ -81,8 +81,10 @@ rule calculate_trade_flows:
 rule calculate_carbon_intensity:
     message:
         "Calculating Carbon Intensity..."
+    params:
+        storage = config['storage_parameters'],
     input:
-        demand = "results/{scenario}/results/Demand.csv",
+        production_by_technology = "results/{scenario}/results/ProductionByTechnology.csv",
         annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
     output:
         emission_intensity = "results/{scenario}/result_summaries/AnnualEmissionIntensity.csv",
