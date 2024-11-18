@@ -44,6 +44,9 @@ def cap_investment_constraints_sto(storage_set, df_max_cap_invest_base,
         
         data = data.explode(
             'YEAR').rename(columns = {'MAX_BUILD' : 'VALUE'})
+        
+        data = data.loc[data["YEAR"].between(start_year, end_year)]
+        
         data['REGION'] = region_name
         
         df_max_cap_invest_sto = pd.concat([df_max_cap_invest_sto, data], join = 'inner')

@@ -40,6 +40,10 @@ def cap_investment_constraints_trn(df_iar_trn_final, df_max_cap_invest_base,
         
         df_max_cap_invest_trn = df_max_cap_invest_trn.explode(
             'YEAR').rename(columns = {'MAX_BUILD' : 'VALUE'})
+        
+        df_max_cap_invest_trn = df_max_cap_invest_trn.loc[df_max_cap_invest_trn["YEAR"].between(
+            start_year, end_year)]
+
         df_max_cap_invest_trn['REGION'] = region_name
         
         df_max_cap_invest_trn = pd.concat([df_max_cap_invest_base, 
