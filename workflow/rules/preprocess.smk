@@ -104,7 +104,6 @@ max_capacity_files = [
     'TotalAnnualMaxCapacity',
     'TotalTechnologyAnnualActivityUpperLimit',
     'AccumulatedAnnualDemand',
-#    'TotalTechnologyModelPeriodActivityUpperLimit'
 ]
 
 user_capacity_files = [
@@ -176,16 +175,31 @@ rule powerplant_var_costs:
     output:
         var_costs = 'results/data/powerplant/VariableCost.csv'
     log:
-        log = 'results/logs/powerplant.log'
+        log = 'results/logs/powerplant_var_cost.log'
     script:
         "../scripts/osemosys_global/powerplant/variable_costs.py"
+
+rule fuel_limits:
+    message:
+        "Generating mining fuel limits..."
+    input:
+        region_csv = "results/data/REGION.csv",
+        technology_csv = "results/data/powerplant/TECHNOLOGY.csv",
+        fuel_limit_csv = "resources/data/fuel_limits.csv",
+    output:
+        model_period_limit_csv = 'results/data/powerplant/ModelPeriodActivityUpperLimit.csv'
+    log:
+        log = 'results/logs/powerplant_fuel_limits.log'
+    script:
+        "../scripts/osemosys_global/powerplant/fuel_limits.py"
 
 rule transmission:
     message:
         "Generating transmission data..."
     input:
         rules.powerplant.output.csv_files,
-        rules.powerplant_var_costs.output,
+        'results/data/powerplant/VariableCost.csv',
+        'results/data/powerplant/ModelPeriodActivityUpperLimit.csv',
         default_op_life = 'resources/data/operational_life.csv',
         gtd_existing = 'resources/data/GTD_existing.csv',
         gtd_planned = 'resources/data/GTD_planned.csv',

@@ -11,7 +11,6 @@ from read import (
     import_cmo_forecasts,
     import_fuel_prices,
     import_set,
-    import_fuel_limits,
 )
 
 # can not use constant file defintions due to waste being tagged incorrectly
@@ -126,7 +125,7 @@ def expand_cmo_data(
         df_international = df_international.mul(international_cost_multiplier)
 
     df_country = df_template.copy().droplevel("COUNTRY")
-    df_country["COUNTRY"] = countries * len(df_country)
+    df_country["COUNTRY"] = [countries] * len(df_country)
     df_country = df_country.explode("COUNTRY")
     df_country = df_country.reset_index().set_index(
         ["FUEL", "COUNTRY", "UNIT", "ENERGY_CONTENT"]
@@ -273,33 +272,6 @@ def filter_var_cost_technologies(
     return df[df.index.get_level_values("TECHNOLOGY").isin(available_techs)].copy()
 
 
-def assign_international_limits(
-    var_costs: pd.DataFrame, fuel_limits: pd.DataFrame
-) -> pd.DataFrame:
-    """Checks if a mining tech can contribute to international markets
-
-    If a country has a fuel limit, the country can contribute to international markets. If the
-    country does not have a fuel limit, the international variable cost is set to a very high value.
-    """
-
-    df = var_costs.copy()
-
-    cost = 999999
-
-    # no international trading
-    if fuel_limits.empty:
-        df["VALUE"] = cost
-        return df
-
-    limits = fuel_limits.copy()
-    limits["name"] = "MIN" + limits.FUEL + limits.COUNTRY
-    limited_techs = limits.name.unique().tolist()
-
-    df.loc[df.TECHNOLOGY.isin(limited_techs), "VALUE"] = cost
-
-    return df
-
-
 def get_mining_data(
     costs: pd.DataFrame, mining_fuels: list[str], region: str
 ) -> pd.DataFrame:
@@ -380,7 +352,6 @@ def main(
     nuclear_costs: int | float,
     waste_costs: int | float,
     international_cost_factor: Optional[int | float] = None,
-    fuel_limits: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """Creates variable cost data"""
 
@@ -422,9 +393,6 @@ def main(
     mining_fuels = MINING_FUELS
     renewable_fuels = RENEWABLE_FUELS
 
-    if not isinstance(fuel_limits, pd.DataFrame):
-        fuel_limits = pd.DataFrame()  # no international trading
-
     # process cost data
     df = apply_energy_content(df)
     df = expand_merged_data(df, years)
@@ -446,7 +414,6 @@ if __name__ == "__main__":
         file_regions = snakemake.input.regions
         file_years = snakemake.input.years
         file_technologies = snakemake.input.technologies
-        file_fuel_limits = snakemake.input.fuel_limits
         file_var_costs = snakemake.output.var_costs
     else:
         file_cmo_forecasts = "resources/data/CMO-October-2024-Forecasts.xlsx"
@@ -454,12 +421,10 @@ if __name__ == "__main__":
         file_regions = "results/India/data/REGION.csv"
         file_years = "results/India/data/YEAR.csv"
         file_technologies = "results/India/data/TECHNOLOGY.csv"
-        file_fuel_limits = "resources/data/fuel_limits.csv"
         file_var_costs = "results/India/data/VariableCosts.csv"
 
     cmo_forecasts = import_cmo_forecasts(file_cmo_forecasts)
     user_fuel_prices = import_fuel_prices(file_fuel_prices)
-    user_fuel_limits = import_fuel_limits(file_fuel_limits)
     technologies = import_set(file_technologies)
     years = import_set(file_years)
     regions = import_set(file_regions)
@@ -475,7 +440,6 @@ if __name__ == "__main__":
         "nuclear_costs": NUCLEAR_VAR_COSTS,
         "waste_costs": WASTE_VAR_COSTS,
         "international_cost_factor": INT_COST_FACTOR,
-        "fuel_limits": user_fuel_limits,
     }
 
     df = main(**input_data)

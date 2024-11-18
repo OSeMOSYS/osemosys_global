@@ -103,6 +103,13 @@ def import_res_cap_base(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
+def import_period_limit(f: str) -> pd.DataFrame:
+    """Imports ModelPeriodActivityUpperLimit.csv as output from the Powerplant rule.
+    
+    ModelPeriodActivityUpperLimit.csv
+    """
+    return pd.read_csv(f)
+
 def import_set_base(f: str) -> pd.DataFrame:
     """Imports a set csv"""
     return pd.read_csv(f)

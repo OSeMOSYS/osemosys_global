@@ -272,25 +272,6 @@ def apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel):
         index=None,
     )
 
-    # Model Period Activity Upper Limit for 'MINCOA***01'
-    min_tech_df = pd.read_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"))
-    min_tech = [
-        x
-        for x in min_tech_df["VALUE"].unique()
-        if x.startswith("MINCOA")
-        if x.endswith("01")
-    ]
-    min_tech_df_final = pd.DataFrame(columns=["REGION", "TECHNOLOGY", "VALUE"])
-    min_tech_df_final["TECHNOLOGY"] = min_tech
-    min_tech_df_final["REGION"] = region
-    min_tech_df_final["VALUE"] = 0
-    min_tech_df_final.to_csv(
-        os.path.join(
-            output_data_dir, "TotalTechnologyModelPeriodActivityUpperLimit.csv"
-        ),
-        index=None,
-    )
-
 
 def apply_calibration(region, years, output_data_dir, calibration):
 

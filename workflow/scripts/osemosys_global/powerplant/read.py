@@ -86,13 +86,6 @@ def import_fuel_prices(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
-def import_fuel_limits(f: str) -> pd.DataFrame:
-    """Imports contry level fuel limits.
-
-    fuel_limits.csv
-    """
-    return pd.read_csv(f)
-
 def import_set(f: str) -> pd.Series:
     s = pd.read_csv(f).squeeze()
     if isinstance(s, pd.Series):
