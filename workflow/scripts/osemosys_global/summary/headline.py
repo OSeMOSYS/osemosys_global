@@ -1,6 +1,7 @@
 """Calculates Headline Metrics"""
 
 import pandas as pd
+from typing import Optional
 from constants import RENEWABLES, FOSSIL, CLEAN
 
 
@@ -40,16 +41,29 @@ def get_gen_cost(
     return pd.DataFrame([data], columns=["Metric", "Unit", "Value"])
 
 
-def _filter_pwr_techs(production_by_technology: pd.DataFrame) -> pd.DataFrame:
+def _filter_pwr_techs(
+    production_by_technology: pd.DataFrame, exclusions: Optional[list[str]]
+) -> pd.DataFrame:
+    """Filters for only power techs
+
+    exclusions: Optional[list[str]]
+        Additional 'PWR' techs to filter for. For example, if ['LDS' and 'SDS'] are provided,
+        will filter out 'PWRLDS' and 'PWRSDS' values
+    """
 
     df = production_by_technology.copy()
 
-    return df[
+    df = df[
         (df.index.get_level_values("TECHNOLOGY").str.startswith("PWR"))
-        & ~(df.index.get_level_values("TECHNOLOGY").str.startswith("PWRLDS"))
-        & ~(df.index.get_level_values("TECHNOLOGY").str.startswith("PWRSDS"))
         & ~(df.index.get_level_values("TECHNOLOGY").str.contains("TRN"))
-    ]
+    ].copy()
+
+    if not exclusions:
+        return df
+
+    prefixes = tuple([f"PWR{x}" for x in exclusions])
+
+    return df[~df.index.get_level_values("TECHNOLOGY").str.startswith(prefixes)].copy()
 
 
 def _filter_techs(
@@ -66,9 +80,11 @@ def _filter_techs(
     return df["VALUE"].to_frame()
 
 
-def get_gen_shares(production_by_technology: pd.DataFrame) -> pd.DataFrame:
+def get_gen_shares(
+    production_by_technology: pd.DataFrame, exclusions: Optional[list[str]] = None
+) -> pd.DataFrame:
 
-    gen_total = _filter_pwr_techs(production_by_technology).VALUE.sum()
+    gen_total = _filter_pwr_techs(production_by_technology, exclusions).VALUE.sum()
     rnw_total = _filter_techs(production_by_technology, RENEWABLES).VALUE.sum()
     fsl_total = _filter_techs(production_by_technology, FOSSIL).VALUE.sum()
     cln_total = _filter_techs(production_by_technology, CLEAN).VALUE.sum()
@@ -88,12 +104,14 @@ def get_gen_shares(production_by_technology: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     if "snakemake" in globals():
+        storage = snakemake.params.storage
         annual_emissions_csv = snakemake.input.annual_emissions
         production_by_technology_csv = snakemake.input.production_by_technology
         total_discounted_cost_csv = snakemake.input.total_discounted_cost
         demand_csv = snakemake.input.demand
         save = snakemake.output.metrics
     else:
+        storage = {"SDS": [], "LDS": []}
         annual_emissions_csv = "results/India/results/AnnualEmissions.csv"
         production_by_technology_csv = (
             "results/India/results/ProductionByTechnologyAnnual.csv"
@@ -108,13 +126,14 @@ if __name__ == "__main__":
     )
     total_discounted_cost = pd.read_csv(total_discounted_cost_csv, index_col=[0, 1])
     demand = pd.read_csv(demand_csv, index_col=[0, 1, 2, 3])
+    exclusions = list(storage)
 
     dfs = []
 
     dfs.append(get_emissions(annual_emissions))
     dfs.append(get_system_cost(total_discounted_cost))
     dfs.append(get_gen_cost(total_discounted_cost, demand))
-    dfs.append(get_gen_shares(production_by_technology))
+    dfs.append(get_gen_shares(production_by_technology, exclusions))
 
     df = pd.concat(dfs)
 

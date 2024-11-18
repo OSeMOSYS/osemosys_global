@@ -56,24 +56,6 @@ rule visualisation:
     shell: 
         'python workflow/scripts/osemosys_global/visualise.py {params.input_data} {params.result_data} {params.scenario_figs_dir} {params.cost_line_expansion_xlsx} {params.countries} {params.results_by_country} {params.years} 2> {log}'
 
-# rule summarise_results:
-#     message:
-#         'Generating summary of results...'
-#     input:
-#         csv_files = expand('results/{{scenario}}/results/{result_file}.csv', result_file = OTOOLE_RESULTS),
-#     params:
-#         start_year = config['startYear'],
-#         end_year = config['endYear'],
-#         dayparts = config['dayparts'],
-#         seasons = config['seasons'],
-#     output:
-#         expand('results/{{scenario}}/result_summaries/{result_summary}.csv', 
-#             result_summary = result_summaries),
-#     log:
-#         log = 'results/{scenario}/logs/summarise_results.log'
-#     shell: 
-#         'python workflow/scripts/osemosys_global/summarise_results.py 2> {log}'
-
 rule calculate_trade_flows:
     message: 
         "Calculating Hourly Trade Flows"
@@ -146,6 +128,8 @@ rule calculate_capacity_by_node:
 rule calcualte_headline_metrics:
     message:
         "Calculating Headline Metrics..."
+    params:
+        storage = config['storage_parameters'],
     input:
         annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
         production_by_technology = "results/{scenario}/results/ProductionByTechnologyAnnual.csv",
