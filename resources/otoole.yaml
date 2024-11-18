@@ -374,7 +374,7 @@ DiscountedCostByTechnology:
     type: result
     dtype: float
     default: 0
-DiscountedOperatingCost:
+DiscountedOperationalCost:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
