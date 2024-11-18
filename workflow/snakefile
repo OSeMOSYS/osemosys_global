@@ -20,21 +20,27 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
     results = [x for x in otoole if otoole[x]["type"] == var]
 
     # no result calcualtions 
-    # or if no result present (ie. no storage runs)
     missing = [
+        # storage investment not garunteed 
         "NewStorageCapacity",
-        "NumberOfNewTechnologyUnits",
+        "TotalDiscountedStorageCost",
         "SalvageValueStorage",
-        "StorageLevelDayTypeStart",
-        "StorageLevelDayTypeFinish",
+        "CapitalInvestmentStorage"
+        "DiscountedCapitalInvestmentStorage",
+        "DiscountedSalvageValueStorage"
+        # storage levels not garunteed 
         "StorageLevelSeasonStart",
         "StorageLevelSeasonFinish",
         "StorageLevelYearStart",
         "StorageLevelYearFinish",
-        "Trade",
-        "TotalDiscountedStorageCost",
-        "ModelPeriodEmissions",
+        "StorageLevelDayTypeStart",
+        "StorageLevelDayTypeFinish",
         "StorageLowerLimit",
+        "StorageUpperLimit",
+        # other missing calcs
+        "NumberOfNewTechnologyUnits",
+        "Trade",
+        "ModelPeriodEmissions",
     ]
 
     return [x for x in results if x not in missing]
