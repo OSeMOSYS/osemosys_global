@@ -106,7 +106,8 @@ rule calculate_generation_shares:
     input:
         production_by_technology = "results/{scenario}/results/ProductionByTechnology.csv",
     output:
-        generation_shares = "results/{scenario}/result_summaries/GenerationShares.csv",
+        generation_shares_node = "results/{scenario}/result_summaries/GenerationSharesNode.csv",
+        generation_shares_country = "results/{scenario}/result_summaries/GenerationSharesCountry.csv",
     log:
         log = 'results/{scenario}/logs/generation_shares.log'
     script: 
