@@ -14,9 +14,15 @@ def calc_trn_capacity(
     if country:
         df["FROM"] = df.index.get_level_values("TECHNOLOGY").str[3:6]
         df["TO"] = df.index.get_level_values("TECHNOLOGY").str[8:11]
+        df = df.drop_duplicates(subset=["FROM", "TO"], keep=False)  # intercountry
     else:
         df["FROM"] = df.index.get_level_values("TECHNOLOGY").str[3:8]
         df["TO"] = df.index.get_level_values("TECHNOLOGY").str[8:13]
+
+    if df.empty:
+        return pd.DataFrame(columns=["FROM", "TO", "YEAR", "VALUE"]).set_index(
+            ["FROM", "TO", "YEAR"]
+        )
 
     return (
         df.reset_index()[["FROM", "TO", "YEAR", "VALUE"]]
