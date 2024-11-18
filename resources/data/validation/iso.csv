@@ -122,6 +122,7 @@ Kiribati,KI,KIR,296,ISO 3166-2:KI,Oceania,Micronesia,"",009,057,""
 Kuwait,KW,KWT,414,ISO 3166-2:KW,Asia,Western Asia,"",142,145,""
 Kyrgyzstan,KG,KGZ,417,ISO 3166-2:KG,Asia,Central Asia,"",142,143,""
 Lao People's Democratic Republic,LA,LAO,418,ISO 3166-2:LA,Asia,South-eastern Asia,"",142,035,""
+Lao People's Democratic Republic (the),LA,LAO,418,ISO 3166-2:LA,Asia,South-eastern Asia,"",142,035,""
 Latvia,LV,LVA,428,ISO 3166-2:LV,Europe,Northern Europe,"",150,154,""
 Lebanon,LB,LBN,422,ISO 3166-2:LB,Asia,Western Asia,"",142,145,""
 Lesotho,LS,LSO,426,ISO 3166-2:LS,Africa,Sub-Saharan Africa,Southern Africa,002,202,018
@@ -175,6 +176,7 @@ Papua New Guinea,PG,PNG,598,ISO 3166-2:PG,Oceania,Melanesia,"",009,054,""
 Paraguay,PY,PRY,600,ISO 3166-2:PY,Americas,Latin America and the Caribbean,South America,019,419,005
 Peru,PE,PER,604,ISO 3166-2:PE,Americas,Latin America and the Caribbean,South America,019,419,005
 Philippines,PH,PHL,608,ISO 3166-2:PH,Asia,South-eastern Asia,"",142,035,""
+Philippines (the),PH,PHL,608,ISO 3166-2:PH,Asia,South-eastern Asia,"",142,035,""
 Pitcairn,PN,PCN,612,ISO 3166-2:PN,Oceania,Polynesia,"",009,061,""
 Poland,PL,POL,616,ISO 3166-2:PL,Europe,Eastern Europe,"",150,151,""
 Portugal,PT,PRT,620,ISO 3166-2:PT,Europe,Southern Europe,"",150,039,""
