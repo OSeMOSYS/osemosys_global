@@ -35,6 +35,10 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
         "TotalDiscountedStorageCost",
         "ModelPeriodEmissions",
         "StorageLowerLimit",
+        "CapitalInvestmentStorage",
+        "DiscountedCapitalInvestmentStorage",
+        "DiscountedCostByStorage",
+        "DiscountedSalvageValueStorage"
     ]
 
     return [x for x in results if x not in missing]
