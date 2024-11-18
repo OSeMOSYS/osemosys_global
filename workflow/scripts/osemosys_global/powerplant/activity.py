@@ -195,10 +195,10 @@ def activity_upstream(df_pwr_iar_final, renewables_list):
                'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL']
     
     # Above should get all the outputs for the MIN technologies, but we need to adjust the mode 2 ones to just the fuel code (rather than MINCOAINT)
-    df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
-               'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL'].str[0:3]+df_oar_upstream['TECHNOLOGY'].str[6:9]
-    df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
-               'FUEL'] = df_oar_upstream['FUEL'].str[0:3]
+    # df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
+    #            'TECHNOLOGY'] = 'MIN'+df_oar_upstream['FUEL'].str[0:3]+df_oar_upstream['TECHNOLOGY'].str[6:9]
+    # df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION']==2,
+    #            'FUEL'] = df_oar_upstream['FUEL'].str[0:3]
 
     # Now remove the duplicate fuels that the above created (because there's now a COA for each country, not each region, and GAS is repeated twice for each region as well):
     df_oar_upstream.drop_duplicates(keep='first',inplace=True)
@@ -207,19 +207,11 @@ def activity_upstream(df_pwr_iar_final, renewables_list):
     df_oar_int = pd.DataFrame(df_oar_upstream.loc[df_oar_upstream['MODE_OF_OPERATION'] == 2, :])
     
     # At this point we should have only the internationally traded fuels since they're all mode 2.  So we can make the tech MINXXXINT and that's that.
-    df_oar_int['TECHNOLOGY'] = 'MIN'+df_oar_int['FUEL']+'INT'
-    # And rename the fuel to XXXINT
-    df_oar_int['FUEL'] = df_oar_int['FUEL']+'INT'
-    df_oar_int['MODE_OF_OPERATION'] = 1  # This is probably not strictly necessary as long as they're always the same in and out...
+    df_oar_int['TECHNOLOGY'] = 'MIN' + df_oar_int['FUEL']
+    df_oar_int['MODE_OF_OPERATION'] = 1
     
     # and de-duplicate this list:
     df_oar_int.drop_duplicates(keep='first',inplace=True)
-
-    # #### Input Activity Ratios - Upstream
-    
-    # All we need to do is take in the thermal fuels for the MINXXXINT technologies.  This already exists as df_oar_int with the XXINT fuel so we can simply copy that:
-    df_iar_int = df_oar_int.copy()
-    df_iar_int['FUEL'] = df_iar_int['FUEL'].str[0:3]
     
     return df_oar_upstream, df_oar_int
 
