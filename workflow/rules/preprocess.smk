@@ -102,7 +102,6 @@ emission_files = [
 
 max_capacity_files = [
     'TotalAnnualMaxCapacity',
-    'TotalTechnologyAnnualActivityUpperLimit',
     'AccumulatedAnnualDemand',
 ]
 
@@ -111,9 +110,13 @@ user_capacity_files = [
     'TotalAnnualMaxCapacityInvestment'
 ]
 
+fuel_limit_files = [
+    'TotalTechnologyAnnualActivityUpperLimit',
+]
+
 GENERATED_CSVS = (
     power_plant_files + transmission_files + storage_files + timeslice_files \
-    + reserves_files + demand_files + emission_files + max_capacity_files
+    + reserves_files + demand_files + emission_files + max_capacity_files + fuel_limit_files
 )
 GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
 EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
@@ -184,7 +187,7 @@ rule fuel_limits:
     input:
         region_csv = "results/data/REGION.csv",
         technology_csv = "results/data/powerplant/TECHNOLOGY.csv",
-        year_csv = "results/data/powerplant/TECHNOLOGY.csv",
+        year_csv = "results/data/YEAR.csv",
         fuel_limit_csv = "resources/data/fuel_limits.csv",
     output:
         activity_upper_limit_csv = 'results/data/TotalTechnologyAnnualActivityUpperLimit.csv'

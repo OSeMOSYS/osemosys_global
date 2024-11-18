@@ -4,37 +4,6 @@ import pandas as pd
 from typing import Optional
 
 
-"""
-
-def apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel):
-
-    mf_df = pd.read_csv(os.path.join(input_dir, "data", "fuel_limits.csv"))
-    mf_df["TECHNOLOGY"] = "MIN" + mf_df["FUEL"] + mf_df["COUNTRY"]
-    mf_df = mf_df[["TECHNOLOGY", "YEAR", "VALUE"]]
-
-    tech_list = mf_df["TECHNOLOGY"].unique()
-    mf_df_final = pd.DataFrame(
-        list(itertools.product(tech_list, years)), columns=["TECHNOLOGY", "YEAR"]
-    )
-    mf_df_final = pd.merge(mf_df_final, mf_df, how="left", on=["TECHNOLOGY", "YEAR"])
-    mf_df_final["VALUE"] = mf_df_final["VALUE"].astype(float)
-    for each_tech in tech_list:
-        mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"] = (
-            mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"]
-            .interpolate()
-            .round(0)
-        )
-
-    mf_df_final["REGION"] = region
-    mf_df_final = mf_df_final[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
-    mf_df_final.dropna(inplace=True)
-    mf_df_final.to_csv(
-        os.path.join(output_data_dir, "TotalTechnologyAnnualActivityUpperLimit.csv"),
-        index=None,
-    )
-"""
-
-
 def import_fuel_limits(f: str) -> pd.DataFrame:
     """Imports contry level fuel limits.
 
@@ -126,7 +95,7 @@ if __name__ == "__main__":
         fuel_limit_csv = snakemake.input.fuel_limit_csv
         region_csv = snakemake.input.region_csv
         years_csv = snakemake.input.year_csv
-        activity_upper_limit_csv = snakemake.output.annual_limit_csv
+        activity_upper_limit_csv = snakemake.output.activity_upper_limit_csv
     else:
         technology_csv = "results/India/data/TECHNOLOGY.csv"
         fuel_limit_csv = "resources/data/fuel_limits.csv"
