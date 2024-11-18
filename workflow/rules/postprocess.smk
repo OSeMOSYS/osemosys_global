@@ -113,14 +113,16 @@ rule calculate_generation_shares:
     script: 
         "../scripts/osemosys_global/summary/gen_shares.py"
 
-rule calculate_capacity_by_node:
+rule calculate_capacity:
     message:
         "Calculating Capacity by Node..."
     input:
         total_capacity = "results/{scenario}/results/TotalCapacityAnnual.csv",
     output:
-        power_capacity = "results/{scenario}/result_summaries/PowerCapacity.csv",
-        transmission_capacity = "results/{scenario}/result_summaries/TransmissionCapacity.csv",
+        power_capacity_node = "results/{scenario}/result_summaries/PowerCapacityNode.csv",
+        transmission_capacity_node = "results/{scenario}/result_summaries/TransmissionCapacityNode.csv",
+        power_capacity_country = "results/{scenario}/result_summaries/PowerCapacityCountry.csv",
+        transmission_capacity_country = "results/{scenario}/result_summaries/TransmissionCapacityCountry.csv",
     log:
         log = 'results/{scenario}/logs/generation_shares.log'
     script: 
