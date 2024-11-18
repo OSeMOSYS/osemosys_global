@@ -4,11 +4,11 @@ import pandas as pd
 from typing import Optional
 from constants import CLEAN, RENEWABLES, FOSSIL
 
-# do not include storage in generation share calcualtion 
-EXCLUDE = ["LDS", "SDS"]
 
 def _get_gen_by_node(
-    production: pd.DataFrame, include: Optional[list[str]] = None, exclude: Optional[list[str]] = None
+    production: pd.DataFrame,
+    include: Optional[list[str]] = None,
+    exclude: Optional[list[str]] = None,
 ) -> pd.DataFrame:
 
     df = production.copy()
@@ -31,7 +31,12 @@ def _get_gen_by_node(
     )
 
 
-def calc_generation_shares(production_by_technology: pd.DataFrame) -> pd.DataFrame:
+def calc_generation_shares(
+    production_by_technology: pd.DataFrame, exclusions: Optional[list[str]] = None
+) -> pd.DataFrame:
+
+    if not exclusions:
+        exclusions = []
 
     df = production_by_technology.copy()
 
@@ -40,9 +45,11 @@ def calc_generation_shares(production_by_technology: pd.DataFrame) -> pd.DataFra
         & ~(df.index.get_level_values("TECHNOLOGY").str.contains("TRN"))
     ]
 
-    total = _get_gen_by_node(df, exclude=EXCLUDE).rename(columns={"VALUE": "TOTAL"})
+    total = _get_gen_by_node(df, exclude=exclusions).rename(columns={"VALUE": "TOTAL"})
     clean = _get_gen_by_node(df, include=CLEAN).rename(columns={"VALUE": "CLEAN"})
-    renewable = _get_gen_by_node(df, include=RENEWABLES).rename(columns={"VALUE": "RENEWABLE"})
+    renewable = _get_gen_by_node(df, include=RENEWABLES).rename(
+        columns={"VALUE": "RENEWABLE"}
+    )
     fossil = _get_gen_by_node(df, include=FOSSIL).rename(columns={"VALUE": "FOSSIL"})
 
     shares = (
@@ -62,17 +69,21 @@ def calc_generation_shares(production_by_technology: pd.DataFrame) -> pd.DataFra
 if __name__ == "__main__":
     if "snakemake" in globals():
         production_by_technology_annual_csv = snakemake.input.production_by_technology
+        storage = snakemake.params.storage
         save = snakemake.output.generation_shares
     else:
         production_by_technology_annual_csv = (
             "results/India/results/ProductionByTechnologyAnnual.csv"
         )
+        storage = {"SDS": [], "LDS": []}
         save = "results/India/results/GenerationShares.csv"
 
     production_by_technology_annual = pd.read_csv(
         production_by_technology_annual_csv, index_col=[0, 1, 2, 3]
     )
 
-    df = calc_generation_shares(production_by_technology_annual)
+    exclusions = list(storage)
+
+    df = calc_generation_shares(production_by_technology_annual, exclusions)
 
     df.to_csv(save, index=True)

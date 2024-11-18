@@ -119,6 +119,8 @@ rule calculate_cost_by_node:
 rule calculate_generation_shares:
     message:
         "Calculating Generaion Fuel Shares..."
+    params:
+        storage = config['storage_parameters'],
     input:
         production_by_technology = "results/{scenario}/results/ProductionByTechnology.csv",
     output:
