@@ -25,9 +25,9 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
         "NewStorageCapacity",
         "TotalDiscountedStorageCost",
         "SalvageValueStorage",
-        "CapitalInvestmentStorage"
+        "CapitalInvestmentStorage",
         "DiscountedCapitalInvestmentStorage",
-        "DiscountedSalvageValueStorage"
+        "DiscountedSalvageValueStorage",
         # storage levels not garunteed 
         "StorageLevelSeasonStart",
         "StorageLevelSeasonFinish",
