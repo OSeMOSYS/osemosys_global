@@ -42,7 +42,7 @@ CapitalCostStorage:
     indices: [REGION,STORAGE,YEAR]
     type: param
     dtype: float
-    default: 2000
+    default: 0.001
 Conversionld:
     indices: [TIMESLICE,DAYTYPE]
     type: param
@@ -142,7 +142,7 @@ OperationalLifeStorage:
     indices: [REGION,STORAGE]
     type: param
     dtype: float
-    default: 10
+    default: 1
 OutputActivityRatio:
     indices: [REGION,TECHNOLOGY,FUEL,MODE_OF_OPERATION,YEAR]
     type: param
@@ -307,286 +307,238 @@ AnnualEmissions:
     type: result
     dtype: float
     default: 0
-    calculated: True
 AccumulatedNewCapacity:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
-AccumulatedNewStorageCapacity:
-    indices: [REGION, STORAGE, YEAR]
-    type: result
-    dtype: float
-    default: 0
-    calculated: True
 AnnualFixedOperatingCost:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 AnnualTechnologyEmission:
     indices: [REGION, TECHNOLOGY, EMISSION, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
-AnnualTechnologyEmissionsPenalty:
-    indices: [REGION, TECHNOLOGY, YEAR]
-    type: result
-    dtype: float
-    default: 0
-    short_name: AnnualTechEmissionsPenalty
-    calculated: True
 AnnualTechnologyEmissionByMode:
     indices: [REGION, TECHNOLOGY, EMISSION, MODE_OF_OPERATION, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 AnnualVariableOperatingCost:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 CapitalInvestment:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 CapitalInvestmentStorage:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 Demand:
     indices: [REGION, TIMESLICE, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
-DiscountedCapitalInvestmentStorage:
-    indices: [REGION, STORAGE, YEAR]
-    type: result
-    dtype: float
-    default: 0
-    short_name: DiscountedCapexStorage
-    calculated: False
-DiscountedOperatingCost: 
+DiscountedCapitalInvestment:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
+DiscountedCapitalInvestmentStorage:
+    short_name: DiscountedCapitalInvestStorage
+    indices: [REGION, STORAGE, YEAR]
+    type: result
+    dtype: float
+    default: 0
+DiscountedCostByStorage:
+    indices: [REGION, STORAGE, YEAR]
+    type: result
+    dtype: float
+    default: 0
+DiscountedCostByTechnology:
+    indices: [REGION, TECHNOLOGY, YEAR]
+    type: result
+    dtype: float
+    default: 0
+DiscountedOperationalCost:
+    indices: [REGION, TECHNOLOGY, YEAR]
+    type: result
+    dtype: float
+    default: 0
 DiscountedSalvageValue:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 DiscountedSalvageValueStorage:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
-TotalDiscountedStorageCost:
-    indices: [REGION, STORAGE, YEAR]
-    type: result
-    dtype: float
-    default: 0
-    calculated: False
 DiscountedTechnologyEmissionsPenalty:
     short_name: DiscountedTechEmissionsPenalty
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 ModelPeriodEmissions:
     indices: [REGION, EMISSION]
     type: result
     dtype: float
     default: 0
-    calculated: False
 NetChargeWithinDay:
     indices: [REGION, STORAGE, SEASON, DAYTYPE, DAILYTIMEBRACKET, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 NetChargeWithinYear:
     indices: [REGION, STORAGE, SEASON, DAYTYPE, DAILYTIMEBRACKET, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 NewCapacity:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 NewStorageCapacity:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 NumberOfNewTechnologyUnits:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 OperatingCost: 
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 ProductionByTechnology:
     indices: [REGION, TIMESLICE, TECHNOLOGY, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 ProductionByTechnologyAnnual:
     indices: [REGION, TECHNOLOGY, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 RateOfActivity:
     indices: [REGION, TIMESLICE, TECHNOLOGY, MODE_OF_OPERATION, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 RateOfProductionByTechnology:
     indices: [REGION, TIMESLICE, TECHNOLOGY, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 RateOfProductionByTechnologyByMode:
     short_name: RateOfProductionByTechByMode
     indices: [REGION, TIMESLICE, TECHNOLOGY, MODE_OF_OPERATION, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 RateOfUseByTechnology:
     indices: [REGION, TIMESLICE, TECHNOLOGY, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 RateOfUseByTechnologyByMode:
     indices: [REGION, TIMESLICE, TECHNOLOGY, MODE_OF_OPERATION, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 SalvageValue:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 SalvageValueStorage:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 StorageLevelDayTypeFinish:
     indices: [REGION, STORAGE, SEASON, DAYTYPE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 StorageLevelDayTypeStart:
     indices: [REGION, STORAGE, SEASON, DAYTYPE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 StorageLevelSeasonStart:
     indices: [REGION, STORAGE, SEASON, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 StorageLevelYearStart:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 StorageLevelYearFinish:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 StorageLowerLimit:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 StorageUpperLimit:
     indices: [REGION, STORAGE, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 TotalAnnualTechnologyActivityByMode:
     short_name: TotalAnnualTechActivityByMode
     indices: [REGION, TECHNOLOGY, MODE_OF_OPERATION, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 TotalCapacityAnnual:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 TotalDiscountedCost:
     indices: [REGION,YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 TotalTechnologyAnnualActivity:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: True
 TotalTechnologyModelPeriodActivity:
     short_name: TotalTechModelPeriodActivity
     indices: [REGION, TECHNOLOGY]
     type: result
     dtype: float
     default: 0
-    calculated: True
 Trade:
     indices: [REGION, REGION, TIMESLICE, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False
 UseByTechnology:
     indices: [REGION, TIMESLICE, TECHNOLOGY, FUEL, YEAR]
     type: result
     dtype: float
     default: 0
-    calculated: False

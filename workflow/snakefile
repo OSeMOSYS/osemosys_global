@@ -21,20 +21,27 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
 
     # no result calcualtions 
     missing = [
+        # storage investment not guaranteed 
         "NewStorageCapacity",
-        "NumberOfNewTechnologyUnits",
+        "TotalDiscountedStorageCost",
         "SalvageValueStorage",
-        "StorageLevelDayTypeStart",
-        "StorageLevelDayTypeFinish",
+        "CapitalInvestmentStorage",
+        "DiscountedCapitalInvestmentStorage",
+        "DiscountedSalvageValueStorage",
+        "DiscountedCostByStorage",
+        # storage levels not guaranteed 
         "StorageLevelSeasonStart",
         "StorageLevelSeasonFinish",
         "StorageLevelYearStart",
         "StorageLevelYearFinish",
-        "Trade",
-        "DiscountedOperatingCost",
-        "TotalDiscountedStorageCost",
-        "ModelPeriodEmissions",
+        "StorageLevelDayTypeStart",
+        "StorageLevelDayTypeFinish",
         "StorageLowerLimit",
+        "StorageUpperLimit",
+        # other missing calcs
+        "NumberOfNewTechnologyUnits",
+        "Trade",
+        "ModelPeriodEmissions",
     ]
 
     return [x for x in results if x not in missing]
@@ -86,9 +93,9 @@ rule all:
 
         # model results 
         expand('results/{scenario}/result_summaries/{result_summary}.csv', 
-            scenario=config['scenario'], result_summary=result_summaries), 
+            scenario=config['scenario'], result_summary=RESULT_SUMMARIES), 
         expand('results/{scenario}/figures/{result_figure}.html', 
-            scenario=config['scenario'], result_figure = result_figures),
+            scenario=config['scenario'], result_figure = RESULT_FIGURES),
 
         # validation results 
         expand("results/{scenario}/validation/{country}/capacity/{dataset}.png",

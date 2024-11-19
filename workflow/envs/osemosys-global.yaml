@@ -12,8 +12,5 @@ dependencies:
  - glpk>=5.0
 
  - pip:
-   - wbgapi>=1.0.12
-   - geopy>=2.4.1
-   - otoole==1.1.3
-   - dash==2.17
+   - otoole>=1.1.4
    - ../../. # path to setup.py

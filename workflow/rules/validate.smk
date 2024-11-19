@@ -109,9 +109,9 @@ rule validate_emission_intensity:
     message: "Validating emission intensity against {wildcards.datasource}"
     input:
         validation_data = emission_intensity_validation_data,
-        og_result = "results/{scenario}/results/AnnualEmissionIntensity.csv"
+        og_result = "results/{scenario}/result_summaries/AnnualEmissionIntensity.csv"
     params:
-        result_dir="results/{scenario}/results",
+        result_dir="results/{scenario}/result_summaries",
         variable="emission_intensity"
     output:
         expand("results/{{scenario}}/validation/{country}/emission_intensity/{{datasource}}.png", country=COUNTRIES)
