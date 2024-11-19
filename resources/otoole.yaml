@@ -322,12 +322,6 @@ AnnualTechnologyEmission:
     type: result
     dtype: float
     default: 0
-AnnualTechnologyEmissionsPenalty:
-    indices: [REGION, TECHNOLOGY, YEAR]
-    type: result
-    dtype: float
-    default: 0
-    short_name: AnnualTechEmissionsPenalty
 AnnualTechnologyEmissionByMode:
     indices: [REGION, TECHNOLOGY, EMISSION, MODE_OF_OPERATION, YEAR]
     type: result
@@ -374,7 +368,7 @@ DiscountedCostByTechnology:
     type: result
     dtype: float
     default: 0
-DiscountedOperatingCost:
+DiscountedOperationalCost:
     indices: [REGION, TECHNOLOGY, YEAR]
     type: result
     dtype: float

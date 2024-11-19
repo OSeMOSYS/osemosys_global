@@ -17,7 +17,6 @@ demand_figures = [
 power_plant_files = [
     'powerplant/CapitalCost',
     'powerplant/FixedCost',
-    'powerplant/VariableCost',
     'powerplant/CapacityToActivityUnit',
     'powerplant/OperationalLife',
     'powerplant/TotalAnnualMaxCapacityInvestment',
@@ -32,7 +31,6 @@ power_plant_files = [
     'YEAR',
     'AvailabilityFactor',
     'TotalAnnualMaxCapacity',
-    'TotalTechnologyAnnualActivityUpperLimit',
     'powerplant/TotalTechnologyModelPeriodActivityUpperLimit',
     'AccumulatedAnnualDemand',
     'TotalAnnualMinCapacity'
@@ -111,9 +109,14 @@ user_capacity_files = [
     'TotalAnnualMaxCapacityInvestment'
 ]
 
+fuel_limit_files = [
+    'TotalTechnologyAnnualActivityUpperLimit',
+]
+
 GENERATED_CSVS = (
     power_plant_files + transmission_files + storage_files + timeslice_files \
-    + reserves_files + demand_files + emission_files# + max_capacity_files
+    + reserves_files + demand_files + emission_files + fuel_limit_files
+
 )
 GENERATED_CSVS = [Path(x).stem for x in GENERATED_CSVS]
 EMPTY_CSVS = [x for x in OTOOLE_PARAMS if x not in GENERATED_CSVS]
@@ -182,8 +185,6 @@ rule powerplant:
         default_av_factors = 'resources/data/availability_factors.csv',
         custom_res_cap = powerplant_cap_custom_csv(),
         custom_res_potentials = powerplant_res_potentials_custom_csv(),
-        cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx',
-        fuel_prices = 'resources/data/fuel_prices.csv',
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -197,7 +198,6 @@ rule powerplant:
         output_data_dir = 'results/data',
         input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',
-
     output:
         csv_files = expand('results/data/{output_file}.csv', output_file = power_plant_files)
     log:
@@ -205,17 +205,49 @@ rule powerplant:
     script:
         "../scripts/osemosys_global/powerplant/main.py"
 
+rule powerplant_var_costs:
+    message:
+        "Generating powerplant variable costs..."
+    input:
+        cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx',
+        fuel_prices = 'resources/data/fuel_prices.csv',
+        regions = "results/data/REGION.csv",
+        years = "results/data/YEAR.csv",
+        technologies = "results/data/powerplant/TECHNOLOGY.csv",
+    output:
+        var_costs = 'results/data/powerplant/VariableCost.csv'
+    log:
+        log = 'results/logs/powerplant_var_cost.log'
+    script:
+        "../scripts/osemosys_global/powerplant/variable_costs.py"
+
+rule fuel_limits:
+    message:
+        "Generating mining fuel limits..."
+    input:
+        region_csv = "results/data/REGION.csv",
+        technology_csv = "results/data/powerplant/TECHNOLOGY.csv",
+        year_csv = "results/data/YEAR.csv",
+        fuel_limit_csv = "resources/data/fuel_limits.csv",
+    output:
+        activity_upper_limit_csv = 'results/data/TotalTechnologyAnnualActivityUpperLimit.csv'
+    log:
+        log = 'results/logs/powerplant_fuel_limits.log'
+    script:
+        "../scripts/osemosys_global/powerplant/fuel_limits.py"
+
 rule transmission:
     message:
         "Generating transmission data..."
     input:
         rules.powerplant.output.csv_files,
+        'results/data/powerplant/VariableCost.csv',
         default_op_life = 'resources/data/operational_life.csv',
         gtd_existing = 'resources/data/GTD_existing.csv',
         gtd_planned = 'resources/data/GTD_planned.csv',
         gtd_mapping = 'resources/data/GTD_region_mapping.csv',
         centerpoints = 'resources/data/centerpoints.csv',
-        transmission_build_rates = 'resources/data/transmission_build_rates.csv'
+        transmission_build_rates = 'resources/data/transmission_build_rates.csv',
     params:
         trade = config['crossborderTrade'],
         start_year = config['startYear'],

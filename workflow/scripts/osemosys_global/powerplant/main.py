@@ -4,7 +4,6 @@ import os
 from read import(
     import_plexos_2015,
     import_res_limit,
-    import_fuel_limit,
     import_build_rates,
     import_weo_regions,
     import_weo_costs,
@@ -13,8 +12,6 @@ from read import(
     import_afs,
     import_custom_res_cap,
     import_custom_res_potentials,
-    import_cmo_forecasts,
-    import_fuel_prices,
     import_specified_annual_demand,
 )
 
@@ -22,11 +19,6 @@ from constants import(
     DUPLICATE_TECHS,
     MODE_LIST,
     RENEWABLES_LIST,
-    CMO_DATA_YEAR,
-    BIOMASS_VAR_COSTS,
-    NUCLEAR_VAR_COSTS,
-    WASTE_VAR_COSTS,
-    INT_COST_FACTOR,
     PW2050_TECH_DICT
     )
 
@@ -47,14 +39,12 @@ from activity import(
     activity_upstream,
     activity_master_end,
     capact,
-    set_annual_activity_upper_limit,
     set_model_period_activity_upper_limit
     )
 
 from costs import(
     costs_pwr,
     costs_end,
-    costs_var_pwr
     )
 
 from operational_life import set_op_life
@@ -85,7 +75,6 @@ def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
     res_limit: pd.DataFrame,
-    fuel_limit: pd.DataFrame,
     build_rates: pd.DataFrame,
     weo_costs: pd.DataFrame,
     weo_regions: pd.DataFrame,
@@ -95,8 +84,6 @@ def main(
     tech_code_dict: pd.DataFrame,
     custom_res_cap: pd.DataFrame,
     default_av_factors: pd.DataFrame,
-    cmo_forecasts: pd.DataFrame,
-    fuel_prices: pd.DataFrame,
     annual_demand: pd.DataFrame,
 ):
     
@@ -127,10 +114,6 @@ def main(
     df_oar_final, df_iar_final = activity_master_end(df_pwr_oar_final, df_oar_upstream, 
                                                      df_oar_int, df_pwr_iar_final, 
                                                      DUPLICATE_TECHS)
-    
-    # Set TotalTechnologyAnnualActivityUpperLimit based on user defined fuel limits.
-    df_annual_activity_upper_limit = set_annual_activity_upper_limit(fuel_limit,  start_year, 
-                                                                     end_year, region_name)
         
     # Set capital and fixed powerplant costs.
     df_costs = costs_pwr(weo_costs)
@@ -211,13 +194,6 @@ def main(
     # Set availability factors. Occurs after set_user_defined_capacity as tech_set gets updated.
     df_af_final = availability_factor(default_av_factors, tech_set,
                                       start_year, end_year, region_name)
-
-    # Set variable costs. Occurs after set_user_defined_capacity as tech_set gets updated.    
-    df_var_cost_final = costs_var_pwr(fuel_prices, tech_set,
-                                      start_year, end_year, region_name,
-                                      cmo_forecasts, CMO_DATA_YEAR, 
-                                      BIOMASS_VAR_COSTS, NUCLEAR_VAR_COSTS, 
-                                      WASTE_VAR_COSTS, INT_COST_FACTOR)
     
     # Set total max capacity (potential - residuals) for renewable technologies.
     df_max_capacity = set_renewable_limits(res_limit, PW2050_TECH_DICT,
@@ -264,8 +240,6 @@ def main(
     
     df_fix_cost_final.to_csv(os.path.join(powerplant_data_dir, "FixedCost.csv"), index = None)
     
-    df_var_cost_final.to_csv(os.path.join(powerplant_data_dir, "VariableCost.csv"), index = None)    
-    
     df_capact_final.to_csv(os.path.join(powerplant_data_dir, "CapacityToActivityUnit.csv"), index = None)
     
     df_op_life.to_csv(os.path.join(powerplant_data_dir, "OperationalLife.csv"), index = None)
@@ -291,9 +265,6 @@ def main(
                                         "TotalAnnualMaxCapacity.csv"), 
                            index = None)
     
-    df_annual_activity_upper_limit.to_csv(os.path.join(
-        output_data_dir, "TotalTechnologyAnnualActivityUpperLimit.csv"), index=None)
-    
     df_accumulated_annual_demand.to_csv(os.path.join(output_data_dir, 
                                                      "AccumulatedAnnualDemand.csv"), 
                                         index=None)
@@ -315,15 +286,12 @@ if __name__ == "__main__":
     if "snakemake" in globals():
         file_plexos = snakemake.input.plexos
         file_res_limit = snakemake.input.res_limit
-        file_fuel_limit = snakemake.input.fuel_limit
         file_build_rates = snakemake.input.build_rates
         file_default_op_life = snakemake.input.default_op_life
         file_naming_convention_tech = snakemake.input.naming_convention_tech
         file_weo_costs = snakemake.input.weo_costs
         file_weo_regions = snakemake.input.weo_regions
-        file_default_av_factors = snakemake.input.default_av_factors
-        file_cmo_forecasts = snakemake.input.cmo_forecasts     
-        file_fuel_prices = snakemake.input.fuel_prices      
+        file_default_av_factors = snakemake.input.default_av_factors     
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
@@ -349,15 +317,13 @@ if __name__ == "__main__":
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
         file_res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
-        file_fuel_limit = 'resources/data/fuel_limits.csv'
         file_build_rates = 'resources/data/powerplant_build_rates.csv'        
         file_default_op_life = 'resources/data/operational_life.csv'
         file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
         file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
         file_weo_regions = 'resources/data/weo_region_mapping.csv'
         file_default_av_factors = 'resources/data/availability_factors.csv'  
-        file_cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx'          
-        file_fuel_prices = 'resources/data/fuel_prices.csv'
+        file_default_av_factors = 'resources/data/availability_factors.csv'        
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
@@ -386,7 +352,6 @@ if __name__ == "__main__":
     plexos_memb = import_plexos_2015(file_plexos, "memb")
     
     res_limit = import_res_limit(file_res_limit)
-    fuel_limit = import_fuel_limit(file_fuel_limit)
     build_rates = import_build_rates(file_build_rates)
     
     op_life = import_op_life(file_default_op_life)
@@ -405,8 +370,6 @@ if __name__ == "__main__":
     weo_regions = import_weo_regions(file_weo_regions)
     
     availability = import_afs(file_default_av_factors)
-    cmo_forecasts = import_cmo_forecasts(file_cmo_forecasts)
-    fuel_prices = import_fuel_prices(file_fuel_prices)
     specified_annual_demand = import_specified_annual_demand(file_specified_annual_demand)
     
     if custom_nodes:
@@ -420,7 +383,6 @@ if __name__ == "__main__":
         "plexos_prop": plexos_prop,
         "plexos_memb": plexos_memb,
         "res_limit" : res_limit,
-        "fuel_limit" : fuel_limit,
         "build_rates" : build_rates,
         "weo_costs": weo_costs,
         "weo_regions": weo_regions,
@@ -430,9 +392,8 @@ if __name__ == "__main__":
         "tech_code_dict": tech_code_dict,
         "custom_res_cap" : custom_res_cap,
         "default_av_factors": availability,
-        "cmo_forecasts" : cmo_forecasts,
-        "fuel_prices" : fuel_prices,
         "annual_demand" : specified_annual_demand
+
     }
     
     # CALL MAIN
