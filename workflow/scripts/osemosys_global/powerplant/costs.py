@@ -2,9 +2,6 @@
 
 import pandas as pd
 import numpy as np
-import itertools
-from typing import Optional
-from data import get_years
 
 from constants import COSTS_DICT
 

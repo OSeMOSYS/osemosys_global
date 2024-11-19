@@ -284,34 +284,6 @@ def capact(df_oar_final):
 
     return df_capact_final
 
-def set_annual_activity_upper_limit(fuel_limit, start_year, 
-                                    end_year, region_name):
-    
-    years = get_years(start_year, end_year)
-    
-    mf_df = fuel_limit.copy()
-    mf_df["TECHNOLOGY"] = "MIN" + mf_df["FUEL"] + mf_df["COUNTRY"]
-    mf_df = mf_df[["TECHNOLOGY", "YEAR", "VALUE"]]
-
-    tech_list = mf_df["TECHNOLOGY"].unique()
-    mf_df_final = pd.DataFrame(
-        list(itertools.product(tech_list, years)), columns=["TECHNOLOGY", "YEAR"]
-    )
-    mf_df_final = pd.merge(mf_df_final, mf_df, how="left", on=["TECHNOLOGY", "YEAR"])
-    mf_df_final["VALUE"] = mf_df_final["VALUE"].astype(float)
-    for each_tech in tech_list:
-        mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"] = (
-            mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"]
-            .interpolate()
-            .round(0)
-        )
-
-    mf_df_final["REGION"] = region_name
-    mf_df_final = mf_df_final[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
-    mf_df_final.dropna(inplace=True)
-
-    return mf_df_final
-
 def set_model_period_activity_upper_limit(tech_set, region_name):
 
     # Model Period Activity Upper Limit for 'MINCOA***01'
