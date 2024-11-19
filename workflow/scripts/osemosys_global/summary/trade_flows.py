@@ -1,4 +1,4 @@
-"""Calcualtes Transmission Capacity per node"""
+"""Calcualtes Transmission Flows"""
 
 import pandas as pd
 import itertools
@@ -22,7 +22,7 @@ def apply_timeshift(x: int, timeshift: int) -> int:
         return x
 
 
-def get_trade_flows(
+def get_trade_flows_node(
     activity_by_mode: pd.DataFrame,
     seasons_raw: dict[str, list[int]],
     dayparts_raw: dict[str, list[int]],
@@ -166,11 +166,72 @@ def get_trade_flows(
         )
     return df
 
+def get_trade_flows_country(
+    trade_flows_node: pd.DataFrame,
+) -> pd.DataFrame:
+    
+    df = trade_flows_node.copy()
+    
+    df["NODE_1"] = df['NODE_1'].str[0:3] + 'XX'
+    df["NODE_2"] = df['NODE_2'].str[0:3] + 'XX'
+    df = df.loc[df["NODE_1"] != df["NODE_2"]]  # intercountry
+    
+    return(df.groupby(["YEAR", "MONTH", "HOUR", "NODE_1", "NODE_2"], as_index = False, 
+                      observed = False).sum())
+
+def get_net_annual_flows(
+    trade_flows_ts: pd.DataFrame,
+) -> pd.DataFrame:
+    
+    df = trade_flows_ts.copy()
+    
+    return(df.groupby(["YEAR", "NODE_1", "NODE_2"], as_index = False, 
+                      observed = False)['VALUE'].sum())
+
+def get_import_annual_flows(
+    trade_flows_ts: pd.DataFrame,
+) -> pd.DataFrame:
+    
+    df = trade_flows_ts.copy()
+    df = df.loc[df['VALUE'] < 0]
+    df['VALUE']  = df['VALUE']  * -1
+    
+    return(df.groupby(["YEAR", "NODE_1", "NODE_2"], as_index = False, 
+                      observed = False)['VALUE'].sum())
+
+def get_export_annual_flows(
+    trade_flows_ts: pd.DataFrame,
+) -> pd.DataFrame:
+    
+    df = trade_flows_ts.copy()
+    df = df.loc[df['VALUE'] > 0]
+    
+    return(df.groupby(["YEAR", "NODE_1", "NODE_2"], as_index = False, 
+                      observed = False)['VALUE'].sum())
+
+def get_total_annual_flows(
+    trade_flows_ts: pd.DataFrame,
+) -> pd.DataFrame:
+    
+    df = trade_flows_ts.copy()
+    df['VALUE'] = df['VALUE'].abs()
+    
+    return(df.groupby(["YEAR", "NODE_1", "NODE_2"], as_index = False, 
+                      observed = False)['VALUE'].sum())
 
 if __name__ == "__main__":
     if "snakemake" in globals():
         activity_by_mode_csv = snakemake.input.activity_by_mode
-        save = snakemake.output.trade_flows
+        trade_flows_node_save = snakemake.output.node_trade_flows
+        trade_flows_country_save = snakemake.output.country_trade_flows
+        annual_net_trade_flows_node_save = snakemake.output.annual_net_node_trade_flows
+        annual_net_trade_flows_country_save = snakemake.output.annual_net_country_trade_flows
+        annual_import_trade_flows_node_save = snakemake.output.annual_import_node_trade_flows
+        annual_import_trade_flows_country_save = snakemake.output.annual_import_country_trade_flows
+        annual_export_trade_flows_node_save = snakemake.output.annual_export_node_trade_flows
+        annual_export_trade_flows_country_save = snakemake.output.annual_export_country_trade_flows
+        annual_total_trade_flows_node_save = snakemake.output.annual_total_node_trade_flows
+        annual_total_trade_flows_country_save = snakemake.output.annual_total_country_trade_flows        
         seasons = snakemake.params.seasons
         dayparts = snakemake.params.dayparts
         timeshift = snakemake.params.timeshift
@@ -178,13 +239,40 @@ if __name__ == "__main__":
         activity_by_mode_csv = (
             "results/India/results/TotalAnnualTechnologyActivityByMode.csv"
         )
-        save = "results/India/results/TradeFlows.csv"
+        trade_flows_node_save = "results/India/result_summaries/TradeFlowsNode.csv"
+        trade_flows_country_save = "results/India/result_summaries/TradeFlowsCountry.csv"
+        annual_net_trade_flows_node_save = "results/India/result_summaries/AnnualNetTradeFlowsNode.csv"
+        annual_net_trade_flows_country_save = "results/India/result_summaries/AnnualNetTradeFlowsCountry.csv"
+        annual_import_trade_flows_node_save = "results/India/result_summaries/AnnualImportTradeFlowsNode.csv"
+        annual_import_trade_flows_country_save = "results/India/result_summaries/AnnualImportTradeFlowsCountry.csv"
+        annual_export_trade_flows_node_save = "results/India/result_summaries/AnnualExportTradeFlowsNode.csv"
+        annual_export_trade_flows_country_save = "results/India/result_summaries/AnnualExportTradeFlowsCountry.csv"
+        annual_total_trade_flows_node_save = "results/India/result_summaries/AnnualTotalTradeFlowsNode.csv"
+        annual_total_trade_flows_country_save = "results/India/result_summaries/AnnualTotalTradeFlowsCountry.csv"        
         seasons = {"S1": [1, 2, 3, 4, 5, 6], "S2": [7, 8, 9, 10, 11, 12]}
         dayparts = {"D1": [1, 7], "D2": [7, 13], "D3": [13, 19], "D4": [19, 25]}
         timeshift = 0
 
     activity_by_mode = pd.read_csv(activity_by_mode_csv, index_col=[0, 1, 2, 3, 4])
 
-    df = get_trade_flows(activity_by_mode, seasons, dayparts, timeshift)
-
-    df.to_csv(save, index=False)
+    trade_flows_node = get_trade_flows_node(activity_by_mode, seasons, dayparts, timeshift)
+    trade_flows_country = get_trade_flows_country(trade_flows_node)
+    annual_net_trade_flows_node = get_net_annual_flows(trade_flows_node)
+    annual_net_trade_flows_country = get_net_annual_flows(trade_flows_country)
+    annual_import_trade_flows_node = get_import_annual_flows(trade_flows_node)
+    annual_import_trade_flows_country = get_import_annual_flows(trade_flows_country)
+    annual_export_trade_flows_node = get_export_annual_flows(trade_flows_node)
+    annual_export_trade_flows_country = get_export_annual_flows(trade_flows_country)
+    annual_total_trade_flows_node = get_total_annual_flows(trade_flows_node)
+    annual_total_trade_flows_country = get_total_annual_flows(trade_flows_country)    
+    
+    trade_flows_node.to_csv(trade_flows_node_save, index=False)
+    trade_flows_country.to_csv(trade_flows_country_save, index=False)
+    annual_net_trade_flows_node.to_csv(annual_net_trade_flows_node_save, index=False)
+    annual_net_trade_flows_country.to_csv(annual_net_trade_flows_country_save, index=False)
+    annual_import_trade_flows_node.to_csv(annual_import_trade_flows_node_save, index=False)
+    annual_import_trade_flows_country.to_csv(annual_import_trade_flows_country_save, index=False)
+    annual_export_trade_flows_node.to_csv(annual_export_trade_flows_node_save, index=False)
+    annual_export_trade_flows_country.to_csv(annual_export_trade_flows_country_save, index=False)
+    annual_total_trade_flows_node.to_csv(annual_total_trade_flows_node_save, index=False)
+    annual_total_trade_flows_country.to_csv(annual_total_trade_flows_country_save, index=False)

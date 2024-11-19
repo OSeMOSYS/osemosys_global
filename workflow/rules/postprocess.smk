@@ -8,7 +8,16 @@ RESULT_FIGURES = [
 ]
 
 RESULT_SUMMARIES = [
-    "TradeFlows",
+    "TradeFlowsNode",
+    "TradeFlowsCountry",
+    "AnnualNetTradeFlowsNode",
+    "AnnualNetTradeFlowsCountry",
+    "AnnualImportTradeFlowsNode",
+    "AnnualImportTradeFlowsCountry",
+    "AnnualExportTradeFlowsNode",
+    "AnnualExportTradeFlowsCountry",
+    "AnnualTotalTradeFlowsNode",
+    "AnnualTotalTradeFlowsCountry",
     "AnnualEmissionIntensity",
     "PowerCapacityNode",
     "TransmissionCapacityNode",
@@ -64,7 +73,7 @@ rule visualisation:
 
 rule calculate_trade_flows:
     message: 
-        "Calculating Hourly Trade Flows..."
+        "Calculating Trade Flows..."
     params:
         seasons = config["seasons"],
         dayparts = config["dayparts"],
@@ -72,7 +81,16 @@ rule calculate_trade_flows:
     input:
         activity_by_mode = "results/{scenario}/results/TotalAnnualTechnologyActivityByMode.csv",
     output:
-        trade_flows = "results/{scenario}/result_summaries/TradeFlows.csv",
+        node_trade_flows = "results/{scenario}/result_summaries/TradeFlowsNode.csv",
+        country_trade_flows = "results/{scenario}/result_summaries/TradeFlowsCountry.csv",
+        annual_net_node_trade_flows = "results/{scenario}/result_summaries/AnnualNetTradeFlowsNode.csv",
+        annual_net_country_trade_flows = "results/{scenario}/result_summaries/AnnualNetTradeFlowsCountry.csv",
+        annual_import_node_trade_flows = "results/{scenario}/result_summaries/AnnualImportTradeFlowsNode.csv",
+        annual_import_country_trade_flows = "results/{scenario}/result_summaries/AnnualImportTradeFlowsCountry.csv",        
+        annual_export_node_trade_flows = "results/{scenario}/result_summaries/AnnualExportTradeFlowsNode.csv",
+        annual_export_country_trade_flows = "results/{scenario}/result_summaries/AnnualExportTradeFlowsCountry.csv",        
+        annual_total_node_trade_flows = "results/{scenario}/result_summaries/AnnualTotalTradeFlowsNode.csv",
+        annual_total_country_trade_flows = "results/{scenario}/result_summaries/AnnualTotalTradeFlowsCountry.csv",        
     log:
         log = "results/{scenario}/logs/trade_flows.log"
     script: 
