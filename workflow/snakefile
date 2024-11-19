@@ -21,14 +21,15 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
 
     # no result calcualtions 
     missing = [
-        # storage investment not garunteed 
+        # storage investment not guaranteed 
         "NewStorageCapacity",
         "TotalDiscountedStorageCost",
         "SalvageValueStorage",
         "CapitalInvestmentStorage",
         "DiscountedCapitalInvestmentStorage",
         "DiscountedSalvageValueStorage",
-        # storage levels not garunteed 
+        "DiscountedCostByStorage",
+        # storage levels not guaranteed 
         "StorageLevelSeasonStart",
         "StorageLevelSeasonFinish",
         "StorageLevelYearStart",

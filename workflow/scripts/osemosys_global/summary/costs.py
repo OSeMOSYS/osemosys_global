@@ -27,29 +27,33 @@ def get_tech_cost(discounted_cost_tech: pd.DataFrame, country: bool) -> pd.DataF
         .sum()
     )
 
-def get_storage_cost(discounted_cost_storage: pd.DataFrame, country: bool) -> pd.DataFrame:
+
+def get_storage_cost(
+    discounted_cost_storage: pd.DataFrame, country: bool
+) -> pd.DataFrame:
 
     df = discounted_cost_storage.copy()
-    
+
     if country:
         r = "COUNTRY"
         df[r] = df.index.get_level_values("STORAGE").str[3:6]
     else:
         r = "NODE"
         df[r] = df.index.get_level_values("STORAGE").str[3:8]
-    
+
     return (
         df.reset_index()[["REGION", r, "YEAR", "VALUE"]]
         .groupby(["REGION", r, "YEAR"])
         .sum()
     )
 
+
 def get_demand(demand: pd.DataFrame, country: bool) -> pd.DataFrame:
 
     df = demand.copy()
 
     df = df[df.index.get_level_values("FUEL").str.startswith("ELC")]
-    
+
     if country:
         r = "COUNTRY"
         df[r] = df.index.get_level_values("FUEL").str[3:6]
@@ -106,13 +110,12 @@ if __name__ == "__main__":
         discounted_cost_by_storage = pd.read_csv(
             discounted_cost_by_storage_csv, index_col=[0, 1, 2]
         )
-    except FileExistsError:
-        discounted_cost_by_storage_raw = pd.DataFrame(
+    except FileNotFoundError:
+        discounted_cost_by_storage = pd.DataFrame(
             columns=["REGION", "STORAGE", "YEAR", "VALUE"]
         ).set_index(["REGION", "STORAGE", "YEAR"])
 
-
-    # node level metrics 
+    # node level metrics
 
     tech_cost = get_tech_cost(discounted_cost_by_technology, country=False)
     storage_cost = get_storage_cost(discounted_cost_by_storage, country=False)
@@ -123,8 +126,8 @@ if __name__ == "__main__":
     pwr_cost.to_csv(power_cost_node_csv, index=True)
     cost.to_csv(total_cost_node_csv, index=True)
 
-    # country level metrics 
-    
+    # country level metrics
+
     tech_cost = get_tech_cost(discounted_cost_by_technology, country=True)
     storage_cost = get_storage_cost(discounted_cost_by_storage, country=True)
     cost = tech_cost.add(storage_cost, fill_value=0)

@@ -107,7 +107,7 @@ rule calculate_costs:
     log:
         log = 'results/{scenario}/logs/node_cost.log'
     script: 
-        "../scripts/osemosys_global/summary/node_cost.py"
+        "../scripts/osemosys_global/summary/costs.py"
 
 rule calculate_generation_shares:
     message:
