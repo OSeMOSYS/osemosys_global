@@ -14,7 +14,7 @@ def calc_trn_capacity(
     if country:
         df["FROM"] = df.index.get_level_values("TECHNOLOGY").str[3:6]
         df["TO"] = df.index.get_level_values("TECHNOLOGY").str[8:11]
-        df = df.drop_duplicates(subset=["FROM", "TO"], keep=False)  # intercountry
+        df = df.loc[df['FROM'] != df['TO']]  # intercountry
     else:
         df["FROM"] = df.index.get_level_values("TECHNOLOGY").str[3:8]
         df["TO"] = df.index.get_level_values("TECHNOLOGY").str[8:13]
@@ -68,10 +68,10 @@ if __name__ == "__main__":
         trn_country_save = snakemake.output.transmission_capacity_country
     else:
         total_capacity_csv = "results/India/results/TotalCapacityAnnual.csv"
-        pwr_node_save = ""
-        trn_node_save = ""
-        pwr_country_save = ""
-        trn_country_save = ""
+        pwr_node_save = "results/India/result_summaries/PowerCapacityNode.csv"
+        trn_node_save = "results/India/result_summaries/TransmissionCapacityNode.csv"
+        pwr_country_save = "results/India/result_summaries/PowerCapacityCountry.csv"
+        trn_country_save = "results/India/result_summaries/TransmissionCapacityCountry.csv"
 
     total_capacity_annual = pd.read_csv(total_capacity_csv, index_col=[0, 1, 2])
 
