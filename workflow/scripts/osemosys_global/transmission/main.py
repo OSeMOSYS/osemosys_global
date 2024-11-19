@@ -18,7 +18,7 @@ from read import(
     import_max_cap_invest_base,
     import_min_cap_invest_base,
     import_res_cap_base,
-    import_set_base
+    import_set_base,
 )
 
 from constants import(
@@ -75,7 +75,7 @@ def main(
     min_cap_invest_base: pd.DataFrame,
     res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
-    fuel_set_base: pd.DataFrame
+    fuel_set_base: pd.DataFrame,
 ):
     
     # CALL FUNCTIONS
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     min_cap_invest_base = import_min_cap_invest_base(file_min_cap_invest_base)
     res_cap_base = import_res_cap_base(file_res_cap_base)
     tech_set_base = import_set_base(file_tech_set)  
-    fuel_set_base = import_set_base(file_fuel_set)  
+    fuel_set_base = import_set_base(file_fuel_set)
     
     input_data = {
         "default_op_life": op_life_dict,
@@ -339,7 +339,7 @@ if __name__ == "__main__":
         "min_cap_invest_base" : min_cap_invest_base,
         "res_cap_base" : res_cap_base, 
         "tech_set_base" : tech_set_base,
-        "fuel_set_base" : fuel_set_base,  
+        "fuel_set_base" : fuel_set_base,
     }
     
     # CALL MAIN

@@ -137,7 +137,6 @@ def main():
     )
 
     apply_build_rates(region, years, output_data_dir, input_dir, max_build)
-    apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel)
     apply_calibration(region, years, output_data_dir, calibration)
     apply_re_targets(region, years, output_data_dir, re_targets, remove_nodes)
 
@@ -241,53 +240,6 @@ def apply_build_rates(region, years, output_data_dir, input_dir, max_build):
     df_max_cap["VALUE"] = df_max_cap["VALUE"].astype(float).round(3)
     df_max_cap.to_csv(
         os.path.join(output_data_dir, "TotalAnnualMaxCapacityInvestment.csv"),
-        index=None,
-    )
-
-
-def apply_fuel_limits(region, years, output_data_dir, input_dir, max_fuel):
-
-    mf_df = pd.read_csv(os.path.join(input_dir, "data", "fuel_limits.csv"))
-    mf_df["TECHNOLOGY"] = "MIN" + mf_df["FUEL"] + mf_df["COUNTRY"]
-    mf_df = mf_df[["TECHNOLOGY", "YEAR", "VALUE"]]
-
-    tech_list = mf_df["TECHNOLOGY"].unique()
-    mf_df_final = pd.DataFrame(
-        list(itertools.product(tech_list, years)), columns=["TECHNOLOGY", "YEAR"]
-    )
-    mf_df_final = pd.merge(mf_df_final, mf_df, how="left", on=["TECHNOLOGY", "YEAR"])
-    mf_df_final["VALUE"] = mf_df_final["VALUE"].astype(float)
-    for each_tech in tech_list:
-        mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"] = (
-            mf_df_final.loc[mf_df_final["TECHNOLOGY"].isin([each_tech]), "VALUE"]
-            .interpolate()
-            .round(0)
-        )
-
-    mf_df_final["REGION"] = region
-    mf_df_final = mf_df_final[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
-    mf_df_final.dropna(inplace=True)
-    mf_df_final.to_csv(
-        os.path.join(output_data_dir, "TotalTechnologyAnnualActivityUpperLimit.csv"),
-        index=None,
-    )
-
-    # Model Period Activity Upper Limit for 'MINCOA***01'
-    min_tech_df = pd.read_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"))
-    min_tech = [
-        x
-        for x in min_tech_df["VALUE"].unique()
-        if x.startswith("MINCOA")
-        if x.endswith("01")
-    ]
-    min_tech_df_final = pd.DataFrame(columns=["REGION", "TECHNOLOGY", "VALUE"])
-    min_tech_df_final["TECHNOLOGY"] = min_tech
-    min_tech_df_final["REGION"] = region
-    min_tech_df_final["VALUE"] = 0
-    min_tech_df_final.to_csv(
-        os.path.join(
-            output_data_dir, "TotalTechnologyModelPeriodActivityUpperLimit.csv"
-        ),
         index=None,
     )
 
