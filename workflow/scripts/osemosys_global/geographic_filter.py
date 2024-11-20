@@ -16,6 +16,9 @@ scenario_name = config.get('scenario')
 geographic_scope = config.get('geographic_scope')
 remove_nodes = config.get('nodes_to_remove')
 
+res_targets = config.get('re_targets')
+res_targets = list(res_targets.keys())
+
 output_data_dir = config_paths.output_data_dir
 scenario_dir = config_paths.scenario_dir
 scenario_data_dir = config_paths.scenario_data_dir
@@ -66,6 +69,7 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
             if 'FUEL' in df.columns:
                 df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
                             df['FUEL'].str[6:9].isin(geographic_scope) |
+                            df['FUEL'].isin(res_targets) |
                             df['FUEL'].isin(international_fuels)]
                 
                 if remove_nodes:    
@@ -75,6 +79,7 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
             if str(each_csv).split('/')[-1] == 'FUEL.csv':
                 df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
                             df['VALUE'].str[6:9].isin(geographic_scope) |
+                            df['VALUE'].isin(res_targets) |
                             df['VALUE'].isin(international_fuels)]
                 
                 if remove_nodes:

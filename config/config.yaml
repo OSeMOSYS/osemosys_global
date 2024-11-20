@@ -20,6 +20,7 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
+  - "BTN"
   - "IND"
 
 crossborderTrade: True
@@ -133,19 +134,6 @@ nodes_to_remove:
 #- "AAAXX" where AAA is a 3-letter country code, and XX is a 2-letter 
 # sub-national code
 
-powerplant_build_rates:
- # [TECHNOLOGY, COUNTRY, METHOD, VALUE, START_YEAR, END_YEAR]
- # where TECHNOLOGY_TYPE is, for example, all coal powerplants and is in the 
- # format COA.
- # COUNTRY is the 3-letter country code. E.g. "IND" for "Indonesia" 
- # METHOD specifies how the build rate is applied: absolute ("ABS" or as a 
- # percentage ("PCT") of the maximum capacity for a TECHNOLOGY_TYPE.
- # VALUE is the value - either absolute or percentage - by which the capacity 
- # of the associated TECHNOLOGY can increase. It is applied from the START_YEAR 
- # to the END_YEAR.
- # E.g. - ["SPV", "IND", "ABS", 0, 2020, 2025] 
-  - ["SPV", "IND", "PCT", 25, 2020, 2025] 
-
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
@@ -178,27 +166,39 @@ reserve_margin_technologies:
   LDS : 77
 
 emission_limit:
-# - [EMISSION, COUNTRY, YEAR, VALUE]
+# - [EMISSION, COUNTRY, TYPE, YEAR, VALUE]
 # where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
 # when that constraint must be adhered to. All years between multiple emission 
-# constraints will be interpolated.
- - ["CO2", "IND", 2040, 1]
-
-fuel_limits:
-# FUEL: [VALUE, COUNTRY/INTERNATIONAL, YEAR]
-# Where FUEL is the fuel on which a limit is being applied (e.g. COA), VALUE is
-# the value in Petajoules (PJ), COUNTRY/INTERNATIONAL specific which domestic 
-# fuel (e.g. IND) or international fuel ("INT") the limit is being applied to, 
-# and YEAR is the year for which the limit is applied. All years between multiple 
-# fuel extraction constraints will be interpolated.
-
+# constraints will be interpolated if TYPE is set to "LINEAR". If "POINT" is used
+# it means that a singular year value is set without interpolation occuring in
+# previous target years. A combination of TYPE targets can be set per EMISSION and
+# COUNTRY yet only a single target per YEAR.
+ - ["CO2", "IND", "POINT", 2048, 0]
+ - ["CO2", "IND", "LINEAR", 2040, 1]
+ - ["CO2", "IND", "LINEAR", 2028, 400]
+ - ["CO2", "IND", "POINT", 2030, 300]
 
 calibration:
-#  OCG1: [50, "IND", 2021]
+# TECHNOLOGY: [VALUE, COUNTRY, YEAR]
+# where VALUE is percentage (%) availability of a given technology. This can be used
+# to constrain power plant output (generation).
+  OCG1: [50, "IND", 2021]
 
 re_targets:
-# E.g. - ["IND", 2030, 2040, 30]
-# where "IND" is the country code; 2030, 2040 are the start and end years
-# respectively; and 30 is the target between the start and end years (inclusive)
-# in %
- - ["IND", 2030, 2040, 30]
+# TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]
+# E.g. TO1: ["IND", [], "PCT", 2030, 2040, 60]
+# E.g. TO2: ["INDSO", ['WOF', 'WON'], "PCT", 2025, 2045, 15]
+# E.g. TO3: ["INDSO", ['WOF'], "ABS", 2040, 2050, 200]
+# Targets can be set in absolute terms ("ABS", VALUE = GW) or in relative terms 
+# ("PCT", VALUE = %) where targets in relative terms represent the share of generation.
+# For "PCT", targets can be set at national (e.g. "IND") and nodal levels (e.g. "INDSO")
+# whereas "ABS" can only be set at nodal levels. For "PCT", a single technology can 
+# be set for the target (e.g. ["WOF"]) a technology subset can be set (e.g. ['WOF', 'WON'])
+# or the TECHNOLOGY list can be left empty (e.g. []) as such that all renewable
+# technologies contribute to the target. For "ABS", only one technology can be 
+# selected per target. Note that a combination of targets can be set that affect
+# the same countries/nodes/technologies. This can be computationally intensive.
+  T01: ["", [], "PCT", 2048, 2050, 95]
+  T02: ["IND", [], "PCT", 2030, 2040, 60]
+  T03: ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15]
+  T04: ["INDSO", ['WOF'], "ABS", 2040, 2050, 200]  

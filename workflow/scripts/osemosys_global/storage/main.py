@@ -48,7 +48,6 @@ from user_defined_capacity import set_user_defined_capacity_sto
 from residual_capacity import res_capacity_storage
 
 from sets import(set_unique_storage_technologies, 
-                 set_unique_storage_technologies_custom_nodes, 
                  set_unique_technologies)
 
 from technology_to_from_storage import (set_technology_to_storage,
@@ -81,13 +80,7 @@ def main(
     
     # Set storage set
     storage_set = set_unique_storage_technologies(fuel_set_base, unique_sto_techs)
-    
-    # Set storage sets in case custom nodes are defined
-    if custom_nodes:
-        storage_set_custom_nodes = set_unique_storage_technologies_custom_nodes(custom_nodes, 
-                                                                                unique_sto_techs)
-        storage_set = pd.concat([storage_set, storage_set_custom_nodes])
-        
+
     # Create TechnologyToStorage and TechnologyFromStorage
     tech_to_storage = set_technology_to_storage(storage_set, region_name)
     tech_from_storage = set_technology_from_storage(storage_set, region_name)    

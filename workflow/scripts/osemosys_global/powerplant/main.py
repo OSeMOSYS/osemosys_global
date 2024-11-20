@@ -3,18 +3,23 @@ import os
 
 from read import(
     import_plexos_2015,
+    import_res_limit,
+    import_build_rates,
     import_weo_regions,
     import_weo_costs,
     import_op_life,
     import_naming_convention_tech,
     import_afs,
     import_custom_res_cap,
+    import_custom_res_potentials,
+    import_specified_annual_demand,
 )
 
 from constants import(
     DUPLICATE_TECHS,
     MODE_LIST,
     RENEWABLES_LIST,
+    PW2050_TECH_DICT
     )
 
 from data import(
@@ -43,7 +48,11 @@ from costs import(
 
 from operational_life import set_op_life
 
-from investment_constraints import cap_investment_constraints
+from investment_constraints import(
+    cap_investment_constraints,
+    set_renewable_limits,
+    set_build_rates
+    )
 
 from sets import(
     create_sets,
@@ -54,9 +63,18 @@ from user_defined_capacity import set_user_defined_capacity
 
 from availability import availability_factor
 
+from renewable_targets import(
+    apply_re_pct_targets,
+    apply_re_abs_targets,
+    )
+
+from calibration import apply_calibration
+
 def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
+    res_limit: pd.DataFrame,
+    build_rates: pd.DataFrame,
     weo_costs: pd.DataFrame,
     weo_regions: pd.DataFrame,
     default_op_life: pd.DataFrame,
@@ -65,6 +83,7 @@ def main(
     tech_code_dict: pd.DataFrame,
     custom_res_cap: pd.DataFrame,
     default_av_factors: pd.DataFrame,
+    specified_demand: pd.DataFrame,
 ):
     
     # CALL FUNCTIONS
@@ -94,7 +113,7 @@ def main(
     df_oar_final, df_iar_final = activity_master_end(df_pwr_oar_final, df_oar_upstream, 
                                                      df_oar_int, df_pwr_iar_final, 
                                                      DUPLICATE_TECHS)
-    
+        
     # Set capital and fixed powerplant costs.
     df_costs = costs_pwr(weo_costs)
     
@@ -174,7 +193,37 @@ def main(
     # Set availability factors. Occurs after set_user_defined_capacity as tech_set gets updated.
     df_af_final = availability_factor(default_av_factors, tech_set,
                                       start_year, end_year, region_name)
-
+    
+    # Set total max capacity (potential - residuals) for renewable technologies.
+    df_max_capacity = set_renewable_limits(res_limit, PW2050_TECH_DICT,
+                                           custom_nodes, custom_res_potentials,
+                                           df_res_cap, start_year, 
+                                           end_year, region_name)
+    
+    # Add user defined build rates to TotalAnnualMaxCapacityInvestment
+    df_max_cap_invest = set_build_rates(build_rates, tech_set, df_max_cap_invest, 
+                                        df_max_capacity, start_year, end_year, region_name)
+    
+    # Set OAR, FUEL and AccumulatedAnnualDemand based on user defined RES generation targets.
+    fuel_set, df_oar_final, df_accumulated_annual_demand = apply_re_pct_targets(res_targets, 
+                                                                                geographic_scope,
+                                                                                remove_nodes, 
+                                                                                df_oar_final,
+                                                                                RENEWABLES_LIST,
+                                                                                fuel_set, 
+                                                                                specified_demand,
+                                                                                region_name)
+    
+    # Set OAR, FUEL and AccumulatedAnnualDemand after calibration.
+    fuel_set, df_oar_final, df_accumulated_annual_demand = apply_calibration(calibration, 
+                                                                             df_oar_final, 
+                                                                             df_accumulated_annual_demand, 
+                                                                             fuel_set)
+    
+    # Set TotalAnnualMinCapacity based on user defined RES capacity targets.
+    df_total_annual_min_capacity = apply_re_abs_targets(res_targets, remove_nodes, 
+                                                        region_name)
+    
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -205,6 +254,18 @@ def main(
     
     # OUTPUT CSV's NOT USED AS INPUT FOR TRANMISSION RULE
     
+    df_max_capacity.to_csv(os.path.join(output_data_dir, 
+                                        "TotalAnnualMaxCapacity.csv"), 
+                           index = None)
+    
+    df_accumulated_annual_demand.to_csv(os.path.join(output_data_dir, 
+                                                     "AccumulatedAnnualDemand.csv"), 
+                                        index=None)
+    
+    df_total_annual_min_capacity.to_csv(os.path.join(output_data_dir, 
+                                                     "TotalAnnualMinCapacity.csv"), 
+                                        index=None)
+    
     df_af_final.to_csv(os.path.join(output_data_dir, 'AvailabilityFactor.csv'), index=None)
     
     years_set.to_csv(os.path.join(output_data_dir, "YEAR.csv"), index = None)
@@ -217,23 +278,31 @@ if __name__ == "__main__":
     
     if "snakemake" in globals():
         file_plexos = snakemake.input.plexos
+        file_res_limit = snakemake.input.res_limit
+        file_build_rates = snakemake.input.build_rates
         file_default_op_life = snakemake.input.default_op_life
         file_naming_convention_tech = snakemake.input.naming_convention_tech
         file_weo_costs = snakemake.input.weo_costs
         file_weo_regions = snakemake.input.weo_regions
-        file_default_av_factors = snakemake.input.default_av_factors
+        file_default_av_factors = snakemake.input.default_av_factors     
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
+        geographic_scope = snakemake.params.geographic_scope
         custom_nodes = snakemake.params.custom_nodes
+        remove_nodes = snakemake.params.remove_nodes
         tech_capacity = snakemake.params.user_defined_capacity
         no_investment_techs = snakemake.params.no_investment_techs
+        res_targets = snakemake.params.res_targets
+        calibration = snakemake.params.calibration
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
-        powerplant_data_dir = snakemake.params.powerplant_data_dir    
+        powerplant_data_dir = snakemake.params.powerplant_data_dir  
+        file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'  
         
         if custom_nodes:
             file_custom_res_cap = snakemake.input.custom_res_cap
+            file_custom_res_potentials = snakemake.input.custom_res_potentials
             
     # The below else statement defines variables if the 'powerplant/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
@@ -241,29 +310,46 @@ if __name__ == "__main__":
             
     else:
         file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
+        file_res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
+        file_build_rates = 'resources/data/powerplant_build_rates.csv'        
         file_default_op_life = 'resources/data/operational_life.csv'
         file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
         file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
         file_weo_regions = 'resources/data/weo_region_mapping.csv'
+        file_default_av_factors = 'resources/data/availability_factors.csv'  
         file_default_av_factors = 'resources/data/availability_factors.csv'        
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
+        geographic_scope = ['BTN', 'IND']
         custom_nodes = [] 
+        remove_nodes = []
         tech_capacity = {'PWRCOAINDWE01': [8, 2000, 2025, 5, 1100, 35],
                          'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
+        res_targets = {'T01': ["", [], "PCT", 2048, 2050, 95],
+                       'T02': ["IND", [], "PCT", 2030, 2040, 60],
+                       'T03': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
+                       'T04': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
+                      }
+        calibration = {}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
+        file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'
         
         if custom_nodes:
-            file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv' 
+            file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv'
+            file_custom_res_potentials = 'resources/data/custom_nodes/RE_potentials.csv' 
 
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
     plexos_memb = import_plexos_2015(file_plexos, "memb")
+    
+    res_limit = import_res_limit(file_res_limit)
+    build_rates = import_build_rates(file_build_rates)
+    
     op_life = import_op_life(file_default_op_life)
     
     op_life_dict = dict(zip(list(op_life['tech']),
@@ -280,15 +366,20 @@ if __name__ == "__main__":
     weo_regions = import_weo_regions(file_weo_regions)
     
     availability = import_afs(file_default_av_factors)
+    specified_annual_demand = import_specified_annual_demand(file_specified_annual_demand)
     
     if custom_nodes:
         custom_res_cap = import_custom_res_cap(file_custom_res_cap)
+        custom_res_potentials = import_custom_res_potentials(file_custom_res_potentials)
     else:
         custom_res_cap = []
+        custom_res_potentials = []
     
     input_data = {
         "plexos_prop": plexos_prop,
         "plexos_memb": plexos_memb,
+        "res_limit" : res_limit,
+        "build_rates" : build_rates,
         "weo_costs": weo_costs,
         "weo_regions": weo_regions,
         "default_op_life": op_life_dict,
@@ -297,6 +388,7 @@ if __name__ == "__main__":
         "tech_code_dict": tech_code_dict,
         "custom_res_cap" : custom_res_cap,
         "default_av_factors": availability,
+        "specified_demand" : specified_annual_demand
     }
     
     # CALL MAIN

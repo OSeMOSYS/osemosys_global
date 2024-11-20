@@ -37,6 +37,10 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
         "StorageLevelDayTypeStart",
         "StorageLevelDayTypeFinish",
         "StorageLowerLimit",
+        "CapitalInvestmentStorage",
+        "DiscountedCapitalInvestmentStorage",
+        "DiscountedCostByStorage",
+        "DiscountedSalvageValueStorage"
         "StorageUpperLimit",
         # other missing calcs
         "NumberOfNewTechnologyUnits",

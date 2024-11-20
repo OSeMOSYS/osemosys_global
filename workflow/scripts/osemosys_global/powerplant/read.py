@@ -17,6 +17,20 @@ def import_plexos_2015(f: str, metric: str) -> dict[str, pd.DataFrame]:
 
     return pd.read_excel(f, sheet_name=sheet_name)
 
+def import_res_limit(f: str) -> pd.DataFrame:
+    """Imports the PLEXOS-World MESSAGix soft link model file for 
+    renewable resource limits.
+    
+    PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx
+    """
+    return pd.read_excel(f, sheet_name = 'Properties')
+
+def import_build_rates(f: str) -> pd.DataFrame:
+    """Imports user defined build rates for powerplant technologies.
+    
+    powerplant_build_rates.csv
+    """
+    return pd.read_csv(f)
 
 def import_weo_regions(f: str) -> pd.DataFrame:
     """Imports WEO to OG region mapping.
@@ -65,6 +79,12 @@ def import_custom_res_cap(f: str) -> pd.DataFrame:
     """
     return pd.read_csv(f)
 
+def import_custom_res_potentials(f: str) -> pd.DataFrame:
+    """Imports renewable potentials for custom nodes.
+    
+    custom_nodes\RE_potentials.csv
+    """
+    return pd.read_csv(f)
 
 def import_cmo_forecasts(f: str) -> pd.DataFrame:
     """Imports CMO forecasts.
@@ -78,11 +98,17 @@ def import_cmo_forecasts(f: str) -> pd.DataFrame:
         nrows=5,
     )
 
-
 def import_fuel_prices(f: str) -> pd.DataFrame:
     """Imports international and country specific fuel prices.
 
     fuel_prices.csv
+    """
+    return pd.read_csv(f)
+
+def import_specified_annual_demand(f: str) -> pd.DataFrame:
+    """Imports SpecifiedAnnualDemand.csv as output from the demand_projections rule.
+    
+    SpecifiedAnnualDemand.csv
     """
     return pd.read_csv(f)
 

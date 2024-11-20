@@ -284,3 +284,39 @@ def new_iar(df_in, tech, new_iar_ccg,
     df_out.loc[:,'VALUE'] = round(1/iar, 3)
     
     return df_out
+
+def get_max_value_per_technology(df):
+    """Gets the max value for each unique technology in a dataframe.
+
+    This function will search through a 'TECHNOLOGY' column to identify each
+    unique technology. The input dataframe will be filtered based on each
+    unique technology and only keep one datapoint per technology - the
+    datapoint cooresponding to the max value in the 'VALUE' column.
+
+    Args:
+        df: Dataframe with at minimum a 'TECHNOLOGY' and 'VALUE' columns
+
+    Returns:
+        df: Filtered dataframe giving max values per technology.
+    """
+
+    # Get list of techs to filter over
+    techs = df["TECHNOLOGY"].unique().tolist()
+
+    # output list to hold filtered data
+    out_data = []
+
+    # perform filtering
+    for tech in techs:
+        # for tech in ['PWRHYDCHNJS01']:
+        df_tech_filter = df.loc[df["TECHNOLOGY"] == tech]
+        df_value_filter = df_tech_filter.loc[
+            df_tech_filter["VALUE"] == df_tech_filter["VALUE"].max()
+        ].reset_index(drop=True)
+        df_value_filter = df_value_filter.drop_duplicates(subset=["VALUE"])
+        value_filter_data = df_value_filter.values.tolist()
+        out_data.append(value_filter_data[0])
+
+    # setup dataframe to return
+    df_out = pd.DataFrame(out_data, columns=list(df))
+    return df_out
