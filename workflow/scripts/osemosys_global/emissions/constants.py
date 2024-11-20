@@ -17,3 +17,6 @@ _TECH_TO_FUEL = {
 
 # Emission name
 _EMISSION = "CO2"
+
+# COA CCS CO2 capture efficiency
+CCS_EFF = 90

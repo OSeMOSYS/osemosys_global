@@ -4,7 +4,7 @@ import pandas as pd
 
 from data import get_co2_emission_factors
 
-def get_ear(emission, emission_factors, 
+def get_ear(emission, emission_factors, ccs_efficiency,
             iar_base, oar_base, tech_to_fuel):
     """Creates emission activity ratio dataframe.
 
@@ -57,9 +57,11 @@ def get_ear(emission, emission_factors,
     # ADD IN EMISSION COLUMN
 
     df["EMISSION"] = emission + df["COUNTRY"]
-
+    
+    # Add CCS EAR as a function of COA EAR and efficiency constant
     df.loc[df["TECH_CODE"].str.startswith("CCS"), "VALUE"] = (
-        df.loc[df["TECH_CODE"].str.startswith("COA"), "VALUE"].mean() * 0.1
+        df.loc[df["TECH_CODE"].str.startswith("COA"), "VALUE"].mean() * (
+            (100 - ccs_efficiency) / 100)
     )
     df["VALUE"] = df["VALUE"].round(4)
     # Final EmissionActivityRatio dataframe

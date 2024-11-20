@@ -10,7 +10,8 @@ from read import(
 
 from constants import(
     _TECH_TO_FUEL,
-    _EMISSION
+    _EMISSION,
+    CCS_EFF
     )
 
 from emission_activity_ratio import get_ear
@@ -33,7 +34,7 @@ def main(
     # CALL FUNCTIONS
     
     # Set EmissionActivityRatio.
-    df_emission_activity_ratio = get_ear(_EMISSION, emission_factors,
+    df_emission_activity_ratio = get_ear(_EMISSION, emission_factors, CCS_EFF,
                                          iar_base, oar_base, _TECH_TO_FUEL)
     
     # Set EMISSION set.
