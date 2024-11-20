@@ -4,7 +4,7 @@ import pandas as pd
 
 from data import get_co2_emission_factors
 
-def get_ear(emission, emission_factors, storage_techs, 
+def get_ear(emission, emission_factors, 
             iar_base, oar_base, tech_to_fuel):
     """Creates emission activity ratio dataframe.
 
@@ -40,13 +40,16 @@ def get_ear(emission, emission_factors, storage_techs,
     df["FUEL_NAME"] = df["TECH_CODE"].map(tech_to_fuel)
     df["VALUE"] = df["FUEL_NAME"].map(co2_factors)
     
+    # Drop all non-CO2 emitting techs
+    df = df[~df.FUEL_NAME.isna()]
+    
     # Multiply by InputActivityRatio
     df_iar = iar_base.copy()
     df_iar.rename(columns={"VALUE": "IAR"}, inplace=True)
     df = pd.merge(
         df, df_iar, how="left", on=["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"]
     )
-    df["VALUE"] = df["VALUE"].fillna(0)
+
     df["VALUE"] = df["VALUE"] * df["IAR"]
     df.drop_duplicates(inplace=True)
     df["VALUE"] = df["VALUE"].round(4)
@@ -61,8 +64,5 @@ def get_ear(emission, emission_factors, storage_techs,
     df["VALUE"] = df["VALUE"].round(4)
     # Final EmissionActivityRatio dataframe
     df = df[["REGION", "TECHNOLOGY", "EMISSION", "MODE_OF_OPERATION", "YEAR", "VALUE"]]
-    
-    # Filter out storage techs
-    df = df[~df["TECHNOLOGY"].str.startswith(tuple(storage_techs))]
     
     return df

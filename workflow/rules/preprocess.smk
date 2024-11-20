@@ -373,7 +373,6 @@ rule emissions:
         input_data_dir = 'resources/data',
         emission_penalty = config['emission_penalty'],
         emission_limit = config['emission_limit'],
-        storage_parameters = config['storage_parameters']
     output: 
         csv_files = expand('results/data/{output_file}.csv', output_file = emission_files),
     log:

@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-import logging
 
 from read import(
     import_emission_factors,
@@ -22,9 +21,6 @@ from emission_penalty import get_emission_penalty
 
 from emission_limit import add_emission_limits
 
-# Logging formatting
-logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
-
 def main(
         ember: pd.DataFrame,
         emission_factors: pd.DataFrame,
@@ -37,8 +33,8 @@ def main(
     # CALL FUNCTIONS
     
     # Set EmissionActivityRatio.
-    df_emission_activity_ratio = get_ear(_EMISSION, emission_factors, storage_techs, 
-                                      iar_base, oar_base, _TECH_TO_FUEL)
+    df_emission_activity_ratio = get_ear(_EMISSION, emission_factors,
+                                         iar_base, oar_base, _TECH_TO_FUEL)
     
     # Set EMISSION set.
     df_emissions_set = set_unique_emissions(df_emission_activity_ratio)
@@ -81,7 +77,6 @@ if __name__ == "__main__":
         file_oar_base = snakemake.input.oar
         emission_penalty = snakemake.params.emission_penalty
         emission_limit = snakemake.params.emission_limit
-        storage_parameters = snakemake.params.storage_parameters
             
     # The below else statement defines variables if the 'powerplant/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
@@ -101,8 +96,6 @@ if __name__ == "__main__":
                           ["CO2", "IND", "LINEAR", 2040, 1],
                           ["CO2", "IND", "LINEAR", 2028, 400],
                           ["CO2", "IND", "POINT", 2030, 300]]
-        storage_parameters = {'SDS': [1938, 44.25, 0, 85, 4],
-                              'LDS': [3794, 20.2, 0.58, 80, 10]}
 
     # SET INPUT DATA
     ember = get_ember_emissions(file_ember)
@@ -110,8 +103,6 @@ if __name__ == "__main__":
     
     iar_base = import_iar_base(file_iar_base)
     oar_base = import_oar_base(file_oar_base)
-    
-    storage_techs = ['PWR' + stor for stor in storage_parameters.keys()]
     
     input_data = {
     'ember' : ember,
