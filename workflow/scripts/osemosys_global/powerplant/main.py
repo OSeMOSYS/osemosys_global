@@ -321,7 +321,7 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
-        geographic_scope = ['IND', 'PAK', 'BTN']
+        geographic_scope = ['BTN', 'IND']
         custom_nodes = [] 
         remove_nodes = []
         tech_capacity = {'PWRCOAINDWE01': [8, 2000, 2025, 5, 1100, 35],

@@ -20,9 +20,8 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "IND"
-  - "PAK"
   - "BTN"
+  - "IND"
 
 crossborderTrade: True
 

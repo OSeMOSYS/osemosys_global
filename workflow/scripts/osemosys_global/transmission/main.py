@@ -75,8 +75,7 @@ def main(
     min_cap_invest_base: pd.DataFrame,
     res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
-    fuel_set_base: pd.DataFrame,
-    model_period_activity_upper_limit_base: pd.DataFrame,
+    fuel_set_base: pd.DataFrame
 ):
     
     # CALL FUNCTIONS
@@ -110,8 +109,7 @@ def main(
                                              end_year, region_name)
     
     # Adjust activity limits if cross border trade is not allowed following user config.
-    activity_limit_trn = activity_transmission_limit(cross_border_trade, oar_trn,
-                                                     model_period_activity_upper_limit_base)
+    activity_limit_trn = activity_transmission_limit(cross_border_trade, oar_trn)
     
     # Set operational life for transmission.
     op_life_trn = set_op_life_transmission(oar_trn, default_op_life, op_life_base, region_name)

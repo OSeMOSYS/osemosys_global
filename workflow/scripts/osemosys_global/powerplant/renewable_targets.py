@@ -34,7 +34,7 @@ def apply_re_pct_targets(re_targets, geographic_scope, remove_nodes, oar_df,
             value_dict[target] = target_params[5]
         
         # Per entry check if they are relative targets ('PCT').
-        for target in re_targets.keys():
+        for target in re_targets:
             if type_dict[target] == 'PCT':
                 # Check for a technology subset for the target.
                 if not target_techs_dict[target]:
@@ -180,7 +180,7 @@ def apply_re_abs_targets(re_targets, remove_nodes, region_name):
             value_dict[target] = target_params[5]
 
         # Per entry check if they are absolute targets ('ABS').
-        for target in re_targets.keys():
+        for target in re_targets:
             if type_dict[target] == 'ABS':
                 target_years = get_years(first_year_dict[target], 
                                          final_year_dict[target])
