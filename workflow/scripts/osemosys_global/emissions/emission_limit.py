@@ -2,7 +2,6 @@
 
 import pandas as pd
 import itertools
-import numpy as np
 
 from data import get_years
 
@@ -43,8 +42,8 @@ def add_emission_limits(emissions, emission_limit, ember,
         for emission in emission_limit_ordered['EMISSION'].unique():
             # Loop through countries
             for country in emission_limit_ordered['COUNTRY'].unique():
-                prev_data_year = ''
-                prev_data_value = ''
+                prev_data_year = None
+                prev_data_value = None
 
                 # Set input limits for given country and emission
                 limits = emission_limit_ordered.loc[(emission_limit_ordered[
@@ -62,7 +61,7 @@ def add_emission_limits(emissions, emission_limit, ember,
                     data_value = row.VALUE
                     
                     # Check if a limit for earlier years is set
-                    if prev_data_year == '':
+                    if not prev_data_year:
                         # If not check if limit type is LINEAR. If TRUE, set historic
                         # emission values to be able to set a linear relationship in absence
                         # of previous year entries.
@@ -96,8 +95,8 @@ def add_emission_limits(emissions, emission_limit, ember,
                     prev_data_value = data_value
                     
                 # Once done with a given country reset previous year limits.
-                prev_data_year = ''
-                prev_data_value = ''
+                prev_data_year = None
+                prev_data_value = None
                 
                 # Interpolate values for LINEAR targets.
                 data['VALUE'] = data['VALUE'].interpolate()

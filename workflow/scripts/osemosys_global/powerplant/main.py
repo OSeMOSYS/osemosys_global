@@ -38,8 +38,7 @@ from activity import(
     activity_input_pwr,
     activity_upstream,
     activity_master_end,
-    capact,
-    set_model_period_activity_upper_limit
+    capact
     )
 
 from costs import(
@@ -205,10 +204,6 @@ def main(
     df_max_cap_invest = set_build_rates(build_rates, tech_set, df_max_cap_invest, 
                                         df_max_capacity, start_year, end_year, region_name)
     
-    # Set TotalTechnologyAnnualActivityUpperLimit based on user defined fuel limits.
-    df_model_period_activity_upper_limit = set_model_period_activity_upper_limit(tech_set,
-                                                                                 region_name)
-    
     # Set OAR, FUEL and AccumulatedAnnualDemand based on user defined RES generation targets.
     fuel_set, df_oar_final, df_accumulated_annual_demand = apply_re_pct_targets(res_targets, 
                                                                                 geographic_scope,
@@ -227,7 +222,7 @@ def main(
     
     # Set TotalAnnualMinCapacity based on user defined RES capacity targets.
     df_total_annual_min_capacity = apply_re_abs_targets(res_targets, remove_nodes, 
-                                                        tech_set, region_name)
+                                                        region_name)
     
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
@@ -252,9 +247,6 @@ def main(
     df_min_cap_invest.to_csv(os.path.join(powerplant_data_dir, 
                                             'TotalAnnualMinCapacityInvestment.csv'),
                                         index = None)
-    
-    df_model_period_activity_upper_limit.to_csv(os.path.join(
-        powerplant_data_dir, "TotalTechnologyModelPeriodActivityUpperLimit.csv"), index=None)
     
     tech_set.to_csv(os.path.join(powerplant_data_dir, "TECHNOLOGY.csv"), index = None)
     
@@ -397,7 +389,6 @@ if __name__ == "__main__":
         "custom_res_cap" : custom_res_cap,
         "default_av_factors": availability,
         "specified_demand" : specified_annual_demand
-
     }
     
     # CALL MAIN

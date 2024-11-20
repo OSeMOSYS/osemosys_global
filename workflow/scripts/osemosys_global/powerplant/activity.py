@@ -283,20 +283,3 @@ def capact(df_oar_final):
     df_capact_final.drop_duplicates(inplace=True)
 
     return df_capact_final
-
-def set_model_period_activity_upper_limit(tech_set, region_name):
-
-    # Model Period Activity Upper Limit for 'MINCOA***01'
-    min_tech_df = tech_set.copy()
-    min_tech = [
-        x
-        for x in min_tech_df["VALUE"].unique()
-        if x.startswith("MINCOA")
-        if x.endswith("01")
-    ]
-    min_tech_df_final = pd.DataFrame(columns=["REGION", "TECHNOLOGY", "VALUE"])
-    min_tech_df_final["TECHNOLOGY"] = min_tech
-    min_tech_df_final["REGION"] = region_name
-    min_tech_df_final["VALUE"] = 0
-
-    return min_tech_df_final

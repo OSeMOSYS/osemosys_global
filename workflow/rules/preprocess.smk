@@ -31,7 +31,6 @@ power_plant_files = [
     'YEAR',
     'AvailabilityFactor',
     'TotalAnnualMaxCapacity',
-    'powerplant/TotalTechnologyModelPeriodActivityUpperLimit',
     'AccumulatedAnnualDemand',
     'TotalAnnualMinCapacity'
     ]

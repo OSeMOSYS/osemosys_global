@@ -151,8 +151,7 @@ def apply_re_pct_targets(re_targets, geographic_scope, remove_nodes, oar_df,
 
     return fuel_set, oar_df, accumulated_annual_demand
 
-def apply_re_abs_targets(re_targets, remove_nodes, 
-                         tech_set, region_name):
+def apply_re_abs_targets(re_targets, remove_nodes, region_name):
     
     """Apply Renewable Energy targets by country, year and technology
     in absolute terms (GW)."""

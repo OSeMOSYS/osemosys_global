@@ -150,9 +150,6 @@ def activity_transmission_limit(cross_border_trade, df_oar_trn_final,
     df_crossborder_final = apply_dtypes(df_crossborder_final, 
                                         "TotalTechnologyModelPeriodActivityUpperLimit")
     
-    df_crossborder_final = pd.concat([df_model_period_activity_upper_limit_base, 
-                                      df_crossborder_final])
-    
     return df_crossborder_final
 
 def create_trn_dist_capacity_activity(*dfs: pd.DataFrame, value: Optional[float] = 31.536, 

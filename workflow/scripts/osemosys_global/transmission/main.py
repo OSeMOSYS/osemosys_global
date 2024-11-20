@@ -18,8 +18,7 @@ from read import(
     import_max_cap_invest_base,
     import_min_cap_invest_base,
     import_res_cap_base,
-    import_set_base,
-    import_model_period_activity_upper_limit_base
+    import_set_base
 )
 
 from constants import(
@@ -249,7 +248,6 @@ if __name__ == "__main__":
         file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'        
         file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'
-        file_model_period_activity_upper_limit_base = f'{powerplant_data_dir}/TotalTechnologyModelPeriodActivityUpperLimit.csv'
         
     # The below else statement defines variables if the 'transmission/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
@@ -294,7 +292,6 @@ if __name__ == "__main__":
         file_res_cap_base = f'{powerplant_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{powerplant_data_dir}/TECHNOLOGY.csv'
         file_fuel_set = f'{powerplant_data_dir}/FUEL.csv'
-        file_model_period_activity_upper_limit_base = f'{powerplant_data_dir}/TotalTechnologyModelPeriodActivityUpperLimit.csv'
 
     # SET INPUT DATA
     gtd_exist = format_gtd_existing(import_gtd_existing(file_gtd_existing))
@@ -325,8 +322,6 @@ if __name__ == "__main__":
     res_cap_base = import_res_cap_base(file_res_cap_base)
     tech_set_base = import_set_base(file_tech_set)  
     fuel_set_base = import_set_base(file_fuel_set)
-    model_period_activity_upper_limit_base = import_model_period_activity_upper_limit_base(
-        file_model_period_activity_upper_limit_base)
     
     input_data = {
         "default_op_life": op_life_dict,
@@ -346,8 +341,7 @@ if __name__ == "__main__":
         "min_cap_invest_base" : min_cap_invest_base,
         "res_cap_base" : res_cap_base, 
         "tech_set_base" : tech_set_base,
-        "fuel_set_base" : fuel_set_base,
-        "model_period_activity_upper_limit_base" : model_period_activity_upper_limit_base
+        "fuel_set_base" : fuel_set_base
     }
     
     # CALL MAIN
