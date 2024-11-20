@@ -84,7 +84,7 @@ def main(
     tech_code_dict: pd.DataFrame,
     custom_res_cap: pd.DataFrame,
     default_av_factors: pd.DataFrame,
-    annual_demand: pd.DataFrame,
+    specified_demand: pd.DataFrame,
 ):
     
     # CALL FUNCTIONS
@@ -211,11 +211,12 @@ def main(
     
     # Set OAR, FUEL and AccumulatedAnnualDemand based on user defined RES generation targets.
     fuel_set, df_oar_final, df_accumulated_annual_demand = apply_re_pct_targets(res_targets, 
+                                                                                geographic_scope,
                                                                                 remove_nodes, 
                                                                                 df_oar_final,
                                                                                 RENEWABLES_LIST,
                                                                                 fuel_set, 
-                                                                                annual_demand,
+                                                                                specified_demand,
                                                                                 region_name)
     
     # Set OAR, FUEL and AccumulatedAnnualDemand after calibration.
@@ -295,6 +296,7 @@ if __name__ == "__main__":
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
+        geographic_scope = snakemake.params.geographic_scope
         custom_nodes = snakemake.params.custom_nodes
         remove_nodes = snakemake.params.remove_nodes
         tech_capacity = snakemake.params.user_defined_capacity
@@ -327,15 +329,17 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
+        geographic_scope = ['IND', 'PAK', 'BTN']
         custom_nodes = [] 
         remove_nodes = []
         tech_capacity = {'PWRCOAINDWE01': [8, 2000, 2025, 5, 1100, 35],
                          'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
-        res_targets = {'T01': ["IND", [], "PCT", 2030, 2040, 60],
-                       'T02': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
-                       'T03': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
+        res_targets = {'T01': ["", [], "PCT", 2048, 2050, 95],
+                       'T02': ["IND", [], "PCT", 2030, 2040, 60],
+                       'T03': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
+                       'T04': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
                       }
         calibration = {}
         output_data_dir = 'results/data'
@@ -392,7 +396,7 @@ if __name__ == "__main__":
         "tech_code_dict": tech_code_dict,
         "custom_res_cap" : custom_res_cap,
         "default_av_factors": availability,
-        "annual_demand" : specified_annual_demand
+        "specified_demand" : specified_annual_demand
 
     }
     

@@ -9,7 +9,8 @@ rule geographic_filter:
     input: 
         csv_files = expand('results/data/{csv}.csv', csv = OTOOLE_PARAMS),
     params:
-        geographic_scope = config['geographic_scope']
+        geographic_scope = config['geographic_scope'],
+        res_targets = config['re_targets']
     output:
         csv_files = expand('results/{{scenario}}/data/{csv}.csv', csv = OTOOLE_PARAMS),
     # conda:

@@ -4,8 +4,8 @@ import itertools
 
 from data import get_years
 
-def apply_re_pct_targets(re_targets, remove_nodes, oar_df, renewables_list, 
-                     fuel_set, annual_demand_df, region_name):
+def apply_re_pct_targets(re_targets, geographic_scope, remove_nodes, oar_df, 
+                         renewables_list, fuel_set, specified_demand_df, region_name):
     
     """Apply Renewable Energy targets by country, year and technology in 
     relative terms compared to overall generation (= specified demand)."""
@@ -56,6 +56,13 @@ def apply_re_pct_targets(re_targets, remove_nodes, oar_df, renewables_list,
                         & (oar_df["TECHNOLOGY"].str[3:6].isin(tech_filter))
                         & (oar_df["TECHNOLOGY"].str[6:11] == node_dict[target])
                     ].copy()
+                    
+                elif len(str(node_dict[target])) == 0:
+                    re_df = oar_df.loc[
+                        (oar_df["TECHNOLOGY"].str.startswith("PWR"))
+                        & (oar_df["TECHNOLOGY"].str[3:6].isin(tech_filter))
+                        & (oar_df["TECHNOLOGY"].str[6:9].isin(geographic_scope))
+                    ].copy()
                 
                 # Create dummy commodity for the target.
                 re_df["FUEL"] = target + node_dict[target]
@@ -101,8 +108,8 @@ def apply_re_pct_targets(re_targets, remove_nodes, oar_df, renewables_list,
                 re_targets_df.dropna(axis=0, inplace=True)
         
                 # Read 'SpecifiedAnnualDemand' as output from the demand_projection rule.
-                sp_demand_df = annual_demand_df.loc[
-                    ~(annual_demand_df["FUEL"].str[3:8].isin(remove_nodes))
+                sp_demand_df = specified_demand_df.loc[
+                    ~(specified_demand_df["FUEL"].str[3:8].isin(remove_nodes))
                 ]
                   
                 if len(str(node_dict[target])) == 3:
@@ -110,6 +117,12 @@ def apply_re_pct_targets(re_targets, remove_nodes, oar_df, renewables_list,
                     
                 elif len(str(node_dict[target])) == 5:
                     sp_demand_df["GEO"] = sp_demand_df["FUEL"].str[3:8]
+                    
+                elif len(str(node_dict[target])) == 0:
+                    sp_demand_df["GEO"] = ''
+                    sp_demand_df = sp_demand_df.loc[sp_demand_df["FUEL"
+                                                                 ].str[3:6].isin(
+                                                                     geographic_scope)]
                     
                 sp_demand_df = sp_demand_df.groupby(["YEAR", "GEO"], as_index=False)[
                     "VALUE"
@@ -121,7 +134,7 @@ def apply_re_pct_targets(re_targets, remove_nodes, oar_df, renewables_list,
                     re_targets_df, sp_demand_df, how="left", on=["GEO", "YEAR"]
                 )
                 
-                # Calculate the country level target for the dummy RES commodity
+                # Calculate the target for the dummy RES commodity
                 re_targets_df["VALUE"] = re_targets_df["VALUE"] * re_targets_df["DEMAND"]
                 re_targets_df["FUEL"] = target + re_targets_df["GEO"]
                 re_targets_df["REGION"] = region_name

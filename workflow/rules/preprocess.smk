@@ -189,6 +189,7 @@ rule powerplant:
         start_year = config['startYear'],
         end_year = config['endYear'],
         region_name = 'GLOBAL',
+        geographic_scope = config['geographic_scope'],
         custom_nodes = config['nodes_to_add'],
         remove_nodes = config['nodes_to_remove'],
         user_defined_capacity = config['user_defined_capacity'],
