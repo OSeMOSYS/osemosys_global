@@ -182,7 +182,16 @@ calibration:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
 # where VALUE is percentage (%) availability of a given technology. This can be used
 # to constrain power plant output (generation).
-  OCG1: [50, "IND", 2021]
+  URN: [100, "IND", 2023]
+  
+max_availability_factors:
+# [COUNTRY/NODE, TECHNOLOGY, START_YEAR, END_YEAR, VALUE]
+# where VALUE is percentage (%) MAX availability of a given technology. This overwrites
+# the default values from availability_factors.csv in resources/data. This parameter can
+# be used to constrain the output of technologies to, for example, to mimic max generation
+# policy targets.
+ - ["INDWE", 'COA', 2023, 2050, 50]
+ - ["IND", 'COA', 2023, 2050, 25]
 
 re_targets:
 # TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]

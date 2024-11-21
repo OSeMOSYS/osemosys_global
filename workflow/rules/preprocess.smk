@@ -181,7 +181,7 @@ rule powerplant:
         weo_regions = 'resources/data/weo_region_mapping.csv',
         default_op_life = 'resources/data/operational_life.csv',
         naming_convention_tech = 'resources/data/naming_convention_tech.csv',
-        default_av_factors = 'resources/data/availability_factors.csv',
+        default_af_factors = 'resources/data/availability_factors.csv',
         custom_res_cap = powerplant_cap_custom_csv(),
         custom_res_potentials = powerplant_res_potentials_custom_csv(),
     params:
@@ -193,6 +193,7 @@ rule powerplant:
         remove_nodes = config['nodes_to_remove'],
         user_defined_capacity = config['user_defined_capacity'],
         no_investment_techs = config['no_invest_technologies'],
+        availability_factors = config['max_availability_factors'],
         res_targets = config['re_targets'],
         calibration = config['calibration'],
         output_data_dir = 'results/data',

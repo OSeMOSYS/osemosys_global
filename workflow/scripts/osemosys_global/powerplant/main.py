@@ -61,7 +61,10 @@ from sets import(
 
 from user_defined_capacity import set_user_defined_capacity
 
-from availability import availability_factor
+from availability import(
+    availability_factor,
+    availability_factor_custom
+    )
 
 from renewable_targets import(
     apply_re_pct_targets,
@@ -82,7 +85,7 @@ def main(
     tech_list: pd.DataFrame,      
     tech_code_dict: pd.DataFrame,
     custom_res_cap: pd.DataFrame,
-    default_av_factors: pd.DataFrame,
+    default_af_factors: pd.DataFrame,
     specified_demand: pd.DataFrame,
 ):
     
@@ -191,8 +194,11 @@ def main(
              )
     
     # Set availability factors. Occurs after set_user_defined_capacity as tech_set gets updated.
-    df_af_final = availability_factor(default_av_factors, tech_set,
+    df_af_final = availability_factor(default_af_factors, tech_set,
                                       start_year, end_year, region_name)
+    
+    # Set custom availability factors if defined.
+    df_af_final = availability_factor_custom(df_af_final, custom_af_factors)
     
     # Set total max capacity (potential - residuals) for renewable technologies.
     df_max_capacity = set_renewable_limits(res_limit, PW2050_TECH_DICT,
@@ -284,7 +290,7 @@ if __name__ == "__main__":
         file_naming_convention_tech = snakemake.input.naming_convention_tech
         file_weo_costs = snakemake.input.weo_costs
         file_weo_regions = snakemake.input.weo_regions
-        file_default_av_factors = snakemake.input.default_av_factors     
+        file_default_af_factors = snakemake.input.default_af_factors     
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
@@ -293,6 +299,7 @@ if __name__ == "__main__":
         remove_nodes = snakemake.params.remove_nodes
         tech_capacity = snakemake.params.user_defined_capacity
         no_investment_techs = snakemake.params.no_investment_techs
+        custom_af_factors = snakemake.params.availability_factors
         res_targets = snakemake.params.res_targets
         calibration = snakemake.params.calibration
         output_data_dir = snakemake.params.output_data_dir
@@ -316,8 +323,8 @@ if __name__ == "__main__":
         file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
         file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
         file_weo_regions = 'resources/data/weo_region_mapping.csv'
-        file_default_av_factors = 'resources/data/availability_factors.csv'  
-        file_default_av_factors = 'resources/data/availability_factors.csv'        
+        file_default_af_factors = 'resources/data/availability_factors.csv'  
+        file_default_af_factors = 'resources/data/availability_factors.csv'        
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
@@ -328,6 +335,8 @@ if __name__ == "__main__":
                          'PWRBIOINDWE01': [0, 2020, 2030, 2, 2000, 28]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
+        custom_af_factors =  [["INDWE", 'COA', 2023, 2050, 50], 
+                              ["IND", 'COA', 2023, 2050, 25]]
         res_targets = {'T01': ["", [], "PCT", 2048, 2050, 95],
                        'T02': ["IND", [], "PCT", 2030, 2040, 60],
                        'T03': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
@@ -365,7 +374,7 @@ if __name__ == "__main__":
     weo_costs = import_weo_costs(file_weo_costs)
     weo_regions = import_weo_regions(file_weo_regions)
     
-    availability = import_afs(file_default_av_factors)
+    availability = import_afs(file_default_af_factors)
     specified_annual_demand = import_specified_annual_demand(file_specified_annual_demand)
     
     if custom_nodes:
@@ -387,7 +396,7 @@ if __name__ == "__main__":
         "tech_list": tech_list,        
         "tech_code_dict": tech_code_dict,
         "custom_res_cap" : custom_res_cap,
-        "default_av_factors": availability,
+        "default_af_factors": availability,
         "specified_demand" : specified_annual_demand
     }
     

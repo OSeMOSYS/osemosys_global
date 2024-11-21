@@ -28,3 +28,37 @@ def availability_factor(availability, tech_set_base,
                                'VALUE']]
     
     return df_af_final
+
+def availability_factor_custom(df_af, custom_af_factors):
+    
+    if custom_af_factors:
+        
+        # Loop through country level targets and apply
+        for param in custom_af_factors:
+            region = param[0]
+            technology = param[1]
+            first_year = param[2]
+            last_year = param[3]
+            value = param[4]
+            
+            if len(region) == 3:
+                df_af.loc[(df_af["YEAR"].between(first_year, last_year)) & 
+                          (df_af["TECHNOLOGY"].str[6:9] == region) & 
+                          (df_af["TECHNOLOGY"].str[3:6] == technology) 
+                          ,"VALUE"] = value / 100
+        
+        # Do the same for nodal level targets to overwrite country level targets
+        for param in custom_af_factors:
+            region = param[0]
+            technology = param[1]
+            first_year = param[2]
+            last_year = param[3]
+            value = param[4]
+            
+            if len(region) == 5:
+                df_af.loc[(df_af["YEAR"].between(first_year, last_year)) & 
+                          (df_af["TECHNOLOGY"].str[6:11] == region) & 
+                          (df_af["TECHNOLOGY"].str[3:6] == technology) 
+                          ,"VALUE"] = value / 100
+    
+    return df_af
