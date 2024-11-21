@@ -193,6 +193,17 @@ max_availability_factors:
 # max generation policy targets.
  - ["INDWE", 'COA', 2023, 2050, 50]
  - ["IND", 'COA', 2023, 2050, 25]
+ 
+fossil_capacity_targets:
+# [NODE, TECHNOLOGY, START_YEAR, END_YEAR, SENSE, VALUE]
+# where VALUE is the absolute (GW) capacity constraint and SENSE sets the type of constraint.
+# E.g. 'ABS' sets a fixed value, 'MIN' sets a minimum capacity value and 'MAX' sets a maximum
+# capacity value. Note that in case 'ABS' or 'MAX' is applied, the given value needs to be 
+# higher than the residual capacity of that technology in the given year otherwise the workflow
+# will not complete. Targets can only be set at the nodal level.
+ - ["BTNXX", 'COA', 2030, 2050, 'ABS', 1]
+ - ["INDNE", 'CCG', 2040, 2050, 'MIN', 10]
+ - ["INDSO", 'OCG', 2025, 2050, 'MAX', 25]
 
 re_targets:
 # TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]

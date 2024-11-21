@@ -51,7 +51,8 @@ from operational_life import set_op_life
 from investment_constraints import(
     cap_investment_constraints,
     set_renewable_limits,
-    set_build_rates
+    set_build_rates,
+    set_fossil_capacity_constraints
     )
 
 from sets import(
@@ -227,8 +228,15 @@ def main(
                                                                              fuel_set)
     
     # Set TotalAnnualMinCapacity based on user defined RES capacity targets.
-    df_total_annual_min_capacity = apply_re_abs_targets(res_targets, remove_nodes, 
-                                                        region_name)
+    df_min_capacity = apply_re_abs_targets(res_targets, remove_nodes, region_name)
+    
+    # Set user defined fossil capacity constraints.
+    df_max_capacity, df_min_capacity = set_fossil_capacity_constraints(tech_set, 
+                                                                       fossil_capacity_targets, 
+                                                                       df_max_capacity, 
+                                                                       df_min_capacity,
+                                                                       df_res_cap, 
+                                                                       region_name)
     
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
@@ -260,16 +268,14 @@ def main(
     
     # OUTPUT CSV's NOT USED AS INPUT FOR TRANMISSION RULE
     
-    df_max_capacity.to_csv(os.path.join(output_data_dir, 
-                                        "TotalAnnualMaxCapacity.csv"), 
+    df_max_capacity.to_csv(os.path.join(output_data_dir, "TotalAnnualMaxCapacity.csv"), 
                            index = None)
     
     df_accumulated_annual_demand.to_csv(os.path.join(output_data_dir, 
                                                      "AccumulatedAnnualDemand.csv"), 
                                         index=None)
     
-    df_total_annual_min_capacity.to_csv(os.path.join(output_data_dir, 
-                                                     "TotalAnnualMinCapacity.csv"), 
+    df_min_capacity.to_csv(os.path.join(output_data_dir, "TotalAnnualMinCapacity.csv"), 
                                         index=None)
     
     df_af_final.to_csv(os.path.join(output_data_dir, 'AvailabilityFactor.csv'), index=None)
@@ -301,6 +307,7 @@ if __name__ == "__main__":
         no_investment_techs = snakemake.params.no_investment_techs
         custom_af_factors = snakemake.params.availability_factors
         res_targets = snakemake.params.res_targets
+        fossil_capacity_targets = snakemake.params.fossil_capacity_targets      
         calibration = snakemake.params.calibration
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
@@ -342,6 +349,9 @@ if __name__ == "__main__":
                        'T03': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
                        'T04': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
                       }
+        fossil_capacity_targets = [["BTNXX", 'COA', 2030, 2050, 'ABS', 1],
+                                   ["INDNE", 'CCG', 2040, 2050, 'MIN', 10],
+                                   ["INDSO", 'OCG', 2025, 2050, 'MAX', 25]]
         min_generation_factors = {'OCG1': [50, "IND", 2021]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'

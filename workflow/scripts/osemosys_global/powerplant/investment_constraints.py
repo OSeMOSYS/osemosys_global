@@ -192,3 +192,70 @@ def set_build_rates(build_rates, tech_set, max_cap_invest,
     df_max_cap_invest["VALUE"] = df_max_cap_invest["VALUE"].astype(float).round(3)
     
     return df_max_cap_invest
+
+def set_fossil_capacity_constraints(tech_list, fossil_targets, 
+                                    df_max_capacity, df_min_capacity,
+                                    df_residual_capacity, region_name):
+    
+    df_min_capacity.columns = ["REGION", "TECHNOLOGY", "YEAR", "VALUE"]
+    
+    if fossil_targets:
+        
+        # Loop through targets and apply
+        for param in fossil_targets:
+            region = param[0]
+            fuel = param[1]
+            technology = 'PWR' + fuel + region
+            first_year = param[2]
+            last_year = param[3]
+            sense = param[4]
+            value = param[5]
+            
+            years = get_years(first_year, last_year)
+            
+            # Pull residual capacity for OCG/CCG '00' technologies
+            res_cap = df_residual_capacity.loc[
+                (df_residual_capacity['TECHNOLOGY'] == technology + '00')
+                ]
+            
+            res_cap.loc[
+                res_cap['TECHNOLOGY'].str.contains('00'), 'TECHNOLOGY'
+                ] = res_cap['TECHNOLOGY'].str.replace('00', '01') 
+                                  
+            if sense == 'ABS' or sense == 'MAX':
+                    
+                    custom_max_cap = pd.DataFrame(
+                        list(itertools.product([region_name], [technology + '01'], 
+                                               years, [value])), 
+                        columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"]
+                    )
+                    
+                    # Substract residual capacity for OCG/CCG '00' technologies if applicable
+                    if not res_cap.empty:
+                        custom_max_cap = pd.merge(custom_max_cap, res_cap[['YEAR', 'VALUE']], 
+                                                  left_on = 'YEAR', right_on = 'YEAR')
+                        custom_max_cap['VALUE'] = custom_max_cap['VALUE_x'
+                                                                 ] - custom_max_cap['VALUE_y']
+                    
+                    df_max_capacity = pd.concat([df_max_capacity, custom_max_cap], 
+                                                join = 'inner').reset_index(drop = True)
+                          
+            if sense == 'ABS' or sense == 'MIN':
+                    
+                    custom_min_cap = pd.DataFrame(
+                        list(itertools.product([region_name], [technology + '01'], 
+                                               years, [value])), 
+                        columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"]
+                    )
+                    
+                    # Substract residual capacity for OCG/CCG '00' technologies if applicable
+                    if not res_cap.empty:
+                        custom_min_cap = pd.merge(custom_min_cap, res_cap[['YEAR', 'VALUE']], 
+                                                  left_on = 'YEAR', right_on = 'YEAR')
+                        custom_min_cap['VALUE'] = custom_min_cap['VALUE_x'
+                                                                 ] - custom_min_cap['VALUE_y']
+                    
+                    df_min_capacity = pd.concat([df_min_capacity, custom_min_cap],
+                                                join = 'inner').reset_index(drop = True)
+    
+    return df_max_capacity, df_min_capacity
