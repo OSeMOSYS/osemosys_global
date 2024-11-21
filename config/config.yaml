@@ -189,7 +189,7 @@ max_availability_factors:
 # [COUNTRY/NODE, TECHNOLOGY, START_YEAR, END_YEAR, VALUE]
 # where VALUE is percentage (%) MAX availability of a given technology. This overwrites
 # the default values from availability_factors.csv in resources/data. This parameter can
-# be used to constrain the maximum output of technologies to, for example, to mimic 
+# be used to constrain the maximum output of technologies to, for example, mimic 
 # max generation policy targets.
  - ["INDWE", 'COA', 2023, 2050, 50]
  - ["IND", 'COA', 2023, 2050, 25]
