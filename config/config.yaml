@@ -178,18 +178,19 @@ emission_limit:
  - ["CO2", "IND", "LINEAR", 2028, 400]
  - ["CO2", "IND", "POINT", 2030, 300]
 
-calibration:
+min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
-# where VALUE is percentage (%) availability of a given technology. This can be used
-# to constrain power plant output (generation).
+# where VALUE is percentage (%) minimum utilization of a given technology. This can be 
+# used to constrain power plant output (generation), for example, to calibrate historical
+# generation values.
   OCG1: [50, "IND", 2021]
   
 max_availability_factors:
 # [COUNTRY/NODE, TECHNOLOGY, START_YEAR, END_YEAR, VALUE]
 # where VALUE is percentage (%) MAX availability of a given technology. This overwrites
 # the default values from availability_factors.csv in resources/data. This parameter can
-# be used to constrain the output of technologies to, for example, to mimic max generation
-# policy targets.
+# be used to constrain the maximum output of technologies to, for example, to mimic 
+# max generation policy targets.
  - ["INDWE", 'COA', 2023, 2050, 50]
  - ["IND", 'COA', 2023, 2050, 25]
 

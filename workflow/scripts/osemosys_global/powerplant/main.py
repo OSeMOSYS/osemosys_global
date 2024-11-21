@@ -220,7 +220,7 @@ def main(
                                                                                 specified_demand,
                                                                                 region_name)
     
-    # Set OAR, FUEL and AccumulatedAnnualDemand after calibration.
+    # Set OAR, FUEL and AccumulatedAnnualDemand after calibration (minium generation).
     fuel_set, df_oar_final, df_accumulated_annual_demand = apply_calibration(calibration, 
                                                                              df_oar_final, 
                                                                              df_accumulated_annual_demand, 
@@ -342,7 +342,7 @@ if __name__ == "__main__":
                        'T03': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
                        'T04': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
                       }
-        calibration = {}
+        min_generation_factors = {'OCG1': [50, "IND", 2021]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'

@@ -195,7 +195,7 @@ rule powerplant:
         no_investment_techs = config['no_invest_technologies'],
         availability_factors = config['max_availability_factors'],
         res_targets = config['re_targets'],
-        calibration = config['calibration'],
+        calibration = config['min_generation_factors'],
         output_data_dir = 'results/data',
         input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',
