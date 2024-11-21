@@ -182,7 +182,7 @@ calibration:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
 # where VALUE is percentage (%) availability of a given technology. This can be used
 # to constrain power plant output (generation).
-  URN: [100, "IND", 2023]
+  OCG1: [50, "IND", 2021]
   
 max_availability_factors:
 # [COUNTRY/NODE, TECHNOLOGY, START_YEAR, END_YEAR, VALUE]
