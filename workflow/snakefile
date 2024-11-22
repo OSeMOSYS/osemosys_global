@@ -41,7 +41,7 @@ def get_otoole_data(otoole_config: str, var: str) -> list[str]:
         "CapitalInvestmentStorage",
         "DiscountedCapitalInvestmentStorage",
         "DiscountedCostByStorage",
-        "DiscountedSalvageValueStorage"
+        "DiscountedSalvageValueStorage",
         "NetChargeWithinDay",
         "NetChargeWithinYear",
         # other missing calcs
