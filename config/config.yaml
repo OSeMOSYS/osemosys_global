@@ -80,7 +80,6 @@ user_defined_capacity_transmission:
   #         annual_fixed_O&M_cost,
   #         variable_O&M_cost,
   #         efficiency]
-#  trn1: [TRNINDEAINDNE, 5, 1975, 2030, 10, 350, 13, 4, 95]
   trn1: [TRNMYSPESGPXX, 0, 2020, 2025, 3, 338, 11.8, 4, 97.9]
   trn2: [TRNMYSPETHASO, 0, 2020, 2025, 3, 405, 14.2, 4, 97.1]
   trn3: [TRNIDNKAMYSSK, 0, 2020, 2025, 3, 485, 17, 4, 95.9]
@@ -312,4 +311,4 @@ re_targets:
 #  T06: ['SGPXX', ['SPV'], 'ABS', 2030, 2050, 1.6]
 #  T07: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2030, 2039, 35]
 #  T08: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2040, 2050, 50]
-#  T09: ['IDN', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO'], 'PCT', 2030, 2050, 31]
+ # T09: ['IDN', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO'], 'PCT', 2030, 2050, 31]
