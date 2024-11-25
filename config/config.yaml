@@ -52,7 +52,6 @@ no_invest_technologies:
   - "GEO"
   - "BIO"
   - "PET"
-#  - "LDS"
 
 # Result Parameters 
 results_by_country: True
@@ -82,6 +81,45 @@ user_defined_capacity_transmission:
   #         variable_O&M_cost,
   #         efficiency]
 #  trn1: [TRNINDEAINDNE, 5, 1975, 2030, 10, 350, 13, 4, 95]
+  trn1: [TRNMYSPESGPXX, 0, 2020, 2025, 3, 338, 11.8, 4, 97.9]
+  trn2: [TRNMYSPETHASO, 0, 2020, 2025, 3, 405, 14.2, 4, 97.1]
+  trn3: [TRNIDNKAMYSSK, 0, 2020, 2025, 3, 485, 17, 4, 95.9]
+  trn4: [TRNLAOXXTHANO, 0, 2020, 2025, 3, 391, 13.7, 4, 97.3]
+  trn5: [TRNLAOXXVNMNO, 0, 2020, 2025, 3, 412, 14.4, 4, 97]
+  trn6: [TRNKHMXXVNMSO, 0, 2020, 2025, 3, 261, 9.1, 4, 98.6]
+#  trn7: [TRNKHMXXLAOXX, 0, 2020, 2025, 3, 477, 16.7, 4, 96.1]
+  trn8: [TRNKHMXXTHACE, 0, 2020, 2025, 3, 426, 14.9, 4, 96.8]
+  trn9: [TRNMYSPEMYSSK, 0, 2020, 2025, 3, 586, 20.5, 4, 95.3]
+  trn10: [TRNMYSSHMYSSK, 0, 2020, 2025, 3, 489, 17.1, 4, 95.9]
+  trn11: [TRNIDNSMMYSPE, 0, 2020, 2025, 3, 398, 13.9, 4, 97.5]
+  trn12: [TRNIDNSMSGPXX, 0, 2020, 2025, 3, 581, 20.4, 4, 95.8]
+  trn13: [TRNIDNJWIDNSM, 0, 2020, 2025, 3, 634, 22.2, 4, 93.8]
+  trn14: [TRNMYSSHPHLLU, 0, 2020, 2025, 3, 621, 21.7, 4, 94.9]
+  trn15: [TRNBRNXXMYSSH, 0, 2020, 2025, 3, 231, 8.1, 4, 98.8]
+  trn16: [TRNMMRXXTHANO, 0, 2020, 2025, 3, 387, 13.5, 4, 97.4]
+  trn17: [TRNIDNKAMYSSH, 0, 2020, 2025, 3, 471, 16.5, 4, 96.1]
+#  trn18: [TRNLAOXXMMRXX, 0, 2020, 2025, 3, 463, 16.2, 4, 96.3]
+  trn19: [TRNIDNJWIDNKA, 0, 2020, 2025, 3, 683, 23.9, 4, 94.1]
+  trn20: [TRNSGPXXVNMSO, 0, 2020, 2025, 3, 953, 33.4, 4, 92.6]
+  trn21: [TRNKHMXXSGPXX, 0, 2020, 2025, 3, 990, 34.7, 4, 92.2]
+  trn22: [TRNMYSSKSGPXX, 0, 2020, 2025, 3, 512, 17.9, 4, 96.2]
+  trn23: [TRNLAOXXVNMCE, 0, 2020, 2025, 3, 451, 15.8, 4, 96.4]
+  trn24: [TRNPHLLUPHLVI, 0, 2020, 2025, 3, 464, 16.2, 4, 96.7]
+  trn25: [TRNPHLLUPHLMI, 0, 2020, 2025, 3, 586, 20.5, 4, 95.3]
+  trn26: [TRNPHLMIPHLVI, 0, 2020, 2025, 3, 420, 14.7, 4, 97.2]
+  trn27: [TRNIDNKAIDNSM, 0, 2020, 2025, 3, 918, 32.1, 4, 91.3]
+  trn28: [TRNIDNKAIDNSL, 0, 2020, 2025, 3, 468, 16.4, 4, 96.7]
+  trn29: [TRNIDNJWIDNNU, 0, 2020, 2025, 3, 527, 18.5, 4, 95.3]
+  trn30: [TRNIDNNUIDNSL, 0, 2020, 2025, 3, 476, 16.7, 4, 96.6]
+  trn31: [TRNIDNMLIDNSL, 0, 2020, 2025, 3, 587, 20.5, 4, 95.3]
+  trn32: [TRNIDNMLIDNPP, 0, 2020, 2025, 3, 710, 24.9, 4, 93.8]
+  trn33: [TRNVNMCEVNMNO, 0, 2020, 2025, 3, 445, 15.6, 4, 96.5]
+  trn34: [TRNVNMNOVNMSO, 0, 2020, 2025, 3, 570, 19.9, 4, 94.7]
+  trn35: [TRNVNMCEVNMSO, 0, 2020, 2025, 3, 440, 15.4, 4, 96.6]
+  trn36: [TRNTHACETHANO, 0, 2020, 2025, 3, 436, 15.3, 4, 96.7]
+  trn37: [TRNTHANOTHASO, 0, 2020, 2025, 3, 611, 21.4, 4, 94.1]
+  trn38: [TRNTHACETHASO, 0, 2020, 2025, 3, 476, 16.7, 4, 96.1]
+
   # Per technology, only the capacity and build_year
   # parameters can deviate from each other. For all other
   # parameters only the last entry will be used.
@@ -126,7 +164,6 @@ storage_parameters:
   # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
   # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
   SDS: [1938, 44.25, 0, 85, 4]
-#  LDS: [3794, 20.2, 0.58, 80, 10]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
@@ -203,21 +240,21 @@ emission_limit:
 # COUNTRY yet only a single target per YEAR.
 
 # Net-Zero and Unconditiontal targets
-# - ['CO2', 'BRN', 'POINT', 2030, 10]
-# - ['CO2', 'KHM', 'POINT', 2050, 0]
-# - ['CO2', 'IDN', 'POINT', 2030, 290]
-# - ['CO2', 'IDN', 'POINT', 2050, 0]
-# - ['CO2', 'LAO', 'POINT', 2030, 10.85]
-# - ['CO2', 'LAO', 'POINT', 2050, 0]
-# - ['CO2', 'MMR', 'POINT', 2030, 27.37]
-# - ['CO2', 'MYS', 'POINT', 2050, 0]
-# - ['CO2', 'PHL', 'POINT', 2030, 102.42]
-# - ['CO2', 'SGP', 'POINT', 2030, 23.66] 
-# - ['CO2', 'SGP', 'POINT', 2050, 0]
-# - ['CO2', 'THA', 'POINT', 2030, 86.41] 
-# - ['CO2', 'THA', 'POINT', 2050, 0] 
-# - ['CO2', 'VNM', 'POINT', 2030, 206] 
-# - ['CO2', 'VNM', 'POINT', 2050, 0] 
+ - ['CO2', 'BRN', 'POINT', 2030, 10]
+ - ['CO2', 'KHM', 'POINT', 2050, 0]
+ - ['CO2', 'IDN', 'POINT', 2030, 290]
+ - ['CO2', 'IDN', 'POINT', 2050, 0]
+ - ['CO2', 'LAO', 'POINT', 2030, 10.85]
+ - ['CO2', 'LAO', 'POINT', 2050, 0]
+ - ['CO2', 'MMR', 'POINT', 2030, 27.37]
+ - ['CO2', 'MYS', 'POINT', 2050, 0]
+ - ['CO2', 'PHL', 'POINT', 2030, 102.42]
+ - ['CO2', 'SGP', 'POINT', 2030, 23.66] 
+ - ['CO2', 'SGP', 'POINT', 2050, 0]
+ - ['CO2', 'THA', 'POINT', 2030, 86.41] 
+ - ['CO2', 'THA', 'POINT', 2050, 0] 
+ - ['CO2', 'VNM', 'POINT', 2030, 206] 
+ - ['CO2', 'VNM', 'POINT', 2050, 0] 
  
 # Conditional targets
 # - ['CO2', 'KHM', 'POINT', 2030, 4.2]
@@ -274,5 +311,5 @@ re_targets:
 #  T05: ['LAOXX', ['HYD'], 'ABS', 2030, 2050, 13]
 #  T06: ['SGPXX', ['SPV'], 'ABS', 2030, 2050, 1.6]
 #  T07: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2030, 2039, 35]
- # T08: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2040, 2050, 50]
+#  T08: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2040, 2050, 50]
 #  T09: ['IDN', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO'], 'PCT', 2030, 2050, 31]
