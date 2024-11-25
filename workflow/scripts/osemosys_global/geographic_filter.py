@@ -68,24 +68,32 @@ for each_csv in Path(output_data_dir).glob('*.csv'):
                                 df['STORAGE'].str[8:13].isin(remove_nodes))]
 
             if 'FUEL' in df.columns:
-                df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
-                            df['FUEL'].str[6:9].isin(geographic_scope) |
-                            df['FUEL'].isin(international_fuels)]
+                if res_targets is None:
+                    df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
+                                df['FUEL'].str[6:9].isin(geographic_scope) |
+                                df['FUEL'].isin(international_fuels)]
                 
-                if res_targets is not None:
-                    df = df.loc[df['FUEL'].isin(res_targets)]
+                else:
+                    df = df.loc[df['FUEL'].str[3:6].isin(geographic_scope) | 
+                                df['FUEL'].str[6:9].isin(geographic_scope) |
+                                df['FUEL'].isin(res_targets) |
+                                df['FUEL'].isin(international_fuels)]
                 
                 if remove_nodes:    
                     df = df.loc[~(df['FUEL'].str[3:8].isin(remove_nodes) | 
                                 df['FUEL'].str[6:11].isin(remove_nodes))]
 
             if str(each_csv).split('/')[-1] == 'FUEL.csv':
-                df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
-                            df['VALUE'].str[6:9].isin(geographic_scope) |
-                            df['VALUE'].isin(international_fuels)]
-                
-                if res_targets is not None:
-                    df = df.loc[df['VALUE'].isin(res_targets)]
+                if res_targets is None:
+                    df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
+                                df['VALUE'].str[6:9].isin(geographic_scope) |
+                                df['VALUE'].isin(international_fuels)]
+                    
+                else:
+                    df = df.loc[df['VALUE'].str[3:6].isin(geographic_scope) | 
+                                df['VALUE'].str[6:9].isin(geographic_scope) |
+                                df['VALUE'].isin(res_targets) |
+                                df['VALUE'].isin(international_fuels)]
                 
                 if remove_nodes:
                     df = df.loc[~(df['VALUE'].str[3:8].isin(remove_nodes) | 
