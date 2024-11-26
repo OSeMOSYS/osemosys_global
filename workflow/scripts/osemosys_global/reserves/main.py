@@ -60,8 +60,7 @@ if __name__ == "__main__":
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
-        margins = {'RM1': [10, 2025, 2029],
-                   'RM2': [15, 2030, 2050]}
+        margins = {'RM1': [15, 2025, 2050]}
         
         margins_technologies = {
             'BIO' : 90,

@@ -15,8 +15,9 @@ dayparts:
  # D4: [19, 25]
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 4, 5, 6]
-  S2: [7, 8, 9, 10, 11, 12]
+ # S1: [1, 2, 3, 4, 5, 6]
+  #S2: [7, 8, 9, 10, 11, 12]
+  S1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 timeshift: 0 # value between -11 and 12
   
@@ -39,7 +40,6 @@ crossborderTrade: True
 emission_penalty: 
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # where VALUE is in M$/MT CO2
-# - ["CO2", "IND", 2020, 2050, 2.1]
 
 # Investment Parameters 
 no_invest_technologies: 
@@ -49,8 +49,6 @@ no_invest_technologies:
   - "OTH"
   - "WAS"
   - "COG" 
-#  - "GEO"
-#  - "BIO"
   - "PET"
 
 # Result Parameters 
@@ -66,7 +64,6 @@ user_defined_capacity:
   #              build_rate_per_year, 
   #              capex_cost, 
   #              efficiency]
-#  PWRCOAINDWE01: [8, 2000, 2025, 5, 1100, 35]
   # Units are in GW (capacity/build_rate_per_year), m$/GW (capex_cost), 
   # % (efficiency).
 
@@ -86,7 +83,7 @@ user_defined_capacity_transmission:
   trn4: [TRNLAOXXTHANO, 0, 2020, 2025, 3, 391, 13.7, 4, 97.3]
   trn5: [TRNLAOXXVNMNO, 0, 2020, 2025, 3, 412, 14.4, 4, 97]
   trn6: [TRNKHMXXVNMSO, 0, 2020, 2025, 3, 261, 9.1, 4, 98.6]
-#  trn7: [TRNKHMXXLAOXX, 0, 2020, 2025, 3, 477, 16.7, 4, 96.1]
+#  trn7: [TRNKHMXXLAOXX, 0, 2020, 2025, 3, 477, 16.7, 4, 96.1] #already existing in GTD
   trn8: [TRNKHMXXTHACE, 0, 2020, 2025, 3, 426, 14.9, 4, 96.8]
   trn9: [TRNMYSPEMYSSK, 0, 2020, 2025, 3, 586, 20.5, 4, 95.3]
   trn10: [TRNMYSSHMYSSK, 0, 2020, 2025, 3, 489, 17.1, 4, 95.9]
@@ -97,7 +94,7 @@ user_defined_capacity_transmission:
   trn15: [TRNBRNXXMYSSH, 0, 2020, 2025, 3, 231, 8.1, 4, 98.8]
   trn16: [TRNMMRXXTHANO, 0, 2020, 2025, 3, 387, 13.5, 4, 97.4]
   trn17: [TRNIDNKAMYSSH, 0, 2020, 2025, 3, 471, 16.5, 4, 96.1]
-#  trn18: [TRNLAOXXMMRXX, 0, 2020, 2025, 3, 463, 16.2, 4, 96.3]
+#  trn18: [TRNLAOXXMMRXX, 0, 2020, 2025, 3, 463, 16.2, 4, 96.3] #already existing in GTD
   trn19: [TRNIDNJWIDNKA, 0, 2020, 2025, 3, 683, 23.9, 4, 94.1]
   trn20: [TRNSGPXXVNMSO, 0, 2020, 2025, 3, 953, 33.4, 4, 92.6]
   trn21: [TRNKHMXXSGPXX, 0, 2020, 2025, 3, 990, 34.7, 4, 92.2]
