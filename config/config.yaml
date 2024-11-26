@@ -201,7 +201,7 @@ nodes_to_remove:
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
-  RM1: [10, 2025, 2050]
+  RM1: [15, 2025, 2050]
   
 reserve_margin_technologies:
 # TECHNOLOGY: PERCENTAGE,
