@@ -49,8 +49,8 @@ no_invest_technologies:
   - "OTH"
   - "WAS"
   - "COG" 
-  - "GEO"
-  - "BIO"
+#  - "GEO"
+#  - "BIO"
   - "PET"
 
 # Result Parameters 
@@ -201,8 +201,7 @@ nodes_to_remove:
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
-  RM1: [10, 2025, 2029]
-  RM2: [15, 2030, 2050]
+  RM1: [10, 2025, 2050]
   
 reserve_margin_technologies:
 # TECHNOLOGY: PERCENTAGE,
@@ -211,6 +210,7 @@ reserve_margin_technologies:
   BIO : 90
   CCG : 90
   COA : 90
+  COA : 90  
   COG : 50
   CSP : 30
   GEO : 90
