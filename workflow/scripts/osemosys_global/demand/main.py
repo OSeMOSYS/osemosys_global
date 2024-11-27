@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     if custom_nodes:
         all_custom = import_custom_demand_data(custom_nodes_data)
-        custom = get_custom_demand_data(all_custom, custom_nodes, start_year, end_year)
+        custom = get_custom_demand_data(all_custom, start_year, end_year)
         df = merge_default_custom_data(df, custom)
 
     df.to_csv(csv, index=False)

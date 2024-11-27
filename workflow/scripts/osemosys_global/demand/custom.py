@@ -26,10 +26,11 @@ def import_custom_demand_data(csv: str) -> pd.DataFrame:
 
 
 def get_custom_demand_data(
-    all_custom: pd.DataFrame, nodes: list[str], start_year: int, end_year: int
+    all_custom: pd.DataFrame, start_year: int, end_year: int
 ) -> pd.DataFrame:
     """Gets merged custom demand data"""
-
+    
+    nodes = all_custom['CUSTOM_NODE'].unique()
     expected = _get_custom_demand_expected(nodes, start_year, end_year)
 
     df = pd.merge(expected, all_custom, how="left", on=["CUSTOM_NODE", "YEAR"])
@@ -44,5 +45,5 @@ def merge_default_custom_data(
     assert default.columns.equals(custom.columns)
     df = pd.concat([default, custom], ignore_index=True)
     df["VALUE"] = df["VALUE"].round(2)
-    df = df.drop_duplicates(keep="first", subset=["REGION", "FUEL", "YEAR"])
+    df = df.drop_duplicates(keep="last", subset=["REGION", "FUEL", "YEAR"])
     return df
