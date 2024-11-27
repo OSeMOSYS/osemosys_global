@@ -144,9 +144,8 @@ def main(
         
         # Adds residual capacity for custom entries.
         df_res_cap, custom_techs = add_custom_res_cap(df_res_cap, custom_res_cap, 
-                                                      tech_list, custom_nodes,
-                                                      start_year, end_year,
-                                                      region_name)       
+                                                      tech_list, start_year, 
+                                                      end_year, region_name)      
         
         # Creates sets for TECHNOLOGIES including custom entries.
         tech_set = create_sets('TECHNOLOGY', df_oar_final, powerplant_data_dir, custom_techs)
