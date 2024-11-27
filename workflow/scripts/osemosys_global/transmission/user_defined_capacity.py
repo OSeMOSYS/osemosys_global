@@ -128,6 +128,13 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
                                            'YEAR'],
                                    keep='last',
                                    inplace=True)
+    
+    # Make sure that max cap > min cap by adding min cap to max cap for given year
+    for idx, row in df_min_cap_inv.iterrows():
+        df_max_cap_inv.loc[(df_max_cap_inv['TECHNOLOGY'] == row['TECHNOLOGY']) & 
+                           (df_max_cap_inv['YEAR'] == row['YEAR']), 'VALUE'] = df_max_cap_inv.loc[(
+                               df_max_cap_inv['TECHNOLOGY'] == row['TECHNOLOGY']) & 
+                               (df_max_cap_inv['YEAR'] == row['YEAR']), 'VALUE'] + row['VALUE']
 
     # Add IAR and OAR for custom technologies
     tech_list = list(tech_capacity_trn_df['TECHNOLOGY'].unique())
