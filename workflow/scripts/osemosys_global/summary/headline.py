@@ -126,7 +126,11 @@ if __name__ == "__main__":
     )
     total_discounted_cost = pd.read_csv(total_discounted_cost_csv, index_col=[0, 1])
     demand = pd.read_csv(demand_csv, index_col=[0, 1, 2, 3])
-    exclusions = list(storage)
+
+    if storage:
+        exclusions = list(storage)
+    else:
+        exclusions = []
 
     dfs = []
 

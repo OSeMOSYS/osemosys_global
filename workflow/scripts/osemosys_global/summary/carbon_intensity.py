@@ -75,7 +75,10 @@ if __name__ == "__main__":
         save = "results/India/results/AnnualEmissionIntensity.csv"
         storage = {"SDS": [], "LDS": []}
 
-    exclusions = list(storage)
+    if storage:
+        exclusions = list(storage)
+    else:
+        exclusions = []
 
     production = pd.read_csv(production_csv, index_col=[0, 1, 2, 3, 4])
     annual_emissions = pd.read_csv(annual_emissions_csv, index_col=[0, 1, 2])

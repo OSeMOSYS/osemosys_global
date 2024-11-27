@@ -96,11 +96,11 @@ def main(
         max_cap_invest_storage = max_cap_invest_base.copy()
         tech_set = tech_set_base.copy()
         storage_set = pd.DataFrame(columns=["VALUE"])
-        tech_to_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION"])
-        tech_from_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION"])
+        tech_to_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION", "VALUE"])
+        tech_from_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION", "VALUE"])
         res_cap = res_cap_base.copy()
-        res_cap_storage = pd.DataFrame(columns=["REGION", "STORAGE", "YEAR"])
-        storage_level_start = pd.DataFrame(columns=["REGION", "STORAGE"])
+        res_cap_storage = pd.DataFrame(columns=["REGION", "STORAGE", "YEAR", "VALUE"])
+        storage_level_start = pd.DataFrame(columns=["REGION", "STORAGE", "VALUE"])
         tech_capacity_sto = None
 
     else:
@@ -312,7 +312,10 @@ if __name__ == "__main__":
 
     # SET INPUT DATA
     
-    sto_techs = list(storage_parameters.keys())
+    if storage_parameters:
+        sto_techs = list(storage_parameters.keys())
+    else:
+        sto_techs = None
     
     build_rates = import_storage_build_rates(file_storage_build_rates)
     
