@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from typing import Optional, Any 
 
 import logging
 
@@ -77,7 +78,8 @@ def main(
     min_cap_invest_base: pd.DataFrame,
     res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
-    fuel_set_base: pd.DataFrame
+    fuel_set_base: pd.DataFrame,
+    tech_capacity_storage: Optional[dict[str, list[Any]]] = None
 ):
     
     if not unique_sto_techs:
@@ -101,7 +103,7 @@ def main(
         res_cap = res_cap_base.copy()
         res_cap_storage = pd.DataFrame(columns=["REGION", "STORAGE", "YEAR", "VALUE"])
         storage_level_start = pd.DataFrame(columns=["REGION", "STORAGE", "VALUE"])
-        tech_capacity_sto = None
+        tech_capacity_storage = None
 
     else:
     
@@ -164,7 +166,7 @@ def main(
         storage_level_start = set_storage_level_start(storage_set, region_name)
 
         # Alter output csv's based on user defined capacities following user config.
-        if tech_capacity_sto is not None:
+        if tech_capacity_storage is not None:
             (max_cap_invest_storage, 
             min_cap_invest_storage, 
             res_cap,
@@ -232,7 +234,7 @@ def main(
     storage_level_start.to_csv(os.path.join(output_data_dir, 'StorageLevelStart.csv'), 
                            index = None)      
     
-    if tech_capacity_sto is not None:
+    if tech_capacity_storage is not None:
         min_cap_invest_storage.to_csv(os.path.join(output_data_dir, 
                                                 'TotalAnnualMinCapacityInvestment.csv'),
                                             index = None)
@@ -356,7 +358,8 @@ if __name__ == "__main__":
         "min_cap_invest_base" : min_cap_invest_base,
         "res_cap_base" : res_cap_base, 
         "tech_set_base" : tech_set_base,
-        "fuel_set_base" : fuel_set_base,  
+        "fuel_set_base" : fuel_set_base,
+        "tech_capacity_storage": tech_capacity_sto
     }
     
     # CALL MAIN
