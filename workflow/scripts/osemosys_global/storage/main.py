@@ -82,7 +82,7 @@ def main(
     
     if not unique_sto_techs:
         
-        logger.warning("No storage added to the system. Populate Storage Parameters")
+        logger.warning("No storage added to the system. Populate 'storage_parameters' in config file.")
         
         oar_storage = oar_base.copy()
         iar_storage = iar_base.copy()
@@ -290,9 +290,9 @@ if __name__ == "__main__":
                              'sto3': ['PWRLDSINDNE01', 1, 2015, 2025, 2, 3400, 19, 0.5, 82]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET", "LDS"]
-        storage_parameters = {}
-        # storage_parameters = {'SDS': [1938, 44.25, 0, 85, 4],
-        #                       'LDS': [3794, 20.2, 0.58, 80, 10]}
+        
+        storage_parameters = {'SDS': [1938, 44.25, 0, 85, 4],
+                              'LDS': [3794, 20.2, 0.58, 80, 10]}
 
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
