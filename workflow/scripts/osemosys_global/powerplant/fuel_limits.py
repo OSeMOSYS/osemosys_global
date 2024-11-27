@@ -83,9 +83,18 @@ def get_user_fuel_limits(
 
 
 def merge_template_user_limits(
-    template: pd.Series, user_limits: pd.Series
+    template: pd.Series,
+    user_limits: pd.Series,
+    years: Optional[list[int] | pd.Series] = None,
 ) -> pd.Series:
-    return user_limits.combine_first(template)
+    s = user_limits.combine_first(template)
+    if isinstance(years, list):
+        return s[s.index.get_level_values("YEAR").isin(years)]
+    elif isinstance(years, pd.Series):
+        y = years.to_list()
+        return s[s.index.get_level_values("YEAR").isin(y)]
+    else:
+        return s
 
 
 if __name__ == "__main__":
@@ -97,10 +106,10 @@ if __name__ == "__main__":
         years_csv = snakemake.input.year_csv
         activity_upper_limit_csv = snakemake.output.activity_upper_limit_csv
     else:
-        technology_csv = "results/India/data/TECHNOLOGY.csv"
+        technology_csv = "results/ASEAN/data/TECHNOLOGY.csv"
         fuel_limit_csv = "resources/data/fuel_limits.csv"
-        region_csv = "results/India/data/REGION.csv"
-        years_csv = "results/India/data/YEAR.csv"
+        region_csv = "results/ASEAN/data/REGION.csv"
+        years_csv = "results/ASEAN/data/YEAR.csv"
         activity_upper_limit_csv = ""
 
     regions = import_set(region_csv)
@@ -111,6 +120,6 @@ if __name__ == "__main__":
     template = get_template_fuel_limit(regions, techs, years)
     user_limits = get_user_fuel_limits(regions, fuel_limits)
 
-    activity_upper_limit = merge_template_user_limits(template, user_limits)
+    activity_upper_limit = merge_template_user_limits(template, user_limits, years)
 
     activity_upper_limit.to_csv(activity_upper_limit_csv, index=True)
