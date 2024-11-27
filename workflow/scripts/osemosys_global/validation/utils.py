@@ -16,9 +16,9 @@ def _join_data(
 
     modelled = modelled.rename(columns={"VALUE": "OSeMOSYS"})
     actual = actual.rename(columns={"VALUE": dataset_name})
-    
-    df = modelled.join(actual, how="inner")
-    
+
+    df = modelled.join(actual, how="left").fillna(0)
+
     index_values = [df.index.get_level_values(x).unique() for x in df.index.names]
     idx = pd.MultiIndex.from_product(index_values, names=df.index.names)
     df = df.reindex(idx, fill_value=0)
