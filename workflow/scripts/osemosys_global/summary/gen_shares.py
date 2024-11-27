@@ -149,7 +149,10 @@ if __name__ == "__main__":
         production_by_technology_annual_csv, index_col=[0, 1, 2, 3]
     )
 
-    exclusions = list(storage)
+    if storage:
+        exclusions = list(storage)
+    else:
+        exclusions = []
 
     nodes = calc_generation_shares_node(production_by_technology_annual, exclusions)
     country = calc_generation_shares_country(
