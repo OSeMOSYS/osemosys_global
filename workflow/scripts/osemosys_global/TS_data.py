@@ -78,24 +78,24 @@ years = list(range(model_start_year, model_end_year + 1))
 
 # Read renewable profile files
 csp_df = pd.read_csv(os.path.join(input_data_dir, "CSP 2015.csv"), encoding="latin-1")
-if custom_nodes:
-    csp_df_custom = pd.read_csv(
-        os.path.join(custom_nodes_dir, "RE_profiles_CSP.csv"), encoding="latin-1"
-    )
-    csp_df_custom.drop(["Datetime"], axis=1, inplace=True)
-    csp_df = pd.concat([csp_df, csp_df_custom], axis=1)
+
+csp_df_custom = pd.read_csv(
+    os.path.join(custom_nodes_dir, "RE_profiles_CSP.csv"), encoding="latin-1"
+)
+csp_df_custom.drop(["Datetime"], axis=1, inplace=True)
+csp_df = pd.concat([csp_df, csp_df_custom], axis=1)
 
 csp_df.name = "CSP"
 
 spv_df = pd.read_csv(
     os.path.join(input_data_dir, "SolarPV 2015.csv"), encoding="latin-1"
 )
-if custom_nodes:
-    spv_df_custom = pd.read_csv(
-        os.path.join(custom_nodes_dir, "RE_profiles_SPV.csv"), encoding="latin-1"
-    )
-    spv_df_custom.drop(["Datetime"], axis=1, inplace=True)
-    spv_df = pd.concat([spv_df, spv_df_custom], axis=1)
+
+spv_df_custom = pd.read_csv(
+    os.path.join(custom_nodes_dir, "RE_profiles_SPV.csv"), encoding="latin-1"
+)
+spv_df_custom.drop(["Datetime"], axis=1, inplace=True)
+spv_df = pd.concat([spv_df, spv_df_custom], axis=1)
 
 spv_df.name = "SPV"
 
@@ -108,18 +108,21 @@ hyd_df = pd.read_csv(
     os.path.join(input_data_dir, "Hydro_Monthly_Profiles (15 year average).csv"),
     encoding="latin-1",
 )
-if custom_nodes:
-    hyd_df_custom = pd.read_csv(
-        os.path.join(custom_nodes_dir, "RE_profiles_HYD.csv"), encoding="latin-1"
-    )
-    hyd_df = pd.concat([hyd_df, hyd_df_custom])
+    
 hyd_df = hyd_df.loc[hyd_df["NAME"].str.endswith("Capacity Scaler")]
 hyd_df["NAME"] = hyd_df["NAME"].str.split("_").str[0]
+
+hyd_df_custom = pd.read_csv(
+    os.path.join(custom_nodes_dir, "RE_profiles_HYD.csv"), encoding="latin-1"
+)
+hyd_df = pd.concat([hyd_df, hyd_df_custom])
+
 # Drop Brazil transmission nodes J1, J2, J3
 brazil_j_nodes = ["BRA-J1", "BRA-J2", "BRA-J3"]
 hyd_df = hyd_df.loc[~hyd_df["NAME"].isin(brazil_j_nodes)]
 hyd_df = hyd_df.set_index("NAME").T.reset_index()
 hyd_df.rename(columns={"index": "MONTH"}, inplace=True)
+
 hyd_df["MONTH"] = hyd_df["MONTH"].str.replace("M", "").astype(int)
 
 hyd_df_processed = pd.DataFrame(columns=["Datetime"])
@@ -133,24 +136,23 @@ hyd_df_processed.rename(columns=node_region_dict, inplace=True)
 hyd_df_processed.name = "HYD"
 
 won_df = pd.read_csv(os.path.join(input_data_dir, "Won 2015.csv"), encoding="latin-1")
-if custom_nodes:
-    won_df_custom = pd.read_csv(
-        os.path.join(custom_nodes_dir, "RE_profiles_WON.csv"), encoding="latin-1"
-    )
-    won_df_custom.drop(["Datetime"], axis=1, inplace=True)
-    won_df = pd.concat([won_df, won_df_custom], axis=1)
+
+won_df_custom = pd.read_csv(
+    os.path.join(custom_nodes_dir, "RE_profiles_WON.csv"), encoding="latin-1"
+)
+won_df_custom.drop(["Datetime"], axis=1, inplace=True)
+won_df = pd.concat([won_df, won_df_custom], axis=1)
 won_df.name = "WON"
 
 wof_df = pd.read_csv(os.path.join(input_data_dir, "Woff 2015.csv"), encoding="latin-1")
-if custom_nodes:
-    wof_df_custom = pd.read_csv(
-        os.path.join(custom_nodes_dir, "RE_profiles_WOF.csv"), encoding="latin-1"
-    )
-    wof_df_custom.drop(["Datetime"], axis=1, inplace=True)
-    wof_df = pd.concat([wof_df, wof_df_custom], axis=1)
+
+wof_df_custom = pd.read_csv(
+    os.path.join(custom_nodes_dir, "RE_profiles_WOF.csv"), encoding="latin-1"
+)
+wof_df_custom.drop(["Datetime"], axis=1, inplace=True)
+wof_df = pd.concat([wof_df, wof_df_custom], axis=1)
 wof_df.name = "WOF"
-
-
+   
 # ### Create 'output' directory if it doesn't exist
 if not os.path.exists(output_data_dir):
     os.makedirs(output_data_dir)
@@ -172,10 +174,6 @@ def correct_datetime_formatting(time_str):
 
 # ### Create columns for year, month, day, hour, and day type
 
-if custom_nodes:
-    demand_nodes = [x for x in demand_df.columns if x != "Datetime"] + custom_nodes
-else:
-    demand_nodes = [x for x in demand_df.columns if x != "Datetime"]
 # Convert datetime to year, month, day, and hour
 demand_df["Datetime"] = demand_df.Datetime.map(correct_datetime_formatting)
 demand_df["Datetime"] = pd.to_datetime(demand_df["Datetime"], format="%d/%m/%Y %H:%M")
@@ -184,13 +182,17 @@ demand_df["Month"] = demand_df["Datetime"].dt.strftime("%m").astype(int)
 demand_df["Day"] = demand_df["Datetime"].dt.strftime("%d").astype(int)
 demand_df["Hour"] = demand_df["Datetime"].dt.strftime("%H").astype(int)
 
-if custom_nodes:
-    custom_sp_demand_profile = pd.read_csv(
-        os.path.join(input_data_dir, "custom_nodes", "specified_demand_profile.csv")
-    )
-    demand_df = pd.merge(
-        demand_df, custom_sp_demand_profile, how="left", on=["Month", "Day", "Hour"]
-    )
+
+custom_sp_demand_profile = pd.read_csv(
+    os.path.join(input_data_dir, "custom_nodes", "specified_demand_profile.csv")
+)
+
+demand_nodes = [x for x in demand_df.columns if x != "Datetime"] + [
+    y for y in custom_sp_demand_profile.iloc[:,3:].columns]
+
+demand_df = pd.merge(
+    demand_df, custom_sp_demand_profile, how="left", on=["Month", "Day", "Hour"]
+)
 
 # Create column for weekday/weekend
 demand_df["Day-of-week"] = demand_df["Datetime"].dt.dayofweek
@@ -244,7 +246,6 @@ if daytype_included:
 else:
     demand_df["TIMESLICE"] = demand_df["Season"] + demand_df["Daypart"]
 
-
 # ### Calculate YearSplit
 
 
@@ -272,6 +273,7 @@ yearsplit_final.to_csv(os.path.join(output_data_dir, "YearSplit.csv"), index=Non
 sp_demand_df = demand_df[
     [x for x in demand_df.columns if x in demand_nodes or x == "TIMESLICE"]
 ]
+
 sp_demand_df = pd.melt(
     sp_demand_df,
     id_vars="TIMESLICE",
@@ -318,6 +320,9 @@ sp_demand_df.loc[sp_demand_df["node"].str.len() > 6, "FUEL"] = (
     "ELC" + sp_demand_df["node"].str.split("-").str[1:].str.join("") + "02"
 )
 
+# In case custom data is provided only keep the custom data
+sp_demand_df.drop_duplicates(subset=['TIMESLICE', 'FUEL'], keep = 'last', inplace = True)
+
 # Create master table for SpecifiedDemandProfile
 sp_demand_df_final = pd.DataFrame(
     list(
@@ -349,12 +354,13 @@ total_demand_df_final["VALUE"] = total_demand_df_final["VALUE"].mul(3.6 * 1e-6)
 sp_demand_df_final["VALUE"] = sp_demand_df_final["VALUE"].round(2)
 sp_demand_df_final = sp_demand_df_final[
     ["REGION", "FUEL", "TIMESLICE", "YEAR", "VALUE"]
-]
+].dropna()
 
 # sp_demand_df_final = apply_dtypes(sp_demand_df_final, "SpecifiedDemandProfile")
 sp_demand_df_final.drop_duplicates(
     subset=["REGION", "TIMESLICE", "FUEL", "YEAR"], keep="last", inplace=True
 )
+
 sp_demand_df_final.to_csv(
     os.path.join(output_data_dir, "SpecifiedDemandProfile.csv"), index=None
 )
@@ -365,7 +371,6 @@ datetime_ts_df = demand_df[["Datetime", "TIMESLICE"]]
 capfac_all_df = pd.DataFrame(
     columns=["REGION", "TECHNOLOGY", "TIMESLICE", "YEAR", "VALUE"]
 )
-
 
 def capacity_factor(df):
     df["Datetime"] = pd.to_datetime(df["Datetime"], format="%d/%m/%Y %H:%M")
@@ -389,13 +394,20 @@ def capacity_factor(df):
 
     # Rename COMMODITY based on naming convention.
     # Add 'XX' for countries without multiple nodes
-    capfac_df.loc[capfac_df["node"].str.len() <= 6, "TECHNOLOGY"] = (
+    capfac_df.loc[capfac_df["node"].str.len() == 5, "TECHNOLOGY"] = (
+        "PWR" + df.name + capfac_df["node"] + "01"
+    )
+    
+    capfac_df.loc[capfac_df["node"].str.len() == 6, "TECHNOLOGY"] = (
         "PWR" + df.name + capfac_df["node"].str.split("-").str[1:].str.join("") + "XX01"
     )
 
     capfac_df.loc[capfac_df["node"].str.len() > 6, "TECHNOLOGY"] = (
         "PWR" + df.name + capfac_df["node"].str.split("-").str[1:].str.join("") + "01"
     )
+    
+    # In case custom data is provided only keep the custom data
+    capfac_df.drop_duplicates(subset=['TIMESLICE', 'TECHNOLOGY'], keep = 'last', inplace = True)
 
     # Create master table for CapacityFactor
     capfac_df_final = pd.DataFrame(
@@ -430,7 +442,6 @@ capfac_all_df.drop_duplicates(
 )
 capfac_all_df.to_csv(os.path.join(output_data_dir, "CapacityFactor.csv"), index=None)
 
-
 # Create csv for TIMESLICE
 
 # ## Create csv for TIMESLICE
@@ -439,18 +450,6 @@ time_slice_df = pd.DataFrame(time_slice_list, columns=["VALUE"]).astype(
     SET_DTYPES["TIMESLICE"]
 )
 time_slice_df.to_csv(os.path.join(output_data_dir, "TIMESLICE.csv"), index=None)
-
-"""
-def add_storage(region_name, 
-                years, 
-                output_data_dir, 
-                demand_nodes, 
-                time_slice_list,
-                seasons,
-                daytype,
-                dayparts):
-                
-            """
 
 demand_nodes = list(set(list(sp_demand_df_final["FUEL"].str[3:8])))
 
