@@ -301,13 +301,18 @@ rule timeslice:
     message:
         'Generating timeslice data...'
     input:
-        rules.storage.output.csv_files,
         'resources/data/All_Demand_UTC_2015.csv',
         'resources/data/CSP 2015.csv',
         'resources/data/SolarPV 2015.csv',
         'resources/data/Hydro_Monthly_Profiles (15 year average).csv',
         'resources/data/Won 2015.csv',
         'resources/data/Woff 2015.csv',
+        'resources/data/custom_nodes/specified_demand_profile.csv',
+        'resources/data/custom_nodes/RE_profiles_CSP.csv',
+        'resources/data/custom_nodes/RE_profiles_HYD.csv',
+        'resources/data/custom_nodes/RE_profiles_SPV.csv',
+        'resources/data/custom_nodes/RE_profiles_WOF.csv',
+        'resources/data/custom_nodes/RE_profiles_WON.csv',                                
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],

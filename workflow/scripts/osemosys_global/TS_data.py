@@ -172,10 +172,6 @@ def correct_datetime_formatting(time_str):
 
 # ### Create columns for year, month, day, hour, and day type
 
-if custom_nodes:
-    demand_nodes = [x for x in demand_df.columns if x != "Datetime"] + custom_nodes
-else:
-    demand_nodes = [x for x in demand_df.columns if x != "Datetime"]
 # Convert datetime to year, month, day, and hour
 demand_df["Datetime"] = demand_df.Datetime.map(correct_datetime_formatting)
 demand_df["Datetime"] = pd.to_datetime(demand_df["Datetime"], format="%d/%m/%Y %H:%M")
@@ -184,13 +180,17 @@ demand_df["Month"] = demand_df["Datetime"].dt.strftime("%m").astype(int)
 demand_df["Day"] = demand_df["Datetime"].dt.strftime("%d").astype(int)
 demand_df["Hour"] = demand_df["Datetime"].dt.strftime("%H").astype(int)
 
-if custom_nodes:
-    custom_sp_demand_profile = pd.read_csv(
-        os.path.join(input_data_dir, "custom_nodes", "specified_demand_profile.csv")
-    )
-    demand_df = pd.merge(
-        demand_df, custom_sp_demand_profile, how="left", on=["Month", "Day", "Hour"]
-    )
+
+custom_sp_demand_profile = pd.read_csv(
+    os.path.join(input_data_dir, "custom_nodes", "specified_demand_profile.csv")
+)
+
+demand_nodes = [x for x in demand_df.columns if x != "Datetime"] + [
+    y for y in custom_sp_demand_profile.iloc[:,3:].columns]
+
+demand_df = pd.merge(
+    demand_df, custom_sp_demand_profile, how="left", on=["Month", "Day", "Hour"]
+)
 
 # Create column for weekday/weekend
 demand_df["Day-of-week"] = demand_df["Datetime"].dt.dayofweek
@@ -244,7 +244,6 @@ if daytype_included:
 else:
     demand_df["TIMESLICE"] = demand_df["Season"] + demand_df["Daypart"]
 
-
 # ### Calculate YearSplit
 
 
@@ -272,6 +271,7 @@ yearsplit_final.to_csv(os.path.join(output_data_dir, "YearSplit.csv"), index=Non
 sp_demand_df = demand_df[
     [x for x in demand_df.columns if x in demand_nodes or x == "TIMESLICE"]
 ]
+
 sp_demand_df = pd.melt(
     sp_demand_df,
     id_vars="TIMESLICE",
@@ -318,6 +318,9 @@ sp_demand_df.loc[sp_demand_df["node"].str.len() > 6, "FUEL"] = (
     "ELC" + sp_demand_df["node"].str.split("-").str[1:].str.join("") + "02"
 )
 
+# In case custom data is provided only keep the custom data
+sp_demand_df.drop_duplicates(subset=['TIMESLICE', 'FUEL'], keep = 'last', inplace = True)
+
 # Create master table for SpecifiedDemandProfile
 sp_demand_df_final = pd.DataFrame(
     list(
@@ -349,12 +352,13 @@ total_demand_df_final["VALUE"] = total_demand_df_final["VALUE"].mul(3.6 * 1e-6)
 sp_demand_df_final["VALUE"] = sp_demand_df_final["VALUE"].round(2)
 sp_demand_df_final = sp_demand_df_final[
     ["REGION", "FUEL", "TIMESLICE", "YEAR", "VALUE"]
-]
+].dropna()
 
 # sp_demand_df_final = apply_dtypes(sp_demand_df_final, "SpecifiedDemandProfile")
 sp_demand_df_final.drop_duplicates(
     subset=["REGION", "TIMESLICE", "FUEL", "YEAR"], keep="last", inplace=True
 )
+
 sp_demand_df_final.to_csv(
     os.path.join(output_data_dir, "SpecifiedDemandProfile.csv"), index=None
 )
@@ -365,7 +369,6 @@ datetime_ts_df = demand_df[["Datetime", "TIMESLICE"]]
 capfac_all_df = pd.DataFrame(
     columns=["REGION", "TECHNOLOGY", "TIMESLICE", "YEAR", "VALUE"]
 )
-
 
 def capacity_factor(df):
     df["Datetime"] = pd.to_datetime(df["Datetime"], format="%d/%m/%Y %H:%M")
