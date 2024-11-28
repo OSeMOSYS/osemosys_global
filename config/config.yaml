@@ -176,34 +176,34 @@ nodes_to_add:
  # specified in the "geographic scope" 
  # and XX is a 2-letter sub-regional node code. 
  # E.g. - "IDNSM" for a sub-regional node in Sumatra, Indonesia.
-  - 'IDNJW'
-  - 'IDNKA'
-  - 'IDNML'
-  - 'IDNNU'
-  - 'IDNPP'
-  - 'IDNSL'
-  - 'IDNSM'
-  - 'MYSPE'
-  - 'MYSSH'
-  - 'MYSSK'
-  - 'PHLLU'
-  - 'PHLMI'
-  - 'PHLVI'
-  - 'THACE'
-  - 'THANO'
-  - 'THASO'
-  - 'VNMCE'
-  - 'VNMNO'
-  - 'VNMSO'
+ # - 'IDNJW'
+#  - 'IDNKA'
+ # - 'IDNML'
+ # - 'IDNNU'
+ # - 'IDNPP'
+ # - 'IDNSL'
+#  - 'IDNSM'
+#  - 'MYSPE'
+ # - 'MYSSH'
+#  - 'MYSSK'
+#  - 'PHLLU'
+#  - 'PHLMI'
+ # - 'PHLVI'
+ # - 'THACE'
+ # - 'THANO'
+ # - 'THASO'
+ # - 'VNMCE'
+ # - 'VNMNO'
+ # - 'VNMSO'
 
 nodes_to_remove:
 #- "AAAXX" where AAA is a 3-letter country code, and XX is a 2-letter 
 # sub-national code
-  - 'IDNXX'
-  - 'MYSXX'
-  - 'PHLXX'
-  - 'THAXX'
-  - 'VNMXX'
+#  - 'IDNXX'
+ # - 'MYSXX'
+ # - 'PHLXX'
+ # - 'THAXX'
+ # - 'VNMXX'
 
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]

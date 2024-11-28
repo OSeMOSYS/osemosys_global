@@ -80,7 +80,6 @@ if __name__ == "__main__":
         start_year = 2020
         end_year = 2050
         custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
-        # custom_nodes = []
         custom_nodes_data = "resources/data/custom_nodes/specified_annual_demand.csv"
 
     # first bring together original and missing iamc data
@@ -112,9 +111,8 @@ if __name__ == "__main__":
 
     df = df[df.YEAR.isin(range(start_year, end_year + 1))]
 
-    if custom_nodes:
-        all_custom = import_custom_demand_data(custom_nodes_data)
-        custom = get_custom_demand_data(all_custom, start_year, end_year)
-        df = merge_default_custom_data(df, custom)
+    all_custom = import_custom_demand_data(custom_nodes_data)
+    custom = get_custom_demand_data(all_custom, start_year, end_year)
+    df = merge_default_custom_data(df, custom)
 
     df.to_csv(csv, index=False)
