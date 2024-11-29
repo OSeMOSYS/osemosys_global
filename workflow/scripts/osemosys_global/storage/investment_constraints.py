@@ -52,9 +52,9 @@ def cap_investment_constraints_sto(storage_set, df_max_cap_invest_base,
         df_max_cap_invest_sto = pd.concat([df_max_cap_invest_sto, data], join = 'inner')
    
     df_max_cap_invest_sto = apply_dtypes(df_max_cap_invest_sto, "TotalAnnualMaxCapacityInvestment")
-
+    
     # filter for storages defined in config
-    df_max_cap_invest_sto = df_max_cap_invest_sto[df_max_cap_invest_sto.TECHNOLOGY.isin(storage_set.VALUE)]
+    df_max_cap_invest_sto = df_max_cap_invest_sto[df_max_cap_invest_sto.TECHNOLOGY.isin('PWR' + storage_set.VALUE)]
     
     # Add to existing TotalAnnualMaxCapacityInvestment data
     if not df_max_cap_invest_sto.empty:
