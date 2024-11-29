@@ -71,10 +71,10 @@ def res_capacity(df_gen_base, duplicate_techs, start_year, end_year, region_name
 
     return df_res_cap
 
-def add_custom_res_cap(df_res_cap, df_custom, tech_list, custom_nodes,
+def add_custom_res_cap(df_res_cap, df_custom, tech_list, 
                        start_year, end_year, region_name):
 
-    df_custom_res_cap = pd.DataFrame(list(itertools.product(custom_nodes,
+    df_custom_res_cap = pd.DataFrame(list(itertools.product(df_custom['CUSTOM_NODE'].unique(),
                                                    tech_list,
                                                    get_years(start_year, end_year))
                                   ),
@@ -120,4 +120,4 @@ def add_custom_res_cap(df_res_cap, df_custom, tech_list, custom_nodes,
     df_res_cap = df_res_cap.loc[(df_res_cap['TECHNOLOGY'].str.startswith('PWR')) &
                                 (~df_res_cap['TECHNOLOGY'].str.endswith('00'))]
     
-    return df_custom_res_cap, technologies
+    return df_res_cap, technologies
