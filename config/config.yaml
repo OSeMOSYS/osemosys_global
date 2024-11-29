@@ -7,17 +7,17 @@ endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [1, 13]
-  D2: [13, 25]
- # D1: [1, 7]
- # D2: [7, 13]
- # D3: [13, 19]
- # D4: [19, 25]
+ # D1: [1, 13]
+ # D2: [13, 25]
+  D1: [1, 7]
+  D2: [7, 13]
+  D3: [13, 19]
+  D4: [19, 25]
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
- # S1: [1, 2, 3, 4, 5, 6]
-  #S2: [7, 8, 9, 10, 11, 12]
-  S1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+ # S1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  S1: [1, 2, 3, 4, 5, 6]
+  S2: [7, 8, 9, 10, 11, 12]
 
 timeshift: 0 # value between -11 and 12
   
@@ -169,7 +169,7 @@ storage_parameters:
   #                    duration]
   # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
   # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
-#  SDS: [1938, 44.25, 0, 85, 4]
+  SDS: [1938, 44.25, 0, 85, 4]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
@@ -208,7 +208,7 @@ nodes_to_remove:
 reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
-  RM1: [15, 2025, 2050]
+  RM1: [10, 2030, 2050]
   
 reserve_margin_technologies:
 # TECHNOLOGY: PERCENTAGE,
@@ -246,28 +246,28 @@ emission_limit:
 # COUNTRY yet only a single target per YEAR.
 
 # Net-Zero and Unconditiontal targets
- - ['CO2', 'BRN', 'POINT', 2030, 10]
- - ['CO2', 'KHM', 'POINT', 2050, 0]
- - ['CO2', 'IDN', 'POINT', 2030, 290]
- - ['CO2', 'IDN', 'POINT', 2050, 0]
- - ['CO2', 'LAO', 'POINT', 2030, 10.85]
- - ['CO2', 'LAO', 'POINT', 2050, 0]
- - ['CO2', 'MMR', 'POINT', 2030, 27.37]
- - ['CO2', 'MYS', 'POINT', 2050, 0]
- - ['CO2', 'PHL', 'POINT', 2030, 102.42]
- - ['CO2', 'SGP', 'POINT', 2030, 23.66] 
- - ['CO2', 'SGP', 'POINT', 2050, 0]
- - ['CO2', 'THA', 'POINT', 2030, 86.41] 
- - ['CO2', 'THA', 'POINT', 2050, 0] 
- - ['CO2', 'VNM', 'POINT', 2030, 206] 
- - ['CO2', 'VNM', 'POINT', 2050, 0] 
+ - ['CO2', 'BRN', 'LINEAR', 2030, 10]
+ - ['CO2', 'KHM', 'LINEAR', 2050, 0]
+ - ['CO2', 'IDN', 'LINEAR', 2030, 290]
+ - ['CO2', 'IDN', 'LINEAR', 2050, 0]
+ - ['CO2', 'LAO', 'LINEAR', 2030, 10.85]
+ - ['CO2', 'LAO', 'LINEAR', 2050, 0]
+ - ['CO2', 'MMR', 'LINEAR', 2030, 27.37]
+ - ['CO2', 'MYS', 'LINEAR', 2050, 0]
+ - ['CO2', 'PHL', 'LINEAR', 2030, 102.42]
+ - ['CO2', 'SGP', 'LINEAR', 2030, 23.66] 
+ - ['CO2', 'SGP', 'LINEAR', 2050, 0]
+ - ['CO2', 'THA', 'LINEAR', 2030, 86.41] 
+ - ['CO2', 'THA', 'LINEAR', 2050, 0] 
+ - ['CO2', 'VNM', 'LINEAR', 2030, 206] 
+ - ['CO2', 'VNM', 'LINEAR', 2050, 0] 
  
 # Conditional targets
-# - ['CO2', 'KHM', 'POINT', 2030, 4.2]
-# - ['CO2', 'MMR', 'POINT', 2030, 18.36] 
-# - ['CO2', 'PHL', 'POINT', 2030, 25.6] 
-# - ['CO2', 'THA', 'POINT', 2030, 74.07] 
-# - ['CO2', 'VNM', 'POINT', 2030, 138.23] 
+# - ['CO2', 'KHM', 'LINEAR', 2030, 4.2]
+# - ['CO2', 'MMR', 'LINEAR', 2030, 18.36] 
+# - ['CO2', 'PHL', 'LINEAR', 2030, 25.6] 
+# - ['CO2', 'THA', 'LINEAR', 2030, 74.07] 
+# - ['CO2', 'VNM', 'LINEAR', 2030, 138.23] 
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
@@ -292,9 +292,9 @@ fossil_capacity_targets:
 # capacity value. Note that in case 'ABS' or 'MAX' is applied, the given value needs to be 
 # higher than the residual capacity of that technology in the given year otherwise the workflow
 # will not complete. Targets can only be set at the nodal level.
-# - ['KHMXX', 'COA', 2030, 2050, 'MAX', 2.266]
-# - ['KHMXX', 'CCG', 2040, 2040, 'ABS', 0.9]
-# - ['MMRXX', 'COA', 2030, 2030, 'ABS', 3.62]
+ - ['KHMXX', 'COA', 2030, 2050, 'MAX', 2.266]
+ - ['KHMXX', 'CCG', 2040, 2040, 'ABS', 0.9]
+ - ['MMRXX', 'COA', 2030, 2030, 'ABS', 3.62]
 
 re_targets:
 # TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]
@@ -310,12 +310,12 @@ re_targets:
 # technologies contribute to the target. For "ABS", only one technology can be 
 # selected per target. Note that a combination of targets can be set that affect
 # the same countries/nodes/technologies. This can be computationally intensive.
-#  T01: ['KHMXX', ['HYD'], 'ABS', 2030, 2039, 1.558]
-#  T02: ['KHMXX', ['HYD'], 'ABS', 2040, 2050, 2.973]
-#  T03: ['KHMXX', ['SPV'], 'ABS', 2030, 2039, 1.005]
-#  T04: ['KHMXX', ['SPV'], 'ABS', 2040, 2050, 3.155]
-#  T05: ['LAOXX', ['HYD'], 'ABS', 2030, 2050, 13]
-#  T06: ['SGPXX', ['SPV'], 'ABS', 2030, 2050, 1.6]
-#  T07: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2030, 2039, 35]
-#  T08: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2040, 2050, 50]
- # T09: ['IDN', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO'], 'PCT', 2030, 2050, 31]
+  T01: ['KHMXX', ['HYD'], 'ABS', 2030, 2039, 1.558]
+  T02: ['KHMXX', ['HYD'], 'ABS', 2040, 2050, 2.973]
+  T03: ['KHMXX', ['SPV'], 'ABS', 2030, 2039, 1.005]
+  T04: ['KHMXX', ['SPV'], 'ABS', 2040, 2050, 3.155]
+  T05: ['LAOXX', ['HYD'], 'ABS', 2030, 2050, 13]
+  T06: ['SGPXX', ['SPV'], 'ABS', 2030, 2050, 1.6]
+  T07: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2030, 2039, 35]
+  T08: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2040, 2050, 50]
+  T09: ['IDN', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO'], 'PCT', 2030, 2050, 31]
