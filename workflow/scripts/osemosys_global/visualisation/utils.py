@@ -8,7 +8,6 @@ import itertools
 from pathlib import Path
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift
-from osemosys_global.powerplant_data import format_transmission_name
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
@@ -197,115 +196,6 @@ def transform_ts(data:Dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
     df = df.sort_values(by=['MONTH', 'HOUR'])
 
     return df
-    
-def load_node_data_demand_center(cost_line_expansion_xlsx: str) -> pd.DataFrame:
-    """Gets node names with lats and lons at demand center
-    
-    Arguments:
-        cost_line_expansion_xlsx: str
-            Path to 'Costs Line expansion.xlsx' file  
-            
-    Returns: 
-        Dataframe with nodes and lats and lons
-    """
-    
-    def parse_name(x: str) -> str:
-        parts = x.split("-")
-        if len(parts) > 2:
-            return f"{parts[1]}{parts[2]}"
-        else:
-            return f"{parts[1]}XX"
-        
-    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Centerpoints')
-    df = pd.DataFrame()
-    
-    df["NODE"] = raw["Node"].map(lambda x: parse_name(x))
-    df["LATITUDE"] = raw["Latitude"]
-    df["LONGITUDE"] = raw["Longitude"]
-    
-    # drop extra brazil codes 
-    df = df.loc[
-        (df["NODE"] != "BRAJ1") &
-        (df["NODE"] != "BRAJ2") &
-        (df["NODE"] != "BRAJ3")].reset_index(drop=True)
-    
-    return df
-
-def load_node_data_centroid(plexos_world_softlink_xlsx: str) -> pd.DataFrame:
-    """Gets node names with lats and lons at centroid
-    
-    Arguments:
-        plexos_world_softlink_xlsx: str
-            Path to 'PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx' file  
-            
-    Returns: 
-        Dataframe with nodes and lats and lons
-    """
-    
-    def parse_name(x: str) -> str:
-        parts = x.split("-")
-        if len(parts) > 2:
-            return f"{parts[1]}{parts[2]}"
-        else:
-            return f"{parts[1]}XX"
-        
-    raw = pd.read_excel(plexos_world_softlink_xlsx, sheet_name='Attributes')
-    temp = raw.loc[raw["class"] == "Node"]
-
-    temp = temp.loc[
-        (temp["name"] != "SA-BRA-J1") &
-        (temp["name"] != "SA-BRA-J2") &
-        (temp["name"] != "SA-BRA-J3")]
-    
-    temp["NODE"] = temp["name"].map(lambda x: parse_name(x))
-    
-    df_lats = temp.loc[temp["attribute"] == "Latitude"]
-    df_lons = temp.loc[temp["attribute"] == "Longitude"]
-    
-    lats = dict(zip(df_lats["NODE"], df_lats["value"]))
-    lons = dict(zip(df_lons["NODE"], df_lons["value"]))
-    
-    return pd.DataFrame(
-        [[x, lats[x], lons[x]] for x in temp["NODE"].unique().tolist()],
-        columns=["NODE", "LATITUDE", "LONGITUDE"])
-
-def load_line_data(cost_line_expansion_xlsx: str) -> pd.DataFrame:
-    """Gets line names with to/from nodes
-    
-    Arguments:
-        cost_line_expansion_xlsx: str
-            Path to 'Costs Line expansion.xlsx' file  
-    
-    Returns:
-        pd.DataFrame     
-    """
-    def parse_transmission_codes(techs: List[str]) -> pd.DataFrame:
-        """Parses transmission techs to add start/end info"""
-        
-        parsed_data = []
-        for tech in techs:
-            parsed_data.append([
-                tech,
-                tech[3:8],
-                tech[8:]
-            ])
-        return pd.DataFrame(parsed_data, columns=["TECHNOLOGY", "FROM", "TO"])
-    
-    # get all transmission lines
-    raw = pd.read_excel(cost_line_expansion_xlsx, sheet_name='Interface')
-    trn = raw.dropna(subset=["From"])
-    trn = format_transmission_name(trn)
-    
-    # drop extra brazil codes 
-    trn = trn.loc[
-        (trn["TECHNOLOGY"].str[3:8] != "BRAJ1") &
-        (trn["TECHNOLOGY"].str[3:8] != "BRAJ2") &
-        (trn["TECHNOLOGY"].str[3:8] != "BRAJ3") &
-        (trn["TECHNOLOGY"].str[8:] != "BRAJ1") &
-        (trn["TECHNOLOGY"].str[8:] != "BRAJ2") &
-        (trn["TECHNOLOGY"].str[8:] != "BRAJ3")].reset_index(drop=True)
-    
-    return parse_transmission_codes(trn["TECHNOLOGY"].to_list())
 
 def get_map(extent:List[Union[int,float]] = None) -> Tuple[plt.figure, plt.axes]: 
     """Sets up map to plot on
