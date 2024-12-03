@@ -56,20 +56,22 @@ rule visualisation:
         'Generating result figures...'
     input:
         csv_files = expand('results/{{scenario}}/results/{result_file}.csv', result_file = OTOOLE_RESULTS),
+        centerpoints = 'resources/data/centerpoints.csv',
+        custom_nodes_centerpoints = 'resources/data/custom_nodes/centerpoints.csv',
     params:
         input_data = "results/{scenario}/data/",
         result_data = "results/{scenario}/results/",
         scenario_figs_dir = "results/{scenario}/figures/",
-        cost_line_expansion_xlsx = "'resources/data/Costs Line expansion.xlsx'",
         countries = config['geographic_scope'],
         results_by_country = config['results_by_country'],
         years = [config['endYear']],
+        custom_nodes = config['nodes_to_add'],
     output:
         expand('results/{{scenario}}/figures/{result_figure}.html', result_figure = RESULT_FIGURES)
     log:
         log = 'results/{scenario}/logs/visualisation.log'
     shell: 
-        'python workflow/scripts/osemosys_global/visualise.py {params.input_data} {params.result_data} {params.scenario_figs_dir} {params.cost_line_expansion_xlsx} {params.countries} {params.results_by_country} {params.years} 2> {log}'
+        'python workflow/scripts/osemosys_global/visualise.py {params.input_data} {params.result_data} {params.scenario_figs_dir} {params.countries} {params.results_by_country} {params.years} 2> {log}'
 
 rule calculate_trade_flows:
     message: 
