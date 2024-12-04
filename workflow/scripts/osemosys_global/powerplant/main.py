@@ -241,11 +241,12 @@ def main(
                                                                        region_name)
     
     # add backstop technologies 
-    bck_techs, bck_oar, bck_capex, bck_opex = get_backstop_data(tech_set, years_set, region_name)
+    bck_techs, bck_oar, bck_capex, bck_opex, bck_capact = get_backstop_data(tech_set, years_set, region_name)
     tech_set = pd.concat([tech_set, bck_techs])
     df_oar_final = pd.concat([df_oar_final, bck_oar])
     df_cap_cost_final = pd.concat([df_cap_cost_final, bck_capex])
     df_fix_cost_final = pd.concat([df_fix_cost_final, bck_opex])
+    df_capact_final = pd.concat([df_capact_final, bck_capact])
     
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     

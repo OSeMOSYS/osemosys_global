@@ -12,6 +12,7 @@ def get_backstop_data(
     - OAR
     - Capital Cost
     - Fixed Cost
+    - CapacityToActivity
     """
 
     df = tech_set.copy()
@@ -56,4 +57,10 @@ def get_backstop_data(
     opex["VALUE"] = 999999
     opex = opex[["REGION", "TECHNOLOGY", "YEAR", "VALUE"]]
 
-    return techs, oar, capex, opex
+    # capacity to activity
+    capact = pd.DataFrame(index=pd.Index(bck_techs, name="TECHNOLOGY")).reset_index()
+    capact["REGION"] = region
+    capact["VALUE"] = 31.536
+    capact = capact[["REGION", "TECHNOLOGY", "VALUE"]]
+
+    return techs, oar, capex, opex, capact
