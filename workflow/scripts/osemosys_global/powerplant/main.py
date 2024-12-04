@@ -74,6 +74,8 @@ from renewable_targets import(
 
 from calibration import apply_calibration
 
+from backstop import get_backstop_data
+
 def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
@@ -238,6 +240,13 @@ def main(
                                                                        df_res_cap, 
                                                                        region_name)
     
+    # add backstop technologies 
+    bck_techs, bck_oar, bck_capex, bck_opex = get_backstop_data(tech_set, years_set, region_name)
+    tech_set = pd.concat([tech_set, bck_techs])
+    df_oar_final = pd.concat([df_oar_final, bck_oar])
+    df_cap_cost_final = pd.concat([df_cap_cost_final, bck_capex])
+    df_fix_cost_final = pd.concat([df_fix_cost_final, bck_opex])
+    
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -352,7 +361,7 @@ if __name__ == "__main__":
         fossil_capacity_targets = [["BTNXX", 'COA', 2030, 2050, 'ABS', 1],
                                    ["INDNE", 'CCG', 2040, 2050, 'MIN', 10],
                                    ["INDSO", 'OCG', 2025, 2050, 'MAX', 25]]
-        min_generation_factors = {'OCG1': [50, "IND", 2021]}
+        calibration = {'OCG1': [50, "IND", 2021]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
