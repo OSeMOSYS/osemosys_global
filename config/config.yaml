@@ -70,14 +70,15 @@ user_defined_capacity_transmission:
   #         capacity, 
   #         build_year, 
   #         first_year_of_expansion, 
+  #         final_year_of_expansion,   
   #         build_rate_per_year, 
   #         capex_cost,
   #         annual_fixed_O&M_cost,
   #         variable_O&M_cost,
   #         efficiency]
-  # Per technology, only the capacity and build_year
-  # parameters can deviate from each other. For all other
-  # parameters only the last entry will be used.
+  # Per technology, only the capacity, build_year, first_year_of_expansion, 
+  # final_year_of_expansion and build_rate_per_year parameters can deviate
+  # from each other. For all other parameters only the last entry will be used.
   
   # Existing (GTD)
   trn1: [TRNIDNJWIDNNU, 0.4, 2020, 2030, 3, 527, 18.5, 4, 95.3]
