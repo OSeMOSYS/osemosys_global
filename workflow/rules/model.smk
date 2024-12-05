@@ -10,15 +10,16 @@ rule geographic_filter:
         csv_files = expand('results/data/{csv}.csv', csv = OTOOLE_PARAMS),
     params:
         geographic_scope = config['geographic_scope'],
-        res_targets = config['re_targets']
+        res_targets = config['re_targets'],
+        nodes_to_remove = config["nodes_to_remove"],
+        in_dir = "results/data",
+        out_dir = "results/{scenario}/data"
     output:
         csv_files = expand('results/{{scenario}}/data/{csv}.csv', csv = OTOOLE_PARAMS),
-    # conda:
-    #     '../envs/data_processing.yaml'
     log:
         log = 'results/{scenario}/logs/geographicFilter.log'
-    shell:
-        'python workflow/scripts/osemosys_global/geographic_filter.py 2> {log}'
+    script:
+        '../scripts/osemosys_global/geographic_filter.py'
 
 rule copy_otoole_confg:
     message:
