@@ -71,6 +71,7 @@ include: "rules/validate.smk"
 # handlers 
         
 onsuccess:
+    shell(f"python workflow/scripts/osemosys_global/check_backstop.py {config['scenario']}")
     print('Workflow finished successfully!')
 
     # Will fix this in next update so that preprocessing steps dont always need to be rerun

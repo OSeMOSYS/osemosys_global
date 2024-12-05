@@ -74,6 +74,8 @@ from renewable_targets import(
 
 from calibration import apply_calibration
 
+from backstop import get_backstop_data
+
 def main(
     plexos_prop: pd.DataFrame,
     plexos_memb: pd.DataFrame,
@@ -139,9 +141,7 @@ def main(
                                                                       region_name)
     # Calculate residual capacity.
     df_res_cap = res_capacity(gen_table, DUPLICATE_TECHS, start_year, end_year, region_name)
-    
-   # if custom_nodes:
-        
+
     # Adds residual capacity for custom entries.
     df_res_cap, custom_techs = add_custom_res_cap(df_res_cap, custom_res_cap, 
                                                   tech_list, start_year, 
@@ -149,12 +149,7 @@ def main(
     
     # Creates sets for TECHNOLOGIES including custom entries.
     tech_set = create_sets('TECHNOLOGY', df_oar_final, powerplant_data_dir, custom_techs)
-  #  else:
-  #      custom_techs = []
-        
-        # Creates sets for TECHNOLOGIES absent custom entries.
-  #      tech_set = create_sets('TECHNOLOGY', df_oar_final, powerplant_data_dir, [])
-    
+
     # Creates sets for FUEL.
     fuel_set = create_sets('FUEL', df_oar_final, powerplant_data_dir, [])       
     
@@ -237,6 +232,14 @@ def main(
                                                                        df_res_cap, 
                                                                        region_name)
     
+    # add backstop technologies 
+    bck_techs, bck_oar, bck_capex, bck_opex, bck_capact = get_backstop_data(tech_set, years_set, region_name)
+    tech_set = pd.concat([tech_set, bck_techs])
+    df_oar_final = pd.concat([df_oar_final, bck_oar])
+    df_cap_cost_final = pd.concat([df_cap_cost_final, bck_capex])
+    df_fix_cost_final = pd.concat([df_fix_cost_final, bck_opex])
+    df_capact_final = pd.concat([df_capact_final, bck_capact])
+    
     # OUTPUT CSV's USED AS INPUT FOR TRANSMISSION RULE
     
     df_res_cap.to_csv(os.path.join(powerplant_data_dir, "ResidualCapacity.csv"), index=None)
@@ -312,8 +315,6 @@ if __name__ == "__main__":
         input_data_dir = snakemake.params.input_data_dir
         powerplant_data_dir = snakemake.params.powerplant_data_dir  
         file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'  
-        
-       # if custom_nodes:
         file_custom_res_cap = snakemake.input.custom_res_cap
         file_custom_res_potentials = snakemake.input.custom_res_potentials
             
@@ -351,13 +352,11 @@ if __name__ == "__main__":
         fossil_capacity_targets = [["BTNXX", 'COA', 2030, 2050, 'ABS', 1],
                                    ["INDNE", 'CCG', 2040, 2050, 'MIN', 10],
                                    ["INDSO", 'OCG', 2025, 2050, 'MAX', 25]]
-        min_generation_factors = {'OCG1': [50, "IND", 2021]}
+        calibration = {'OCG1': [50, "IND", 2021]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
         file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'
-        
-        #if custom_nodes:
         file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv'
         file_custom_res_potentials = 'resources/data/custom_nodes/RE_potentials.csv' 
 
@@ -385,13 +384,9 @@ if __name__ == "__main__":
     
     availability = import_afs(file_default_af_factors)
     specified_annual_demand = import_specified_annual_demand(file_specified_annual_demand)
-    
-    #if custom_nodes:
+
     custom_res_cap = import_custom_res_cap(file_custom_res_cap)
     custom_res_potentials = import_custom_res_potentials(file_custom_res_potentials)
-    #else:
-    #    custom_res_cap = []
-    #    custom_res_potentials = []
     
     input_data = {
         "plexos_prop": plexos_prop,
