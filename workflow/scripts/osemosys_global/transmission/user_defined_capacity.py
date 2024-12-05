@@ -127,8 +127,6 @@ def set_user_defined_capacity_trn(tech_capacity_trn, op_life_dict,
                            (df_max_cap_inv['YEAR'] == row['YEAR']), 'VALUE'] = df_max_cap_inv.loc[(
                                df_max_cap_inv['TECHNOLOGY'] == row['TECHNOLOGY']) & 
                                (df_max_cap_inv['YEAR'] == row['YEAR']), 'VALUE'] + row['VALUE']
-                               
-    df_max_cap_inv.to_csv('temp5.csv')                              
 
     # Add IAR and OAR for custom technologies
     tech_list = list(tech_capacity_trn_df['TECHNOLOGY'].unique())
