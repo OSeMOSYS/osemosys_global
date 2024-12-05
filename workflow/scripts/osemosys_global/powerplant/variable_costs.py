@@ -341,6 +341,26 @@ def get_renewable_data(
     return df.set_index(["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"])
 
 
+def get_backstop_var_costs(
+    techs: pd.Series, years: pd.Series, regions: pd.Series
+) -> pd.Series:
+    """Gets backstop variable costs"""
+
+    t = techs[techs.str.startswith("PWRBCK")].unique().tolist()
+    y = years.unique().tolist()
+    r = regions.unique().tolist()[0]  # only one region
+
+    df = pd.DataFrame(
+        index=pd.MultiIndex.from_product(
+            [[r], t, y], names=["REGION", "TECHNOLOGY", "YEAR"]
+        )
+    ).reset_index()
+    df["MODE_OF_OPERATION"] = 1
+    df["VALUE"] = 999999
+
+    return df.set_index(["REGION", "TECHNOLOGY", "MODE_OF_OPERATION", "YEAR"])
+
+
 def main(
     cmo_forecasts: pd.DataFrame,
     cmo_data_year: int,
@@ -403,6 +423,11 @@ def main(
     var_costs = pd.concat([mining_data, renewable_data])
     var_costs = var_costs[var_costs.index.get_level_values("YEAR").isin(y)]
     var_costs = filter_var_cost_technologies(var_costs, technologies)
+
+    bck_var_costs = get_backstop_var_costs(technologies, years, regions)
+
+    var_costs = pd.concat([var_costs, bck_var_costs])
+
     return var_costs.round(3)
 
 
@@ -418,10 +443,10 @@ if __name__ == "__main__":
     else:
         file_cmo_forecasts = "resources/data/CMO-October-2024-Forecasts.xlsx"
         file_fuel_prices = "resources/data/fuel_prices.csv"
-        file_regions = "results/India/data/REGION.csv"
-        file_years = "results/India/data/YEAR.csv"
-        file_technologies = "results/India/data/TECHNOLOGY.csv"
-        file_var_costs = "results/India/data/VariableCosts.csv"
+        file_regions = "results/data/REGION.csv"
+        file_years = "results/data/YEAR.csv"
+        file_technologies = "results/data/powerplant/TECHNOLOGY.csv"
+        file_var_costs = "results/data/powerplant/VariableCosts.csv"
 
     cmo_forecasts = import_cmo_forecasts(file_cmo_forecasts)
     user_fuel_prices = import_fuel_prices(file_fuel_prices)
