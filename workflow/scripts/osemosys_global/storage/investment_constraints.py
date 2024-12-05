@@ -14,7 +14,7 @@ def cap_investment_constraints_sto(storage_set, df_max_cap_invest_base,
                                    start_year, end_year, region_name):
     
     techs = storage_set['VALUE'].str[:3].unique()
-    df_max_cap_invest_sto = df_max_cap_invest_base.copy()
+    df_max_cap_invest_sto = pd.DataFrame(columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"])
     
     # Set max annual investments to 0 in case no expansion is allowed for specific storage technology.
     if any(x in no_investment_techs for x in techs) == True:
@@ -52,5 +52,14 @@ def cap_investment_constraints_sto(storage_set, df_max_cap_invest_base,
         df_max_cap_invest_sto = pd.concat([df_max_cap_invest_sto, data], join = 'inner')
    
     df_max_cap_invest_sto = apply_dtypes(df_max_cap_invest_sto, "TotalAnnualMaxCapacityInvestment")
+    
+    # filter for storages defined in config
+    df_max_cap_invest_sto = df_max_cap_invest_sto[df_max_cap_invest_sto.TECHNOLOGY.isin('PWR' + storage_set.VALUE)]
+    
+    # Add to existing TotalAnnualMaxCapacityInvestment data
+    if not df_max_cap_invest_sto.empty:
+        df_max_cap_invest_sto = pd.concat([df_max_cap_invest_base, df_max_cap_invest_sto])
+    else:
+        df_max_cap_invest_sto = df_max_cap_invest_base.copy()
 
     return df_max_cap_invest_sto

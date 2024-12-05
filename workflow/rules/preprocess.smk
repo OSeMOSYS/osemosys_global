@@ -126,12 +126,6 @@ rule make_data_dir:
     output: directory('results/data')
     shell: 'mkdir -p {output}'
 
-def demand_custom_csv() -> str:
-    if config["nodes_to_add"]:
-        return "resources/data/custom_nodes/specified_annual_demand.csv"
-    else:
-        return []
-
 rule demand_projections:
     message:
         "Generating demand data..."
@@ -144,7 +138,7 @@ rule demand_projections:
         iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
         td_losses = "resources/data/T&D Losses.xlsx",
         ember = "resources/data/ember_yearly_electricity_data.csv",
-        custom_nodes = demand_custom_csv()
+        custom_nodes = "resources/data/custom_nodes/specified_annual_demand.csv"
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -155,18 +149,6 @@ rule demand_projections:
         log = 'results/logs/demand_projections.log'
     script:
         "../scripts/osemosys_global/demand/main.py"
-     
-def powerplant_cap_custom_csv() -> str:
-    if config["nodes_to_add"]:
-        return "resources/data/custom_nodes/residual_capacity.csv"
-    else:
-        return []
-        
-def powerplant_res_potentials_custom_csv() -> str:
-    if config["nodes_to_add"]:
-        return "resources/data/custom_nodes/RE_potentials.csv"
-    else:
-        return []
         
 rule powerplant:
     message:
@@ -182,8 +164,8 @@ rule powerplant:
         default_op_life = 'resources/data/operational_life.csv',
         naming_convention_tech = 'resources/data/naming_convention_tech.csv',
         default_af_factors = 'resources/data/availability_factors.csv',
-        custom_res_cap = powerplant_cap_custom_csv(),
-        custom_res_potentials = powerplant_res_potentials_custom_csv(),
+        custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv',
+        custom_res_potentials = 'resources/data/custom_nodes/RE_potentials.csv'
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -301,13 +283,18 @@ rule timeslice:
     message:
         'Generating timeslice data...'
     input:
-        rules.storage.output.csv_files,
         'resources/data/All_Demand_UTC_2015.csv',
         'resources/data/CSP 2015.csv',
         'resources/data/SolarPV 2015.csv',
         'resources/data/Hydro_Monthly_Profiles (15 year average).csv',
         'resources/data/Won 2015.csv',
         'resources/data/Woff 2015.csv',
+        'resources/data/custom_nodes/specified_demand_profile.csv',
+        'resources/data/custom_nodes/RE_profiles_CSP.csv',
+        'resources/data/custom_nodes/RE_profiles_HYD.csv',
+        'resources/data/custom_nodes/RE_profiles_SPV.csv',
+        'resources/data/custom_nodes/RE_profiles_WOF.csv',
+        'resources/data/custom_nodes/RE_profiles_WON.csv',                                
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],

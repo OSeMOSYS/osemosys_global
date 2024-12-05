@@ -1,5 +1,10 @@
 import pandas as pd
 import os
+from typing import Optional, Any 
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 from read import(
     import_storage_build_rates,
@@ -73,101 +78,125 @@ def main(
     min_cap_invest_base: pd.DataFrame,
     res_cap_base: pd.DataFrame,
     tech_set_base: pd.DataFrame,
-    fuel_set_base: pd.DataFrame
+    fuel_set_base: pd.DataFrame,
+    tech_capacity_storage: Optional[dict[str, list[Any]]] = None
 ):
     
-    # CALL FUNCTIONS
-    
-    # Set storage set
-    storage_set = set_unique_storage_technologies(fuel_set_base, unique_sto_techs)
+    if not unique_sto_techs:
+        
+        logger.warning("No storage added to the system. Populate 'storage_parameters' in config file.")
+        
+        oar_storage = oar_base.copy()
+        iar_storage = iar_base.copy()
+        cap_activity_storage = capact_base.copy()
+        cap_cost_storage = pd.DataFrame(columns=["REGION", "STORAGE", "YEAR", "VALUE"])
+        cap_cost = cap_cost_base.copy()
+        fix_cost_storage = fix_cost_base.copy() 
+        var_cost_storage = var_cost_base.copy()
+        op_life = op_life_base.copy()
+        op_life_storage = pd.DataFrame(columns=["REGION", "STORAGE", "VALUE"])
+        max_cap_invest_storage = max_cap_invest_base.copy()
+        tech_set = tech_set_base.copy()
+        storage_set = pd.DataFrame(columns=["VALUE"])
+        tech_to_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION", "VALUE"])
+        tech_from_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION", "VALUE"])
+        res_cap = res_cap_base.copy()
+        res_cap_storage = pd.DataFrame(columns=["REGION", "STORAGE", "YEAR", "VALUE"])
+        storage_level_start = pd.DataFrame(columns=["REGION", "STORAGE", "VALUE"])
+        tech_capacity_storage = None
 
-    # Create TechnologyToStorage and TechnologyFromStorage
-    tech_to_storage = set_technology_to_storage(storage_set, region_name)
-    tech_from_storage = set_technology_from_storage(storage_set, region_name)    
+    else:
+    
+        # Set storage set
+        storage_set = set_unique_storage_technologies(fuel_set_base, unique_sto_techs)
 
-    
-    # Set capital costs for storage.
-    cap_cost, cap_cost_storage = set_storage_capex_costs(storage_set, 
-                                                         storage_parameters,
-                                                         cap_cost_base,
-                                                         start_year,
-                                                         end_year,
-                                                         region_name)
-    
-    # Set fixed and variable operating costs for storage.
-    fix_cost_storage, var_cost_storage = set_storage_operating_costs(storage_set,
-                                                                     storage_parameters,
-                                                                     fix_cost_base,
-                                                                     var_cost_base,
-                                                                     start_year,
-                                                                     end_year,
-                                                                     region_name)
-    
-    # Set activity ratios for storage.
-    iar_storage, oar_storage = activity_storage(storage_set, iar_base, oar_base, 
-                                                storage_parameters, start_year, 
-                                                end_year, region_name)
-    
-    # assign capacity to activity unit to storage.
-    cap_activity_storage = create_storage_capacity_activity(storage_set, capact_base)
-    
-    # Set operational life for storage.
-    op_life, op_life_storage = set_op_life_storage(storage_set, default_op_life, 
-                                                   op_life_base, region_name)
-    
-    # Set annual capacity investment constraints.
-    max_cap_invest_storage = cap_investment_constraints_sto(storage_set, 
-                                                            max_cap_invest_base,
-                                                            build_rates,
-                                                            no_investment_techs, 
-                                                            start_year, 
-                                                            end_year, 
+        # Create TechnologyToStorage and TechnologyFromStorage
+        tech_to_storage = set_technology_to_storage(storage_set, region_name)
+        tech_from_storage = set_technology_from_storage(storage_set, region_name)    
+
+        
+        # Set capital costs for storage.
+        cap_cost, cap_cost_storage = set_storage_capex_costs(storage_set, 
+                                                            storage_parameters,
+                                                            cap_cost_base,
+                                                            start_year,
+                                                            end_year,
                                                             region_name)
-    
-    # Set residual capacity ('PWR') and residual capacity storage.
-    res_cap, res_cap_storage = res_capacity_storage(gesdb_data, gesdb_mapping, 
-                                                    res_cap_base, op_life_dict, 
-                                                    storage_parameters,
-                                                    GESDB_TECH_MAP, DURATION_TYPE,
-                                                    BUILD_YEAR, RETIREMENT_YEAR,
-                                                    INACTIVE_VARS, ACTIVE_VARS,
-                                                    NEW_VARS, start_year,
+        
+        # Set fixed and variable operating costs for storage.
+        fix_cost_storage, var_cost_storage = set_storage_operating_costs(storage_set,
+                                                                        storage_parameters,
+                                                                        fix_cost_base,
+                                                                        var_cost_base,
+                                                                        start_year,
+                                                                        end_year,
+                                                                        region_name)
+        
+        # Set activity ratios for storage.
+        iar_storage, oar_storage = activity_storage(storage_set, iar_base, oar_base, 
+                                                    storage_parameters, start_year, 
                                                     end_year, region_name)
-    
-    storage_level_start = set_storage_level_start(storage_set, region_name)
+        
+        # assign capacity to activity unit to storage.
+        cap_activity_storage = create_storage_capacity_activity(storage_set, capact_base)
+        
+        # Set operational life for storage.
+        op_life, op_life_storage = set_op_life_storage(storage_set, default_op_life, 
+                                                    op_life_base, region_name)
+        
+        # Set annual capacity investment constraints.
+        max_cap_invest_storage = cap_investment_constraints_sto(storage_set, 
+                                                                max_cap_invest_base,
+                                                                build_rates,
+                                                                no_investment_techs, 
+                                                                start_year, 
+                                                                end_year, 
+                                                                region_name)
+        
+        # Set residual capacity ('PWR') and residual capacity storage.
+        res_cap, res_cap_storage = res_capacity_storage(gesdb_data, gesdb_mapping, 
+                                                        res_cap_base, op_life_dict, 
+                                                        storage_parameters,
+                                                        GESDB_TECH_MAP, DURATION_TYPE,
+                                                        BUILD_YEAR, RETIREMENT_YEAR,
+                                                        INACTIVE_VARS, ACTIVE_VARS,
+                                                        NEW_VARS, start_year,
+                                                        end_year, region_name)
+        
+        storage_level_start = set_storage_level_start(storage_set, region_name)
 
-    # Alter output csv's based on user defined capacities following user config.
-    if tech_capacity_sto is not None:
-        (max_cap_invest_storage, 
-         min_cap_invest_storage, 
-         res_cap,
-         res_cap_storage,
-         oar_storage,
-         cap_cost,
-         cap_cost_storage,
-         fix_cost_storage, 
-         var_cost_storage
-         ) = set_user_defined_capacity_sto(
-            tech_capacity_sto, 
-            storage_parameters,
-            default_op_life, 
-            min_cap_invest_base, 
-            max_cap_invest_storage, 
+        # Alter output csv's based on user defined capacities following user config.
+        if tech_capacity_storage is not None:
+            (max_cap_invest_storage, 
+            min_cap_invest_storage, 
             res_cap,
             res_cap_storage,
             oar_storage,
             cap_cost,
             cap_cost_storage,
             fix_cost_storage, 
-            var_cost_storage,
-            start_year,
-            end_year,
-            region_name
-            )  
+            var_cost_storage
+            ) = set_user_defined_capacity_sto(
+                tech_capacity_sto, 
+                storage_parameters,
+                default_op_life, 
+                min_cap_invest_base, 
+                max_cap_invest_storage, 
+                res_cap,
+                res_cap_storage,
+                oar_storage,
+                cap_cost,
+                cap_cost_storage,
+                fix_cost_storage, 
+                var_cost_storage,
+                start_year,
+                end_year,
+                region_name
+                )  
 
-    # get new additions to technology sets
-    new_techs = set_unique_technologies(storage_set)
-    tech_set = pd.concat([tech_set_base, new_techs])
+        # get new additions to technology sets
+        new_techs = set_unique_technologies(storage_set)
+        tech_set = pd.concat([tech_set_base, new_techs])
         
     # OUTPUT CSV's
     
@@ -205,7 +234,7 @@ def main(
     storage_level_start.to_csv(os.path.join(output_data_dir, 'StorageLevelStart.csv'), 
                            index = None)      
     
-    if tech_capacity_sto is not None:
+    if tech_capacity_storage is not None:
         min_cap_invest_storage.to_csv(os.path.join(output_data_dir, 
                                                 'TotalAnnualMinCapacityInvestment.csv'),
                                             index = None)
@@ -263,6 +292,7 @@ if __name__ == "__main__":
                              'sto3': ['PWRLDSINDNE01', 1, 2015, 2025, 2, 3400, 19, 0.5, 82]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET", "LDS"]
+        
         storage_parameters = {'SDS': [1938, 44.25, 0, 85, 4],
                               'LDS': [3794, 20.2, 0.58, 80, 10]}
 
@@ -284,7 +314,10 @@ if __name__ == "__main__":
 
     # SET INPUT DATA
     
-    sto_techs = list(storage_parameters.keys())
+    if storage_parameters:
+        sto_techs = list(storage_parameters.keys())
+    else:
+        sto_techs = None
     
     build_rates = import_storage_build_rates(file_storage_build_rates)
     
@@ -325,7 +358,8 @@ if __name__ == "__main__":
         "min_cap_invest_base" : min_cap_invest_base,
         "res_cap_base" : res_cap_base, 
         "tech_set_base" : tech_set_base,
-        "fuel_set_base" : fuel_set_base,  
+        "fuel_set_base" : fuel_set_base,
+        "tech_capacity_storage": tech_capacity_sto
     }
     
     # CALL MAIN

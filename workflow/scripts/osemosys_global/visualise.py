@@ -7,8 +7,9 @@ from typing import List
 from sklearn.preprocessing import MinMaxScaler
 from typing import Dict
 from osemosys_global.utils import read_csv, filter_transmission_techs
-from osemosys_global.visualisation.utils import get_color_codes, get_map, plot_map_trn_line, plot_map_text, load_node_data_demand_center
-from osemosys_global.visualisation.data import get_total_capacity_data, get_generation_annual_data, get_generation_ts_data
+from osemosys_global.visualisation.utils import(get_color_codes, get_map, plot_map_trn_line, plot_map_text)
+from osemosys_global.visualisation.data import(get_total_capacity_data, get_generation_annual_data, 
+                                               get_generation_ts_data)
 import osemosys_global.constants as constants
 from configuration import ConfigFile, ConfigPaths
 
@@ -16,11 +17,13 @@ from configuration import ConfigFile, ConfigPaths
 def main(
     input_data: pd.DataFrame,
     result_data: pd.DataFrame,
+    centerpoints: pd.DataFrame,    
+    custom_nodes: List[str],
+    custom_nodes_centerpoints : pd.DataFrame,
     scenario_figs_dir: str,
-    cost_line_expansion_xlsx: str,
     countries: List[str],
     results_by_country: bool = True,
-    years: List[int] = [2050]
+    years: List[int] = [2050],
 ):
     """Creates system level and country level graphs."""
 
@@ -48,8 +51,11 @@ def main(
     
     # Creates transmission maps by year      
     for year in years:
-        plot_transmission_capacity(cost_line_expansion_xlsx, result_data, scenario_figs_dir, year)
-        plot_transmission_flow(cost_line_expansion_xlsx, result_data, scenario_figs_dir, year)
+        plot_transmission_capacity(custom_nodes, centerpoints, custom_nodes_centerpoints, 
+                                   result_data, scenario_figs_dir, year)
+        
+        plot_transmission_flow(custom_nodes, centerpoints, custom_nodes_centerpoints, 
+                                   result_data, scenario_figs_dir, year)
 
 def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None) -> None:
     """Plots total capacity chart 
@@ -198,12 +204,14 @@ def midpoint(x1, y1, x2, y2):
     return ((x1 + x2)/2, (y1 + y2)/2)
 
 def plot_transmission_capacity(
-    cost_line_expansion_xlsx: str, 
+    custom_nodes: list,
+    df_centerpoints: pd.DataFrame(),
+    df_custom_nodes_centerpoints: pd.DataFrame(),
     result_data: Dict[str,pd.DataFrame], 
     save_dir: str, 
     year:int
 ) -> None:
-
+    
     # get result data
     total_cap_annual = result_data["TotalCapacityAnnual"]
     trn = filter_transmission_techs(total_cap_annual)
@@ -215,9 +223,20 @@ def plot_transmission_capacity(
     trn['FROM'], trn['TO'] = trn.TECHNOLOGY.str[3:8], trn.TECHNOLOGY.str[8:]
     
     # get node data 
-    df_centerpoints = load_node_data_demand_center(cost_line_expansion_xlsx)
-    df_centerpoints.set_index('NODE', inplace = True)
+    df_centerpoints = df_centerpoints.rename(columns = {'lat' : 'LATITUDE', 'long' : 'LONGITUDE'})
+    df_centerpoints.set_index('region', inplace = True)
     
+    if custom_nodes:            
+        df_custom_nodes_centerpoints = df_custom_nodes_centerpoints.rename(columns = {'lat' : 'LATITUDE', 
+                                                                                      'long' : 'LONGITUDE'})
+        df_custom_nodes_centerpoints.set_index('region', inplace = True)
+        df_centerpoints = pd.concat([df_centerpoints, df_custom_nodes_centerpoints])
+        
+        custom_centerpoints_missing = [val for val in custom_nodes if val not in list(df_centerpoints.index)]
+
+        if custom_centerpoints_missing:
+            print(f'{custom_centerpoints_missing} defined as custom nodes but not added to custom node centerpoints. Custom node transmission lines will not be plotted!')
+                     
     # merge result data with node data 
     trn = trn.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'FROM', right_index = True)
     trn = trn.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
@@ -286,7 +305,7 @@ def plot_transmission_capacity(
             ax=ax,
             x=nodes_to_plot[node][1],
             y=nodes_to_plot[node][0],
-            text=node
+            text=node,
         )
         
     ax.set_title(f'Transmission Capacity in {year} (GW)', fontsize = '6')
@@ -297,7 +316,9 @@ def plot_transmission_capacity(
     )
 
 def plot_transmission_flow(
-    cost_line_expansion_xlsx: str, 
+    custom_nodes: list,
+    df_centerpoints: pd.DataFrame(),
+    df_custom_nodes_centerpoints: pd.DataFrame(),
     result_data: Dict[str,pd.DataFrame], 
     save_dir: str, 
     year:int
@@ -314,8 +335,14 @@ def plot_transmission_flow(
     prd['FROM'], prd['TO'] = prd.TECHNOLOGY.str[3:8], prd.TECHNOLOGY.str[8:]
     
     # get node data 
-    df_centerpoints = load_node_data_demand_center(cost_line_expansion_xlsx)
-    df_centerpoints.set_index('NODE', inplace = True)
+    df_centerpoints = df_centerpoints.rename(columns = {'lat' : 'LATITUDE', 'long' : 'LONGITUDE'})
+    df_centerpoints.set_index('region', inplace = True)
+    
+    if custom_nodes:
+        df_custom_nodes_centerpoints = df_custom_nodes_centerpoints.rename(columns = {'lat' : 'LATITUDE', 
+                                                                                      'long' : 'LONGITUDE'})
+        df_custom_nodes_centerpoints.set_index('region', inplace = True)
+        df_centerpoints = pd.concat([df_centerpoints, df_custom_nodes_centerpoints])
     
     prd = prd.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'FROM', right_index = True)
     prd = prd.merge(df_centerpoints[['LATITUDE', 'LONGITUDE']], left_on = 'TO', right_index = True, suffixes = ('_FROM', '_TO'))
@@ -393,82 +420,29 @@ def plot_transmission_flow(
     )
 
 if __name__ == '__main__':
-    
-    if len(sys.argv) == 8:
-        input_data = read_csv(sys.argv[1])
-        result_data = read_csv(sys.argv[2])
-        scenario_figs_dir = sys.argv[3]
-        cost_line_expansion_xlsx = sys.argv[4]
-        countries = sys.argv[5]
-        if not isinstance(countries, list):
-            countries = [countries]
-        results_by_country = sys.argv[6]
-        years = sys.argv[7]
-        if not isinstance(years, list):
-            years = [years]
-        main(input_data, result_data, scenario_figs_dir, cost_line_expansion_xlsx, countries, results_by_country, years)
-    else:
         try:
             config_paths = ConfigPaths()
             config = ConfigFile('config')
             scenario_figs_dir = config_paths.scenario_figs_dir
             results_by_country = config.get('results_by_country')
-            cost_line_expansion_xlsx = os.path.join(config_paths.input_data_dir, "Costs Line expansion.xlsx")
             countries = config.get('geographic_scope')
             input_data = read_csv(config_paths.scenario_data_dir)
             result_data = read_csv(config_paths.scenario_results_dir)
             years = [config.get('endYear')]
-            main(input_data, result_data, scenario_figs_dir, cost_line_expansion_xlsx, countries, results_by_country, years)
+            centerpoints = pd.read_csv(os.path.join(config_paths.input_data_dir, "centerpoints.csv"))
+            custom_nodes = config.get('nodes_to_add')
+            custom_nodes_centerpoints = pd.read_csv(os.path.join(config_paths.custom_nodes_dir, "centerpoints.csv"))
+            
+            main(input_data, 
+                 result_data, 
+                 centerpoints,
+                 custom_nodes,
+                 custom_nodes_centerpoints,
+                 scenario_figs_dir, 
+                 countries, 
+                 results_by_country, 
+                 years)
+            
         except FileNotFoundError:
-            print(f"Usage: python {sys.argv[0]} <input_data.csv> <result_data.csv> <scenario_figs_dir> <cost_line_expansion_xlsx> <countries> <results_by_country> <years>")
+            print(f"Usage: python {sys.argv[0]} <input_data.csv> <result_data.csv> <scenario_figs_dir> <countries> <results_by_country> <years> <custom_nodes>")
             sys.exit(1)
-
-'''
-# ### Interactive visualisation of residual capacity by node
-
-import matplotlib.pyplot as plt
-import seaborn as sns; sns.set(color_codes = True)
-from ipywidgets import interact, interactive, fixed, interact_manual, Layout
-import ipywidgets as widgets
-#importing plotly and cufflinks in offline mode
-import plotly as py
-#import plotly.graph_objs as go
-import cufflinks
-import plotly.offline as pyo
-from plotly.offline import plot, iplot, init_notebook_mode
-pyo.init_notebook_mode()
-cufflinks.go_offline()
-cufflinks.set_config_file(world_readable=True, theme='white')
-
-color_codes = pd.read_csv(r'data\color_codes.csv', encoding='latin-1')
-color_dict = dict([(n,c) for n,c in zip(color_codes.tech, color_codes.colour)])
-
-def f(node):
-    df_plot = df_res_cap_plot.loc[df_res_cap_plot['node_code']==node]
-    df_plot.drop('node_code', 
-                        axis = 1, 
-                        inplace = True)
-    df_plot = df_plot.pivot_table(index='model_year',
-                                    columns='tech_code',
-                                    values='value',
-                                    aggfunc='sum').reset_index()
-
-
-    #plt.figure(figsize=(10, 10), dpi= 80, facecolor='w', edgecolor='k')
-    #ax = sns.barplot(df_plot)
-    return df_plot.iplot(x = 'model_year',
-                            kind = 'bar', 
-                            barmode = 'stack',
-                            xTitle = 'Year',
-                            yTitle = 'Gigawatts',
-                            color=[color_dict[x] for x in df_plot.columns if x != 'model_year'],
-                            title = 'Residual Capacity',
-                            showlegend = True)
-
-interact(f,
-            node=widgets.Dropdown(options = (df_res_cap_plot['node_code']
-                                            .unique()
-                                            )
-                                )
-        )
-'''
