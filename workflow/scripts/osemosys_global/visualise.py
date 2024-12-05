@@ -193,7 +193,7 @@ def plot_generation_hourly(
     else:
         fig_file = os.path.join(save_dir, 'GenerationHourly.html')
     return fig.write_html(fig_file)
-    
+
 def midpoint(x1, y1, x2, y2):
     return ((x1 + x2)/2, (y1 + y2)/2)
 
