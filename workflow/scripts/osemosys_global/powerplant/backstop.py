@@ -32,7 +32,7 @@ def get_backstop_data(
     ).reset_index()
     oar["REGION"] = region
     oar["FUEL"] = oar.TECHNOLOGY.str.replace("BCK", "ELC")
-    oar["FUEL"] = oar.FUEL + "02"
+    oar["FUEL"] = oar.FUEL + "01"
     oar["MODE_OF_OPERATION"] = 1
     oar["VALUE"] = 1
     oar = oar[["REGION", "TECHNOLOGY", "FUEL", "MODE_OF_OPERATION", "YEAR", "VALUE"]]
