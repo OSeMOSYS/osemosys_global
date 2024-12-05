@@ -47,7 +47,7 @@ def get_backstop_rm(
 ) -> pd.DataFrame:
     """Backstop does not contribute to reserve margin"""
 
-    bck_techs = tech_set[tech_set.VALUE.str.startswith("BCK")]
+    bck_techs = tech_set[tech_set.VALUE.str.startswith("PWRBCK")]
 
     if bck_techs.empty:
         return pd.DataFrame(columns=["REGION", "TECHNOLOGY", "YEAR", "VALUE"])

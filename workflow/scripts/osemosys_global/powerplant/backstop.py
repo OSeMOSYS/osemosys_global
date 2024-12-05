@@ -19,7 +19,7 @@ def get_backstop_data(
 
     # technologies
     techs = df[df.VALUE.str.startswith("PWR")].copy()  # pwrtrn not added yet
-    techs["VALUE"] = "BCK" + df.VALUE.str[-7:-2]
+    techs["VALUE"] = "PWRBCK" + df.VALUE.str[-7:-2]
     techs = techs.drop_duplicates()
     bck_techs = techs.VALUE.to_list()
 
@@ -31,7 +31,7 @@ def get_backstop_data(
         )
     ).reset_index()
     oar["REGION"] = region
-    oar["FUEL"] = oar.TECHNOLOGY.str.replace("BCK", "ELC")
+    oar["FUEL"] = oar.TECHNOLOGY.str.replace("PWRBCK", "ELC")
     oar["FUEL"] = oar.FUEL + "01"
     oar["MODE_OF_OPERATION"] = 1
     oar["VALUE"] = 1

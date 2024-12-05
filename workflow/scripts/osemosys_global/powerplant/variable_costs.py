@@ -346,7 +346,7 @@ def get_backstop_var_costs(
 ) -> pd.Series:
     """Gets backstop variable costs"""
 
-    t = techs[techs.str.startswith("BCK")].unique().tolist()
+    t = techs[techs.str.startswith("PWRBCK")].unique().tolist()
     y = years.unique().tolist()
     r = regions.unique().tolist()[0]  # only one region
 
