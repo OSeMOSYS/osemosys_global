@@ -1,12 +1,10 @@
 """Module for utility plotting functions."""
 
 import pandas as pd
-import os 
-from osemosys_global.configuration import ConfigFile, ConfigPaths
 from typing import Dict, List, Union, Tuple
 import itertools
 from pathlib import Path
-from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
+from constants import DAYS_PER_MONTH, MONTH_NAMES
 from osemosys_global.utils import apply_timeshift
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -15,26 +13,45 @@ import matplotlib.pyplot as plt
 import logging 
 logger = logging.getLogger(__name__)
 
-def get_color_codes() -> Dict:
+def get_years(start: int, end: int) -> range:
+    return range(start, end + 1)
+
+def read_csv(dirpath: str) -> Dict[str,pd.DataFrame]:
+    """Reads in CSVs folder
+    
+    Replace with ReadCSV.read() from otoole v1.0
+    """
+    data = {}
+    files = [Path(x) for x in Path(dirpath).iterdir()]
+    for f in files:
+        data[f.stem] = pd.read_csv(f)
+    return data
+
+def filter_transmission_techs(df: pd.DataFrame, column_name: str = "TECHNOLOGY") -> pd.DataFrame:
+    """Filters out only transmission technologies
+    
+    Arguments: 
+        df: pd.DataFrame
+            otoole formatted dataframe 
+        column_name: str
+            Column name to filter on 
+            
+    Returns: 
+        pd.DataFrame
+    """
+    return df.loc[df[column_name].str.startswith("TRN")].reset_index(drop=True)
+
+def get_color_codes(color_codes) -> Dict:
     """Get color naming dictionary.
     
     Return:
         Dictionary with tech and color name map
     """
-    try:
-        config_paths = ConfigPaths()
-        input_data_dir = config_paths.input_data_dir
-    except FileNotFoundError:
-        input_data_dir = str(Path("resources", "data"))
-    name_colour_codes = pd.read_csv(os.path.join(input_data_dir,
-                                                'color_codes.csv'
-                                                ),
-                                   encoding='latin-1')
 
     # Get colour mapping dictionary
     color_dict = dict([(n, c) for n, c
-                   in zip(name_colour_codes.tech_id,
-                          name_colour_codes.colour)])
+                   in zip(color_codes.tech_id,
+                          color_codes.colour)])
     return color_dict
 
 def powerplant_filter(df: pd.DataFrame, country:str = None) -> pd.DataFrame:
@@ -64,7 +81,13 @@ def powerplant_filter(df: pd.DataFrame, country:str = None) -> pd.DataFrame:
             inplace=True)
     return filtered_df
 
-def transform_ts(data:Dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
+def transform_ts(seasons, 
+                 dayparts,
+                 timeshift,
+                 start_year,
+                 end_year,
+                 data:Dict[str, pd.DataFrame], 
+                 df:pd.DataFrame) -> pd.DataFrame:
     """Adds month, hour, year columns to timesliced data. 
     
     Arguments:
@@ -79,25 +102,21 @@ def transform_ts(data:Dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
 
     generation = list(data["TECHNOLOGY"]["VALUE"].unique())
 
-    config = ConfigFile('config')
-    if not config.file_path.exists():
-        config.file_path = "config/config.yaml"
-    seasons_raw = config.get('seasons')
     seasonsData = []
 
-    for s, months in seasons_raw.items():
+    for s, months in seasons.items():
         for month in months:
             seasonsData.append([month, s]) 
     seasons_df = pd.DataFrame(seasonsData, 
                               columns=['month', 'season'])
     seasons_df = seasons_df.sort_values(by=['month']).reset_index(drop=True)
-    dayparts_raw = config.get('dayparts')
+
     daypartData = []
-    for dp, hr in dayparts_raw.items():
+    for dp, hr in dayparts.items():
         daypartData.append([dp, hr[0], hr[1]])
     dayparts_df = pd.DataFrame(daypartData,
                                columns=['daypart', 'start_hour', 'end_hour'])
-    timeshift = config.get('timeshift')
+
     dayparts_df['start_hour'] = dayparts_df['start_hour'].map(lambda x: apply_timeshift(x, timeshift))
     dayparts_df['end_hour'] = dayparts_df['end_hour'].map(lambda x: apply_timeshift(x, timeshift))
 
@@ -114,7 +133,7 @@ def transform_ts(data:Dict[str, pd.DataFrame], df:pd.DataFrame) -> pd.DataFrame:
                      )
     seasons_df['days'] = seasons_df['season'].map(days_dict)
 
-    years = config.get_years()
+    years = get_years(start_year, end_year[0])
 
     seasons_dict = dict(zip(list(seasons_df['month']),
                             list(seasons_df['season'])

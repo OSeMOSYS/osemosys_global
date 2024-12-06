@@ -2,64 +2,77 @@ import pandas as pd
 pd.set_option('mode.chained_assignment', None)
 import plotly.express as px
 import os
-import sys 
 from typing import List
 from sklearn.preprocessing import MinMaxScaler
 from typing import Dict
-from osemosys_global.utils import read_csv, filter_transmission_techs
-from osemosys_global.visualisation.utils import(get_color_codes, get_map, plot_map_trn_line, plot_map_text)
-from osemosys_global.visualisation.data import(get_total_capacity_data, get_generation_annual_data, 
-                                               get_generation_ts_data)
-import osemosys_global.constants as constants
-from configuration import ConfigFile, ConfigPaths
 
+from utils import(read_csv, 
+                  filter_transmission_techs, 
+                  get_color_codes, 
+                  get_map, 
+                  plot_map_trn_line, 
+                  plot_map_text)
+
+from data import(
+    get_total_capacity_data, 
+    get_generation_annual_data, 
+    get_generation_ts_data)
+
+from constants import COLORS
 
 def main(
-    input_data: pd.DataFrame,
+    result_input_data: pd.DataFrame,
     result_data: pd.DataFrame,
-    centerpoints: pd.DataFrame,    
+    centerpoints: pd.DataFrame,  
+    color_codes: pd.DataFrame,
+    seasons: dict,
+    dayparts: dict,
+    timeshift: int,
+    start_year: int,
     custom_nodes: List[str],
     custom_nodes_centerpoints : pd.DataFrame,
     scenario_figs_dir: str,
-    countries: List[str],
+    geographic_scope: List[str],
     results_by_country: bool = True,
-    years: List[int] = [2050],
+    end_year: List[int] = [2050],
 ):
-    """Creates system level and country level graphs."""
-
+    """Creates system level and country level graphs."""   
+    
     # Check for output directory 
     try:
         os.makedirs(scenario_figs_dir)
     except FileExistsError:
         pass
-
+    
     # Get system level results 
     plot_total_capacity(result_data, scenario_figs_dir, country=None)
-    plot_generation_annual(result_data, scenario_figs_dir, country=None)
-    plot_generation_hourly(input_data, result_data, scenario_figs_dir, country=None)
+    plot_generation_annual(color_codes, result_data, scenario_figs_dir, country=None)
+    plot_generation_hourly(seasons, dayparts, timeshift, start_year, end_year, 
+                           color_codes, result_input_data, result_data, scenario_figs_dir,
+                           country=None)
 
     # If producing by country results, check for folder structure 
     if results_by_country:
-        for country in countries:
+        for country in geographic_scope:
             try:
                 os.makedirs(os.path.join(scenario_figs_dir, country))
             except FileExistsError:
                 pass
     
             plot_total_capacity(result_data, scenario_figs_dir, country=country)
-            plot_generation_annual(result_data, scenario_figs_dir, country=country)
+            plot_generation_annual(color_codes, result_data, scenario_figs_dir, country=country)
     
     # Creates transmission maps by year      
-    for year in years:
-        plot_transmission_capacity(custom_nodes, centerpoints, custom_nodes_centerpoints, 
-                                   result_data, scenario_figs_dir, year)
-        
-        plot_transmission_flow(custom_nodes, centerpoints, custom_nodes_centerpoints, 
-                                   result_data, scenario_figs_dir, year)
+
+    plot_transmission_capacity(custom_nodes, centerpoints, custom_nodes_centerpoints, 
+                               result_data, scenario_figs_dir, end_year)
+    
+    plot_transmission_flow(custom_nodes, centerpoints, custom_nodes_centerpoints, 
+                               result_data, scenario_figs_dir, end_year)
 
 def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None) -> None:
     """Plots total capacity chart 
-        
+    
     Arguments:
         data: Dict[str,pd.DataFrame]
             Result data
@@ -71,8 +84,8 @@ def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str
     """
 
     df = get_total_capacity_data(data, country=country)
-    plot_colors = constants.COLORS
-
+    plot_colors = COLORS
+    
     if not country: # System level titles
         graph_title = 'Total System Capacity'
         legend_title = 'Powerplant'
@@ -106,7 +119,8 @@ def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str
 
     return fig.write_html(fig_file)
 
-def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None) -> None:
+def plot_generation_annual(color_codes, data: Dict[str,pd.DataFrame], 
+                           save_dir: str, country:str = None) -> None:
     """Plots total annual generation
         
     Arguments:
@@ -118,7 +132,7 @@ def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:
     """
 
     df = get_generation_annual_data(data, country=country)
-    plot_colors = get_color_codes()
+    plot_colors = get_color_codes(color_codes)
 
     if not country: # System level titles
         graph_title = 'Total System Generation'
@@ -155,11 +169,18 @@ def plot_generation_annual(data: Dict[str,pd.DataFrame], save_dir: str, country:
 
 
 def plot_generation_hourly(
-    input_data: Dict[str,pd.DataFrame], 
+    seasons, 
+    dayparts,
+    timeshift,
+    start_year,
+    end_year,
+    color_codes,
+    result_input_data: Dict[str,pd.DataFrame], 
     result_data: Dict[str,pd.DataFrame], 
     save_dir: str, 
     country:str = None
 ) -> None:
+    
     """Plots total annual generation
         
     Arguments:
@@ -170,8 +191,16 @@ def plot_generation_hourly(
             system level
     """
 
-    df = get_generation_ts_data(input_data, result_data, country=country)
-    plot_colors = get_color_codes()
+    df = get_generation_ts_data(seasons, 
+                                dayparts,
+                                timeshift,
+                                start_year,
+                                end_year,
+                                result_input_data, 
+                                result_data, 
+                                country=country)
+    
+    plot_colors = get_color_codes(color_codes)
 
     fig = px.area(df,
                   x='HOUR',
@@ -211,7 +240,7 @@ def plot_transmission_capacity(
     save_dir: str, 
     year:int
 ) -> None:
-    
+
     # get result data
     total_cap_annual = result_data["TotalCapacityAnnual"]
     trn = filter_transmission_techs(total_cap_annual)
@@ -272,7 +301,7 @@ def plot_transmission_capacity(
     fig, ax = get_map(extent=extent)
     
     # generates all lines and map text
-    df_year = trn.loc[trn['YEAR'] == int(year)]
+    df_year = trn.loc[trn['YEAR'] == int(year[0])]
     for y in df_year.index.unique():
         
         # get data to plot
@@ -376,7 +405,7 @@ def plot_transmission_flow(
     fig, ax = get_map(extent=extent)
     
     # generates all lines and map text
-    df_year = prd.loc[prd['YEAR'] == int(year)]
+    df_year = prd.loc[prd['YEAR'] == int(year[0])]
     for y in df_year.index.unique():
         
         # get data to plot
@@ -420,29 +449,56 @@ def plot_transmission_flow(
     )
 
 if __name__ == '__main__':
-        try:
-            config_paths = ConfigPaths()
-            config = ConfigFile('config')
-            scenario_figs_dir = config_paths.scenario_figs_dir
-            results_by_country = config.get('results_by_country')
-            countries = config.get('geographic_scope')
-            input_data = read_csv(config_paths.scenario_data_dir)
-            result_data = read_csv(config_paths.scenario_results_dir)
-            years = [config.get('endYear')]
-            centerpoints = pd.read_csv(os.path.join(config_paths.input_data_dir, "centerpoints.csv"))
-            custom_nodes = config.get('nodes_to_add')
-            custom_nodes_centerpoints = pd.read_csv(os.path.join(config_paths.custom_nodes_dir, "centerpoints.csv"))
-            
-            main(input_data, 
-                 result_data, 
-                 centerpoints,
-                 custom_nodes,
-                 custom_nodes_centerpoints,
-                 scenario_figs_dir, 
-                 countries, 
-                 results_by_country, 
-                 years)
-            
-        except FileNotFoundError:
-            print(f"Usage: python {sys.argv[0]} <input_data.csv> <result_data.csv> <scenario_figs_dir> <countries> <results_by_country> <years> <custom_nodes>")
-            sys.exit(1)
+    
+    if "snakemake" in globals():
+        
+        scenario_figs_dir = snakemake.params.scenario_figs_dir
+        results_by_country = snakemake.params.results_by_country
+        geographic_scope = snakemake.params.geographic_scope
+        result_input_data = read_csv(snakemake.params.result_input_data)
+        result_data = read_csv(snakemake.params.result_data)
+        start_year = snakemake.params.start_year
+        end_year = snakemake.params.end_year
+        centerpoints = pd.read_csv(snakemake.input.centerpoints)
+        custom_nodes = snakemake.params.custom_nodes
+        custom_nodes_centerpoints = pd.read_csv(snakemake.input.custom_nodes_centerpoints)
+        color_codes = pd.read_csv(snakemake.input.color_codes)
+        seasons = snakemake.params.seasons
+        dayparts = snakemake.params.dayparts
+        timeshift = snakemake.params.timeshift
+        
+    else:
+        
+        scenario_figs_dir = "results/test/figures/"
+        results_by_country = True
+        geographic_scope = ["BTN", "IND"]
+        result_input_data = read_csv("results/test/data/")
+        result_data = read_csv("results/test/results/")
+        start_year = 2021
+        end_year = 2050
+        centerpoints = pd.read_csv("resources/data/centerpoints.csv")
+        custom_nodes = []
+        custom_nodes_centerpoints = pd.read_csv("resources/data/custom_nodes/centerpoints.csv")
+        color_codes = pd.read_csv("resources/data/color_codes.csv")
+        seasons =   {'S1': [1, 2, 3, 4, 5, 6], 
+                     'S2': [7, 8, 9, 10, 11, 12]}
+        dayparts =   {'D1': [1, 7],
+                      'D2': [7, 13],
+                      'D3': [13, 19],
+                      'D4': [19, 25]}
+        timeshift = 0
+        
+    main(result_input_data, 
+         result_data, 
+         centerpoints,
+         color_codes,
+         seasons,
+         dayparts,
+         timeshift,
+         start_year,
+         custom_nodes,
+         custom_nodes_centerpoints,
+         scenario_figs_dir, 
+         geographic_scope, 
+         results_by_country,
+         end_year)
