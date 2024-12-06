@@ -1,6 +1,6 @@
 """Getter functions for data to plot"""
 
-from .utils import powerplant_filter, transform_ts
+from utils import powerplant_filter, transform_ts
 import pandas as pd
 from typing import Dict
 import logging 
@@ -48,7 +48,14 @@ def get_generation_annual_data(data: Dict[str,pd.DataFrame], country:str =None):
                     as_index=False)['VALUE'].sum()
     return df
 
-def get_generation_ts_data(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,pd.DataFrame], country:str =None):
+def get_generation_ts_data(
+        seasons, 
+        dayparts,
+        timeshift,
+        start_year,
+        end_year,
+        input_data: Dict[str,pd.DataFrame], 
+        result_data: Dict[str,pd.DataFrame], country:str =None):
     """Gets data for plotting generation by time slice
     
     Arguments: 
@@ -67,5 +74,11 @@ def get_generation_ts_data(input_data: Dict[str,pd.DataFrame], result_data: Dict
     df = result_data["ProductionByTechnology"]
     df = powerplant_filter(df, country)
     df.VALUE = df.VALUE.astype('float64')
-    df = transform_ts(input_data, df)
+    df = transform_ts(seasons, 
+                      dayparts,
+                      timeshift,
+                      start_year,
+                      end_year,
+                      input_data, 
+                      df)
     return df
