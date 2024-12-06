@@ -68,7 +68,7 @@ def main(
                                result_data, scenario_figs_dir, end_year)
     
     plot_transmission_flow(custom_nodes, centerpoints, custom_nodes_centerpoints, 
-                               result_data, scenario_figs_dir, end_year)
+                           result_data, scenario_figs_dir, end_year)
 
 def plot_total_capacity(data: Dict[str,pd.DataFrame], save_dir: str, country:str = None) -> None:
     """Plots total capacity chart 
@@ -278,8 +278,9 @@ def plot_transmission_capacity(
     # assign line widths based on result data 
     scaler = MinMaxScaler()
     maxlinewidth = 3
-    trn['line_width'] = (scaler.fit_transform(trn[['VALUE']]) * maxlinewidth).round(1)
-    trn['line_width'].where(trn['line_width'] >= 0.3, 0.3, inplace = True)
+    trn['line_width'] = (scaler.fit_transform(trn[['VALUE']]) * maxlinewidth).round(1)   
+    trn.loc[trn['line_width'] <= 0.3, 'line_width'] = 0.3
+
     
     # get unique nodes to plot 
     nodes_to_plot = {}
@@ -384,7 +385,7 @@ def plot_transmission_flow(
     scaler = MinMaxScaler()
     maxlinewidth = 3
     prd['line_width'] = (scaler.fit_transform(prd[['VALUE']]) * maxlinewidth).round(1)
-    prd['line_width'].where(prd['line_width'] >= 0.3, 0.3, inplace = True)
+    prd.loc[prd['line_width'] <= 0.3, 'line_width'] = 0.3
     
     # get unique nodes to plot 
     nodes_to_plot = {}
