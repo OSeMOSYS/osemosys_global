@@ -229,7 +229,7 @@ def get_map(extent:List[Union[int,float]] = None) -> Tuple[plt.figure, plt.axes]
     fig, ax = plt.subplots(subplot_kw={"projection": mrc})
     ax.add_feature(cfeature.NaturalEarthFeature('physical', 'land', '50m', edgecolor='face', facecolor='lightgrey'))
     ax.add_feature(cfeature.NaturalEarthFeature('physical', 'ocean', '50m', edgecolor='black', linewidth = 0.3, facecolor='#46bcec'))
-    ax.add_feature(cfeature.BORDERS, color="black", linewidth = 0.3)
+    ax.add_feature(cfeature.BORDERS, edgecolor="black", linewidth = 0.3)
     
     if extent:
         ax.set_extent(extent)
