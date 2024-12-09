@@ -124,7 +124,8 @@ def main(
                                                         region_name)
     
     # Set residual capacity.
-    res_cap_trn = res_capacity_transmission(gtd_exist_corrected, gtd_planned_corrected, 
+    res_cap_trn = res_capacity_transmission(gtd_exist_corrected, gtd_planned_corrected,
+                                            transmission_existing, transmission_planned,
                                             res_cap_base, op_life_dict, 
                                             start_year, end_year, region_name,
                                             RETIREMENT_YEAR_TRANSMISSION, 
@@ -230,6 +231,8 @@ if __name__ == "__main__":
         no_investment_techs = snakemake.params.no_investment_techs      
         transmission_parameters = snakemake.params.transmission_parameters           
         cross_border_trade = snakemake.params.trade
+        transmission_existing = snakemake.params.transmission_existing
+        transmission_planned = snakemake.params.transmission_planned
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
         powerplant_data_dir = snakemake.params.powerplant_data_dir  
@@ -263,10 +266,13 @@ if __name__ == "__main__":
         region_name = 'GLOBAL'
 
         custom_nodes = []
-        tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2030, 10, 350, 13, 4, 95],
-                             'trn2': ['TRNINDEAINDNE', 1, 1990, 2030, 10, 350, 13, 4, 95],
-                             'trn3': ['TRNINDEAINDNE', 2, 2035, 2030, 10, 350, 13, 4, 95],
-                             'trn4': ['TRNINDNOINDSO', 0, 2020, 2025, 0.5, 620, 24, 4, 92]}
+        tech_capacity_trn = {'trn1': ['TRNINDEAINDNE', 5, 1975, 2025, 2025, 0, 350, 13, 4, 95],
+                             'trn2': ['TRNINDEAINDNE', 1, 1990, 2025, 2025, 0, 350, 13, 4, 95],
+                             'trn3': ['TRNINDEAINDNE', 2, 2035, 2025, 2025, 0, 350, 13, 4, 95],
+                             'trn4': ['TRNINDEAINDNE', 0, 2020, 2025, 2025, 1, 350, 13, 4, 95],
+                             'trn5': ['TRNINDEAINDNE', 0, 2020, 2030, 2040, 2, 350, 13, 4, 95],
+                             'trn6': ['TRNINDEAINDNE', 0, 2020, 2040, 2050, 3, 350, 13, 4, 95],                             
+                             'trn7': ['TRNINDNOINDSO', 0, 2020, 2025, 2025, 0.5, 620, 24, 4, 92]}
 
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
                                "COG", "GEO", "BIO", "PET"]
@@ -274,6 +280,8 @@ if __name__ == "__main__":
                                    'HVDC': [238, 297509, 3.5, 1.3, 3.5, 4],
                                    'HVDC_subsea': [295, 297509, 3.5, 1.3, 3.5, 4]}
         cross_border_trade = True
+        transmission_existing = True
+        transmission_planned = True
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'

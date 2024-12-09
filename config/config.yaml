@@ -42,7 +42,24 @@ geographic_scope:
   - "THA"
   - "VNM"             
 
+# Set to True if transmission should be included
 crossborderTrade: True
+
+# Set to True if existing transmission capacities should be included
+# from the Global Transmission Database (Brinkerink et al., 2024).
+transmission_existing: True
+
+# Set to True if planned transmission capacities should be included
+# from the Global Transmission Database (Brinkerink et al., 2024).
+transmission_planned: True
+
+# Set to True if existing storage capacities should be included
+# from the Global Energy Storage Database (DOE/Sandia).
+storage_existing: True
+
+# Set to True if planned storage capacities should be included
+# from the Global Energy Storage Database (DOE/Sandia).
+storage_planned: True
 
 # Emission Parameters 
 emission_penalty: 

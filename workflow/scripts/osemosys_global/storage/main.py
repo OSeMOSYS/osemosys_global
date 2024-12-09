@@ -1,6 +1,7 @@
 import pandas as pd
 import os
-from typing import Optional, Any 
+
+from typing import Optional, Any
 
 import logging
 
@@ -155,7 +156,8 @@ def main(
         
         # Set residual capacity ('PWR') and residual capacity storage.
         res_cap, res_cap_storage = res_capacity_storage(gesdb_data, gesdb_mapping, 
-                                                        res_cap_base, op_life_dict, 
+                                                        res_cap_base, storage_existing, 
+                                                        storage_planned, op_life_dict, 
                                                         storage_parameters,
                                                         GESDB_TECH_MAP, DURATION_TYPE,
                                                         BUILD_YEAR, RETIREMENT_YEAR,
@@ -250,7 +252,9 @@ if __name__ == "__main__":
         file_storage_build_rates = snakemake.input.storage_build_rates 
         file_default_op_life = snakemake.input.default_op_life
         file_gesdb_project_data = snakemake.input.gesdb_project_data
-        file_gesdb_regional_mapping = snakemake.input.gesdb_regional_mapping        
+        file_gesdb_regional_mapping = snakemake.input.gesdb_regional_mapping
+        storage_existing = snakemake.params.storage_existing
+        storage_planned = snakemake.params.storage_planned        
         start_year = snakemake.params.start_year
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
@@ -282,7 +286,9 @@ if __name__ == "__main__":
         file_storage_build_rates = 'resources/data/storage_build_rates.csv'
         file_default_op_life = 'resources/data/operational_life.csv'
         file_gesdb_project_data = 'resources/data/GESDB_Project_Data.json'
-        file_gesdb_regional_mapping = 'resources/data/GESDB_region_mapping.csv'        
+        file_gesdb_regional_mapping = 'resources/data/GESDB_region_mapping.csv'
+        storage_existing = True
+        storage_planned = True          
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'

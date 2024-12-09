@@ -234,6 +234,8 @@ rule transmission:
         transmission_build_rates = 'resources/data/transmission_build_rates.csv',
     params:
         trade = config['crossborderTrade'],
+        transmission_existing = config['transmission_existing'],
+        transmission_planned = config['transmission_planned'],
         start_year = config['startYear'],
         end_year = config['endYear'],
         region_name = 'GLOBAL',
@@ -262,6 +264,8 @@ rule storage:
         gesdb_project_data = 'resources/data/GESDB_Project_Data.json',
         gesdb_regional_mapping = 'resources/data/GESDB_region_mapping.csv',
     params:
+        storage_existing = config['storage_existing'],
+        storage_planned = config['storage_planned'],
         start_year = config['startYear'],
         end_year = config['endYear'],
         region_name = 'GLOBAL',

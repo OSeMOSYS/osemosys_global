@@ -144,9 +144,12 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
             'STORAGE'].str.startswith(tech), 'VALUE'] = df_res_cap_sto_ud_final.loc[
                 df_res_cap_sto_ud_final['STORAGE'].str.startswith(tech), 'VALUE'] * \
                     duration / 277.777778
-                    
-    df_res_sto_cap = pd.concat([res_cap_sto_base, df_res_cap_sto_ud_final 
-                            if not df_res_cap_sto_ud_final.empty else None])
+    
+    if not res_cap_sto_base.empty:
+        df_res_sto_cap = pd.concat([res_cap_sto_base, df_res_cap_sto_ud_final 
+                                if not df_res_cap_sto_ud_final.empty else None])
+    else:
+        df_res_sto_cap = df_res_cap_sto_ud_final.copy()
 
     # Group residual capacities in case user defined technology entries already exist.
     df_res_sto_cap = df_res_sto_cap.groupby(['REGION', 'STORAGE', 'YEAR']
