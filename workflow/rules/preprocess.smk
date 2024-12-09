@@ -234,6 +234,8 @@ rule transmission:
         transmission_build_rates = 'resources/data/transmission_build_rates.csv',
     params:
         trade = config['crossborderTrade'],
+        transmission_existing = config['transmission_existing'],
+        transmission_planned = config['transmission_planned'],
         start_year = config['startYear'],
         end_year = config['endYear'],
         region_name = 'GLOBAL',
