@@ -21,3 +21,13 @@ def set_unique_technologies(ar: pd.DataFrame) -> pd.DataFrame():
     data['VALUE'] = 'PWR' + data['VALUE']
     
     return data
+
+def set_storage_fuels(ar: pd.DataFrame) -> pd.DataFrame():
+    data = ar.copy()
+    data = data.loc[(data['VALUE'].str.startswith('ELC')) & 
+                    (data['VALUE'].str.endswith('01'))]
+    
+    data['VALUE'] = data['VALUE'].str.replace('01', '03')
+    data = pd.concat([ar, data])
+    
+    return data

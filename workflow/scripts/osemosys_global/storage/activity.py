@@ -16,7 +16,7 @@ def activity_storage(storage_set, df_iar_base, df_oar_base, storage_param,
     
     years = [get_years(start_year, end_year)]
 
-    # InputActivityRatio
+    # InputActivityRatio Storage object
     df_storage_iar = pd.DataFrame(
         list(itertools.product([region_name], storage_set['VALUE'].unique(), years, [1])),
         columns=["REGION", "TECHNOLOGY", "YEAR", "MODE_OF_OPERATION"],
@@ -30,8 +30,14 @@ def activity_storage(storage_set, df_iar_base, df_oar_base, storage_param,
     ]
     
     df_iar = pd.concat([df_iar_base, df_storage_iar])
+    
+    # InputActivityRatio PWRTRN object for storage output
+    df_pwrtrn_iar = df_iar.copy().loc[df_iar['TECHNOLOGY'].str.startswith('PWRTRN')]
+    df_pwrtrn_iar["FUEL"] = df_pwrtrn_iar["FUEL"].str.replace('01', '03')
+    
+    df_iar = pd.concat([df_iar, df_pwrtrn_iar])
 
-    # OutputActivityRatio
+    # OutputActivityRatio Storage object
     df_storage_oar = pd.DataFrame(
         list(itertools.product([region_name], storage_set['VALUE'].unique(), years, [2])),
         columns=["REGION", "TECHNOLOGY", "YEAR", "MODE_OF_OPERATION"],
@@ -44,6 +50,7 @@ def activity_storage(storage_set, df_iar_base, df_oar_base, storage_param,
 
     df_storage_oar["TECHNOLOGY"] = "PWR" + df_storage_oar["TECHNOLOGY"] 
     df_storage_oar["FUEL"] = "ELC" + df_storage_oar["TECHNOLOGY"].str[6:13]
+    df_storage_oar["FUEL"] = df_storage_oar["FUEL"].str.replace('01', '03')
     df_storage_oar = df_storage_oar[
         ["REGION", "TECHNOLOGY", "FUEL", "MODE_OF_OPERATION", "YEAR", "VALUE"]
     ]

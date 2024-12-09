@@ -54,7 +54,8 @@ from user_defined_capacity import set_user_defined_capacity_sto
 from residual_capacity import res_capacity_storage
 
 from sets import(set_unique_storage_technologies, 
-                 set_unique_technologies)
+                 set_unique_technologies, 
+                 set_storage_fuels)
 
 from technology_to_from_storage import (set_technology_to_storage,
                                         set_technology_from_storage
@@ -98,6 +99,7 @@ def main(
         op_life_storage = pd.DataFrame(columns=["REGION", "STORAGE", "VALUE"])
         max_cap_invest_storage = max_cap_invest_base.copy()
         tech_set = tech_set_base.copy()
+        fuel_set = fuel_set_base.copy()
         storage_set = pd.DataFrame(columns=["VALUE"])
         tech_to_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION", "VALUE"])
         tech_from_storage = pd.DataFrame(columns=["REGION","TECHNOLOGY","STORAGE","MODE_OF_OPERATION", "VALUE"])
@@ -108,8 +110,9 @@ def main(
 
     else:
     
-        # Set storage set
-        storage_set = set_unique_storage_technologies(fuel_set_base, unique_sto_techs)
+        # Set fuel and storage set
+        fuel_set = set_storage_fuels(fuel_set_base)
+        storage_set = set_unique_storage_technologies(fuel_set, unique_sto_techs)
 
         # Create TechnologyToStorage and TechnologyFromStorage
         tech_to_storage = set_technology_to_storage(storage_set, region_name)
@@ -222,6 +225,7 @@ def main(
                                         index = None)
 
     tech_set.to_csv(os.path.join(output_data_dir, "TECHNOLOGY.csv"), index = None)
+    fuel_set.to_csv(os.path.join(output_data_dir, "FUEL.csv"), index = None)
     storage_set.to_csv(os.path.join(output_data_dir, "STORAGE.csv"), index = None)
     
     tech_to_storage.to_csv(os.path.join(output_data_dir, "TechnologyToStorage.csv"), index=None)
@@ -276,7 +280,7 @@ if __name__ == "__main__":
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
         file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'        
-        file_fuel_set = f'{output_data_dir}/FUEL.csv'
+        file_fuel_set = f'{transmission_data_dir}/FUEL.csv'
         
     # The below else statement defines variables if the 'transmission/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
@@ -293,7 +297,7 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         custom_nodes = []
-        tech_capacity_sto = {'sto1': ['PWRSDSINDWE01', 2, 2010, 2025, 3, 1800, 40, 0, 87],
+        tech_capacity_sto = {'sto1': ['PWRSDSIDNSM01', 2, 2010, 2025, 3, 1800, 40, 0, 87],
                              'sto2': ['PWRLDSINDNE01', 4, 1985, 2025, 2, 3400, 19, 0.5, 82],
                              'sto3': ['PWRLDSINDNE01', 1, 2015, 2025, 2, 3400, 19, 0.5, 82]}
         no_investment_techs = ["CSP", "WAV", "URN", "OTH", "WAS", 
@@ -316,7 +320,7 @@ if __name__ == "__main__":
         file_min_cap_invest_base = f'{transmission_data_dir}/TotalAnnualMinCapacityInvestment.csv'
         file_res_cap_base = f'{transmission_data_dir}/ResidualCapacity.csv'
         file_tech_set = f'{transmission_data_dir}/TECHNOLOGY.csv'
-        file_fuel_set = f'{output_data_dir}/FUEL.csv'
+        file_fuel_set = f'{transmission_data_dir}/FUEL.csv'
 
     # SET INPUT DATA
     

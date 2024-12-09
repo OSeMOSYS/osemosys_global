@@ -48,7 +48,7 @@ transmission_files = [
     'transmission/OutputActivityRatio',
     'transmission/ResidualCapacity',
     'transmission/TECHNOLOGY',
-    'FUEL'
+    'transmission/FUEL'
     ]
     
 storage_files = [
@@ -69,7 +69,8 @@ storage_files = [
     'STORAGE',
     'StorageLevelStart',
     'TechnologyToStorage',
-    'TechnologyFromStorage'
+    'TechnologyFromStorage',
+    'FUEL'
     ]
 
 timeslice_files = [
