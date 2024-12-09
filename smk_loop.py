@@ -7,14 +7,14 @@ data_dir = 'results/data'
 
 '''Set to 'list' to only run scenarios in 'scenario_list' or set to 'folder' to run all
 scenario config files as defined in 'config_dir'. Can be used to run a scenario sample.'''
-run_type = 'list'
+run_type = 'folder'
 
 scenario_list = [
-    'trn15',
-    #'trn16',
-    'trn17',
-    #'trn18',
-    #'trn19',
+    'lowseasons',
+    'base',
+    'trnlimit',
+    'reservemargin',
+    'varcost',
     #'trn20',
     #'trn21',
     #'trn22',
@@ -34,14 +34,14 @@ scenario_list = [
 
 if run_type == 'folder':
     for scenario in os.listdir(config_dir):
-        subprocess.run("snakemake --configfile "f'{config_dir}/{scenario}'"", 
+        subprocess.run("snakemake --cores 12 --configfile "f'{config_dir}/{scenario}'"", 
                        shell = True)
         
         shutil.rmtree(data_dir)
         
 if run_type == 'list':
     for scenario in scenario_list:
-        subprocess.run("snakemake --configfile "f'{config_dir}/{scenario}.yaml'"", 
+        subprocess.run("snakemake --cores 12 --configfile "f'{config_dir}/{scenario}.yaml'"", 
                        shell = True)
         
         shutil.rmtree(data_dir)

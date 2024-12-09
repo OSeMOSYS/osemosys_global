@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "trn16"
+scenario: "lowseasons"
 
 # Temporal Parameters 
 startYear: 2023
@@ -7,22 +7,25 @@ endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [1, 13]
-  D2: [13, 25]
-  #D1: [1, 4]
-  #D2: [4, 7]
-  #D3: [7, 10]
-  #D4: [10, 13]
-  #D5: [13, 16]
-  #D6: [16, 19]
-  #D7: [19, 22]
-  #D8: [22, 25]
+  D1: [1, 7]
+  D2: [7, 13]
+  D3: [13, 19]
+  D4: [19, 25]
+  #D5: [9, 11]
+  #D6: [11, 13]
+  #D7: [13, 15]
+  #D8: [15, 17]
+  #D9: [17, 19]
+  #D10: [19, 21]
+  #D11: [21, 23]
+  #D12: [23, 25]
   
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-  #S1: [1, 2, 3, 4, 5, 6]
-  #S2: [7, 8, 9, 10, 11, 12]
+  S1: [1, 2, 3, 4, 5, 6]
+  S2: [7, 8, 9, 10, 11, 12]
+  #S3: [7, 8, 9]
+  #S4: [10, 11, 12]
 
 timeshift: 0 # value between -11 and 12
   
@@ -105,7 +108,7 @@ user_defined_capacity_transmission:
 
   # Planned (GGI - APG, International)
   #trn15: [TRNMYSPESGPXX, 0, 2020, 2030, 2030, 0.525, 338, 11.8, 4, 97.9] # AIMS III ID - 1, COD 2030 assumed
-  trn16: [TRNMYSPETHASO, 0, 2020, 2040, 2040, 1.043, 405, 14.2, 4, 97.1] # AIMS III ID - 2, COD 2040 assumed following target
+  #trn16: [TRNMYSPETHASO, 0, 2020, 2040, 2040, 1.043, 405, 14.2, 4, 97.1] # AIMS III ID - 2, COD 2040 assumed following target
   #trn17: [TRNIDNSMMYSPE, 0, 2020, 2030, 2030, 0.6, 398, 13.9, 4, 97.5] # AIMS III ID - 4, COD 2030 assumed
   #trn18: [TRNMYSSHPHLLU, 0, 2020, 2040, 2040, 0.196, 621, 21.7, 4, 94.9] # AIMS III ID - 6, COD 2040 assumed following target
   #trn19: [TRNBRNXXMYSSK, 0, 2020, 2028, 2028, 0.5, 448, 15.7, 4, 96.5] # AIMS III ID - 7, 500 MW assumed (275 kV line)
@@ -191,7 +194,7 @@ storage_parameters:
   #                    duration]
   # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
   # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
-  SDS: [1938, 44.25, 0.1, 85, 4]
+  SDS: [1938, 44.25, 0, 85, 4]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
