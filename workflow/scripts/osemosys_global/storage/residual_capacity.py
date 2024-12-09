@@ -10,6 +10,8 @@ from data import(
 def res_capacity_storage(gesdb_data, 
                          gesdb_regional_mapping,
                          res_cap_base,
+                         storage_existing,
+                         storage_planned,
                          op_life_dict,
                          storage_param,
                          gesdb_tech_map,
@@ -137,29 +139,41 @@ def res_capacity_storage(gesdb_data,
                                        (residual['YEAR'] == (year - 1))]
                 new_row.loc[new_row['YEAR'] == (year - 1), 'YEAR'] = year
                 
-                residual = pd.concat([residual, new_row])           
+                residual = pd.concat([residual, new_row])
+                
+    if not storage_existing:
+        residual = residual.loc[residual['YEAR'] > start_year]
+        
+    if not storage_planned:
+        residual = residual.loc[residual['YEAR'] == start_year]
+        
+    if not residual.empty:
 
-    residual['REGION'] = region_name
-    residual = residual.drop_duplicates(subset=['REGION', 'STORAGE', 'YEAR']
-                                        , keep = 'last').set_index(['REGION', 'STORAGE', 'YEAR'])
-    
-    # Pull power rating data for ResidualCapacity.csv
-    residual_capacity = residual[['rated_power']].reset_index(
-        drop = False).rename(columns = {'rated_power' : 'VALUE', 'STORAGE' : 'TECHNOLOGY'})
-    
-    # Convert from kW to GW
-    residual_capacity['VALUE'] = round(residual_capacity['VALUE'] / 1000000, 4)
-    residual_capacity['TECHNOLOGY'] = 'PWR' + residual_capacity['TECHNOLOGY']
-    
-    # Pull storage capacity data for ResidualStorageCapacity.csv
-    residual_storage_capacity = residual[['storage_capacity']].reset_index(
-        drop = False).rename(columns = {'storage_capacity' : 'VALUE'})
-    
-    # Convert from kWh to PJ
-    residual_storage_capacity['VALUE'] = round(residual_storage_capacity['VALUE'
-                                                                         ] / 277777777.77778, 5)
- 
-    # Combine residual capacity df's.
-    residual_capacity = pd.concat([res_cap_base, residual_capacity]).reset_index(drop = True)
+        residual['REGION'] = region_name
+        residual = residual.drop_duplicates(subset=['REGION', 'STORAGE', 'YEAR']
+                                            , keep = 'last').set_index(['REGION', 'STORAGE', 'YEAR'])
+        
+        # Pull power rating data for ResidualCapacity.csv
+        residual_capacity = residual[['rated_power']].reset_index(
+            drop = False).rename(columns = {'rated_power' : 'VALUE', 'STORAGE' : 'TECHNOLOGY'})
+        
+        # Convert from kW to GW
+        residual_capacity['VALUE'] = round(residual_capacity['VALUE'] / 1000000, 4)
+        residual_capacity['TECHNOLOGY'] = 'PWR' + residual_capacity['TECHNOLOGY']
+        
+        # Pull storage capacity data for ResidualStorageCapacity.csv
+        residual_storage_capacity = residual[['storage_capacity']].reset_index(
+            drop = False).rename(columns = {'storage_capacity' : 'VALUE'})
+        
+        # Convert from kWh to PJ
+        residual_storage_capacity['VALUE'] = round(residual_storage_capacity['VALUE'
+                                                                             ] / 277777777.77778, 5)
+     
+        # Combine residual capacity df's.
+        residual_capacity = pd.concat([res_cap_base, residual_capacity]).reset_index(drop = True)
+        
+    else:
+        residual_capacity = res_cap_base.copy()
+        residual_storage_capacity = pd.DataFrame(columns = ['REGION', 'STORAGE', 'YEAR','VALUE'])
 
     return residual_capacity, residual_storage_capacity
