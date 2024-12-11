@@ -201,9 +201,9 @@ India,Tamil Nadu,INDSO
 India,Uttar Pradesh,INDNO
 India,Uttarakhand,INDNO
 India,West Bengal,INDEA
-Indonesia,East Nusa Tenggara,IDNXX
-Indonesia,Jakarta,IDNXX
-Indonesia,West Java,IDNXX
+Indonesia,East Nusa Tenggara,IDNNU
+Indonesia,Jakarta,IDNJW
+Indonesia,West Java,IDNJW
 Iran,Mazandaran,IRNXX
 Ireland,Connacht,IRLXX
 Ireland,County Louth,IRLXX
@@ -348,8 +348,8 @@ Nigeria,Ogun,NGAXX
 Norway,Rogaland,NORXX
 Norway,Vestland,NORXX
 Norway,,NORXX
-Philippines,Laguna,PHLXX
-Philippines,Zambales,PHLXX
+Philippines,Laguna,PHLLU
+Philippines,Zambales,PHLLU
 Poland,Malopolskie,POLXX
 Poland,Podkarpackie,POLXX
 Poland,Pomorskie,POLXX
@@ -472,10 +472,10 @@ Taiwan,Nantou,TWNXX
 Taiwan,Taiwan,TWNXX
 Tanzania,null,TZAXX
 Tanzania,,TZAXX
-Thailand,Kanchanaburi,THAXX
-Thailand,Nakhon Ratchasima,THAXX
-Thailand,Nakhon Ratchasima Province,THAXX
-Thailand,Tak,THAXX
+Thailand,Kanchanaburi,THACE
+Thailand,Nakhon Ratchasima,THANO
+Thailand,Nakhon Ratchasima Province,THANO
+Thailand,Tak,THANO
 Togo,Maritime Region,TGOXX
 Ukraine,Chernivtsi Oblast,UKRXX
 Ukraine,Kiev,UKRXX
