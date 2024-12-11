@@ -7,20 +7,20 @@ endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [1, 13]
-  D2: [13, 25]
-  #D1: [1, 7]
-  #D2: [7, 13]
-  #D3: [13, 19]
-  #D4: [19, 25]
-  #D5: [9, 11]
-  #D6: [11, 13]
-  #D7: [13, 15]
-  #D8: [15, 17]
-  #D9: [17, 19]
-  #D10: [19, 21]
-  #D11: [21, 23]
-  #D12: [23, 25]
+  #D1: [1, 13]
+  #D2: [13, 25]
+  D1: [1, 3]
+  D2: [3, 5]
+  D3: [5, 7]
+  D4: [7, 9]
+  D5: [9, 11]
+  D6: [11, 13]
+  D7: [13, 15]
+  D8: [15, 17]
+  D9: [17, 19]
+  D10: [19, 21]
+  D11: [21, 23]
+  D12: [23, 25]
   
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
@@ -74,7 +74,6 @@ emission_penalty:
 no_invest_technologies: 
   - "CSP"
   - "WAV"
-  #- "URN"
   - "OTH"
   - "WAS"
   - "COG" 
@@ -198,7 +197,7 @@ storage_parameters:
   #                    duration]
   # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
   # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
-  #SDS: [1938, 44.25, 0.002, 85, 4]
+  SDS: [1938, 44.25, 0.002, 85, 4]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
