@@ -84,17 +84,22 @@ if __name__ == "__main__":
         demand_csv = snakemake.input.demand
         power_cost_node_csv = snakemake.output.node_pwr_cost
         power_cost_country_csv = snakemake.output.country_pwr_cost
+        power_cost_global_csv = snakemake.output.global_pwr_cost        
         total_cost_node_csv = snakemake.output.node_cost
         total_cost_country_csv = snakemake.output.country_cost
+        total_cost_global_csv = snakemake.output.global_cost
+        
     else:
         discounted_cost_by_technology_csv = (
             "results/India/results/DiscountedCostByTechnology.csv"
         )
         demand_csv = "results/India/results/Demand.csv"
-        power_cost_node_csv = "results/India/result_summaries/NodePowerCost.csv"
-        power_cost_country_csv = "results/India/result_summaries/CountryPowerCost.csv"
-        total_cost_node_csv = "results/India/result_summaries/NodeCost.csv"
-        total_cost_country_csv = "results/India/result_summaries/CountryCost.csv"
+        power_cost_node_csv = "results/India/result_summaries/PowerCostNode.csv"
+        power_cost_country_csv = "results/India/result_summaries/PowerCostCountry.csv"
+        power_cost_global_csv = "results/India/result_summaries/PowerCostGlobal.csv"
+        total_cost_node_csv = "results/India/result_summaries/TotalCostNode.csv"
+        total_cost_country_csv = "results/India/result_summaries/TotalCostCountry.csv"
+        total_cost_global_csv = "results/India/result_summaries/TotalCostGlobal.csv"
 
     discounted_cost_by_technology = pd.read_csv(
         discounted_cost_by_technology_csv, index_col=[0, 1, 2]
@@ -128,11 +133,25 @@ if __name__ == "__main__":
 
     # country level metrics
 
-    tech_cost = get_tech_cost(discounted_cost_by_technology, country=True)
-    storage_cost = get_storage_cost(discounted_cost_by_storage, country=True)
-    cost = tech_cost.add(storage_cost, fill_value=0)
-    demand = get_demand(demand_raw, country=True)
-    pwr_cost = get_pwr_cost(demand, cost)
+    tech_cost_country = get_tech_cost(discounted_cost_by_technology, country=True)
+    storage_cost_country = get_storage_cost(discounted_cost_by_storage, country=True)
+    cost_country = tech_cost_country.add(storage_cost_country, fill_value=0)
+    demand_country = get_demand(demand_raw, country=True)
+    pwr_cost_country = get_pwr_cost(demand_country, cost_country)
 
-    pwr_cost.to_csv(power_cost_country_csv, index=True)
-    cost.to_csv(total_cost_country_csv, index=True)
+    pwr_cost_country.to_csv(power_cost_country_csv, index=True)
+    cost_country.to_csv(total_cost_country_csv, index=True)
+    
+    # global level metrics
+
+    cost_global = tech_cost_country.add(storage_cost_country, 
+                                        fill_value=0).groupby(["YEAR"]).sum()
+  
+    demand_global = get_demand(demand_raw, country=True)
+    demand_global = demand_global.groupby([
+        demand_global.index.get_level_values("YEAR")]).sum()
+
+    pwr_cost_global = get_pwr_cost(demand_global, cost_global)
+
+    pwr_cost_global.to_csv(power_cost_global_csv, index=True)
+    cost_global.to_csv(total_cost_global_csv, index=True)

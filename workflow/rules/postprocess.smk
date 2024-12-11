@@ -30,6 +30,8 @@ RESULT_SUMMARIES = [
     "TotalCostNode",
     "PowerCostCountry",
     "TotalCostCountry",
+    "PowerCostGlobal",
+    "TotalCostGlobal",
     "Metrics"
 ]
 
@@ -128,8 +130,10 @@ rule calculate_costs:
     output:
         node_pwr_cost = "results/{scenario}/result_summaries/PowerCostNode.csv",
         country_pwr_cost = "results/{scenario}/result_summaries/PowerCostCountry.csv",
+        global_pwr_cost = "results/{scenario}/result_summaries/PowerCostGlobal.csv",
         node_cost = "results/{scenario}/result_summaries/TotalCostNode.csv",
         country_cost = "results/{scenario}/result_summaries/TotalCostCountry.csv",
+        global_cost = "results/{scenario}/result_summaries/TotalCostGlobal.csv",
     log:
         log = 'results/{scenario}/logs/node_cost.log'
     script: 
