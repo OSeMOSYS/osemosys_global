@@ -25,6 +25,7 @@ RESULT_SUMMARIES = [
     "TransmissionCapacityCountry",
     "GenerationSharesNode",
     "GenerationSharesCountry",
+    "GenerationSharesGlobal",
     "PowerCostNode",
     "TotalCostNode",
     "PowerCostCountry",
@@ -144,6 +145,7 @@ rule calculate_generation_shares:
     output:
         generation_shares_node = "results/{scenario}/result_summaries/GenerationSharesNode.csv",
         generation_shares_country = "results/{scenario}/result_summaries/GenerationSharesCountry.csv",
+        generation_shares_global = "results/{scenario}/result_summaries/GenerationSharesGlobal.csv",
     log:
         log = 'results/{scenario}/logs/generation_shares.log'
     script: 
