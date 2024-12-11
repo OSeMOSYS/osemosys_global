@@ -74,7 +74,7 @@ emission_penalty:
 no_invest_technologies: 
   - "CSP"
   - "WAV"
-  - "URN"
+  #- "URN"
   - "OTH"
   - "WAS"
   - "COG" 
@@ -198,7 +198,7 @@ storage_parameters:
   #                    duration]
   # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
   # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
-  SDS: [1938, 44.25, 0.002, 85, 4]
+  #SDS: [1938, 44.25, 0.002, 85, 4]
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
