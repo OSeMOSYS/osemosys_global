@@ -171,7 +171,7 @@ def set_user_defined_capacity_sto(tech_capacity_sto,
 
     for idx, tech_params in tech_capacity_sto.items():
         df_oar.loc[df_oar['TECHNOLOGY'] == tech_params[0],
-                   'VALUE'] = round(1 / (efficiency_dict[idx] / 100), 3)
+                   'VALUE'] = round(efficiency_dict[idx] / 100, 3)
     
     # Update CapitalCostStorage with user-defined capex costs by storage technology
     df_cap_cost_sto = cap_cost_sto_base.copy()
