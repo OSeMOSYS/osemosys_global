@@ -19,16 +19,20 @@ RESULT_SUMMARIES = [
     "AnnualTotalTradeFlowsNode",
     "AnnualTotalTradeFlowsCountry",
     "AnnualEmissionIntensity",
+    "AnnualEmissionIntensityGlobal",
     "PowerCapacityNode",
     "TransmissionCapacityNode",
     "PowerCapacityCountry",
     "TransmissionCapacityCountry",
     "GenerationSharesNode",
     "GenerationSharesCountry",
+    "GenerationSharesGlobal",
     "PowerCostNode",
     "TotalCostNode",
     "PowerCostCountry",
     "TotalCostCountry",
+    "PowerCostGlobal",
+    "TotalCostGlobal",
     "Metrics"
 ]
 
@@ -113,6 +117,7 @@ rule calculate_carbon_intensity:
         annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
     output:
         emission_intensity = "results/{scenario}/result_summaries/AnnualEmissionIntensity.csv",
+        emission_intensity_global = "results/{scenario}/result_summaries/AnnualEmissionIntensityGlobal.csv",
     log:
         log = 'results/{scenario}/logs/carbon_intensity.log'
     script: 
@@ -127,8 +132,10 @@ rule calculate_costs:
     output:
         node_pwr_cost = "results/{scenario}/result_summaries/PowerCostNode.csv",
         country_pwr_cost = "results/{scenario}/result_summaries/PowerCostCountry.csv",
+        global_pwr_cost = "results/{scenario}/result_summaries/PowerCostGlobal.csv",
         node_cost = "results/{scenario}/result_summaries/TotalCostNode.csv",
         country_cost = "results/{scenario}/result_summaries/TotalCostCountry.csv",
+        global_cost = "results/{scenario}/result_summaries/TotalCostGlobal.csv",
     log:
         log = 'results/{scenario}/logs/node_cost.log'
     script: 
@@ -144,6 +151,7 @@ rule calculate_generation_shares:
     output:
         generation_shares_node = "results/{scenario}/result_summaries/GenerationSharesNode.csv",
         generation_shares_country = "results/{scenario}/result_summaries/GenerationSharesCountry.csv",
+        generation_shares_global = "results/{scenario}/result_summaries/GenerationSharesGlobal.csv",
     log:
         log = 'results/{scenario}/logs/generation_shares.log'
     script: 
