@@ -19,6 +19,7 @@ RESULT_SUMMARIES = [
     "AnnualTotalTradeFlowsNode",
     "AnnualTotalTradeFlowsCountry",
     "AnnualEmissionIntensity",
+    "AnnualEmissionIntensityGlobal",
     "PowerCapacityNode",
     "TransmissionCapacityNode",
     "PowerCapacityCountry",
@@ -116,6 +117,7 @@ rule calculate_carbon_intensity:
         annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
     output:
         emission_intensity = "results/{scenario}/result_summaries/AnnualEmissionIntensity.csv",
+        emission_intensity_global = "results/{scenario}/result_summaries/AnnualEmissionIntensityGlobal.csv",
     log:
         log = 'results/{scenario}/logs/carbon_intensity.log'
     script: 
