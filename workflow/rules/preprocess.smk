@@ -317,8 +317,8 @@ rule timeslice:
         csv_files = expand('results/data/{output_file}.csv', output_file=timeslice_files),
     log:
         log = 'results/logs/timeslice.log'    
-    shell:
-        'python workflow/scripts/osemosys_global/TS_data.py 2> {log}'
+    script:
+        "../scripts/osemosys_global/TS_data.py"
         
 rule reserves:
     message:

@@ -65,7 +65,7 @@ def main(
     node_region_dict = dict(zip(nodes, regions))
         
     hyd_df = hyd_df.loc[hyd_df["NAME"].str.endswith("Capacity Scaler")]
-    hyd_df["NAME"] = hyd_df["NAME"].str.split("_").str[0]
+    hyd_df.loc[:,"NAME"] = hyd_df["NAME"].str.split("_").str[0]
 
     hyd_df = pd.concat([hyd_df, hyd_df_custom])
     
@@ -132,10 +132,9 @@ def main(
     )
     
     # Create column for weekday/weekend
-    demand_df["Day-of-week"] = demand_df["Datetime"].dt.dayofweek
-    demand_df.loc[demand_df["Day-of-week"] < 5, "Day-of-week"] = "WD"
+    demand_df["Day-of-week"] = demand_df["Datetime"].dt.dayofweek.astype(str)
+    demand_df.loc[demand_df["Day-of-week"].isin([0,1,2,3,4]), "Day-of-week"] = "WD"
     demand_df.loc[demand_df["Day-of-week"] != "WD", "Day-of-week"] = "WE"
-    
     
     # ### Create dictionaries for 'seasons' and 'dayparts'
     
@@ -155,7 +154,7 @@ def main(
     
     
     demand_df["Season"] = demand_df["Month"]
-    demand_df["Season"].replace(seasons_dict, inplace=True)
+    demand_df["Season"] = demand_df["Season"].replace(seasons_dict)
     
     demand_df["Hour"] = demand_df["Hour"].map(lambda x: apply_timeshift(int(x), timeshift))
     for daypart in dayparts_dict:
@@ -176,7 +175,7 @@ def main(
     # ### Create column for timeslice with and without day-type
     
     
-    if daytpe:
+    if daytype:
         demand_df["TIMESLICE"] = (
             demand_df["Season"] + demand_df["Day-of-week"] + demand_df["Daypart"]
         )
@@ -219,7 +218,7 @@ def main(
         value_name="demand",
     )
     
-    sp_demand_df = sp_demand_df.groupby(["TIMESLICE", "node"], as_index=False).agg(sum)
+    sp_demand_df = sp_demand_df.groupby(["TIMESLICE", "node"], as_index=False).sum()
     
     # Calculate SpecifiedAnnualDemand
     total_demand_df = (
@@ -305,9 +304,6 @@ def main(
     # CapacityFactor
     
     datetime_ts_df = demand_df[["Datetime", "TIMESLICE"]]
-    capfac_all_df = pd.DataFrame(
-        columns=["REGION", "TECHNOLOGY", "TIMESLICE", "YEAR", "VALUE"]
-    )
     
     def capacity_factor(df):
         df["Datetime"] = pd.to_datetime(df["Datetime"], format="%d/%m/%Y %H:%M")
@@ -368,10 +364,10 @@ def main(
     
         return capfac_df_final
     
-    
-    capfacs = [capfac_all_df]
+    capfacs = []
     for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
         capfacs.append(capacity_factor(each))
+    
     capfac_all_df = pd.concat(capfacs).reset_index(drop=True)
     
     capfac_all_df.drop_duplicates(
@@ -451,7 +447,6 @@ if __name__ == "__main__":
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
         geographic_scope = snakemake.params.geographic_scope
-        custom_nodes = snakemake.params.custom_nodes
         output_data_dir = snakemake.params.output_data_dir
         input_data_dir = snakemake.params.input_data_dir
         output_dir = snakemake.params.output_dir
@@ -462,18 +457,18 @@ if __name__ == "__main__":
         dayparts = snakemake.params.dayparts
         timeshift = snakemake.params.timeshift
         
-        plexos_demand = snakemake.input.plexos_demand
-        plexos_csp_2015 = snakemake.input.plexos_csp_2015
-        plexos_spv_2015 = snakemake.input.plexos_spv_2015
-        plexos_hyd_2015 = snakemake.input.plexos_hyd_2015
-        plexos_won_2015 = snakemake.input.plexos_won_2015
-        plexos_wof_2015 = snakemake.input.plexos_wof_2015
-        custom_specified_demand_profiles = snakemake.input.custom_specified_demand_profiles
-        custom_csp_profiles = snakemake.input.custom_csp_profiles
-        custom_hyd_profiles = snakemake.input.custom_hyd_profiles
-        custom_spv_profiles = snakemake.input.custom_spv_profiles
-        custom_wof_profiles = snakemake.input.custom_wof_profiles
-        custom_won_profiles = snakemake.input.custom_won_profiles
+        plexos_demand = pd.read_csv(snakemake.input.plexos_demand)
+        plexos_csp_2015 = pd.read_csv(snakemake.input.plexos_csp_2015)
+        plexos_spv_2015 = pd.read_csv(snakemake.input.plexos_spv_2015)
+        plexos_hyd_2015 = pd.read_csv(snakemake.input.plexos_hyd_2015)
+        plexos_won_2015 = pd.read_csv(snakemake.input.plexos_won_2015)
+        plexos_wof_2015 = pd.read_csv(snakemake.input.plexos_wof_2015)
+        custom_specified_demand_profiles = pd.read_csv(snakemake.input.custom_specified_demand_profiles)
+        custom_csp_profiles = pd.read_csv(snakemake.input.custom_csp_profiles)
+        custom_hyd_profiles = pd.read_csv(snakemake.input.custom_hyd_profiles)
+        custom_spv_profiles = pd.read_csv(snakemake.input.custom_spv_profiles)
+        custom_wof_profiles = pd.read_csv(snakemake.input.custom_wof_profiles)
+        custom_won_profiles = pd.read_csv(snakemake.input.custom_won_profiles)
         
     # The below else statement defines variables if the 'powerplant/main' script is to be run locally
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
@@ -484,13 +479,12 @@ if __name__ == "__main__":
         end_year = 2050
         region_name = 'GLOBAL'
         geographic_scope = ['BTN', 'IND']
-        custom_nodes = [] 
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         output_dir = 'results'
         input_dir = 'resources'
         custom_nodes_dir = 'resources/data/custom_nodes'
-        daytpe = False
+        daytype = False
         seasons =   {'S1': [1, 2, 3, 4, 5, 6], 
                      'S2': [7, 8, 9, 10, 11, 12]}
         dayparts =   {'D1': [1, 7],
