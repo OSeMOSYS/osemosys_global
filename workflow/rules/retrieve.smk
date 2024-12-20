@@ -39,7 +39,8 @@ rule download_external_files:
     message:
         "Downloading external files..."
     params:
-        files = get_external_links()
+        files = get_external_links(),
+        input_data_dir = 'resources/data'
     log:
         log = "results/logs/external_files.log"
     output:
