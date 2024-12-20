@@ -65,7 +65,7 @@ def main(
     node_region_dict = dict(zip(nodes, regions))
         
     hyd_df = hyd_df.loc[hyd_df["NAME"].str.endswith("Capacity Scaler")]
-    hyd_df["NAME"] = hyd_df["NAME"].str.split("_").str[0]
+    hyd_df.loc[:,"NAME"] = hyd_df["NAME"].str.split("_").str[0]
 
     hyd_df = pd.concat([hyd_df, hyd_df_custom])
     
@@ -132,10 +132,9 @@ def main(
     )
     
     # Create column for weekday/weekend
-    demand_df["Day-of-week"] = demand_df["Datetime"].dt.dayofweek
-    demand_df.loc[demand_df["Day-of-week"] < 5, "Day-of-week"] = "WD"
+    demand_df["Day-of-week"] = demand_df["Datetime"].dt.dayofweek.astype(str)
+    demand_df.loc[demand_df["Day-of-week"].isin([0,1,2,3,4]), "Day-of-week"] = "WD"
     demand_df.loc[demand_df["Day-of-week"] != "WD", "Day-of-week"] = "WE"
-    
     
     # ### Create dictionaries for 'seasons' and 'dayparts'
     
@@ -155,7 +154,7 @@ def main(
     
     
     demand_df["Season"] = demand_df["Month"]
-    demand_df["Season"].replace(seasons_dict, inplace=True)
+    demand_df["Season"] = demand_df["Season"].replace(seasons_dict)
     
     demand_df["Hour"] = demand_df["Hour"].map(lambda x: apply_timeshift(int(x), timeshift))
     for daypart in dayparts_dict:
@@ -219,7 +218,7 @@ def main(
         value_name="demand",
     )
     
-    sp_demand_df = sp_demand_df.groupby(["TIMESLICE", "node"], as_index=False).agg(sum)
+    sp_demand_df = sp_demand_df.groupby(["TIMESLICE", "node"], as_index=False).sum()
     
     # Calculate SpecifiedAnnualDemand
     total_demand_df = (
@@ -305,9 +304,6 @@ def main(
     # CapacityFactor
     
     datetime_ts_df = demand_df[["Datetime", "TIMESLICE"]]
-    capfac_all_df = pd.DataFrame(
-        columns=["REGION", "TECHNOLOGY", "TIMESLICE", "YEAR", "VALUE"]
-    )
     
     def capacity_factor(df):
         df["Datetime"] = pd.to_datetime(df["Datetime"], format="%d/%m/%Y %H:%M")
@@ -368,10 +364,10 @@ def main(
     
         return capfac_df_final
     
-    
-    capfacs = [capfac_all_df]
+    capfacs = []
     for each in [hyd_df_processed, csp_df, spv_df, won_df, wof_df]:
         capfacs.append(capacity_factor(each))
+    
     capfac_all_df = pd.concat(capfacs).reset_index(drop=True)
     
     capfac_all_df.drop_duplicates(
