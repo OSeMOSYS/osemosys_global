@@ -10,26 +10,9 @@ scenario config files as defined in 'config_dir'. Can be used to run a scenario 
 run_type = 'folder'
 
 scenario_list = [
-    'lowseasons',
-    'base',
-    'trnlimit',
-    'reservemargin',
-    'varcost',
-    #'trn20',
-    #'trn21',
-    #'trn22',
-    #'trn23',
-    #'trn24',
-    #'trn25',
-    #'trn26',
-    #'trn27',
-    #'trn28',
-    #'trn29',
-    #'trn30',
-    #'trn31',
-    #'trn32',
-    #'trn33',
-    #'trn34',
+    'MYSPESGPXX',
+    'MYSPETHASO',
+    'IDNSMMYSPE'
     ]
 
 if run_type == 'folder':
