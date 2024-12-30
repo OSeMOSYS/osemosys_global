@@ -52,7 +52,7 @@ def add_emission_limits(emissions, emission_limit, ember,
                 
                 # Filter template df for given country and emission
                 data = template.copy().loc[template["EMISSION"].isin(
-                    [emission + country])]
+                    [emission + country])].reset_index(drop = True)
                      
                 # Loop through limits per country
                 for idx, row in limits.iterrows():
@@ -68,12 +68,25 @@ def add_emission_limits(emissions, emission_limit, ember,
                         if data_type == 'LINEAR':
                             ember_data = ember.copy().loc[
                                 (ember["EMISSION"].isin([emission + country]))]
+
                             # Check if year for country specific EMBER data exists in horizon.
                             for year in ember_data["YEAR"].unique():
                                 if year in data["YEAR"].values:
                                     # Set baseline year data for LINEAR
                                     data.loc[(data["YEAR"] == year),"VALUE"] = ember_data.loc[
                                         (ember_data["YEAR"] == year)]['VALUE'].iloc[0]
+                                    
+                            # If none of EMBER data years exist in horizon, pull latest EMBER year
+                            # to be able to set linear interpolation values.
+                            if ember_data["YEAR"].unique()[-1] < data["YEAR"].values[0]:
+                                data.loc[len(data)] = [data['EMISSION'].iloc[-1], 
+                                                       ember_data["YEAR"].unique()[-1]]
+                                
+                                data = data.sort_values(by = ['YEAR']).reset_index(drop = True)
+                                
+                                data.loc[(data["YEAR"] == ember_data["YEAR"].unique()[-1]),"VALUE"
+                                         ] = ember_data.loc[
+                                             (ember_data["YEAR"] == year)]['VALUE'].iloc[0]
 
                         # Set baseline year data for POINT
                         data.loc[(data["YEAR"] == data_year),"VALUE"] = data_value     
@@ -104,6 +117,7 @@ def add_emission_limits(emissions, emission_limit, ember,
                 # Format df
                 data.dropna(axis=0, inplace=True)
                 data["REGION"] = region_name
+                data = data.loc[data["YEAR"].between(start_year, end_year)]
                 data = data[["REGION", "EMISSION", "YEAR", "VALUE"]]
                 
                 if annual_emission_limit.empty:
