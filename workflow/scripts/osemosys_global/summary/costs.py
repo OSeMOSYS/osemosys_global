@@ -47,6 +47,42 @@ def get_storage_cost(
         .sum()
     )
 
+def get_transmission_cost(discounted_cost_tech: pd.DataFrame, country: bool) -> pd.DataFrame:
+
+    df = discounted_cost_tech.copy()
+
+    df1 = df.copy()[
+        (df.index.get_level_values("TECHNOLOGY").str.startswith("TRN"))
+    ]
+
+    if country:
+        r = "COUNTRY"
+        df1[r] = df1.index.get_level_values("TECHNOLOGY").str[3:6]
+    else:
+        r = "NODE"
+        df1[r] = df1.index.get_level_values("TECHNOLOGY").str[3:8]
+    
+    df2 = df.copy()[
+        (df.index.get_level_values("TECHNOLOGY").str.startswith("TRN"))
+    ]
+
+    if country:
+        r = "COUNTRY"
+        df2[r] = df2.index.get_level_values("TECHNOLOGY").str[8:11]
+    else:
+        r = "NODE"
+        df2[r] = df2.index.get_level_values("TECHNOLOGY").str[8:13]
+        
+    for df in [df1, df2]:
+        df['VALUE'] = df['VALUE'] / 2
+        
+    df = pd.concat([df1, df2])
+
+    return (
+        df.reset_index()[["REGION", r, "YEAR", "VALUE"]]
+        .groupby(["REGION", r, "YEAR"])
+        .sum()
+    )
 
 def get_demand(demand: pd.DataFrame, country: bool) -> pd.DataFrame:
 
@@ -124,7 +160,11 @@ if __name__ == "__main__":
 
     tech_cost = get_tech_cost(discounted_cost_by_technology, country=False)
     storage_cost = get_storage_cost(discounted_cost_by_storage, country=False)
-    cost = tech_cost.add(storage_cost, fill_value=0)
+    transmission_cost = get_transmission_cost(discounted_cost_by_technology, country=False)
+    
+    cost = tech_cost.add(storage_cost, fill_value = 0
+                         ).add(transmission_cost, fill_value = 0)
+    
     demand = get_demand(demand_raw, country=False)
     pwr_cost = get_pwr_cost(demand, cost)
 
@@ -135,7 +175,11 @@ if __name__ == "__main__":
 
     tech_cost_country = get_tech_cost(discounted_cost_by_technology, country=True)
     storage_cost_country = get_storage_cost(discounted_cost_by_storage, country=True)
-    cost_country = tech_cost_country.add(storage_cost_country, fill_value=0)
+    transmission_cost_country = get_transmission_cost(discounted_cost_by_technology, country=True)    
+    
+    cost_country = tech_cost_country.add(storage_cost_country, fill_value = 0
+                                         ).add(transmission_cost_country, fill_value = 0)
+    
     demand_country = get_demand(demand_raw, country=True)
     pwr_cost_country = get_pwr_cost(demand_country, cost_country)
 
@@ -143,9 +187,11 @@ if __name__ == "__main__":
     cost_country.to_csv(total_cost_country_csv, index=True)
     
     # global level metrics
-
+    
     cost_global = tech_cost_country.add(storage_cost_country, 
-                                        fill_value=0).groupby(["YEAR"]).sum()
+                                        fill_value = 0
+                                        ).add(transmission_cost_country, fill_value = 0
+                                              ).groupby(["YEAR"]).sum()
   
     demand_global = get_demand(demand_raw, country=True)
     demand_global = demand_global.groupby([
