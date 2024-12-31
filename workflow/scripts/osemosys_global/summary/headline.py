@@ -94,9 +94,9 @@ def get_gen_shares(
     fsl_total = _filter_techs(df, FOSSIL).VALUE.sum()
     cln_total = _filter_techs(df, CLEAN).VALUE.sum()
 
-    rnw_share = round((rnw_total / gen_total) * 100, 0)
-    fsl_share = round((fsl_total / gen_total) * 100, 0)
-    cln_share = round((cln_total / gen_total) * 100, 0)
+    rnw_share = round((rnw_total / gen_total) * 100, 2)
+    fsl_share = round((fsl_total / gen_total) * 100, 2)
+    cln_share = round((cln_total / gen_total) * 100, 2)
 
     data = [
         ["Fossil energy share", "%", fsl_share],
