@@ -52,6 +52,7 @@ def _filter_pwr_techs(
     """
 
     df = production_by_technology.copy()
+    df = df.loc[df.index.get_level_values("FUEL").str.startswith('ELC')]
 
     df = df[
         (df.index.get_level_values("TECHNOLOGY").str.startswith("PWR"))
@@ -71,6 +72,7 @@ def _filter_techs(
 ) -> pd.DataFrame:
 
     df = production_by_technology.copy()
+    df = df.loc[df.index.get_level_values("FUEL").str.startswith('ELC')]
     df["tech"] = df.index.get_level_values("TECHNOLOGY").str[0:6]
 
     techs = [f"PWR{x}" for x in carriers]
@@ -83,15 +85,18 @@ def _filter_techs(
 def get_gen_shares(
     production_by_technology: pd.DataFrame, exclusions: Optional[list[str]] = None
 ) -> pd.DataFrame:
+    
+    df = production_by_technology.copy()
+    df = df.loc[df.index.get_level_values("FUEL").str.startswith('ELC')]
 
-    gen_total = _filter_pwr_techs(production_by_technology, exclusions).VALUE.sum()
-    rnw_total = _filter_techs(production_by_technology, RENEWABLES).VALUE.sum()
-    fsl_total = _filter_techs(production_by_technology, FOSSIL).VALUE.sum()
-    cln_total = _filter_techs(production_by_technology, CLEAN).VALUE.sum()
+    gen_total = _filter_pwr_techs(df, exclusions).VALUE.sum()
+    rnw_total = _filter_techs(df, RENEWABLES).VALUE.sum()
+    fsl_total = _filter_techs(df, FOSSIL).VALUE.sum()
+    cln_total = _filter_techs(df, CLEAN).VALUE.sum()
 
-    rnw_share = round((rnw_total / gen_total) * 100, 0)
-    fsl_share = round((fsl_total / gen_total) * 100, 0)
-    cln_share = round((cln_total / gen_total) * 100, 0)
+    rnw_share = round((rnw_total / gen_total) * 100, 2)
+    fsl_share = round((fsl_total / gen_total) * 100, 2)
+    cln_share = round((cln_total / gen_total) * 100, 2)
 
     data = [
         ["Fossil energy share", "%", fsl_share],

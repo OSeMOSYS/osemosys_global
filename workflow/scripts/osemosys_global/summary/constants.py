@@ -1,7 +1,7 @@
 """Constants for summary statistics"""
 
 RENEWABLES = ["BIO", "GEO", "HYD", "SPV", "CSP", "WAS", "WAV", "WON", "WOF"]
-CLEAN = ["BIO", "GEO", "HYD", "SPV", "CSP", "WAS", "WAV", "WON", "WOF", "URN"]
+CLEAN = ["BIO", "CCS", "GEO", "HYD", "SPV", "CSP", "WAS", "WAV", "WON", "WOF", "URN"]
 FOSSIL = ["CCG", "COA", "COG", "OCG", "OIL", "OTH", "PET"]
 
 MONTH_NAMES = {
