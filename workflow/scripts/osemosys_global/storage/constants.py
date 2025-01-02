@@ -14,12 +14,12 @@ SET_DTYPES = {
 }
 
 # Group GESDB technologies into OG technologies.
-GESDB_TECH_MAP = {'Compressed air energy storage' : 'LDS', 
+GESDB_TECH_MAP = {'Compressed air energy storage' : 'SDS', 
                   'Electro-chemical capacitor' : 'SDS', 
                   'Flow battery' : 'SDS', 
                   'Flywheel' : 'SDS', 
                   'Heat thermal storage' : 'SDS', 
-                  'Hydrogen storage' : 'LDS',
+                  'Hydrogen storage' : 'SDS',
                   'Latent heat' : 'SDS', 
                   'Lead-acid battery' : 'SDS', 
                   'Lithium-ion battery' : 'SDS', 
