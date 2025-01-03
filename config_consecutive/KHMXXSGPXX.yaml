@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "IDNSMMYSPE"
+scenario: "KHMXXSGPXX"
 
 # Temporal Parameters 
 startYear: 2023
@@ -125,7 +125,7 @@ user_defined_capacity_transmission:
   # Planned (GGI - APG, International)
   #trn15: [TRNMYSPESGPXX, 0, 2020, 2030, 2030, 0.525, 338, 11.8, 4, 97.9] # AIMS III ID - 1, COD 2030 assumed
   #trn16: [TRNMYSPETHASO, 0, 2020, 2040, 2040, 1.043, 405, 14.2, 4, 97.1] # AIMS III ID - 2, COD 2040 assumed following target
-  trn17: [TRNIDNSMMYSPE, 0, 2020, 2030, 2030, 0.6, 398, 13.9, 4, 97.5] # AIMS III ID - 4, COD 2030 assumed
+  #trn17: [TRNIDNSMMYSPE, 0, 2020, 2030, 2030, 0.6, 398, 13.9, 4, 97.5] # AIMS III ID - 4, COD 2030 assumed
   #trn18: [TRNMYSSHPHLLU, 0, 2020, 2040, 2040, 0.196, 621, 21.7, 4, 94.9] # AIMS III ID - 6, COD 2040 assumed following target
   #trn19: [TRNBRNXXMYSSK, 0, 2020, 2028, 2028, 0.5, 448, 15.7, 4, 96.5] # AIMS III ID - 7, 500 MW assumed (275 kV line)
   #trn20: [TRNLAOXXTHANO, 0, 2020, 2030, 2030, 0.25, 391, 13.7, 4, 97.3] # AIMS III ID - 9, 250 MW assumed (115/230 kV line), COD 2030 assumed
@@ -138,7 +138,7 @@ user_defined_capacity_transmission:
   #trn27: [TRNIDNSMSGPXX, 0, 2020, 2030, 2030, 1.6, 446, 15.6, 4, 96.5] # AIMS III ID - 16, COD 2030 assumed following target
   #trn28: [TRNLAOXXMMRXX, 0, 2020, 2027, 2027, 0.6, 463, 16.2, 4, 96.3] # AIMS III ID - 17, 600 MW assumed following highest value
   #trn29: [TRNSGPXXVNMSO, 0, 2020, 2030, 2030, 1.2, 560, 19.6, 4, 94.8] # COD 2030 assumed
-  #trn30: [TRNKHMXXSGPXX, 0, 2020, 2030, 2030, 1, 571, 20, 4, 94.7] # COD 2030 assumed
+  trn30: [TRNKHMXXSGPXX, 0, 2020, 2030, 2030, 1, 571, 20, 4, 94.7] # COD 2030 assumed
   
   # Planned (GGI - APG, Sub-National)
   #trn31: [TRNMYSPEMYSSK, 0, 2020, 2030, 2030, 1.6, 586, 20.5, 4, 95.3] # AIMS III ID - 3, COD 2030 assumed

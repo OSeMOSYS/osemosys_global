@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "IDNSMMYSPE"
+scenario: "ASEAN"
 
 # Temporal Parameters 
 startYear: 2023
@@ -125,7 +125,7 @@ user_defined_capacity_transmission:
   # Planned (GGI - APG, International)
   #trn15: [TRNMYSPESGPXX, 0, 2020, 2030, 2030, 0.525, 338, 11.8, 4, 97.9] # AIMS III ID - 1, COD 2030 assumed
   #trn16: [TRNMYSPETHASO, 0, 2020, 2040, 2040, 1.043, 405, 14.2, 4, 97.1] # AIMS III ID - 2, COD 2040 assumed following target
-  trn17: [TRNIDNSMMYSPE, 0, 2020, 2030, 2030, 0.6, 398, 13.9, 4, 97.5] # AIMS III ID - 4, COD 2030 assumed
+  #trn17: [TRNIDNSMMYSPE, 0, 2020, 2030, 2030, 0.6, 398, 13.9, 4, 97.5] # AIMS III ID - 4, COD 2030 assumed
   #trn18: [TRNMYSSHPHLLU, 0, 2020, 2040, 2040, 0.196, 621, 21.7, 4, 94.9] # AIMS III ID - 6, COD 2040 assumed following target
   #trn19: [TRNBRNXXMYSSK, 0, 2020, 2028, 2028, 0.5, 448, 15.7, 4, 96.5] # AIMS III ID - 7, 500 MW assumed (275 kV line)
   #trn20: [TRNLAOXXTHANO, 0, 2020, 2030, 2030, 0.25, 391, 13.7, 4, 97.3] # AIMS III ID - 9, 250 MW assumed (115/230 kV line), COD 2030 assumed
