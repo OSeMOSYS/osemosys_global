@@ -40,7 +40,7 @@ def activity_storage(storage_set, df_iar_base, df_oar_base, storage_param,
     
     for each_tech in storage_param.keys():
         df_storage_oar.loc[df_storage_oar['TECHNOLOGY'].str.contains(each_tech),
-                           'VALUE'] = round(1 / (efficiency_dict[each_tech] / 100), 3)
+                           'VALUE'] = round(efficiency_dict[each_tech] / 100, 3)
 
     df_storage_oar["TECHNOLOGY"] = "PWR" + df_storage_oar["TECHNOLOGY"] 
     df_storage_oar["FUEL"] = "ELC" + df_storage_oar["TECHNOLOGY"].str[6:13]
