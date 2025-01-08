@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "KHMXXTHACE"
+scenario: "MMRXXTHANO"
 
 # Temporal Parameters 
 startYear: 2023
@@ -7,25 +7,19 @@ endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [1, 3]
-  D2: [3, 5]
-  D3: [5, 7]
-  D4: [7, 9]
-  D5: [9, 11]
-  D6: [11, 13]
-  D7: [13, 15]
-  D8: [15, 17]
-  D9: [17, 19]
-  D10: [19, 21]
-  D11: [21, 23]
-  D12: [23, 25] 
+  D1: [1, 4]
+  D2: [4, 7]
+  D3: [7, 10]
+  D4: [10, 13]
+  D5: [13, 16]
+  D6: [16, 19]
+  D7: [19, 22]
+  D8: [22, 25]
   
 seasons:
   #season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3]
-  S2: [4, 5, 6]
-  S3: [7, 8, 9]
-  S4: [10, 11, 12]
+  S1: [1, 2, 3, 4, 5, 6]
+  S2: [7, 8, 9, 10, 11, 12]
 
 timeshift: 0 # value between -11 and 12
   
@@ -130,10 +124,10 @@ user_defined_capacity_transmission:
   #trn19: [TRNBRNXXMYSSK, 0, 2020, 2028, 2028, 0.5, 448, 15.7, 4, 96.5] # AIMS III ID - 7, 500 MW assumed (275 kV line)
   #trn20: [TRNLAOXXTHANO, 0, 2020, 2030, 2030, 0.25, 391, 13.7, 4, 97.3] # AIMS III ID - 9, 250 MW assumed (115/230 kV line), COD 2030 assumed
   #trn21: [TRNLAOXXVNMNO, 0, 2020, 2030, 2030, 0.5, 412, 14.4, 4, 97] # AIMS III ID - 10, 500 MW assumed (220 kV line), COD 2030 assumed
-  #trn22: [TRNMMRXXTHANO, 0, 2020, 2030, 2030, 0.365, 387, 13.5, 4, 97.4] # AIMS III ID - 11, COD 2030 assumed
+  trn22: [TRNMMRXXTHANO, 0, 2020, 2030, 2030, 0.365, 387, 13.5, 4, 97.4] # AIMS III ID - 11, COD 2030 assumed
   #trn23: [TRNKHMXXLAOXX, 0, 2020, 2026, 2026, 0.25, 477, 16.7, 4, 96.1] # AIMS III ID - 13, 250 MW assumed (115 kV line)
   #trn24: [TRNKHMXXLAOXX, 0, 2020, 2030, 2030, 1, 477, 16.7, 4, 96.1] # AIMS III ID - 13, 1 GW assumed (500 kV line)
-  trn25: [TRNKHMXXTHACE, 0, 2020, 2030, 2030, 0.65, 426, 14.9, 4, 96.8] # AIMS III ID - 14, COD 2030 assumed
+  #trn25: [TRNKHMXXTHACE, 0, 2020, 2030, 2030, 0.65, 426, 14.9, 4, 96.8] # AIMS III ID - 14, COD 2030 assumed
   #trn26: [TRNIDNKAMYSSH, 0, 2020, 2029, 2029, 0.5, 471, 16.5, 4, 96.1] # AIMS III ID - 15, 500 MW assumed
   #trn27: [TRNIDNSMSGPXX, 0, 2020, 2030, 2030, 1.6, 446, 15.6, 4, 96.5] # AIMS III ID - 16, COD 2030 assumed following target
   #trn28: [TRNLAOXXMMRXX, 0, 2020, 2027, 2027, 0.6, 463, 16.2, 4, 96.3] # AIMS III ID - 17, 600 MW assumed following highest value
