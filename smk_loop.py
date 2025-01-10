@@ -2,12 +2,12 @@ import subprocess
 import os
 import shutil
 
-config_dir = 'config_consecutive/3hourly2seasons'
+config_dir = 'config_consecutive/2hourly4seasons'
 data_dir = 'results/data'
 
 '''Set to 'list' to only run scenarios in 'scenario_list' or set to 'folder' to run all
 scenario config files as defined in 'config_dir'. Can be used to run a scenario sample.'''
-run_type = 'list'
+run_type = 'folder'
 
 scenario_list = [
   'ASEAN',
