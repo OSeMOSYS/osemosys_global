@@ -41,7 +41,7 @@ def format_emissions(annual_emissions: pd.DataFrame) -> pd.DataFrame:
     df["COUNTRY"] = df.EMISSION.str[3:6]
     return df.groupby(["REGION", "EMISSION", "COUNTRY", "YEAR"]).sum()
 
-def format_global_values(production: pd.DataFrame, emissions: pd.DataFrame):
+def format_global_values(production: pd.DataFrame, emissions: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     p_global = production.reset_index()[["YEAR", "VALUE"]
                                        ].groupby(["YEAR"]).sum()
     
