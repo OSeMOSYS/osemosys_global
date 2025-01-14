@@ -51,9 +51,9 @@ def get_transmission_cost(discounted_cost_tech: pd.DataFrame, country: bool) -> 
 
     df = discounted_cost_tech.copy()
 
-    df1 = df.copy()[
+    df1 = df[
         (df.index.get_level_values("TECHNOLOGY").str.startswith("TRN"))
-    ]
+    ].copy()
 
     if country:
         r = "COUNTRY"
