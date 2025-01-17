@@ -49,9 +49,7 @@ def get_user_fuel_limits(
     r = r[0]
 
     if fuel_limits.empty:
-        s = pd.Series(index=["REGION", "TECHNOLOGY", "YEAR"])
-        s.name = "VALUE"
-        return s
+        return pd.Series()
 
     # format limits dataframe
     limits = fuel_limits.copy()
@@ -87,7 +85,12 @@ def merge_template_user_limits(
     user_limits: pd.Series,
     years: Optional[list[int] | pd.Series] = None,
 ) -> pd.Series:
-    s = user_limits.combine_first(template)
+
+    if user_limits.empty:
+        s = template
+    else:
+        s = user_limits.combine_first(template)
+
     if isinstance(years, list):
         return s[s.index.get_level_values("YEAR").isin(years)]
     elif isinstance(years, pd.Series):
