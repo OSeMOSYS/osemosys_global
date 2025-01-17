@@ -145,7 +145,7 @@ user_defined_capacity_transmission:
   trn25: [TRNAGOXXZMBXX, 0, 2030, 2030, 2040, 2.0, 724, 25.3, 4, 92.4] # Angola–Zambia Interconnector, COD 2030 assumed
   trn26: [TRNBWAXXZAFXX, 0, 2030, 2030, 2050, 0, 310, 10.9, 4, 98.1] # Botswana–South Africa (BOSA) Interconnector, MW not avaliable, COD 2030 assumed
 
-  trn27: [TRNCODXXZMBXX, 0.827, 2030, 2030, 2050, 0.07, 745, 26.1, 4, 92.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
+  trn27: [TRNCODXXZMBXX, 0, 2030, 2030, 2050, 0.07, 745, 26.1, 4, 92.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
   trn28: [TRNMOZXXMWIXX, 0, 2030, 2030, 2050, 0.120, 616, 21.6, 4, 94] # Mozambique–Malawi (MOMA), COD 2030 assumed
   trn29: [TRNMWIXXTZAXX, 0, 2030, 2030, 2050, 0.05, 535, 18.7, 4, 95.2] # Tanzania-Malawi Transmission Interconnector, COD 2030 assumed
   trn30: [TRNMOZXXZMBXX, 0, 2030, 2030, 2050, 0.9, 596, 20.9, 4, 94.3] # Mozambique–Zambia Interconnector, COD 2030 assumed
@@ -199,7 +199,7 @@ storage_parameters:
   # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
   # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
   SDS: [1938, 44.25, 0.002, 85, 4] 
-  LDS: [1938, 44.25, 0.002, 85, 4]
+
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
  # specified in the "geographic scope" 
