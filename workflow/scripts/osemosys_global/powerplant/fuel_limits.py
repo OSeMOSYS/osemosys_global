@@ -1,6 +1,7 @@
 """Applies fuel limits to mining technologies"""
 
 import pandas as pd
+import numpy as np
 from typing import Optional
 
 
@@ -49,9 +50,7 @@ def get_user_fuel_limits(
     r = r[0]
 
     if fuel_limits.empty:
-        s = pd.Series(index=["REGION", "TECHNOLOGY", "YEAR"])
-        s.name = "VALUE"
-        return s
+        return pd.Series()
 
     # format limits dataframe
     limits = fuel_limits.copy()
@@ -87,7 +86,12 @@ def merge_template_user_limits(
     user_limits: pd.Series,
     years: Optional[list[int] | pd.Series] = None,
 ) -> pd.Series:
-    s = user_limits.combine_first(template)
+
+    if user_limits.empty:
+        s = template
+    else:
+        s = user_limits.combine_first(template)
+
     if isinstance(years, list):
         return s[s.index.get_level_values("YEAR").isin(years)]
     elif isinstance(years, pd.Series):
@@ -106,10 +110,10 @@ if __name__ == "__main__":
         years_csv = snakemake.input.year_csv
         activity_upper_limit_csv = snakemake.output.activity_upper_limit_csv
     else:
-        technology_csv = "results/ASEAN/data/TECHNOLOGY.csv"
+        technology_csv = "results/India/data/TECHNOLOGY.csv"
         fuel_limit_csv = "resources/data/fuel_limits.csv"
-        region_csv = "results/ASEAN/data/REGION.csv"
-        years_csv = "results/ASEAN/data/YEAR.csv"
+        region_csv = "results/India/data/REGION.csv"
+        years_csv = "results/India/data/YEAR.csv"
         activity_upper_limit_csv = ""
 
     regions = import_set(region_csv)
