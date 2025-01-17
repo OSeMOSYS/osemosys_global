@@ -1,7 +1,6 @@
 """Applies fuel limits to mining technologies"""
 
 import pandas as pd
-import numpy as np
 from typing import Optional
 
 
@@ -110,10 +109,10 @@ if __name__ == "__main__":
         years_csv = snakemake.input.year_csv
         activity_upper_limit_csv = snakemake.output.activity_upper_limit_csv
     else:
-        technology_csv = "results/India/data/TECHNOLOGY.csv"
+        technology_csv = "results/ASEAN/data/TECHNOLOGY.csv"
         fuel_limit_csv = "resources/data/fuel_limits.csv"
-        region_csv = "results/India/data/REGION.csv"
-        years_csv = "results/India/data/YEAR.csv"
+        region_csv = "results/ASEAN/data/REGION.csv"
+        years_csv = "results/ASEAN/data/YEAR.csv"
         activity_upper_limit_csv = ""
 
     regions = import_set(region_csv)
