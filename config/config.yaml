@@ -260,7 +260,7 @@ emission_limit:
  - ['CO2', 'ZAF', 'LINEAR', 2050, 0]
  - ['CO2', 'ZMB', 'LINEAR', 2030, 1.11]
  - ['CO2', 'ZWE', 'LINEAR', 2030, 1.5]
- - ['CO2', 'NAM', 'POINT', 2050, 0]
+ - ['CO2', 'NAM', 'LINEAR', 2050, 0]
 # Conditional targets 
 # - ['CO2', 'AGO', 'LINEAR', 2025, 1.92]
 # - ['CO2', 'COD', 'LINEAR', 2030, 0.43]
