@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "250116SAPPv5"
+scenario: "250120SAPPv6"
 
 # Temporal Parameters 
 startYear: 2023
@@ -250,9 +250,8 @@ emission_limit:
 # COUNTRY yet only a single target per YEAR.
 
 # Net-Zero and Unconditiontal targets
- - ['CO2', 'AGO', 'LINEAR', 2025, 2.17]
- - ['CO2', 'BWA', 'LINEAR', 2030, 0.24]
- - ['CO2', 'COD', 'LINEAR', 2030, 0.68]
+ - ['CO2', 'AGO', 'LINEAR', 2025, 2.17] 
+ - ['CO2', 'COD', 'POINT', 2030, 0.54]
  - ['CO2', 'MWI', 'LINEAR', 2040, 0.13]
  - ['CO2', 'MWI', 'LINEAR', 2050, 0]
  - ['CO2', 'TZA', 'LINEAR', 2030, 2.58]
