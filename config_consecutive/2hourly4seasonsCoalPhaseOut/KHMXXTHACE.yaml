@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "IDNJWIDNSM"
+scenario: "KHMXXTHACE"
 
 # Temporal Parameters 
 startYear: 2023
@@ -74,6 +74,7 @@ no_invest_technologies:
   - "WAS"
   - "COG" 
   - "PET"
+  - "COA"
 
 # Result Parameters 
 results_by_country: True
@@ -133,7 +134,7 @@ user_defined_capacity_transmission:
   #trn22: [TRNMMRXXTHANO, 0, 2020, 2030, 2030, 0.365, 387, 13.5, 4, 97.4] # AIMS III ID - 11, COD 2030 assumed
   #trn23: [TRNKHMXXLAOXX, 0, 2020, 2026, 2026, 0.25, 477, 16.7, 4, 96.1] # AIMS III ID - 13, 250 MW assumed (115 kV line)
   #trn24: [TRNKHMXXLAOXX, 0, 2020, 2030, 2030, 1, 477, 16.7, 4, 96.1] # AIMS III ID - 13, 1 GW assumed (500 kV line)
-  #trn25: [TRNKHMXXTHACE, 0, 2020, 2030, 2030, 0.65, 426, 14.9, 4, 96.8] # AIMS III ID - 14, COD 2030 assumed
+  trn25: [TRNKHMXXTHACE, 0, 2020, 2030, 2030, 0.65, 426, 14.9, 4, 96.8] # AIMS III ID - 14, COD 2030 assumed
   #trn26: [TRNIDNKAMYSSH, 0, 2020, 2029, 2029, 0.5, 471, 16.5, 4, 96.1] # AIMS III ID - 15, 500 MW assumed
   #trn27: [TRNIDNSMSGPXX, 0, 2020, 2030, 2030, 1.6, 446, 15.6, 4, 96.5] # AIMS III ID - 16, COD 2030 assumed following target
   #trn28: [TRNLAOXXMMRXX, 0, 2020, 2027, 2027, 0.6, 463, 16.2, 4, 96.3] # AIMS III ID - 17, 600 MW assumed following highest value
@@ -144,7 +145,7 @@ user_defined_capacity_transmission:
   #trn31: [TRNMYSPEMYSSK, 0, 2020, 2030, 2030, 1.6, 586, 20.5, 4, 95.3] # AIMS III ID - 3, COD 2030 assumed
   #trn32: [TRNMYSSHMYSSK, 0, 2020, 2030, 2030, 0.05, 489, 17.1, 4, 95.9] # AIMS III ID - 8, COD 2030 assumed
   #trn33: [TRNIDNJWIDNKA, 0, 2020, 2030, 2030, 0.5, 683, 23.9, 4, 94.1] # AIMS III ID - 18a, 500 MW assumed, COD 2030 assumed
-  trn34: [TRNIDNJWIDNSM, 0, 2020, 2031, 2031, 2.6, 634, 22.2, 4, 93.8] # AIMS III ID - 18b
+  #trn34: [TRNIDNJWIDNSM, 0, 2020, 2031, 2031, 2.6, 634, 22.2, 4, 93.8] # AIMS III ID - 18b
   
   # Additional expansion for existing Sub-National
   trn35: [TRNIDNJWIDNNU, 0, 2020, 2030, 2050, 0.5, 527, 18.5, 4, 95.3]
@@ -194,7 +195,6 @@ storage_parameters:
   # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
   # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
   SDS: [1938, 44.25, 0.002, 85, 4]
-  LDS: [3794, 20.2, 0.58, 80, 10]  
 
 nodes_to_add:
  #- "AAAXX" where AAA is a 3-letter country code, 
@@ -241,7 +241,6 @@ reserve_margin_technologies:
 # reserve margin. Technologies that are not listed are excluded from contributing.
   BIO : 90
   CCG : 90
-  COA : 90
   CCS : 90  
   COG : 50
   CSP : 30
@@ -305,8 +304,105 @@ max_availability_factors:
 # the default values from availability_factors.csv in resources/data. This parameter can
 # be used to constrain the maximum output of technologies to, for example, mimic 
 # max generation policy targets.
-# - ['IDN', 'COA', 2025, 2049, 30]
-# - ['IDN', 'COA', 2050, 2050, 25]
+ - ['BRN', 'COA', 2025, 2026, 81.8]
+ - ['IDN', 'COA', 2025, 2026, 81.8]
+ - ['KHM', 'COA', 2025, 2026, 81.8]
+ - ['LAO', 'COA', 2025, 2026, 81.8]
+ - ['MMR', 'COA', 2025, 2026, 81.8]
+ - ['MYS', 'COA', 2025, 2026, 81.8]
+ - ['PHL', 'COA', 2025, 2026, 81.8]
+ - ['THA', 'COA', 2025, 2026, 81.8]
+ - ['VNM', 'COA', 2025, 2026, 81.8]
+ - ['BRN', 'COA', 2026, 2027, 73.6]
+ - ['IDN', 'COA', 2026, 2027, 73.6]
+ - ['KHM', 'COA', 2026, 2027, 73.6]
+ - ['LAO', 'COA', 2026, 2027, 73.6]
+ - ['MMR', 'COA', 2026, 2027, 73.6]
+ - ['MYS', 'COA', 2026, 2027, 73.6]
+ - ['PHL', 'COA', 2026, 2027, 73.6]
+ - ['THA', 'COA', 2026, 2027, 73.6]
+ - ['VNM', 'COA', 2026, 2027, 73.6]
+ - ['BRN', 'COA', 2027, 2028, 65.5]
+ - ['IDN', 'COA', 2027, 2028, 65.5]
+ - ['KHM', 'COA', 2027, 2028, 65.5]
+ - ['LAO', 'COA', 2027, 2028, 65.5]
+ - ['MMR', 'COA', 2027, 2028, 65.5]
+ - ['MYS', 'COA', 2027, 2028, 65.5]
+ - ['PHL', 'COA', 2027, 2028, 65.5]
+ - ['THA', 'COA', 2027, 2028, 65.5]
+ - ['VNM', 'COA', 2027, 2028, 65.5]
+ - ['BRN', 'COA', 2028, 2029, 57.3]
+ - ['IDN', 'COA', 2028, 2029, 57.3]
+ - ['KHM', 'COA', 2028, 2029, 57.3]
+ - ['LAO', 'COA', 2028, 2029, 57.3]
+ - ['MMR', 'COA', 2028, 2029, 57.3]
+ - ['MYS', 'COA', 2028, 2029, 57.3]
+ - ['PHL', 'COA', 2028, 2029, 57.3]
+ - ['THA', 'COA', 2028, 2029, 57.3]
+ - ['VNM', 'COA', 2028, 2029, 57.3]
+ - ['BRN', 'COA', 2029, 2030, 49.1]
+ - ['IDN', 'COA', 2029, 2030, 49.1]
+ - ['KHM', 'COA', 2029, 2030, 49.1]
+ - ['LAO', 'COA', 2029, 2030, 49.1]
+ - ['MMR', 'COA', 2029, 2030, 49.1]
+ - ['MYS', 'COA', 2029, 2030, 49.1]
+ - ['PHL', 'COA', 2029, 2030, 49.1]
+ - ['THA', 'COA', 2029, 2030, 49.1]
+ - ['VNM', 'COA', 2029, 2030, 49.1]
+ - ['BRN', 'COA', 2030, 2031, 40.9]
+ - ['IDN', 'COA', 2030, 2031, 40.9]
+ - ['KHM', 'COA', 2030, 2031, 40.9]
+ - ['LAO', 'COA', 2030, 2031, 40.9]
+ - ['MMR', 'COA', 2030, 2031, 40.9]
+ - ['MYS', 'COA', 2030, 2031, 40.9]
+ - ['PHL', 'COA', 2030, 2031, 40.9]
+ - ['THA', 'COA', 2030, 2031, 40.9]
+ - ['VNM', 'COA', 2030, 2031, 40.9]
+ - ['BRN', 'COA', 2031, 2032, 32.7]
+ - ['IDN', 'COA', 2031, 2032, 32.7]
+ - ['KHM', 'COA', 2031, 2032, 32.7]
+ - ['LAO', 'COA', 2031, 2032, 32.7]
+ - ['MMR', 'COA', 2031, 2032, 32.7]
+ - ['MYS', 'COA', 2031, 2032, 32.7]
+ - ['PHL', 'COA', 2031, 2032, 32.7]
+ - ['THA', 'COA', 2031, 2032, 32.7]
+ - ['VNM', 'COA', 2031, 2032, 32.7]
+ - ['BRN', 'COA', 2032, 2033, 24.5]
+ - ['IDN', 'COA', 2032, 2033, 24.5]
+ - ['KHM', 'COA', 2032, 2033, 24.5]
+ - ['LAO', 'COA', 2032, 2033, 24.5]
+ - ['MMR', 'COA', 2032, 2033, 24.5]
+ - ['MYS', 'COA', 2032, 2033, 24.5]
+ - ['PHL', 'COA', 2032, 2033, 24.5]
+ - ['THA', 'COA', 2032, 2033, 24.5]
+ - ['VNM', 'COA', 2032, 2033, 24.5]
+ - ['BRN', 'COA', 2033, 2034, 16.4]
+ - ['IDN', 'COA', 2033, 2034, 16.4]
+ - ['KHM', 'COA', 2033, 2034, 16.4]
+ - ['LAO', 'COA', 2033, 2034, 16.4]
+ - ['MMR', 'COA', 2033, 2034, 16.4]
+ - ['MYS', 'COA', 2033, 2034, 16.4]
+ - ['PHL', 'COA', 2033, 2034, 16.4]
+ - ['THA', 'COA', 2033, 2034, 16.4]
+ - ['VNM', 'COA', 2033, 2034, 16.4]
+ - ['BRN', 'COA', 2034, 2035, 8.2]
+ - ['IDN', 'COA', 2034, 2035, 8.2]
+ - ['KHM', 'COA', 2034, 2035, 8.2]
+ - ['LAO', 'COA', 2034, 2035, 8.2]
+ - ['MMR', 'COA', 2034, 2035, 8.2]
+ - ['MYS', 'COA', 2034, 2035, 8.2]
+ - ['PHL', 'COA', 2034, 2035, 8.2]
+ - ['THA', 'COA', 2034, 2035, 8.2]
+ - ['VNM', 'COA', 2034, 2035, 8.2]
+ - ['BRN', 'COA', 2035, 2050, 0]
+ - ['IDN', 'COA', 2035, 2050, 0]
+ - ['KHM', 'COA', 2035, 2050, 0]
+ - ['LAO', 'COA', 2035, 2050, 0]
+ - ['MMR', 'COA', 2035, 2050, 0]
+ - ['MYS', 'COA', 2035, 2050, 0]
+ - ['PHL', 'COA', 2035, 2050, 0]
+ - ['THA', 'COA', 2035, 2050, 0]
+ - ['VNM', 'COA', 2035, 2050, 0]
  
 fossil_capacity_targets:
 # [NODE, TECHNOLOGY, START_YEAR, END_YEAR, SENSE, VALUE]
@@ -315,9 +411,9 @@ fossil_capacity_targets:
 # capacity value. Note that in case 'ABS' or 'MAX' is applied, the given value needs to be 
 # higher than the residual capacity of that technology in the given year otherwise the workflow
 # will not complete. Targets can only be set at the nodal level.
- - ['KHMXX', 'COA', 2030, 2050, 'MAX', 2.266]
- - ['KHMXX', 'CCG', 2040, 2040, 'ABS', 0.9]
- - ['MMRXX', 'COA', 2030, 2030, 'ABS', 3.62]
+# - ['KHMXX', 'COA', 2030, 2050, 'MAX', 2.266]
+# - ['KHMXX', 'CCG', 2040, 2040, 'ABS', 0.9]
+# - ['MMRXX', 'COA', 2030, 2030, 'ABS', 3.62]
 
 re_targets:
 # TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]

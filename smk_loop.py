@@ -2,7 +2,7 @@ import subprocess
 import os
 import shutil
 
-config_dir = 'config_consecutive/2hourly4seasonsLDS'
+config_dir = 'config_consecutive/2hourly4seasonsCoalPhaseOut'
 data_dir = 'results/data'
 
 '''Set to 'list' to only run scenarios in 'scenario_list' or set to 'folder' to run all
