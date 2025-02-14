@@ -177,6 +177,10 @@ rule calcualte_headline_metrics:
         "Calculating Headline Metrics..."
     params:
         storage = config['storage_parameters'],
+        otoole_input = "resources/otoole.yaml"
+        otoole_results = "resources/otoole.yaml"
+        input_dir = "results/{scenario}/data/"
+        result_dir = "results/{scenario}/results/"
     input:
         annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
         production_by_technology = "results/{scenario}/results/ProductionByTechnologyAnnual.csv",

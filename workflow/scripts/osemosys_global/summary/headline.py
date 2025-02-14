@@ -3,6 +3,9 @@
 import pandas as pd
 from typing import Optional
 from constants import RENEWABLES, FOSSIL, CLEAN
+from otoole import read
+from utils import get_discount_factor
+from pathlib import Path
 
 
 def get_emissions(annual_emissions: pd.DataFrame) -> pd.DataFrame:
@@ -24,11 +27,9 @@ def get_system_cost(total_discounted_cost: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame([data], columns=["Metric", "Unit", "Value"])
 
 
-def get_gen_cost(
-    total_discounted_cost: pd.DataFrame, demand: pd.DataFrame
-) -> pd.DataFrame:
+def get_gen_cost(cost: pd.DataFrame, demand: pd.DataFrame) -> pd.DataFrame:
 
-    costs = total_discounted_cost.copy()
+    costs = cost.copy()
     dem = demand.copy()
 
     total_cost = costs.VALUE.sum()  # $M
@@ -37,7 +38,7 @@ def get_gen_cost(
     # ($M / PJ) ($1000000 / $M) (1 PJ / 1000 TJ) (1 TJ / 1000 GJ) (1 GJ / 1000 MJ) (3600sec / 1000 hr) = 3.6
     gen_cost = ((total_cost / total_demand) * 3.6).round(0)
 
-    data = ["Cost of electricity", "$/MWh", gen_cost]
+    data = ["Discounted Cost of electricity", "$/MWh", gen_cost]
     return pd.DataFrame([data], columns=["Metric", "Unit", "Value"])
 
 
@@ -52,7 +53,7 @@ def _filter_pwr_techs(
     """
 
     df = production_by_technology.copy()
-    df = df.loc[df.index.get_level_values("FUEL").str.startswith('ELC')]
+    df = df.loc[df.index.get_level_values("FUEL").str.startswith("ELC")]
 
     df = df[
         (df.index.get_level_values("TECHNOLOGY").str.startswith("PWR"))
@@ -72,7 +73,7 @@ def _filter_techs(
 ) -> pd.DataFrame:
 
     df = production_by_technology.copy()
-    df = df.loc[df.index.get_level_values("FUEL").str.startswith('ELC')]
+    df = df.loc[df.index.get_level_values("FUEL").str.startswith("ELC")]
     df["tech"] = df.index.get_level_values("TECHNOLOGY").str[0:6]
 
     techs = [f"PWR{x}" for x in carriers]
@@ -85,9 +86,9 @@ def _filter_techs(
 def get_gen_shares(
     production_by_technology: pd.DataFrame, exclusions: Optional[list[str]] = None
 ) -> pd.DataFrame:
-    
+
     df = production_by_technology.copy()
-    df = df.loc[df.index.get_level_values("FUEL").str.startswith('ELC')]
+    df = df.loc[df.index.get_level_values("FUEL").str.startswith("ELC")]
 
     gen_total = _filter_pwr_techs(df, exclusions).VALUE.sum()
     rnw_total = _filter_techs(df, RENEWABLES).VALUE.sum()
@@ -107,42 +108,63 @@ def get_gen_shares(
     return pd.DataFrame(data, columns=["Metric", "Unit", "Value"])
 
 
+def _read_result_data(result_dir: str) -> dict[str, pd.DataFrame]:
+    """Reads in result CSVs
+
+    Issue with otoole config
+    """
+    data = {}
+    files = [Path(x) for x in Path(result_dir).iterdir()]
+    for f in files:
+        df = pd.read_csv(f)
+        df = df.set_index(df.columns[:-1].tolist())
+        data[f.stem] = df
+    return data
+
+
 if __name__ == "__main__":
     if "snakemake" in globals():
         storage = snakemake.params.storage
-        annual_emissions_csv = snakemake.input.annual_emissions
-        production_by_technology_csv = snakemake.input.production_by_technology
-        total_discounted_cost_csv = snakemake.input.total_discounted_cost
-        demand_csv = snakemake.input.demand
+        input_data_dir = snakemake.params.input_dir
+        result_data_dir = snakemake.params.result_dir
         save = snakemake.output.metrics
+        otoole_config = snakemake.params.otoole_input
     else:
         storage = {"SDS": [], "LDS": []}
-        annual_emissions_csv = "results/India/results/AnnualEmissions.csv"
-        production_by_technology_csv = (
-            "results/India/results/ProductionByTechnologyAnnual.csv"
-        )
-        total_discounted_cost_csv = "results/India/results/TotalDiscountedCost.csv"
-        demand_csv = "results/India/results/Demand.csv"
+        input_data_dir = "results/India/data"
+        result_data_dir = "results/India/results"
         save = "results/India/result_summaries/Metrics.csv"
+        otoole_config = "resources/otoole.yaml"
 
-    annual_emissions = pd.read_csv(annual_emissions_csv, index_col=[0, 1, 2])
-    production_by_technology = pd.read_csv(
-        production_by_technology_csv, index_col=[0, 1, 2, 3]
-    )
-    total_discounted_cost = pd.read_csv(total_discounted_cost_csv, index_col=[0, 1])
-    demand = pd.read_csv(demand_csv, index_col=[0, 1, 2, 3])
+    input_data, input_defaults = read(otoole_config, "csv", input_data_dir)
+    result_data = _read_result_data(result_data_dir)
+
+    if input_data["DiscountRate"].empty:
+        regions = input_data["REGION"].VALUE.to_list()
+        assert len(regions) == 1
+        input_data["DiscountRate"] = pd.DataFrame(
+            [[regions[0], input_defaults["DiscountRate"]]], columns=["REGION", "VALUE"]
+        ).set_index("REGION")
 
     if storage:
         exclusions = list(storage)
     else:
         exclusions = []
 
+    years = input_data["YEAR"].VALUE.to_list()
+    discount_factor = get_discount_factor(years, input_data["DiscountRate"])
+    result_data["DiscountedDemand"] = result_data["Demand"].div(discount_factor)
+
     dfs = []
 
-    dfs.append(get_emissions(annual_emissions))
-    dfs.append(get_system_cost(total_discounted_cost))
-    dfs.append(get_gen_cost(total_discounted_cost, demand))
-    dfs.append(get_gen_shares(production_by_technology, exclusions))
+    dfs.append(get_emissions(result_data["AnnualEmissions"]))
+    dfs.append(get_system_cost(result_data["TotalDiscountedCost"]))
+    dfs.append(
+        get_gen_cost(
+            result_data["TotalDiscountedCost"], result_data["DiscountedDemand"]
+        )
+    )
+    dfs.append(get_gen_shares(result_data["ProductionByTechnologyAnnual"], exclusions))
 
     df = pd.concat(dfs)
 
