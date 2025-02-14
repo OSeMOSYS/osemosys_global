@@ -2,7 +2,7 @@
 
 import pandas as pd
 from typing import Optional
-from .constants import SET_DTYPES
+from constants import SET_DTYPES
 
 import logging
 

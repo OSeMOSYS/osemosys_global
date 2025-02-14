@@ -4,8 +4,7 @@ import pandas as pd
 from typing import Optional
 from constants import RENEWABLES, FOSSIL, CLEAN
 from otoole import read
-from utils import get_discount_factor
-from pathlib import Path
+from utils import get_discount_factor, _read_result_data
 
 
 def get_emissions(annual_emissions: pd.DataFrame) -> pd.DataFrame:
@@ -106,20 +105,6 @@ def get_gen_shares(
     ]
 
     return pd.DataFrame(data, columns=["Metric", "Unit", "Value"])
-
-
-def _read_result_data(result_dir: str) -> dict[str, pd.DataFrame]:
-    """Reads in result CSVs
-
-    Issue with otoole config
-    """
-    data = {}
-    files = [Path(x) for x in Path(result_dir).iterdir()]
-    for f in files:
-        df = pd.read_csv(f)
-        df = df.set_index(df.columns[:-1].tolist())
-        data[f.stem] = df
-    return data
 
 
 if __name__ == "__main__":

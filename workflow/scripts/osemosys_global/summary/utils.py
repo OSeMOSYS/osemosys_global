@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 
 
 def get_discount_factor(
@@ -36,3 +37,17 @@ def get_discount_factor(
     return discount_factor.reset_index()[["REGION", "YEAR", "VALUE"]].set_index(
         ["REGION", "YEAR"]
     )
+
+
+def _read_result_data(result_dir: str) -> dict[str, pd.DataFrame]:
+    """Reads in result CSVs
+
+    Issue with otoole config
+    """
+    data = {}
+    files = [Path(x) for x in Path(result_dir).iterdir()]
+    for f in files:
+        df = pd.read_csv(f)
+        df = df.set_index(df.columns[:-1].tolist())
+        data[f.stem] = df
+    return data
