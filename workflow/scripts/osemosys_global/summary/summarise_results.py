@@ -6,7 +6,7 @@ from typing import Dict
 from configuration import ConfigFile, ConfigPaths
 from osemosys_global.visualisation.utils import transform_ts, powerplant_filter
 from osemosys_global.visualisation.constants import DAYS_PER_MONTH, MONTH_NAMES
-from osemosys_global.utils import apply_timeshift
+from osemosys_global.utils import apply_timeshift, discount_factor 
 pd.set_option('mode.chained_assignment', None)
 
 
@@ -128,7 +128,10 @@ def headline_metrics(input_data: Dict[str,pd.DataFrame], result_data: Dict[str,p
                    'Value'] = (system_cost_total/1000).round(0)
 
     # Cost of electricity generation
-    df_demand = result_data["Demand"]
+    discount_rate = input_data['DiscountRate']
+    years = input_data['YEAR'].VALUE.to_list()
+    discount_fac = discount_factor(['GLOBAL'],years, discount_rate)
+    df_demand = result_data["Demand"].mul(discount_fac)
     demand_total = df_demand.VALUE.sum()  # Total demand in TWh
     df_metrics.loc[df_metrics['Metric'].str.startswith('Cost of electricity'),
                    'Value'] = (system_cost_total/(demand_total*0.2778)).round(0)
