@@ -236,9 +236,7 @@ emission_limit:
  - ['CO2', 'AGO', 'LINEAR', 2025, 2.17] 
  - ['CO2', 'COD', 'LINEAR', 2030, 0.54]
  - ['CO2', 'MWI', 'LINEAR', 2040, 0.13]
- - ['CO2', 'MWI', 'LINEAR', 2050, 0] 
- - ['CO2', 'ZAF', 'LINEAR', 2030, 179.3]
- - ['CO2', 'ZAF', 'LINEAR', 2025, 84.37]
+ - ['CO2', 'MWI', 'LINEAR', 2050, 0]  
  - ['CO2', 'ZAF', 'LINEAR', 2050, 0]
  - ['CO2', 'ZMB', 'LINEAR', 2030, 1.57]
  - ['CO2', 'ZWE', 'LINEAR', 2030, 1.5]
@@ -252,6 +250,9 @@ emission_limit:
 # - ['CO2', 'ZMB', 'POINT', 2030, 1.11]
 # - ['CO2', 'ZWE', 'LINEAR', 2030, 0.85]
 # - ['CO2', 'TZA', 'LINEAR', 2030, 2.58]
+# - ['CO2', 'ZAF', 'LINEAR', 2030, 179.3]
+# - ['CO2', 'ZAF', 'LINEAR', 2025, 84.37]
+
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
 # where VALUE is percentage (%) minimum utilization of a given technology. This can be 
