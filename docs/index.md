@@ -17,6 +17,7 @@ energy system model.
 
 installation
 getting-started
+examples
 contributing
 model-structure
 advanced-functionality

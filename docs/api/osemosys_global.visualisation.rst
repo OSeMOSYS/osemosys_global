@@ -28,6 +28,14 @@ osemosys\_global.visualisation.utils module
    :undoc-members:
    :show-inheritance:
 
+osemosys\_global.visualisation.visualise module
+-----------------------------------------------
+
+.. automodule:: osemosys_global.visualisation.visualise
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

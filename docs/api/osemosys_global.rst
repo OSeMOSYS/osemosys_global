@@ -8,6 +8,14 @@ Subpackages
    :maxdepth: 4
 
    osemosys_global.dashboard
+   osemosys_global.demand
+   osemosys_global.emissions
+   osemosys_global.powerplant
+   osemosys_global.reserves
+   osemosys_global.storage
+   osemosys_global.summary
+   osemosys_global.transmission
+   osemosys_global.validation
    osemosys_global.visualisation
 
 Submodules
@@ -21,10 +29,10 @@ osemosys\_global.TS\_data module
    :undoc-members:
    :show-inheritance:
 
-osemosys\_global.configuration module
--------------------------------------
+osemosys\_global.check\_backstop module
+---------------------------------------
 
-.. automodule:: osemosys_global.configuration
+.. automodule:: osemosys_global.check_backstop
    :members:
    :undoc-members:
    :show-inheritance:
@@ -37,26 +45,26 @@ osemosys\_global.constants module
    :undoc-members:
    :show-inheritance:
 
-osemosys\_global.demand\_projection module
-------------------------------------------
+osemosys\_global.create\_missing\_csvs module
+---------------------------------------------
 
-.. automodule:: osemosys_global.demand_projection
+.. automodule:: osemosys_global.create_missing_csvs
    :members:
    :undoc-members:
    :show-inheritance:
 
-osemosys\_global.emissions module
----------------------------------
+osemosys\_global.custom module
+------------------------------
 
-.. automodule:: osemosys_global.emissions
+.. automodule:: osemosys_global.custom
    :members:
    :undoc-members:
    :show-inheritance:
 
-osemosys\_global.file\_check module
------------------------------------
+osemosys\_global.external\_files module
+---------------------------------------
 
-.. automodule:: osemosys_global.file_check
+.. automodule:: osemosys_global.external_files
    :members:
    :undoc-members:
    :show-inheritance:
@@ -69,82 +77,10 @@ osemosys\_global.geographic\_filter module
    :undoc-members:
    :show-inheritance:
 
-osemosys\_global.max\_capacity module
--------------------------------------
-
-.. automodule:: osemosys_global.max_capacity
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.node\_mapping module
--------------------------------------
-
-.. automodule:: osemosys_global.node_mapping
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.powerplant\_data module
-----------------------------------------
-
-.. automodule:: osemosys_global.powerplant_data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.summarise\_results module
-------------------------------------------
-
-.. automodule:: osemosys_global.summarise_results
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.trade\_flows module
-------------------------------------
-
-.. automodule:: osemosys_global.trade_flows
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.user\_defined\_capacity module
------------------------------------------------
-
-.. automodule:: osemosys_global.user_defined_capacity
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 osemosys\_global.utils module
 -----------------------------
 
 .. automodule:: osemosys_global.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.variablecosts module
--------------------------------------
-
-.. automodule:: osemosys_global.variablecosts
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.visualisation module
--------------------------------------
-
-.. automodule:: osemosys_global.visualisation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-osemosys\_global.visualise module
----------------------------------
-
-.. automodule:: osemosys_global.visualise
    :members:
    :undoc-members:
    :show-inheritance:

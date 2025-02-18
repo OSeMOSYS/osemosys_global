@@ -119,7 +119,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "OSeMOSYS Global"
-copyright = "2022, osemosys"
+copyright = "2025, osemosys"
 # copyright = f"{datetime.datetime.today().year}, {author}"
 
 
