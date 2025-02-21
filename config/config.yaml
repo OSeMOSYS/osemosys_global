@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "250120SAPPv8"
+scenario: "250120SAPPv18"
 
 # Temporal Parameters 
 startYear: 2023
@@ -87,7 +87,7 @@ no_invest_technologies:
 results_by_country: True
 
 # solver parameters
-solver: "cbc" # cbc, cplex, gurobi
+solver: "gurobi" # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, 
@@ -128,9 +128,9 @@ user_defined_capacity_transmission:
   trn1: [TRNAGOXXNAMXX, 0, 2020, 2030, 2030, 0.6, 674, 23.6, 4, 93.2] # ANNA INTERCONNECTOR, COD 2030 assumed
   trn2: [TRNAGOXXCODXX, 0, 2020, 2030, 2030, 2.0, 429, 15, 4, 96.8] # Angola–Democratic Republic of Congo-PROMARKS INTERCONNECTOR, COD 2030 assumed
   trn3: [TRNAGOXXZMBXX, 0, 2020, 2030, 2030, 2.0, 724, 25.3, 4, 92.4] # Angola–Zambia Interconnector, COD 2030 assumed
-  trn4: [TRNBWAXXZAFXX, 0, 2020, 2030, 2030, 0, 310, 10.9, 4, 98.1] # Botswana–South Africa (BOSA) Interconnector, MW not avaliable, COD 2030 assumed
+# trn4: [TRNBWAXXZAFXX, 0, 2020, 2030, 2030, 0, 310, 10.9, 4, 98.1] # Botswana–South Africa (BOSA) Interconnector, MW not avaliable, COD 2030 assumed
 
-  trn5: [TRNCODXXZMBXX, 0, 2020, 2030, 2030, 0.07, 745, 26.1, 4, 92.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
+  trn5: [TRNCODXXZMBXX, 0, 2020, 2030, 2030, 0.7, 745, 26.1, 4, 92.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
   trn6: [TRNMOZXXMWIXX, 0, 2020, 2030, 2030, 0.120, 616, 21.6, 4, 94] # Mozambique–Malawi (MOMA), COD 2030 assumed
   trn7: [TRNMWIXXTZAXX, 0, 2020, 2030, 2030, 0.05, 535, 18.7, 4, 95.2] # Tanzania-Malawi Transmission Interconnector, COD 2030 assumed
   trn8: [TRNMOZXXZMBXX, 0, 2020, 2030, 2030, 0.9, 596, 20.9, 4, 94.3] # Mozambique–Zambia Interconnector, COD 2030 assumed
@@ -294,12 +294,14 @@ re_targets:
 # technologies contribute to the target. For "ABS", only one technology can be 
 # selected per target. Note that a combination of targets can be set that affect
 # the same countries/nodes/technologies. This can be computationally intensive.
-#  T01: ['KHMXX', ['HYD'], 'ABS', 2030, 2039, 1.558]
-#  T02: ['KHMXX', ['HYD'], 'ABS', 2040, 2050, 2.973]
-#  T03: ['KHMXX', ['SPV'], 'ABS', 2030, 2039, 1.005]
-#  T04: ['KHMXX', ['SPV'], 'ABS', 2040, 2050, 3.155]
-#  T05: ['LAOXX', ['HYD'], 'ABS', 2030, 2050, 13]
-#  T06: ['SGPXX', ['SPV'], 'ABS', 2030, 2050, 1.6]
-#  T07: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2030, 2039, 35]
-#  T08: ['PHL', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO', 'WAV'], 'PCT', 2040, 2050, 50]
-#  T09: ['IDN', ['HYD', 'SPV', 'WON', 'WOF', 'BIO', 'GEO'], 'PCT', 2030, 2050, 31]
+#  T01: ['KHMXX', ['HYD'], 'ABS', 2030, 2039, 1.558] 
+   T01: ['AGOXX', ['HYD' ], 'PCT', 2025, 2050, 66]
+#  T02: ['AGOXX', ['CCG' ], 'PCT', 2025, 2050, 19]
+   T03: ['AGOXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2035, 2050, 60] 
+#  T04: ['AGOXX', ['SPV'], 'ABS', 2025, 2050, 0.07]
+#  T05: ['AGOXX', ['BIO'], 'ABS', 2025, 2050, 0.5]
+#  T06: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 15]
+#  T07: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 50]
+#  T08: ['SWZXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2030, 2050, 50]
+#  T09: ['SWZXX', ['SPV'], 'ABS', 2024, 2050, 0.04]
+#  T10: ['SWZXX', ['BIO'], 'ABS', 2024, 2050, 0.04]
