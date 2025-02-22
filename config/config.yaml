@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "250120SAPPv25"
+scenario: "250120SAPPv26"
 
 # Temporal Parameters 
 startYear: 2023
@@ -305,3 +305,4 @@ re_targets:
    T08: ['SWZXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2030, 2050, 50]
 #  T09: ['SWZXX', ['SPV'], 'ABS', 2024, 2050, 0.04]
    T10: ['SWZXX', ['BIO'], 'ABS', 2024, 2050, 0.04]
+   T11: ['NAMXX', ['HYD', 'SPV', 'WON','BIO', ], 'PCT', 2035, 2050, 60]
