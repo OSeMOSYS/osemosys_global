@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "250120SAPPv30"
+scenario: "250120SAPPv32"
 
 # Temporal Parameters 
 startYear: 2023
@@ -278,7 +278,7 @@ fossil_capacity_targets:
 # will not complete. Targets can only be set at the nodal level.
 # - ['KHMXX', 'COA', 2030, 2050, 'MAX', 2.266]
 # - ['KHMXX', 'CCG', 2040, 2040, 'ABS', 0.9]
-# - ['MMRXX', 'COA', 2030, 2030, 'ABS', 3.62]
+  - ['ZAFXX', 'CCG', 2030, 2050, 'ABS', 6.06]
 
 re_targets:
 # TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]
