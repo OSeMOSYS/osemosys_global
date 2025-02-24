@@ -126,6 +126,10 @@ rule calculate_carbon_intensity:
 rule calculate_costs:
     message:
         "Calculating Costs..."
+    params:
+        otoole_input = "resources/otoole.yaml",
+        input_dir = "results/{scenario}/data/",
+        result_dir = "results/{scenario}/results/"
     input:
         discounted_cost_by_technology = "results/{scenario}/results/DiscountedCostByTechnology.csv",
         demand = "results/{scenario}/results/Demand.csv",
@@ -177,6 +181,9 @@ rule calcualte_headline_metrics:
         "Calculating Headline Metrics..."
     params:
         storage = config['storage_parameters'],
+        otoole_input = "resources/otoole.yaml",
+        input_dir = "results/{scenario}/data/",
+        result_dir = "results/{scenario}/results/",
     input:
         annual_emissions = "results/{scenario}/results/AnnualEmissions.csv",
         production_by_technology = "results/{scenario}/results/ProductionByTechnologyAnnual.csv",
