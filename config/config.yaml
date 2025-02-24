@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "250120SAPPv32"
+scenario: "250120SAPPv34"
 
 # Temporal Parameters 
 startYear: 2023
@@ -277,7 +277,7 @@ fossil_capacity_targets:
 # will not complete. Targets can only be set at the nodal level.
 # - ['KHMXX', 'COA', 2030, 2050, 'MAX', 2.266]
 # - ['KHMXX', 'CCG', 2040, 2040, 'ABS', 0.9]
-  - ['ZAFXX', 'CCG', 2030, 2050, 'ABS', 6.06]
+#  - ['ZAFXX', 'CCG', 2030, 2050, 'ABS', 6.06]
 
 re_targets:
 # TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]
@@ -296,17 +296,17 @@ re_targets:
 #  T01: ['KHMXX', ['HYD'], 'ABS', 2030, 2039, 1.558] 
    T01: ['AGOXX', ['HYD' ], 'PCT', 2025, 2050, 66]
 #  T02: ['AGOXX', ['CCG' ], 'PCT', 2025, 2050, 19]
-   T03: ['AGOXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2035, 2050, 60] 
-   T04: ['AGOXX', ['SPV'], 'ABS', 2025, 2050, 0.07]
+#   T03: ['AGOXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2035, 2050, 60] 
+#   T04: ['AGOXX', ['SPV'], 'ABS', 2025, 2050, 0.07]
 #  T05: ['AGOXX', ['BIO'], 'ABS', 2025, 2050, 0.5]
    T06: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 15]
    T07: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 50]
    T08: ['SWZXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2030, 2050, 50]
 #  T09: ['SWZXX', ['SPV'], 'ABS', 2024, 2050, 0.04]
-   T10: ['SWZXX', ['BIO'], 'ABS', 2024, 2050, 0.04]
-   T11: ['NAMXX', ['HYD', 'SPV', 'WON','BIO', ], 'PCT', 2035, 2050, 60]
-   T12: ['ZAFXX', ['WON'], 'ABS', 2030, 2050, 14.4]
-   T13: ['ZAFXX', ['SPV'], 'ABS', 2030, 2050, 6]
-   T14: ['TZAXX', ['HYD', 'SPV', 'GEO','BIO', ], 'PCT', 2030, 2050, 75]
-   T15: ['ZWEXX', ['HYD', 'SPV', 'GEO','BIO', 'WON'], 'PCT', 2030, 2050, 26.5]
-   T16: ['ZMBXX', ['HYD', 'SPV', 'WON','GEO',], 'PCT', 2030, 2050, 30]
+#   T10: ['SWZXX', ['BIO'], 'ABS', 2024, 2050, 0.04]
+#   T11: ['NAMXX', ['HYD', 'SPV', 'WON','BIO', ], 'PCT', 2035, 2050, 60]
+#   T12: ['ZAFXX', ['WON'], 'ABS', 2030, 2050, 14.4]
+#   T13: ['ZAFXX', ['SPV'], 'ABS', 2030, 2050, 6]
+#   T14: ['TZAXX', ['HYD', 'SPV', 'GEO','BIO', ], 'PCT', 2030, 2050, 75]
+#   T15: ['ZWEXX', ['HYD', 'SPV', 'GEO','BIO', 'WON'], 'PCT', 2030, 2050, 26.5]
+#   T16: ['ZMBXX', ['HYD', 'SPV', 'WON','GEO',], 'PCT', 2030, 2050, 30]
