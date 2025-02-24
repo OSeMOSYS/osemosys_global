@@ -1,0 +1,311 @@
+# Scenario Name 
+scenario: "ZMBXXZWEXX"
+
+# Temporal Parameters 
+startYear: 2023
+endYear: 2050
+daytype: False
+dayparts:
+  #daypart : [start_hour (inclusive), end_hour (exclusive)]
+  D1: [1, 13]
+  D2: [13, 25]
+  #D1: [1, 3]
+  #D2: [3, 5]
+  #D3: [5, 7]
+  #D4: [7, 9]
+  #D5: [9, 11]
+  #D6: [11, 13]
+  #D7: [13, 15]
+  #D8: [15, 17]
+  #D9: [17, 19]
+  #D10: [19, 21]
+  #D11: [21, 23]
+  #D12: [23, 25]
+  
+seasons:
+  #season : [month 1, month 2, ...] (all inclusive)
+  S1: [1, 2, 3, 4, 5, 6]
+  S2: [7, 8, 9, 10, 11, 12]
+  #S1: [1, 2, 3]
+  #S2: [4, 5, 6]
+  #S3: [7, 8, 9, 10, 11, 12]
+  #S4: [10, 11, 12]
+
+timeshift: 0 # value between -11 and 12
+  
+# Spatial Parameters 
+geographic_scope:
+  - "AGO"
+  - "BWA"
+  - "COD"
+  - "SWZ"
+  - "LSO"
+  - "MWI"
+  - "MOZ"
+  - "NAM"
+  - "ZAF"
+  - "TZA"
+  - "ZMB"
+  - "ZWE"          
+
+# Set to True if transmission should be included
+crossborderTrade: True
+
+# Set to True if existing transmission capacities should be included
+# from the Global Transmission Database (Brinkerink et al., 2024).
+transmission_existing: True
+
+# Set to True if planned transmission capacities should be included
+# from the Global Transmission Database (Brinkerink et al., 2024).
+transmission_planned: True
+
+# Set to True if existing storage capacities should be included
+# from the Global Energy Storage Database (DOE/Sandia).
+storage_existing: True
+
+# Set to True if planned storage capacities should be included
+# from the Global Energy Storage Database (DOE/Sandia).
+storage_planned: True
+
+# Emission Parameters 
+emission_penalty: 
+# - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
+# where VALUE is in M$/MT CO2
+
+# Investment Parameters 
+no_invest_technologies: 
+  - "CSP"
+  - "WAV"
+  - "OTH"
+  - "WAS"
+  - "COG" 
+  - "PET"
+  - "GEO"
+  - "BIO" 
+ 
+# Result Parameters 
+results_by_country: True
+
+# solver parameters
+solver: "cbc" # cbc, cplex, gurobi
+
+user_defined_capacity:
+  # technology: [capacity, 
+  #              build_year, 
+  #              first_year_of_expansion, 
+  #              build_rate_per_year, 
+  #              capex_cost, 
+  #              efficiency]
+  # Units are in GW (capacity/build_rate_per_year), m$/GW (capex_cost), 
+  # % (efficiency).
+
+user_defined_capacity_transmission:
+  # entry: [technology,
+  #         capacity, 
+  #         build_year, 
+  #         first_year_of_expansion, 
+  #         final_year_of_expansion,   
+  #         build_rate_per_year, 
+  #         capex_cost,
+  #         annual_fixed_O&M_cost,
+  #         variable_O&M_cost,
+  #         efficiency]
+  # Per technology, only the capacity, build_year, first_year_of_expansion, 
+  # final_year_of_expansion and build_rate_per_year parameters can deviate
+  # from each other. For all other parameters only the last entry will be used.
+
+  #Scenario 1 (no additional transmission - Baseline)
+
+  #Scenario 2
+  #trn8: [TRNNAMXXZMBXX, 0, 2020, 2030, 2030, 0.3, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
+  
+  #Scenario 3  
+  trn12: [TRNZMBXXZWEXX, 0, 2020, 2030, 2030, 0.3, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2031 assumed as this will appear duplicate to Zambia-Zimbabwe
+  
+  #Scenario 4
+  #trn8: [TRNNAMXXZMBXX, 0, 2020, 2030, 2030, 0.3, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
+  #trn12: [TRNZMBXXZWEXX, 0, 2020, 2030, 2030, 0.3, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2031 assumed as this will appear duplicate to Zambia-Zimbabwe  
+  
+  #Scenario 5
+  #trn1: [TRNAGOXXNAMXX, 0, 2020, 2030, 2030, 0.6, 674, 23.6, 4, 93.2] # ANNA INTERCONNECTOR, COD 2030 assumed
+  #trn2: [TRNAGOXXCODXX, 0, 2020, 2030, 2030, 2.0, 429, 15, 4, 96.8] # Angola–Democratic Republic of Congo-PROMARKS INTERCONNECTOR, COD 2030 assumed
+  #trn3: [TRNAGOXXZMBXX, 0, 2020, 2030, 2030, 2.0, 724, 25.3, 4, 92.4] # Angola–Zambia Interconnector, COD 2030 assumed
+  #trn4: [TRNCODXXZMBXX, 0, 2020, 2030, 2030, 0.7, 745, 26.1, 4, 92.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
+  #trn5: [TRNMOZXXMWIXX, 0, 2020, 2030, 2030, 0.120, 616, 21.6, 4, 94] # Mozambique–Malawi (MOMA), COD 2030 assumed
+  #trn6: [TRNMWIXXTZAXX, 0, 2020, 2030, 2030, 0.05, 535, 18.7, 4, 95.2] # Tanzania-Malawi Transmission Interconnector, COD 2030 assumed
+  #trn7: [TRNMOZXXZMBXX, 0, 2020, 2030, 2030, 0.9, 596, 20.9, 4, 94.3] # Mozambique–Zambia Interconnector, COD 2030 assumed
+  #trn8: [TRNNAMXXZMBXX, 0, 2020, 2030, 2030, 0.3, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
+  #trn9: [TRNZAFXXZWEXX, 0, 2020, 2030, 2030, 1.2, 531, 18.6, 4, 95.3] # MoZiSa Transmission Project, COD 2030 assumed
+  #trn10: [TRNTZAXXZMBXX, 0, 2020, 2030, 2030, 0.04, 662, 23.2, 4, 93.3] # Tanzania–Zambia (TAZA) Interconnector, COD 2030 assumed
+  #trn11: [TRNMOZXXTZAXX, 0, 2020, 2030, 2030, 1.5, 832, 29.1, 4, 90.8] # Mozambique–Tanzania Interconnector (MOTA), COD 2030 assumed 
+  #trn12: [TRNZMBXXZWEXX, 0, 2020, 2030, 2030, 0.6, 392, 13.7, 4, 97.3]#  ZiZaBoNa and Zambia–Zimbabwe Interconnector (Kariba North Bank to Kariba South Bank), COD 2030 assumed
+  #trn13: [TRNMOZXXZWEXX, 0, 2020, 2030, 2030, 1.2, 516, 18.1, 4, 95.5]  # MoZiSa Transmission Project, COD 2030 assumed  
+  
+user_defined_capacity_storage:
+  # entry: [technology, 
+  #         capacity, 
+  #         build_year, 
+  #         first_year_of_expansion, 
+  #         build_rate_per_year, 
+  #         capex_cost, 
+  #         annual_fixed_O&M_cost, 
+  #         variable_O&M_cost, 
+  #         roundtrip_efficiency]
+#  sto1: [PWRSDSINDWE01, 2, 2010, 2025, 3, 1800, 40, 0, 87]
+  # Per technology, only the capacity and build_year
+  # parameters can deviate from each other. For all other
+  # parameters only the last entry will be used.
+  # Units are in GW (capacity/build_rate_per_year), m$/GW (capex_cost/annual_fixed_O&M_cost), 
+  # $/MWh (variable_O&M_cost), % (roundtrip_efficiency).
+
+transmission_parameters:
+  # technology_group: [Line CAPEX, 
+  #                    Converter pair CAPEX, 
+  #                    Line losses, 
+  #                    AC/DC Converter pair losses, 
+  #                    Fixed O&M costs, 
+  #                    Variable O&M costs]
+  # Units are in $2020/MW/KM (Line CAPEX), $2020/MW (Converter pair CAPEX),
+  # %/1000km (Line losses), % (AC/DC Converter pair losses), 
+  # % of total CAPEX/yr (Fixed O&M costs), $/MWh (Variable O&M costs).
+  HVAC: [779, 95400, 6.75, 0, 3.5, 4]
+  HVDC: [238, 297509, 3.5, 1.3, 3.5, 4]
+  HVDC_subsea: [295, 297509, 3.5, 1.3, 3.5, 4]
+
+storage_parameters:
+  # technology_group: [capex_cost,
+  #                    annual_fixed_O&M_cost,
+  #                    variable_O&M_cost,
+  #                    roundtrip_efficiency,
+  #                    duration]
+  # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
+  # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
+  SDS: [1938, 44.25, 0.002, 85, 4] 
+
+nodes_to_add:
+ #- "AAAXX" where AAA is a 3-letter country code, 
+ # specified in the "geographic scope" 
+ # and XX is a 2-letter sub-regional node code. 
+ # E.g. - "IDNSM" for a sub-regional node in Sumatra, Indonesia.
+ 
+
+nodes_to_remove:
+#- "AAAXX" where AAA is a 3-letter country code, and XX is a 2-letter 
+# sub-national code
+ 
+reserve_margin:
+# RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
+# Years for which there is no PERCENTAGE value will be interpolated
+  RM1: [10, 2030, 2050]
+  
+reserve_margin_technologies:
+# TECHNOLOGY: PERCENTAGE,
+# Specify the share of capacity (%) per technology that can contribute to the
+# reserve margin. Technologies that are not listed are excluded from contributing.
+  BIO : 90
+  CCG : 90
+  COA : 90
+  CCS : 90  
+  COG : 50
+  CSP : 30
+  GEO : 90
+  HYD : 30
+  OCG : 90
+  OIL : 90
+  OTH : 90
+  PET : 90
+  SPV : 0
+  URN : 90
+  WAS : 90
+  WAV : 10
+  WOF : 10
+  WON : 10
+  SDS : 69
+
+emission_limit:
+# - [EMISSION, COUNTRY, TYPE, YEAR, VALUE]
+# where VALUE is emissions in million tonnes of CO2-equivalent and YEAR is  
+# when that constraint must be adhered to. All years between multiple emission 
+# constraints will be interpolated if TYPE is set to "LINEAR". If "POINT" is used
+# it means that a singular year value is set without interpolation occuring in
+# previous target years. A combination of TYPE targets can be set per EMISSION and
+# COUNTRY yet only a single target per YEAR.
+
+# Net-Zero and Unconditiontal targets
+ - ['CO2', 'AGO', 'LINEAR', 2025, 2.17] 
+ - ['CO2', 'COD', 'LINEAR', 2030, 0.54]
+ - ['CO2', 'MWI', 'LINEAR', 2040, 0.13]
+ - ['CO2', 'MWI', 'LINEAR', 2050, 0]  
+ - ['CO2', 'ZAF', 'LINEAR', 2050, 0]
+ - ['CO2', 'ZMB', 'LINEAR', 2030, 1.57]
+ - ['CO2', 'ZWE', 'LINEAR', 2030, 1.5]
+ - ['CO2', 'NAM', 'LINEAR', 2050, 0]
+# Conditional targets 
+# - ['CO2', 'AGO', 'LINEAR', 2025, 1.92]
+# - ['CO2', 'COD', 'LINEAR', 2030, 0.43]
+# - ['CO2', 'MWI', 'LINEAR', 2040, 0.07]
+# - ['CO2', 'NAM', 'LINEAR', 2030, -0.29]
+# - ['CO2', 'NAM', 'LINEAR', 2030, -0.26]
+# - ['CO2', 'ZMB', 'POINT', 2030, 1.11]
+# - ['CO2', 'ZWE', 'LINEAR', 2030, 0.85]
+# - ['CO2', 'TZA', 'LINEAR', 2030, 2.58]
+# - ['CO2', 'ZAF', 'LINEAR', 2030, 179.3]
+# - ['CO2', 'ZAF', 'LINEAR', 2025, 84.37]
+
+min_generation_factors:
+# TECHNOLOGY: [VALUE, COUNTRY, YEAR]
+# where VALUE is percentage (%) minimum utilization of a given technology. This can be 
+# used to constrain power plant output (generation), for example, to calibrate historical
+# generation values.
+#  OCG1: [50, "IND", 2021]
+  
+max_availability_factors:
+# [COUNTRY/NODE, TECHNOLOGY, START_YEAR, END_YEAR, VALUE]
+# where VALUE is percentage (%) MAX availability of a given technology. This overwrites
+# the default values from availability_factors.csv in resources/data. This parameter can
+# be used to constrain the maximum output of technologies to, for example, mimic 
+# max generation policy targets.
+# - ['IDN', 'COA', 2025, 2049, 30]
+# - ['IDN', 'COA', 2050, 2050, 25]
+ 
+fossil_capacity_targets:
+# [NODE, TECHNOLOGY, START_YEAR, END_YEAR, SENSE, VALUE]
+# where VALUE is the absolute (GW) capacity constraint and SENSE sets the type of constraint.
+# E.g. 'ABS' sets a fixed value, 'MIN' sets a minimum capacity value and 'MAX' sets a maximum
+# capacity value. Note that in case 'ABS' or 'MAX' is applied, the given value needs to be 
+# higher than the residual capacity of that technology in the given year otherwise the workflow
+# will not complete. Targets can only be set at the nodal level.
+# - ['KHMXX', 'COA', 2030, 2050, 'MAX', 2.266]
+# - ['KHMXX', 'CCG', 2040, 2040, 'ABS', 0.9]
+#  - ['ZAFXX', 'CCG', 2030, 2050, 'ABS', 6.06]
+
+re_targets:
+# TARGET: [COUNTRY/NODE, [TECHNOLOGY], START_YEAR, END_YEAR, VALUE]
+# E.g. TO1: ["IND", [], "PCT", 2030, 2040, 60]
+# E.g. TO2: ["INDSO", ['WOF', 'WON'], "PCT", 2025, 2045, 15]
+# E.g. TO3: ["INDSO", ['WOF'], "ABS", 2040, 2050, 200]
+# Targets can be set in absolute terms ("ABS", VALUE = GW) or in relative terms 
+# ("PCT", VALUE = %) where targets in relative terms represent the share of generation.
+# For "PCT", targets can be set at national (e.g. "IND") and nodal levels (e.g. "INDSO")
+# whereas "ABS" can only be set at nodal levels. For "PCT", a single technology can 
+# be set for the target (e.g. ["WOF"]) a technology subset can be set (e.g. ['WOF', 'WON'])
+# or the TECHNOLOGY list can be left empty (e.g. []) as such that all renewable
+# technologies contribute to the target. For "ABS", only one technology can be 
+# selected per target. Note that a combination of targets can be set that affect
+# the same countries/nodes/technologies. This can be computationally intensive.
+   T01: ['AGOXX', ['HYD' ], 'PCT', 2025, 2050, 66]
+#  T02: ['AGOXX', ['CCG' ], 'PCT', 2025, 2050, 19]
+#   T03: ['AGOXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2035, 2050, 60] 
+#   T04: ['AGOXX', ['SPV'], 'ABS', 2025, 2050, 0.07]
+#  T05: ['AGOXX', ['BIO'], 'ABS', 2025, 2050, 0.5]
+   T06: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 15]
+   T07: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 50]
+   T08: ['SWZXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2030, 2050, 50]
+#  T09: ['SWZXX', ['SPV'], 'ABS', 2024, 2050, 0.04]
+#   T10: ['SWZXX', ['BIO'], 'ABS', 2024, 2050, 0.04]
+#   T11: ['NAMXX', ['HYD', 'SPV', 'WON','BIO', ], 'PCT', 2035, 2050, 60]
+#   T12: ['ZAFXX', ['WON'], 'ABS', 2030, 2050, 14.4]
+#   T13: ['ZAFXX', ['SPV'], 'ABS', 2030, 2050, 6]
+#   T14: ['TZAXX', ['HYD', 'SPV', 'GEO','BIO', ], 'PCT', 2030, 2050, 75]
+#   T15: ['ZWEXX', ['HYD', 'SPV', 'GEO','BIO', 'WON'], 'PCT', 2030, 2050, 26.5]
+#   T16: ['ZMBXX', ['HYD', 'SPV', 'WON','GEO',], 'PCT', 2030, 2050, 30]

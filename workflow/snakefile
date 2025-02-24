@@ -5,7 +5,7 @@ min_version("8.0")
 
 # configuration
 
-configfile: 'config/config.yaml'
+#configfile: 'config/config.yaml'
 
 # helper functions 
 
