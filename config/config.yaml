@@ -114,17 +114,19 @@ user_defined_capacity_transmission:
   # final_year_of_expansion and build_rate_per_year parameters can deviate
   # from each other. For all other parameters only the last entry will be used.
 
-  #Scenario 1
+  #Scenario 1 (no additional transmission - Baseline)
+
+  #Scenario 2
   #trn8: [TRNNAMXXZMBXX, 0, 2020, 2030, 2030, 0.3, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
   
-  #Scenario 2  
+  #Scenario 3  
   #trn12: [TRNZMBXXZWEXX, 0, 2020, 2030, 2030, 0.3, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2031 assumed as this will appear duplicate to Zambia-Zimbabwe
   
-  #Scenario 3
+  #Scenario 4
   #trn8: [TRNNAMXXZMBXX, 0, 2020, 2030, 2030, 0.3, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
   #trn12: [TRNZMBXXZWEXX, 0, 2020, 2030, 2030, 0.3, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2031 assumed as this will appear duplicate to Zambia-Zimbabwe  
   
-  #Scenario 4
+  #Scenario 5
   trn1: [TRNAGOXXNAMXX, 0, 2020, 2030, 2030, 0.6, 674, 23.6, 4, 93.2] # ANNA INTERCONNECTOR, COD 2030 assumed
   trn2: [TRNAGOXXCODXX, 0, 2020, 2030, 2030, 2.0, 429, 15, 4, 96.8] # Angola–Democratic Republic of Congo-PROMARKS INTERCONNECTOR, COD 2030 assumed
   trn3: [TRNAGOXXZMBXX, 0, 2020, 2030, 2030, 2.0, 724, 25.3, 4, 92.4] # Angola–Zambia Interconnector, COD 2030 assumed
@@ -291,7 +293,6 @@ re_targets:
 # technologies contribute to the target. For "ABS", only one technology can be 
 # selected per target. Note that a combination of targets can be set that affect
 # the same countries/nodes/technologies. This can be computationally intensive.
-#  T01: ['KHMXX', ['HYD'], 'ABS', 2030, 2039, 1.558] 
    T01: ['AGOXX', ['HYD' ], 'PCT', 2025, 2050, 66]
 #  T02: ['AGOXX', ['CCG' ], 'PCT', 2025, 2050, 19]
 #   T03: ['AGOXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2035, 2050, 60] 
