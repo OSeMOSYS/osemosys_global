@@ -304,7 +304,7 @@ re_targets:
 #   T04: ['AGOXX', ['SPV'], 'ABS', 2025, 2050, 0.07]
 #  T05: ['AGOXX', ['BIO'], 'ABS', 2025, 2050, 0.5]
    T06: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 15]
-   T07: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2030, 2050, 50]
+   T07: ['BWAXX', ['BIO', 'SPV', 'WON', ], 'PCT', 2036, 2050, 50]
    T08: ['SWZXX', ['HYD', 'SPV', 'WON','BIO',], 'PCT', 2030, 2050, 50]
 #  T09: ['SWZXX', ['SPV'], 'ABS', 2024, 2050, 0.04]
 #   T10: ['SWZXX', ['BIO'], 'ABS', 2024, 2050, 0.04]
