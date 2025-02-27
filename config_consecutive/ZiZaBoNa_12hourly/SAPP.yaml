@@ -4,6 +4,7 @@ scenario: "SAPP"
 # Temporal Parameters 
 startYear: 2023
 endYear: 2050
+daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
   D1: [1, 13]
@@ -79,8 +80,6 @@ no_invest_technologies:
   - "WAS"
   - "COG" 
   - "PET"
-  - "GEO"
-  - "BIO" 
  
 # Result Parameters 
 results_by_country: True
