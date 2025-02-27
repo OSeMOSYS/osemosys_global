@@ -347,7 +347,7 @@ if __name__ == "__main__":
         res_targets = {'T01': ["", [], "PCT", 2048, 2050, 95],
                        'T02': ["IND", [], "PCT", 2030, 2040, 60],
                        'T03': ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15],
-                       'T04': ["INDSO", ['WOF'], "ABS", 2040, 2050, 200] 
+                       'T04': ["INDSO", ['WOF'], "ABS", 2040, 2050, 100] 
                       }
         fossil_capacity_targets = [["BTNXX", 'COA', 2030, 2050, 'ABS', 1],
                                    ["INDNE", 'CCG', 2040, 2050, 'MIN', 10],
