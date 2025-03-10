@@ -167,8 +167,7 @@ The following steps will walk through how to submit code changes.
 
 :::{seealso}
 Before contributing, please see our 
-[installation instructions](installation.md#installation) and working 
-[examples](getting-started.md#examples)
+[installation instructions](installation.md#installation)
 :::
 
 ### 1. Submit an Issue
@@ -180,27 +179,13 @@ and avoids unnecessary work.
 
 ### 2. Install the osemosys-global Conda Environment
 
-Before you start coding, we recommend creating an isolated 
-[virtual environment](https://realpython.com/python-virtual-environments-a-primer/) 
-to avoid any problems with your installed Python packages. This can easily be 
-done via [Miniconda](https://docs.conda.io/en/latest/miniconda.html):
+Before you start coding, we recommend creating an isolated [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) to avoid any problems with your installed Python packages. This can easily be 
+done via `mamba`, with instructions [here](installation.md#2-install-mamba).
 
-:::{seealso}
-How to [install](installation.md#3-create-the-conda-environment) OSeMOSYS 
-Global's prepared conda environment
-:::
+1. Activate the OSeMOSYS Global conda environment
 
-1. Install the OSeMOSYS Global conda environment.
-
-    ``` bash
-    (base) $ conda env create -f workflow/envs/osemosys-global.yaml    
-    ```
-    
-2. Activate the OSeMOSYS Global conda environment
-
-    ``` bash
+    ```bash
     (base) $ conda activate osemosys-global 
-
     (osemosys-global) $   
     ```
 
