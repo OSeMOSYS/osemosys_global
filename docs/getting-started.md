@@ -66,7 +66,7 @@ OSeMOSYS Global will automatically aggregate and ingest geo-located powerplants 
 ```{eval-rst}
 .. csv-table::
    :header-rows: 1
-   :widths: 16,16,16,16,16
+   :widths: 20,20,20,20,20,20
    :file: config_tables/generators.csv
 ```
 
@@ -76,7 +76,7 @@ OSeMOSYS Global interfaces with the [Gloabl Transmission Database](https://www.s
 ```{eval-rst}
 .. csv-table::
    :header-rows: 1
-   :widths: 16,16,16,16,16
+   :widths: 20,20,20,20,20,20
    :file: config_tables/transmission.csv
 ```
 
@@ -86,7 +86,7 @@ OSeMOSYS Global interfaces with the [DOE Gloabl Energy Storage Database](https:/
 ```{eval-rst}
 .. csv-table::
    :header-rows: 1
-   :widths: 16,16,16,16,16
+   :widths: 20,20,20,20,20,20
    :file: config_tables/storage.csv
 ```
 
@@ -96,11 +96,18 @@ A core function of energy planning models is expoloring the impacts of different
 ```{eval-rst}
 .. csv-table::
    :header-rows: 1
-   :widths: 16,16,16,16,16
+   :widths: 20,20,20,20,20,20
    :file: config_tables/policies.csv
 ```
 
 ## Units
 
-testing
+Unless otherwise specified, all results will follow the units given in the table below.
+
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 20,20
+   :file: config_tables/units.csv
+```
 

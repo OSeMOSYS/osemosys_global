@@ -1,20 +1,20 @@
-Option,Type,Restrictions,Description,Example
-**storage_existing**,bool,,Include existing storage from `DOE <https://gesdb.sandia.gov/>`_,True
-**storage_planned**,bool,,Include planned storage from `DOE <https://gesdb.sandia.gov/>`_,True
-**storage_parameters**,"dict[str,list[float]]","Must define values for short and long duration storage ('SDS','LDS')",Parameters to attach to all storage objectes of that type,"SDS: [1938, 44.25, 0, 85, 4]"
---capex_cost,float,>=0,"Capital cost of storage ($/kW)",1938
---annual_fixed_O&M_cost,float,>=0,"Annual fixed operating cost ($/kW)",44.25
---variable_O&M_cost,float,">=0","Variable operating cost ($/MWh)",0
---roundtrip_efficiency,float,">=0,<=100","Roundtrip efficiency (%)",85
---duration,float,>=0,"Hours of storage (ie. duration = storage capacity (GWh)/Power rating (GW))",4
-**user_defined_capacity_storage**,"dict[str,list[str | float]]",,Defines custom storage in the model,"sto1: [PWRSDSINDWE01, 2, 2010, 2025, 3, 1800, 40, 0, 87]"
---technology,str,Must follow naming conventions `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Name of storage,PWRSDSINDWE01
---capacity,float,>=0,"Existing capacity (GW)",2
---build_year,float,>=0,Year that existing capacity was built,
---first_year_of_expansion,float,>=first modeled year,First year that the storage can be expanded,2010
---final_year_of_expansion,float,>=first_year_of_expansion,Last year that the storage can be expanded,2025
---build_rate_per_year,float,>=0,Absolute value that the storage can be expanded year year (GW),3
---capex_cost,float,>=0,"Capital cost of the storage ($/kW)",1800
---annual_fixed_O&M_cost,float,>=0,"Fixed operational cost of storage ($/kW)",40
---variable_O&M_cost,float,>=0,"Variable operational and maintenance cost of storage ($/MWh)",0
---roundtrip_efficiency,float,">=0,<=100","Roundtrip efficiency of the storage (%)",87
+Option,Type,Unit,Restrictions,Description,Example
+**storage_existing**,bool,,,Include existing storage from `DOE <https://gesdb.sandia.gov/>`_,TRUE
+**storage_planned**,bool,,,Include planned storage from `DOE <https://gesdb.sandia.gov/>`_,TRUE
+**storage_parameters**,"dict[str,list[float]]",,"Must define values for short and long duration storage ('SDS','LDS')",Parameters to attach to all storage objectes of that type,"SDS: [1938, 44.25, 0, 85, 4]"
+--capex_cost,float,$/kW,>=0,Capital cost of storage,1938
+--annual_fixed_O&M_cost,float,$/kW,>=0,Annual fixed operating cost,44.25
+--variable_O&M_cost,float,$/MWh,>=0,Variable operating cost,0
+--roundtrip_efficiency,float,%,">=0,<=100",Roundtrip efficiency,85
+--duration,float,hours,>=0,Hours of storage (ie. duration = storage capacity (GWh)/Power rating (GW)),4
+**user_defined_capacity_storage**,"dict[str,list[str | float]]",,,Defines custom storage in the model,"sto1: [PWRSDSINDWE01, 2, 2010, 2025, 3, 1800, 40, 0, 87]"
+--technology,str,,Must follow naming conventions `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Name of storage,PWRSDSINDWE01
+--capacity,float,GW,>=0,Existing capacity,2
+--build_year,float,year,>=0,Year that existing capacity was built,
+--first_year_of_expansion,float,year,>=first modeled year,First year that the storage can be expanded,2010
+--final_year_of_expansion,float,year,>=first_year_of_expansion,Last year that the storage can be expanded,2025
+--build_rate_per_year,float,GW,>=0,Absolute value that the storage can be expanded year year,3
+--capex_cost,float,$/kW,>=0,Capital cost of the storage,1800
+--annual_fixed_O&M_cost,float,$/kW,>=0,Fixed operational cost of storage,40
+--variable_O&M_cost,float,$/MWh,>=0,Variable operational and maintenance cost of storage,0
+--roundtrip_efficiency,float,%,">=0,<=100",Roundtrip efficiency of the storage,87
