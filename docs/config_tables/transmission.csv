@@ -1,0 +1,22 @@
+Option,Type,Restrictions,Description,Example
+crossborderTrade,bool,,Include transmission,True
+transmission_existing,bool,,Include existing transmission from `GTB <https://zenodo.org/records/10870602>`_,True
+transmission_planned,bool,,Include planned transmission from `GTB <https://zenodo.org/records/10870602>`_,True
+transmission_parameters,"dict[str,list[float]]","Must define values for 'HVAC','HVDC','HVDC_subsea'",Parameters to attach to all transmission lines of that type,"HVAC: [779, 95400, 6.75, 0, 3.5, 4]"
+--Line CAPEX,float,>=0,"Capital cost of transmission lines in $2020/MW/KM",779
+--Converter pair CAPEX,float,>=0,"Capital cost of coverters $2020/MW",95400
+--Line Losses,float,">=0,<=100","Losses in line in %/1000km",6.75
+--AC/DC Converter pair losses,float,">=0,<=100","Losses due to converter in %",0
+--Fixed O&M costs,float,>=0,"Fixed operational cost in % of total CAPEX/yr",3.5
+--Variable O&M costs,float,>=0,"Variable operational and maintenance cost in $/MWh",4
+user_defined_capacity_transmission,"dict[str,list[str | float]]",,Defines custom transmission lines in the model,"trn1: [TRNINDEAINDNE, 5, 1975, 2025, 2030, 2, 350, 13, 4, 95]"
+--technology,str,Must follow naming conventions `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Name of tranmsmission line,TRNINDEAINDNE
+--capacity,float,>=0,"Existing capacity (MW)",5
+--build_year,float,>=0,Year that existing capacity was built,
+--first_year_of_expansion,float,>=first modeled year,First year that the line can be expanded,2025
+--final_year_of_expansion,float,>=first_year_of_expansion,Last year that the line can be expanded,2030
+--build_rate_per_year,float,>=0,Absolute value that the line can be expanded year year (MW),2
+--capex_cost,float,>=0,"Capital cost of transmission lines in ($2020/MW/KM)",350
+--annual_fixed_O&M_cost,float,>=0,"Fixed operational cost in % of total CAPEX/yr",13
+--variable_O&M_cost,float,>=0,"Variable operational and maintenance cost ($/MWh)",4
+--efficiency,float,">=0,<=100","Efficiency of the line (%)",95

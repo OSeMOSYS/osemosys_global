@@ -1,0 +1,7 @@
+Option,Type,Restrictions,Description,Example
+startYear,int,>=2015,First Modelled Year (inclusive),2020  
+endYear,int,<=2100,Last Modelled Year (inclusive),2050
+daytype,bool,,(Placeholder),False
+dayparts,"dict[str,list[int]]",">=1,<=25",Hours to include in each represnetative day,"D1: [1, 25]"
+seasons,"dict[str,list[int]]",">=1,<=12",Months to include in each represnetative day,"S1: [1,2,3,4,5,6,7,8,9,10,11,12]"
+timeshift,int,">=-11,<=12",Shifts plots from UTC for a timezone
