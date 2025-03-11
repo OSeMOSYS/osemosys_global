@@ -19,7 +19,7 @@ __location__ = os.path.dirname(__file__)
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../workflow/scripts/osemosys_global'))
+sys.path.insert(0, os.path.abspath("../workflow/scripts/osemosys_global"))
 # print(os.path.abspath('../workflow/scripts/osemosys_global'))
 sys.path.insert(0, os.path.join(__location__, "../workflow/scripts"))
 
@@ -44,6 +44,8 @@ try:
 except FileNotFoundError:
     pass
 
+# Do not generate api docs
+"""
 try:
     import sphinx
 
@@ -57,6 +59,7 @@ try:
     apidoc.main(args)
 except Exception as e:
     print("Running `sphinx-apidoc` failed!\n{}".format(e))
+"""
 
 # -- General configuration ---------------------------------------------------
 
@@ -107,8 +110,8 @@ templates_path = ["_templates"]
 
 # The suffix of source filenames.
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    ".rst": "restructuredtext",
+    ".md": "markdown",
 }
 
 # The encoding of source files.
