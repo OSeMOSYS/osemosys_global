@@ -19,7 +19,8 @@ osemosys_global
 ├── config/           
 │   ├── config.yaml     # General configuration options 
 ├── resources/       
-│   ├── custom_nodes/   # User defined data 
+│   ├── custom/         # User defined data 
+│   ├── default/        # Default data (DO NOT CHANGE)
 ├── results/            # Appears after running 
 │   ├── scenario_name/  # Holds model data for your scenario
 ├── workflow/                         
@@ -99,6 +100,20 @@ A core function of energy planning models is expoloring the impacts of different
    :widths: 20,20,20,20,20,20
    :file: config_tables/policies.csv
 ```
+
+## User Defined Data
+
+Often it may be easier to modify/update data through tabular format. In these instances users can update any of the data found in the `resources/data/custom` folder. Moreover, if custom nodes are defined, you must update this data. 
+
+### RE Profiles
+
+### Residual Capacity
+
+### Demand
+
+### Fuel Limits and Prices
+
+### Build Rates
 
 ## Units
 
