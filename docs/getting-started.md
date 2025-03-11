@@ -9,7 +9,7 @@ OSeMOSYS Global is an open-source, open-data model generator for creating user-c
 ![Flowchart-high-level](_static/flowchart-high-level.png "Flowchart")
 
 
-## Directory Structure 
+## Repository Structure 
 
 Upon cloning OSeMOSYS Global, the directory will look similar to tree structure shown below. Highlighted are the directories where the user is expected to interface with OSeMOSYS Global. Specifically, `config/config.yaml` holds general configuration options, `resources/custom_nodes/` holds data that the user can update to calibrate models or perform more indepth scenario analysis, finally, `results/<scenario>/` will hold all result data from a scenario run. Each of these sectors is described in detail below. 
 
@@ -77,7 +77,7 @@ OSeMOSYS Global interfaces with the [Gloabl Transmission Database](https://www.s
 .. csv-table::
    :header-rows: 1
    :widths: 16,16,16,16,16
-   :file: config_tables/generators.csv
+   :file: config_tables/transmission.csv
 ```
 
 ### Storage Options

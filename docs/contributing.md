@@ -132,7 +132,7 @@ exposed to the user for exploration.
 
 ![Flowchart](_static/flowchart.jpg "Flowchart")
 
-### Directory Structure
+### Directory Tree
 
 The directory structure of OSeMOSYS Global follows the recommended 
 [snakemake directory structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
