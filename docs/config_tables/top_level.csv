@@ -1,3 +1,3 @@
 Option,Type,Restrictions,Description,Example
-scenario,str,alpha-numeric,Name of Scenario, MyScenario 
-solver,str,"One of {'cbc','cplex','gurobi'}",Solver to use,cbc
+**scenario**,str,alpha-numeric,Name of Scenario, MyScenario 
+**solver**,str,"One of {'cbc','cplex','gurobi'}",Solver to use,cbc

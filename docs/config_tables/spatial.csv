@@ -1,4 +1,4 @@
 Option,Type,Restrictions,Description,Example
-geographic_scope,list[str],Three letter country code from `here <https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes>`_,Countries to include in model,"['BTN','IND']"
-nodes_to_add,list[str],'AAAXX' where AAA is a 3-letter country code and XX is a 2-letter sub-national node code,Defines new nodes to add to the model,IDNSM
-nodes_to_remove,list[str],'AAAXX' where AAA is a 3-letter country code and XX is a 2-letter sub-national node code,Defines nodes to remove from base model,BTNXX
+**geographic_scope**,list[str],Three letter country code from `here <https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes>`_,Countries to include in model,"['BTN','IND']"
+**nodes_to_add**,list[str],'AAAXX' where AAA is a 3-letter country code and XX is a 2-letter sub-national node code,Defines new nodes to add to the model,IDNSM
+**nodes_to_remove**,list[str],'AAAXX' where AAA is a 3-letter country code and XX is a 2-letter sub-national node code,Defines nodes to remove from base model,BTNXX

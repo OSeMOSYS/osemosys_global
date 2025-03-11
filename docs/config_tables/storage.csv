@@ -1,13 +1,13 @@
 Option,Type,Restrictions,Description,Example
-storage_existing,bool,,Include existing storage from `DOE <https://gesdb.sandia.gov/>`_,True
-storage_planned,bool,,Include planned storage from `DOE <https://gesdb.sandia.gov/>`_,True
-storage_parameters,"dict[str,list[float]]","Must define values for short and long duration storage ('SDS','LDS')",Parameters to attach to all storage objectes of that type,"SDS: [1938, 44.25, 0, 85, 4]"
+**storage_existing**,bool,,Include existing storage from `DOE <https://gesdb.sandia.gov/>`_,True
+**storage_planned**,bool,,Include planned storage from `DOE <https://gesdb.sandia.gov/>`_,True
+**storage_parameters**,"dict[str,list[float]]","Must define values for short and long duration storage ('SDS','LDS')",Parameters to attach to all storage objectes of that type,"SDS: [1938, 44.25, 0, 85, 4]"
 --capex_cost,float,>=0,"Capital cost of storage ($/kW)",1938
 --annual_fixed_O&M_cost,float,>=0,"Annual fixed operating cost ($/kW)",44.25
 --variable_O&M_cost,float,">=0","Variable operating cost ($/MWh)",0
 --roundtrip_efficiency,float,">=0,<=100","Roundtrip efficiency (%)",85
 --duration,float,>=0,"Hours of storage (ie. duration = storage capacity (GWh)/Power rating (GW))",4
-user_defined_capacity_storage,"dict[str,list[str | float]]",,Defines custom storage in the model,"sto1: [PWRSDSINDWE01, 2, 2010, 2025, 3, 1800, 40, 0, 87]"
+**user_defined_capacity_storage**,"dict[str,list[str | float]]",,Defines custom storage in the model,"sto1: [PWRSDSINDWE01, 2, 2010, 2025, 3, 1800, 40, 0, 87]"
 --technology,str,Must follow naming conventions `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Name of storage,PWRSDSINDWE01
 --capacity,float,>=0,"Existing capacity (GW)",2
 --build_year,float,>=0,Year that existing capacity was built,
