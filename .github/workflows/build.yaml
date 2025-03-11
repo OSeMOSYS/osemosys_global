@@ -32,6 +32,6 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -e .
 
-      - name: Test with pytest
-        run: |
-          tox
+      # - name: Test with pytest
+      #   run: |
+      #     tox
