@@ -159,7 +159,7 @@ Example transmission technologies are given below.
 | PWRTRNUSACA | Transmission in California, USA  |
 
 
-#### Electricity Trading Technology Codes
+### Electricity Trading Technology Codes
 
 Electricity trading technologies are responsible for trading electricity between nodes. Physical commodity trading codes are discussed later. Trading technologies connect one nodes endiuse electricity to an adjacent nodes transmission aggregator technology. The table below summarizes the codes.
 
@@ -171,21 +171,58 @@ Electricity trading technologies are responsible for trading electricity between
 | _ _ _ _ _ _ _ _ X X X _ _ | (10-11)  | 13     | Country to trade **to** |
 | _ _ _ _ _ _ _ _ _ _ _ X X | (12-13)  | 13     | Regional node to trade **to** |
 
+Example transmission technologies are given below.
+
+| Code          | Description |
+|---------------|-------------|
+| TRNCANBCCANNO | Transmission between Canada (CAN) British Columbia (BC) and Canada (CAN) North (NO) |
+| TRNCANBCUSAAK | Transmission between Canada (CAN) British Columbia (BC) and United States (USA) Alaska (AK) |
+| TRNCANBCUSANW | Transmission between Canada (CAN) British Columbia (BC) and United States (USA) North West (NW) |
+
 :::{warning}
 Trading technology codes must be alphabetical based on country codes. For example, trade between the USA and Canada will always `TRNCANxxUSAxx`
 :::
 
+### Storage Technology Codes
+
+Each storage object is comprised of two components; a capacity constrained technology compoenent and an energy constrained store component. The capacity constrained technologies operate on node transmission level electricity (ie. before the aggregator). Only generic Long Duration Storage (LDS) and Short Duration Storage (SDS) are available to be modelled. Naming conventions for the storage capacity technologies is given below.
+
+| Character Example         | Location | Length | Description |
+|---------------------------|----------|--------|-------------|
+| P W R _ _ _ _ _ _ _ _ _ _ | (01-03)  | 13     | Power generator |
+| _ _ _ L D S _ _ _ _ _ _ _ | (04-06)  | 13     | Long duration storage |
+| _ _ _ S D S _ _ _ _ _ _ _ | (04-06)  | 13     | Short durantion storage |
+| _ _ _ _ _ _ X X X _ _ _ _ | (07-09)  | 13     | Country code |
+| _ _ _ _ _ _ _ _ _ X X _ _ | (10-11)  | 13     | Regional node code |
+| _ _ _ _ _ _ _ _ _ _ _ 0 1 | (12-13)  | 13     | Investable technology |
+
+Attached to each storage technology is a storage unit which is responsible for inter-termporal energy shifting. The naming convention for these energy constrained storage units is given below.
+
+| Character Example   | Location | Length | Description |
+|---------------------|----------|--------|-------------|
+| S D S _ _ _ _ _ _ _ | (01-03)  | 11     | Short Duration Storage |
+| L D S _ _ _ _ _ _ _ | (01-03)  | 11     | Long Duration Storage |
+| _ _ _ X X X _ _ _ _ | (04-06)  | 11     | Country code |
+| _ _ _ _ _ _ X X _ _ | (07-09)  | 11     | Node code |
+| _ _ _ _ _ _ _ _ 0 1 | (09-11)  | 11     | Investable Technology |
+
+The graphic below gives an example of how short duration and long duration storage is integrated into a OSeMOSYS Global model of British Columbia, Canada. 
+
+![Storage](_static/storage.png "Storage")
+
 ## Commodity Codes
 
-Commodities (or fuels) carry energy and flow into and out of technologies in OSeMOSYS. There are three classifications of commodities in OSeMOSYS Global, primary fuel, transmission level fuel, and end use fuel.
+Commodities (or fuels) carry energy and flow into and out of technologies in OSeMOSYS. There are three classifications of commodities in OSeMOSYS Global, primary fuel, transmission level fuel, and end use fuel. These are graphically shown below.
+
+![Commodity-codes](_static/fuel-types.png "Commodity Codes")
 
 ### Primary Fuel Codes
 
-Primary fuels in OSeMOSYS Global can be three, six, or eight characters long. Depending on the fuels purpose, the country and/or region may or may not need to be tracked. 
+Primary fuels in OSeMOSYS Global can be six or eight characters long. Depending on the fuels purpose, the country and/or region may or may not need to be tracked. 
 
 | Character Example   | Location | Length    | Description |
 |---------------------|----------|-----------|-------------|
-| X X X ( _ _ _ _ _ ) | (01-03)  | 3 / 6 / 8 | Commodity code |
+| X X X _ _ _ _ _     | (01-03)  | 6 / 8     | Commodity code |
 | _ _ _ X X X ( _ _ ) | (04-06)  | 6 / 8     | Country code for domestic or `INT` for international|
 | _ _ _ _ _ _ X X     | (07-08)  | 8         | Regional node code |
 
@@ -193,8 +230,7 @@ Examples of primary fuels are given below
 
 | Code     | Description |
 |----------|-------------|
-| GAS      | Gas **to** international mining |
-| GASINT   | Gas **from** international mining |
+| GASINT   | Internationally mined gas |
 | GASCAN   | Gas from domestic mining in Canada |
 | WONCANBC | Onshore wind fuel from mining in British Columbia, Canada |
 
@@ -242,7 +278,7 @@ This section will provide further detail on how commodity trading functions in O
 
 ### Primary Fuel Trading
 
-Two primary fuel types exist in OSeMOSYS Global; fuel that can and fuel that can not be traded. Primary fuel that can not be traded may be due to it being a natural resource (such as wind and solar) or due to geographic restrictions (such as hydro). Fuel that can be traded include physical goods (such as coal and uranium). The table below summarizes which primary fuels are tradable.
+Two primary fuel types exist in OSeMOSYS Global; fuel that can and fuel that can not be traded. Primary fuel that can not be traded may be due to it being a natural resource (such as wind and solar). Fuel that can be traded include physical goods (such as coal and uranium). The table below summarizes which primary fuels are tradable.
 
 | Commodity                  | Tradable |
 |----------------------------|----------|
@@ -261,9 +297,9 @@ Two primary fuel types exist in OSeMOSYS Global; fuel that can and fuel that can
 | Offshore Wind              | No       |
 | Onshore Wind               | No       |
 
-Fuel which can **not** be traded is mined by nodal mining technologies and flows directly into its respective nodal power generator. For example, wind and solar resources. Fuel which can be traded flows into an international trading technology, or a nodal power generation technology within the country. A small example of these options are shown below for British Columbia, Canada and the North West, USA for the fuels solar, onshore wind, and coal.
+Fuel which can **not** be traded is mined by nodal mining technologies and flows directly into its respective nodal power generator; for example, wind and solar resources. Fuel which can be traded is mined at a country level and flows into any node within the country. Alternatively, tradable fules can be bought on the global market for a premium. 
 
-![InternationalTrading](_static/international-trading.jpg "International Trade")
+![InternationalTrading](_static/international-trading.png "International Trade")
 
 ### End Use Fuel Trading
 
@@ -273,6 +309,6 @@ Much like with primary fuels, end use fuels can also be traded. However, end use
 
 ## Full Example
 
-The schematic below shows the full reference energy system for the node of British Columbia, Canada. All nodes follow the similar structure. While all technologies exest in each node, depending on input parameters (which can be configured by the user), constraints may be enforced that do not allow certain technologies to be built and/or run.
+The schematic below shows the full reference energy system for the node of British Columbia, Canada. All nodes in OSeMOSYS Global follow the same structure. While all technologies exest in each node, depending on input parameters (which can be configured by the user), constraints may be enforced that do not allow certain technologies to be used and/or invested in.
 
-![RES](_static/res.jpg "RES")
+![RES](_static/res.png "RES")
