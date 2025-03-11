@@ -40,10 +40,10 @@ rule download_external_files:
         "Downloading external files..."
     params:
         files = get_external_links(),
-        input_data_dir = 'resources/data'
+        input_data_dir = 'resources/data/default'
     log:
         log = "results/logs/external_files.log"
     output:
-        csv_files = expand("resources/data/{output_file}", output_file=EXTERNAL_FILES),
+        csv_files = expand("resources/data/default/{output_file}", output_file=EXTERNAL_FILES),
     script:
         "../scripts/osemosys_global/external_files.py"

@@ -263,7 +263,6 @@ if __name__ == "__main__":
         no_investment_techs = snakemake.params.no_investment_techs      
         storage_parameters = snakemake.params.storage_parameters           
         output_data_dir = snakemake.params.output_data_dir
-        input_data_dir = snakemake.params.input_data_dir
         transmission_data_dir = snakemake.params.transmission_data_dir            
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'
@@ -283,10 +282,10 @@ if __name__ == "__main__":
     # the full workflow need to be defined in the config file. 
 
     else:    
-        file_storage_build_rates = 'resources/data/storage_build_rates.csv'
-        file_default_op_life = 'resources/data/operational_life.csv'
-        file_gesdb_project_data = 'resources/data/GESDB_Project_Data.json'
-        file_gesdb_regional_mapping = 'resources/data/GESDB_region_mapping.csv'
+        file_storage_build_rates = 'resources/data/custom/storage_build_rates.csv'
+        file_default_op_life = 'resources/data/custom/operational_life.csv'
+        file_gesdb_project_data = 'resources/data/default/GESDB_Project_Data.json'
+        file_gesdb_regional_mapping = 'resources/data/default/GESDB_region_mapping.csv'
         storage_existing = True
         storage_planned = True          
         start_year = 2021
@@ -303,7 +302,6 @@ if __name__ == "__main__":
                               'LDS': [3794, 20.2, 0.58, 80, 10]}
 
         output_data_dir = 'results/data'
-        input_data_dir = 'resources/data'
         transmission_data_dir = 'results/data/transmission'        
         file_iar_base = f'{transmission_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{transmission_data_dir}/OutputActivityRatio.csv'

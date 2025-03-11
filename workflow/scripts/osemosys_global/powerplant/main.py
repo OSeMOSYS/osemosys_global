@@ -323,15 +323,14 @@ if __name__ == "__main__":
     # the full workflow need to be defined in the config file. 
             
     else:
-        file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
-        file_res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
-        file_build_rates = 'resources/data/powerplant_build_rates.csv'        
-        file_default_op_life = 'resources/data/operational_life.csv'
-        file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
-        file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
-        file_weo_regions = 'resources/data/weo_region_mapping.csv'
-        file_default_af_factors = 'resources/data/availability_factors.csv'  
-        file_default_af_factors = 'resources/data/availability_factors.csv'        
+        file_plexos = 'resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx'
+        file_res_limit = 'resources/data/default/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
+        file_build_rates = 'resources/data/default/powerplant_build_rates.csv'        
+        file_default_op_life = 'resources/data/custom/operational_life.csv'
+        file_naming_convention_tech = 'resources/data/default/naming_convention_tech.csv'
+        file_weo_costs = 'resources/data/default/weo_2020_powerplant_costs.csv'
+        file_weo_regions = 'resources/data/default/weo_region_mapping.csv'
+        file_default_af_factors = 'resources/data/custom/availability_factors.csv'        
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
@@ -357,8 +356,8 @@ if __name__ == "__main__":
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
         file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'
-        file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv'
-        file_custom_res_potentials = 'resources/data/custom_nodes/RE_potentials.csv' 
+        file_custom_res_cap = 'resources/data/custom/residual_capacity.csv'
+        file_custom_res_potentials = 'resources/data/custom/RE_potentials.csv' 
 
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")

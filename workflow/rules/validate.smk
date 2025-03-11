@@ -16,7 +16,7 @@ EMISSION_INTENSITY_VALIDATION = ["ember"]
 
 def capacity_validation_data(wildcards):
     if wildcards.datasource == "ember":
-        return "resources/data/ember_yearly_electricity_data.csv"
+        return "resources/data/default/ember_yearly_electricity_data.csv"
     elif wildcards.datasource == "irena":
         return "resources/data/validation/irena_capacity.csv"
     elif wildcards.datasource == "eia":
@@ -48,7 +48,7 @@ rule validate_capacity:
 
 def generation_validation_data(wildcards):
     if wildcards.datasource == "ember":
-        return "resources/data/ember_yearly_electricity_data.csv"
+        return "resources/data/default/ember_yearly_electricity_data.csv"
     elif wildcards.datasource == "irena":
         return "resources/data/validation/irena_generation.csv"
     elif wildcards.datasource == "eia":
@@ -80,7 +80,7 @@ rule validate_generation:
 
 def emission_validation_data(wildcards):
     if wildcards.datasource == "ember":
-        return "resources/data/ember_yearly_electricity_data.csv"
+        return "resources/data/default/ember_yearly_electricity_data.csv"
     elif wildcards.datasource == "climatewatch":
         return "resources/data/validation/climatewatch.csv"
 
@@ -103,7 +103,7 @@ rule validate_emissions:
 
 def emission_intensity_validation_data(wildcards):
     if wildcards.datasource == "ember":
-        return "resources/data/ember_yearly_electricity_data.csv"
+        return "resources/data/default/ember_yearly_electricity_data.csv"
 
 rule validate_emission_intensity:
     message: "Validating emission intensity against {wildcards.datasource}"

@@ -73,7 +73,6 @@ if __name__ == "__main__":
         end_year = snakemake.params.end_year
         region_name = snakemake.params.region_name
         output_data_dir = snakemake.params.output_data_dir
-        input_data_dir = snakemake.params.input_data_dir
         file_iar_base = snakemake.input.iar
         file_oar_base = snakemake.input.oar
         emission_penalty = snakemake.params.emission_penalty
@@ -83,13 +82,12 @@ if __name__ == "__main__":
     # outside the snakemake workflow. This is relevant for testing purposes only! User inputs when running 
     # the full workflow need to be defined in the config file. 
     else:
-        file_ember = 'resources/data/ember_yearly_electricity_data.csv'
-        file_emission_factors = 'resources/data/emission_factors.csv'        
+        file_ember = 'resources/data/default/ember_yearly_electricity_data.csv'
+        file_emission_factors = 'resources/data/default/emission_factors.csv'        
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
         output_data_dir = 'results/data'
-        input_data_dir = 'resources/data'
         file_iar_base = f'{output_data_dir}/InputActivityRatio.csv'
         file_oar_base = f'{output_data_dir}/OutputActivityRatio.csv'
         emission_penalty = [["CO2", "IND", 2020, 2050, 2.1]]

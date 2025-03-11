@@ -35,7 +35,7 @@ if __name__ == "__main__":
             in_url = sys.argv[2]
             external_files = {in_file: in_url}
             
-        input_data_dir = 'resources/data'
+        input_data_dir = 'resources/data/default'
 
     for file, url in external_files.items():
         path = os.path.join(input_data_dir, file)

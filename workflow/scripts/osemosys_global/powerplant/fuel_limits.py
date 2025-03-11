@@ -110,7 +110,7 @@ if __name__ == "__main__":
         activity_upper_limit_csv = snakemake.output.activity_upper_limit_csv
     else:
         technology_csv = "results/ASEAN/data/TECHNOLOGY.csv"
-        fuel_limit_csv = "resources/data/fuel_limits.csv"
+        fuel_limit_csv = "resources/data/custom/fuel_limits.csv"
         region_csv = "results/ASEAN/data/REGION.csv"
         years_csv = "results/ASEAN/data/YEAR.csv"
         activity_upper_limit_csv = ""

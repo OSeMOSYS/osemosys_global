@@ -130,15 +130,15 @@ rule demand_projections:
     message:
         "Generating demand data..."
     input:
-        plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx",
-        plexos_demand = "resources/data/All_Demand_UTC_2015.csv",
-        iamc_gdp ="resources/data/iamc_db_GDPppp_Countries.xlsx",
-        iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
-        iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
-        iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
-        td_losses = "resources/data/T&D Losses.xlsx",
-        ember = "resources/data/ember_yearly_electricity_data.csv",
-        custom_nodes = "resources/data/custom_nodes/specified_annual_demand.csv"
+        plexos = "resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx",
+        plexos_demand = "resources/data/default/All_Demand_UTC_2015.csv",
+        iamc_gdp ="resources/data/default/iamc_db_GDPppp_Countries.xlsx",
+        iamc_pop = "resources/data/default/iamc_db_POP_Countries.xlsx",
+        iamc_urb = "resources/data/default/iamc_db_URB_Countries.xlsx",
+        iamc_missing = "resources/data/default/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
+        td_losses = "resources/data/default/T&D Losses.xlsx",
+        ember = "resources/data/default/ember_yearly_electricity_data.csv",
+        custom_nodes = "resources/data/custom/specified_annual_demand.csv"
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -155,17 +155,17 @@ rule powerplant:
         "Generating powerplant data..."
     input:
         rules.demand_projections.output.csv_files,
-        plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx',
-        res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
-        fuel_limit = 'resources/data/fuel_limits.csv',
-        build_rates = 'resources/data/powerplant_build_rates.csv',        
-        weo_costs = 'resources/data/weo_2020_powerplant_costs.csv',
-        weo_regions = 'resources/data/weo_region_mapping.csv',
-        default_op_life = 'resources/data/operational_life.csv',
-        naming_convention_tech = 'resources/data/naming_convention_tech.csv',
-        default_af_factors = 'resources/data/availability_factors.csv',
-        custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv',
-        custom_res_potentials = 'resources/data/custom_nodes/RE_potentials.csv'
+        plexos = 'resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx',
+        res_limit = 'resources/data/default/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx',
+        fuel_limit = 'resources/data/custom/fuel_limits.csv',
+        build_rates = 'resources/data/custom/powerplant_build_rates.csv',        
+        weo_costs = 'resources/data/default/weo_2020_powerplant_costs.csv',
+        weo_regions = 'resources/data/default/weo_region_mapping.csv',
+        default_op_life = 'resources/data/custom/operational_life.csv',
+        naming_convention_tech = 'resources/data/default/naming_convention_tech.csv',
+        default_af_factors = 'resources/data/custom/availability_factors.csv',
+        custom_res_cap = 'resources/data/custom/residual_capacity.csv',
+        custom_res_potentials = 'resources/data/custom/RE_potentials.csv'
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
@@ -180,7 +180,7 @@ rule powerplant:
         fossil_capacity_targets = config['fossil_capacity_targets'],
         calibration = config['min_generation_factors'],
         output_data_dir = 'results/data',
-        input_data_dir = 'resources/data',
+        input_data_dir = 'resources/data/default',
         powerplant_data_dir = 'results/data/powerplant',
     output:
         csv_files = expand('results/data/{output_file}.csv', output_file = power_plant_files)
@@ -193,8 +193,8 @@ rule powerplant_var_costs:
     message:
         "Generating powerplant variable costs..."
     input:
-        cmo_forecasts = 'resources/data/CMO-October-2024-Forecasts.xlsx',
-        fuel_prices = 'resources/data/fuel_prices.csv',
+        cmo_forecasts = 'resources/data/default/CMO-October-2024-Forecasts.xlsx',
+        fuel_prices = 'resources/data/custom/fuel_prices.csv',
         regions = "results/data/REGION.csv",
         years = "results/data/YEAR.csv",
         technologies = "results/data/powerplant/TECHNOLOGY.csv",
@@ -212,7 +212,7 @@ rule fuel_limits:
         region_csv = "results/data/REGION.csv",
         technology_csv = "results/data/powerplant/TECHNOLOGY.csv",
         year_csv = "results/data/YEAR.csv",
-        fuel_limit_csv = "resources/data/fuel_limits.csv",
+        fuel_limit_csv = "resources/data/custom/fuel_limits.csv",
     output:
         activity_upper_limit_csv = 'results/data/TotalTechnologyAnnualActivityUpperLimit.csv'
     log:
@@ -226,12 +226,12 @@ rule transmission:
     input:
         rules.powerplant.output.csv_files,
         'results/data/powerplant/VariableCost.csv',
-        default_op_life = 'resources/data/operational_life.csv',
-        gtd_existing = 'resources/data/GTD_existing.csv',
-        gtd_planned = 'resources/data/GTD_planned.csv',
-        gtd_mapping = 'resources/data/GTD_region_mapping.csv',
-        centerpoints = 'resources/data/centerpoints.csv',
-        transmission_build_rates = 'resources/data/transmission_build_rates.csv',
+        default_op_life = 'resources/data/custom/operational_life.csv',
+        gtd_existing = 'resources/data/default/GTD_existing.csv',
+        gtd_planned = 'resources/data/default/GTD_planned.csv',
+        gtd_mapping = 'resources/data/default/GTD_region_mapping.csv',
+        centerpoints = 'resources/data/default/centerpoints.csv',
+        transmission_build_rates = 'resources/data/custom/transmission_build_rates.csv',
     params:
         trade = config['crossborderTrade'],
         transmission_existing = config['transmission_existing'],
@@ -244,7 +244,6 @@ rule transmission:
         no_investment_techs = config['no_invest_technologies'],
         transmission_parameters = config['transmission_parameters'],
         output_data_dir = 'results/data',
-        input_data_dir = 'resources/data',
         powerplant_data_dir = 'results/data/powerplant',
         transmission_data_dir = 'results/data/transmission',
     output:
@@ -259,10 +258,10 @@ rule storage:
         "Generating storage data..."
     input:
         rules.transmission.output.csv_files,
-        default_op_life = 'resources/data/operational_life.csv',
-        storage_build_rates = 'resources/data/storage_build_rates.csv',
-        gesdb_project_data = 'resources/data/GESDB_Project_Data.json',
-        gesdb_regional_mapping = 'resources/data/GESDB_region_mapping.csv',
+        default_op_life = 'resources/data/custom/operational_life.csv',
+        storage_build_rates = 'resources/data/custom/storage_build_rates.csv',
+        gesdb_project_data = 'resources/data/default/GESDB_Project_Data.json',
+        gesdb_regional_mapping = 'resources/data/default/GESDB_region_mapping.csv',
     params:
         storage_existing = config['storage_existing'],
         storage_planned = config['storage_planned'],
@@ -274,7 +273,6 @@ rule storage:
         no_investment_techs = config['no_invest_technologies'],
         storage_parameters = config['storage_parameters'],
         output_data_dir = 'results/data',
-        input_data_dir = 'resources/data',
         transmission_data_dir = 'results/data/transmission',
     output:
         csv_files = expand('results/data/{output_file}.csv', output_file = storage_files)
@@ -287,27 +285,27 @@ rule timeslice:
     message:
         'Generating timeslice data...'
     input:
-        plexos_demand = 'resources/data/All_Demand_UTC_2015.csv',
-        plexos_csp_2015 = 'resources/data/CSP 2015.csv',
-        plexos_spv_2015 = 'resources/data/SolarPV 2015.csv',
-        plexos_hyd_2015 = 'resources/data/Hydro_Monthly_Profiles (15 year average).csv',
-        plexos_won_2015 = 'resources/data/Won 2015.csv',
-        plexos_wof_2015 = 'resources/data/Woff 2015.csv',
-        custom_specified_demand_profiles = 'resources/data/custom_nodes/specified_demand_profile.csv',
-        custom_csp_profiles = 'resources/data/custom_nodes/RE_profiles_CSP.csv',
-        custom_hyd_profiles = 'resources/data/custom_nodes/RE_profiles_HYD.csv',
-        custom_spv_profiles = 'resources/data/custom_nodes/RE_profiles_SPV.csv',
-        custom_wof_profiles = 'resources/data/custom_nodes/RE_profiles_WOF.csv',
-        custom_won_profiles = 'resources/data/custom_nodes/RE_profiles_WON.csv',                                
+        plexos_demand = 'resources/data/default/All_Demand_UTC_2015.csv',
+        plexos_csp_2015 = 'resources/data/default/CSP 2015.csv',
+        plexos_spv_2015 = 'resources/data/default/SolarPV 2015.csv',
+        plexos_hyd_2015 = 'resources/data/default/Hydro_Monthly_Profiles (15 year average).csv',
+        plexos_won_2015 = 'resources/data/default/Won 2015.csv',
+        plexos_wof_2015 = 'resources/data/default/Woff 2015.csv',
+        custom_specified_demand_profiles = 'resources/data/custom/specified_demand_profile.csv',
+        custom_csp_profiles = 'resources/data/custom/RE_profiles_CSP.csv',
+        custom_hyd_profiles = 'resources/data/custom/RE_profiles_HYD.csv',
+        custom_spv_profiles = 'resources/data/custom/RE_profiles_SPV.csv',
+        custom_wof_profiles = 'resources/data/custom/RE_profiles_WOF.csv',
+        custom_won_profiles = 'resources/data/custom/RE_profiles_WON.csv',                                
     params:
         start_year = config['startYear'],
         end_year = config['endYear'],
         region_name = 'GLOBAL',
         output_data_dir = 'results/data',
-        input_data_dir = 'resources/data',
+        input_data_dir = 'resources/data/default',
         input_dir = 'resources',
         output_dir = 'results',
-        custom_nodes_dir = 'resources/data/custom_nodes',
+        custom_nodes_dir = 'resources/data/custom',
         geographic_scope = config['geographic_scope'],
         seasons = config['seasons'],
         dayparts = config['dayparts'],
@@ -343,12 +341,12 @@ rule demand_projection_figures:
     message:
         "Generating demand figures..."
     input:
-        plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx",
-        iamc_gdp ="resources/data/iamc_db_GDPppp_Countries.xlsx",
-        iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx",
-        iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx",
-        iamc_missing = "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
-        ember = "resources/data/ember_yearly_electricity_data.csv"
+        plexos = "resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx",
+        iamc_gdp ="resources/data/default/iamc_db_GDPppp_Countries.xlsx",
+        iamc_pop = "resources/data/default/iamc_db_POP_Countries.xlsx",
+        iamc_urb = "resources/data/default/iamc_db_URB_Countries.xlsx",
+        iamc_missing = "resources/data/default/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx",
+        ember = "resources/data/default/ember_yearly_electricity_data.csv"
     output:
         regression = 'results/figs/regression.png',
         projection = 'results/figs/projection.png'
@@ -361,8 +359,8 @@ rule emissions:
     message:
         'Generating emission data...'
     input:
-        ember = 'resources/data/ember_yearly_electricity_data.csv',    
-        emissions_factors = 'resources/data/emission_factors.csv',
+        ember = 'resources/data/default/ember_yearly_electricity_data.csv',    
+        emissions_factors = 'resources/data/default/emission_factors.csv',
         iar = 'results/data/InputActivityRatio.csv',
         oar = 'results/data/OutputActivityRatio.csv',
     params:
@@ -370,7 +368,6 @@ rule emissions:
         end_year = config['endYear'],
         region_name = 'GLOBAL',
         output_data_dir = 'results/data',
-        input_data_dir = 'resources/data',
         emission_penalty = config['emission_penalty'],
         emission_limit = config['emission_limit'],
     output: 
