@@ -1,0 +1,17 @@
+Component,Source,Notes
+Powerplant Capacity,`PLEXOS World  <https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/CBYXBY>`_,
+Electricity Demand Timeseries,`PLEXOS World  <https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/CBYXBY>`_,
+Electricity Demand Projections,`Ember <https://ember-energy.org/data/>`_ | `PLEXOS World <https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/CBYXBY>`_ | `IAMC  <https://www.iamconsortium.org/resources/databases/>`_,
+Transmission Capacity,`Global Transmission Database <https://www.sciencedirect.com/science/article/pii/S2352340924003895?dgcid=rss_sd_all>`_,Existing and Planned
+Powerplant Capital Costs,`IEA World Energy Outlook  <https://www.iea.org/reports/world-energy-outlook-2020>`_,
+Powerplant Fixed Costs,`IEA World Energy Outlook  <https://www.iea.org/reports/world-energy-outlook-2020>`_,
+Fuel Costs,`World Bank Commodity Markets <https://www.worldbank.org/en/research/commodity-markets>`_,
+Powerplant Lifetimes,`NREL Annual Technology Baseline <https://atb.nrel.gov/>`_,
+Emission Factors,`Environmental Protection Agency <https://www.epa.gov/climateleadership/ghg-emission-factors-hub>`_,
+Solar Timeseries,`Pietzcker et al. <https://doi.org/10.1016/j.apenergy.2014.08.011>`_,
+Wind Timeseries ,`Eurek et al. <https://doi.org/10.1016/j.eneco.2016.11.015>`_,
+Hydro Timeseries,`Gernaat et al. <https://doi.org/10.1038/s41560-017-0006-y>`_,
+Storage Capacity,`DOE Global Energy Storage Database <https://gesdb.sandia.gov/>`_,Existing and Planned
+Emission Validation,`Ember <https://ember-energy.org/data/>`_ | `ClimateWatch <https://www.climatewatchdata.org/>`_,
+Generation Validation,`Ember <https://ember-energy.org/data/>`_ | `IRENA <https://www.irena.org/Data>`_ | `EIA <https://www.eia.gov/outlooks/ieo/>`_,
+Capacity Validation,`Ember <https://ember-energy.org/data/>`_ | `IRENA <https://www.irena.org/Data>`_ | `EIA <https://www.eia.gov/outlooks/ieo/>`_,

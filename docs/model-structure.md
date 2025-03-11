@@ -1,35 +1,24 @@
 # Model Structure
 
-This page describes the structure of OSeMOSYS Global and the naming conventions 
-used. This is a helpful resource for when modifying the configuration file
-or interpreting the results.
+This page describes the structure of OSeMOSYS Global and the naming conventions used. This is a helpful resource for when modifying the configuration file or interpreting the results.
 
 ## Reference Energy System
 
-The schematic below shows a (very) high level overview of the reference energy 
-system (RES). OSeMOSYS models are built through connecting commodities 
-(ie. fuels) and energy conversion technologies. In OSeMOSYS Global, each 
-technology and commodity has a unique identifier based on it purpose (mining, 
-transmission, ect...), its type (hydropower, solar power, ect...), and/or its 
-location (country and regional node). 
+The schematic below shows a (very) high level overview of the reference energy system (RES). OSeMOSYS models are built through connecting commodities (ie. fuels) and energy conversion technologies. In OSeMOSYS Global, each technology and commodity has a unique identifier based on it purpose (mining, transmission, ect...), its type (hydropower, solar power, ect...), and/or its location (country and regional node). 
 
 ![Simple-RES](_static/simple-res.jpg "Simple RES")
 
 :::{seealso}
-A full RES for a single OSeMOSYS Global node can be found [here](#full-example). 
-See OSeMOSYS'
-[documentation](https://osemosys.readthedocs.io/en/latest/manual/Create%20a%20model%20in%20OSeMOSYS.html#mapping-the-res-of-atlantis)
-for more information on Reference Energy Systems.
+A full RES for a single OSeMOSYS Global node can be found [here](#full-example). See OSeMOSYS' [documentation](https://osemosys.readthedocs.io/en/latest/manual/Create%20a%20model%20in%20OSeMOSYS.html#mapping-the-res-of-atlantis) for more information on Reference Energy Systems.
 :::
 
-### Spatial Codes
+## Spatial Codes
 
-#### Country Codes
+Each node in OSeMOSYS Global is given a unique 5 letter long code. It has the format of `XXXYY`, where `XXX` is the country code and `YY` is the region code.
 
-OSeMOSYS Global can model up to **163 countries**. All countries are
-described using their three letter codes, which can be found
-[here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3). A few examples 
-are given in the table below
+### Country Code
+
+OSeMOSYS Global natively models up to **163 countries**. All countries are described using their three letter ISO code which can be found [here](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3). A few examples are given in the table below
 
 | Country           | Code |
 |-------------------|------|
@@ -37,11 +26,9 @@ are given in the table below
 | Canada            | CAN  |
 | India             | IND  |
 
-#### Regional Node Codes
+### Regional Node Codes
 
-Some countries are further divided into regional nodes, for a total of **265
-nodes**. These nodes are represented by adding 2 `XX` characters to the end of 
-the country codes.
+Some countries are further divided into regional nodes, for a total of **265 nodes**. If a country does not have subregions, 2 `XX` characters to the end of the country codes.
   
 | Character Example | Location | Length | Description        |
 |-------------------|----------|--------|--------------------|
@@ -56,17 +43,13 @@ Examples of regional node codes are given below:
 | Canada          | British Columbia  | CANBC  |
 | Bangladesh      | n/a               | BGDXX  |
   
-### Acronyms
+## Acronyms
 
-Each unique technology and commodity in OSeMOSYS Global has a three-character
-code used to identify it. These three letter codes are not directly modelled,
-instead they are used to build the full technologies and commodity codes used
-in OSeMOSYS Global.
+Each unique technology and commodity in OSeMOSYS Global has a three-character code used to identify it. These three letter codes are not directly modelled, instead they are used to build the full technologies and commodity codes used in OSeMOSYS Global.
 
-#### Technology Acronyms
+### Technology Acronyms
 
-Thirteen power generation technologies are modelled in OSeMOSYS Global. The
-acronyms used to identify each technology are given below.
+Thirteen power generation technologies are modelled in OSeMOSYS Global. The acronyms used to identify each technology are given below.
 
 | Technology                 | Code |
 |----------------------------|------|
@@ -88,12 +71,9 @@ acronyms used to identify each technology are given below.
 | Offshore Wind              | WOF  |
 | Onshore Wind               | WON  |
 
-#### Commodity Acronyms
+### Commodity Acronyms
 
-Each of the power generation technologies operate on a given commodity, which
-are listed in the table below. Note, that some technologies share commodities, 
-such as combined cycle natural gas and open cycle natural gas both operating 
-on the commodity GAS.
+Each of the power generation technologies operate on a given commodity, which are listed in the table below. Note, that some technologies share commodities, such as combined cycle natural gas and open cycle natural gas both operating on the commodity GAS.
 
 | Commodity                  | Code |
 |----------------------------|------|
@@ -112,13 +92,9 @@ on the commodity GAS.
 | Offshore Wind              | WOF  |
 | Onshore Wind               | WON  |
 
-### Technology Codes
+## Technology Codes
 
-Technologies are responsible for converting one energy carrier into another.
-Each technology can have unique parameters, such as costs, efficiencies, 
-and capacity/generation limits. There are four types of technologies in 
-OSeMOSYS Global; mining technologies, power generation technologies, 
-transmission technologies, and trade technologies.
+Technologies are responsible for converting one energy carrier into another. Each technology can have unique parameters, such as costs, efficiencies, and capacity/generation limits. There are four types of technologies in OSeMOSYS Global; mining technologies, power generation technologies, transmission technologies, and trade technologies.
 
 #### Mining Technology Codes
 
