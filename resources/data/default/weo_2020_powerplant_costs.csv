@@ -1,0 +1,1365 @@
+technology,weo_region,parameter,2019,2030,2040
+Biogas - DG Industry,Europe,"Annual O&M Costs
+($2019 per kW)",95,95,90
+Biogas - DG Industry,United States,"Annual O&M Costs
+($2019 per kW)",105,105,100
+Biogas - DG Industry,Japan,"Annual O&M Costs
+($2019 per kW)",100,100,95
+Biogas - DG Industry,Russia,"Annual O&M Costs
+($2019 per kW)",100,100,100
+Biogas - DG Industry,China,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Biogas - DG Industry,India,"Annual O&M Costs
+($2019 per kW)",85,80,80
+Biogas - DG Industry,Middle East,"Annual O&M Costs
+($2019 per kW)",100,95,95
+Biogas - DG Industry,Africa,"Annual O&M Costs
+($2019 per kW)",95,90,90
+Biogas - DG Industry,Brazil,"Annual O&M Costs
+($2019 per kW)",90,85,85
+Biomass - waste incineration - CHP,Europe,"Annual O&M Costs
+($2019 per kW)",280,280,270
+Biomass - waste incineration - CHP,United States,"Annual O&M Costs
+($2019 per kW)",300,290,290
+Biomass - waste incineration - CHP,Japan,"Annual O&M Costs
+($2019 per kW)",320,300,300
+Biomass - waste incineration - CHP,Russia,"Annual O&M Costs
+($2019 per kW)",310,300,300
+Biomass - waste incineration - CHP,China,"Annual O&M Costs
+($2019 per kW)",220,210,210
+Biomass - waste incineration - CHP,India,"Annual O&M Costs
+($2019 per kW)",250,250,240
+Biomass - waste incineration - CHP,Middle East,"Annual O&M Costs
+($2019 per kW)",260,250,250
+Biomass - waste incineration - CHP,Africa,"Annual O&M Costs
+($2019 per kW)",280,270,270
+Biomass - waste incineration - CHP,Brazil,"Annual O&M Costs
+($2019 per kW)",260,250,250
+Biomass CHP Medium,Europe,"Annual O&M Costs
+($2019 per kW)",140,135,135
+Biomass CHP Medium,United States,"Annual O&M Costs
+($2019 per kW)",150,145,145
+Biomass CHP Medium,Japan,"Annual O&M Costs
+($2019 per kW)",145,140,140
+Biomass CHP Medium,Russia,"Annual O&M Costs
+($2019 per kW)",130,125,125
+Biomass CHP Medium,China,"Annual O&M Costs
+($2019 per kW)",95,90,90
+Biomass CHP Medium,India,"Annual O&M Costs
+($2019 per kW)",105,105,105
+Biomass CHP Medium,Middle East,"Annual O&M Costs
+($2019 per kW)",110,105,105
+Biomass CHP Medium,Africa,"Annual O&M Costs
+($2019 per kW)",105,105,100
+Biomass CHP Medium,Brazil,"Annual O&M Costs
+($2019 per kW)",110,105,105
+Biomass CHP Small,Europe,"Annual O&M Costs
+($2019 per kW)",200,190,190
+Biomass CHP Small,United States,"Annual O&M Costs
+($2019 per kW)",210,210,200
+Biomass CHP Small,Japan,"Annual O&M Costs
+($2019 per kW)",200,200,190
+Biomass CHP Small,Russia,"Annual O&M Costs
+($2019 per kW)",190,180,180
+Biomass CHP Small,China,"Annual O&M Costs
+($2019 per kW)",140,140,130
+Biomass CHP Small,India,"Annual O&M Costs
+($2019 per kW)",170,170,170
+Biomass CHP Small,Middle East,"Annual O&M Costs
+($2019 per kW)",190,180,170
+Biomass CHP Small,Africa,"Annual O&M Costs
+($2019 per kW)",180,170,170
+Biomass CHP Small,Brazil,"Annual O&M Costs
+($2019 per kW)",190,180,180
+Biomass Cofiring,Europe,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Biomass Cofiring,United States,"Annual O&M Costs
+($2019 per kW)",25,25,25
+Biomass Cofiring,Japan,"Annual O&M Costs
+($2019 per kW)",25,20,20
+Biomass Cofiring,Russia,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Biomass Cofiring,China,"Annual O&M Costs
+($2019 per kW)",15,15,15
+Biomass Cofiring,India,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Biomass Cofiring,Middle East,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Biomass Cofiring,Africa,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Biomass Cofiring,Brazil,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Biomass Power plant,Europe,"Annual O&M Costs
+($2019 per kW)",85,80,80
+Biomass Power plant,United States,"Annual O&M Costs
+($2019 per kW)",85,85,85
+Biomass Power plant,Japan,"Annual O&M Costs
+($2019 per kW)",85,80,80
+Biomass Power plant,Russia,"Annual O&M Costs
+($2019 per kW)",80,75,75
+Biomass Power plant,China,"Annual O&M Costs
+($2019 per kW)",55,55,55
+Biomass Power plant,India,"Annual O&M Costs
+($2019 per kW)",75,75,75
+Biomass Power plant,Middle East,"Annual O&M Costs
+($2019 per kW)",80,75,75
+Biomass Power plant,Africa,"Annual O&M Costs
+($2019 per kW)",75,75,70
+Biomass Power plant,Brazil,"Annual O&M Costs
+($2019 per kW)",80,75,75
+CCGT,Europe,"Annual O&M Costs
+($2019 per kW)",25,25,25
+CCGT,United States,"Annual O&M Costs
+($2019 per kW)",25,25,25
+CCGT,Japan,"Annual O&M Costs
+($2019 per kW)",30,30,30
+CCGT,Russia,"Annual O&M Costs
+($2019 per kW)",30,30,30
+CCGT,China,"Annual O&M Costs
+($2019 per kW)",20,20,20
+CCGT,India,"Annual O&M Costs
+($2019 per kW)",25,25,25
+CCGT,Middle East,"Annual O&M Costs
+($2019 per kW)",30,30,30
+CCGT,Africa,"Annual O&M Costs
+($2019 per kW)",25,25,25
+CCGT,Brazil,"Annual O&M Costs
+($2019 per kW)",25,25,25
+CCGT - CHP,Europe,"Annual O&M Costs
+($2019 per kW)",40,40,40
+CCGT - CHP,United States,"Annual O&M Costs
+($2019 per kW)",40,40,40
+CCGT - CHP,Japan,"Annual O&M Costs
+($2019 per kW)",45,45,45
+CCGT - CHP,Russia,"Annual O&M Costs
+($2019 per kW)",40,40,40
+CCGT - CHP,China,"Annual O&M Costs
+($2019 per kW)",30,30,30
+CCGT - CHP,India,"Annual O&M Costs
+($2019 per kW)",35,35,35
+CCGT - CHP,Middle East,"Annual O&M Costs
+($2019 per kW)",40,40,40
+CCGT - CHP,Africa,"Annual O&M Costs
+($2019 per kW)",35,35,35
+CCGT - CHP,Brazil,"Annual O&M Costs
+($2019 per kW)",35,35,35
+CCGT + CCS,Europe,"Annual O&M Costs
+($2019 per kW)",80,75,65
+CCGT + CCS,United States,"Annual O&M Costs
+($2019 per kW)",80,75,65
+CCGT + CCS,Japan,"Annual O&M Costs
+($2019 per kW)",80,75,70
+CCGT + CCS,Russia,"Annual O&M Costs
+($2019 per kW)",95,90,80
+CCGT + CCS,China,"Annual O&M Costs
+($2019 per kW)",70,70,60
+CCGT + CCS,India,"Annual O&M Costs
+($2019 per kW)",80,75,70
+CCGT + CCS,Middle East,"Annual O&M Costs
+($2019 per kW)",100,95,85
+CCGT + CCS,Africa,"Annual O&M Costs
+($2019 per kW)",85,80,75
+CCGT + CCS,Brazil,"Annual O&M Costs
+($2019 per kW)",84,80,71
+Coal* + CCS,Europe,"Annual O&M Costs
+($2019 per kW)",165,160,135
+Coal* + CCS,United States,"Annual O&M Costs
+($2019 per kW)",170,160,145
+Coal* + CCS,Japan,"Annual O&M Costs
+($2019 per kW)",175,170,155
+Coal* + CCS,Russia,"Annual O&M Costs
+($2019 per kW)",180,170,155
+Coal* + CCS,China,"Annual O&M Costs
+($2019 per kW)",140,135,115
+Coal* + CCS,India,"Annual O&M Costs
+($2019 per kW)",155,150,130
+Coal* + CCS,Middle East,"Annual O&M Costs
+($2019 per kW)",165,160,140
+Coal* + CCS,Africa,"Annual O&M Costs
+($2019 per kW)",175,165,150
+Coal* + CCS,Brazil,"Annual O&M Costs
+($2019 per kW)",165,160,140
+Concentrating solar power,Europe,"Annual O&M Costs
+($2019 per kW)",230,180,150
+Concentrating solar power,United States,"Annual O&M Costs
+($2019 per kW)",260,210,180
+Concentrating solar power,Japan,"Annual O&M Costs
+($2019 per kW)",220,170,150
+Concentrating solar power,Russia,"Annual O&M Costs
+($2019 per kW)",220,170,150
+Concentrating solar power,China,"Annual O&M Costs
+($2019 per kW)",200,150,130
+Concentrating solar power,India,"Annual O&M Costs
+($2019 per kW)",230,180,160
+Concentrating solar power,Middle East,"Annual O&M Costs
+($2019 per kW)",210,160,140
+Concentrating solar power,Africa,"Annual O&M Costs
+($2019 per kW)",200,160,140
+Concentrating solar power,Brazil,"Annual O&M Costs
+($2019 per kW)",210,170,140
+Fuel cell (distributed electricity generation),Europe,"Annual O&M Costs
+($2019 per kW)",100,50,50
+Fuel cell (distributed electricity generation),United States,"Annual O&M Costs
+($2019 per kW)",100,50,50
+Fuel cell (distributed electricity generation),Japan,"Annual O&M Costs
+($2019 per kW)",100,50,50
+Fuel cell (distributed electricity generation),Russia,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Fuel cell (distributed electricity generation),China,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Fuel cell (distributed electricity generation),India,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Middle East,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Africa,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Brazil,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Gas turbine,Europe,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Gas turbine,United States,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Gas turbine,Japan,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Gas turbine,Russia,"Annual O&M Costs
+($2019 per kW)",25,25,25
+Gas turbine,China,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Gas turbine,India,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Gas turbine,Middle East,"Annual O&M Costs
+($2019 per kW)",25,25,25
+Gas turbine,Africa,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Gas turbine,Brazil,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Geothermal,Europe,"Annual O&M Costs
+($2019 per kW)",55,55,50
+Geothermal,United States,"Annual O&M Costs
+($2019 per kW)",45,40,40
+Geothermal,Japan,"Annual O&M Costs
+($2019 per kW)",55,55,50
+Geothermal,Russia,"Annual O&M Costs
+($2019 per kW)",45,40,40
+Geothermal,China,"Annual O&M Costs
+($2019 per kW)",45,45,45
+Geothermal,India,"Annual O&M Costs
+($2019 per kW)",70,70,65
+Geothermal,Middle East,"Annual O&M Costs
+($2019 per kW)",45,40,40
+Geothermal,Africa,"Annual O&M Costs
+($2019 per kW)",60,60,55
+Geothermal,Brazil,"Annual O&M Costs
+($2019 per kW)",55,50,50
+Hydropower - large-scale,Europe,"Annual O&M Costs
+($2019 per kW)",60,60,60
+Hydropower - large-scale,United States,"Annual O&M Costs
+($2019 per kW)",65,65,65
+Hydropower - large-scale,Japan,"Annual O&M Costs
+($2019 per kW)",60,55,55
+Hydropower - large-scale,Russia,"Annual O&M Costs
+($2019 per kW)",50,50,55
+Hydropower - large-scale,China,"Annual O&M Costs
+($2019 per kW)",40,40,40
+Hydropower - large-scale,India,"Annual O&M Costs
+($2019 per kW)",50,50,50
+Hydropower - large-scale,Middle East,"Annual O&M Costs
+($2019 per kW)",55,55,55
+Hydropower - large-scale,Africa,"Annual O&M Costs
+($2019 per kW)",50,50,50
+Hydropower - large-scale,Brazil,"Annual O&M Costs
+($2019 per kW)",50,50,50
+Hydropower - small-scale,Europe,"Annual O&M Costs
+($2019 per kW)",75,75,75
+Hydropower - small-scale,United States,"Annual O&M Costs
+($2019 per kW)",80,80,80
+Hydropower - small-scale,Japan,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Hydropower - small-scale,Russia,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Hydropower - small-scale,China,"Annual O&M Costs
+($2019 per kW)",40,40,40
+Hydropower - small-scale,India,"Annual O&M Costs
+($2019 per kW)",60,65,65
+Hydropower - small-scale,Middle East,"Annual O&M Costs
+($2019 per kW)",65,65,70
+Hydropower - small-scale,Africa,"Annual O&M Costs
+($2019 per kW)",60,60,60
+Hydropower - small-scale,Brazil,"Annual O&M Costs
+($2019 per kW)",65,65,65
+IGCC,Europe,"Annual O&M Costs
+($2019 per kW)",90,85,80
+IGCC,United States,"Annual O&M Costs
+($2019 per kW)",90,85,85
+IGCC,Japan,"Annual O&M Costs
+($2019 per kW)",100,95,95
+IGCC,Russia,"Annual O&M Costs
+($2019 per kW)",90,85,80
+IGCC,China,"Annual O&M Costs
+($2019 per kW)",50,45,40
+IGCC,India,"Annual O&M Costs
+($2019 per kW)",70,70,70
+IGCC,Middle East,"Annual O&M Costs
+($2019 per kW)",90,85,85
+IGCC,Africa,"Annual O&M Costs
+($2019 per kW)",90,85,85
+IGCC,Brazil,"Annual O&M Costs
+($2019 per kW)",90,85,85
+IGCC + CCS,Europe,"Annual O&M Costs
+($2019 per kW)",205,195,170
+IGCC + CCS,United States,"Annual O&M Costs
+($2019 per kW)",210,195,170
+IGCC + CCS,Japan,"Annual O&M Costs
+($2019 per kW)",220,205,190
+IGCC + CCS,Russia,"Annual O&M Costs
+($2019 per kW)",190,180,165
+IGCC + CCS,China,"Annual O&M Costs
+($2019 per kW)",165,155,125
+IGCC + CCS,India,"Annual O&M Costs
+($2019 per kW)",185,175,155
+IGCC + CCS,Middle East,"Annual O&M Costs
+($2019 per kW)",200,185,165
+IGCC + CCS,Africa,"Annual O&M Costs
+($2019 per kW)",210,200,185
+IGCC + CCS,Brazil,"Annual O&M Costs
+($2019 per kW)",200,185,165
+Marine,Europe,"Annual O&M Costs
+($2019 per kW)",210,140,100
+Marine,United States,"Annual O&M Costs
+($2019 per kW)",200,130,100
+Marine,Japan,"Annual O&M Costs
+($2019 per kW)",210,140,100
+Marine,Russia,"Annual O&M Costs
+($2019 per kW)",200,140,100
+Marine,China,"Annual O&M Costs
+($2019 per kW)",200,130,100
+Marine,India,"Annual O&M Costs
+($2019 per kW)",200,130,100
+Marine,Middle East,"Annual O&M Costs
+($2019 per kW)",200,130,100
+Marine,Africa,"Annual O&M Costs
+($2019 per kW)",200,130,100
+Marine,Brazil,"Annual O&M Costs
+($2019 per kW)",200,135,100
+Nuclear,Europe,"Annual O&M Costs
+($2019 per kW)",160,160,160
+Nuclear,United States,"Annual O&M Costs
+($2019 per kW)",175,175,175
+Nuclear,Japan,"Annual O&M Costs
+($2019 per kW)",225,225,225
+Nuclear,Russia,"Annual O&M Costs
+($2019 per kW)",160,160,160
+Nuclear,China,"Annual O&M Costs
+($2019 per kW)",120,120,120
+Nuclear,India,"Annual O&M Costs
+($2019 per kW)",140,140,140
+Nuclear,Middle East,"Annual O&M Costs
+($2019 per kW)",160,160,160
+Nuclear,Africa,"Annual O&M Costs
+($2019 per kW)",170,170,170
+Nuclear,Brazil,"Annual O&M Costs
+($2019 per kW)",170,170,170
+Oil,Europe,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,United States,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,Japan,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,Russia,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,China,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,India,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,Middle East,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,Africa,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oil,Brazil,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,Europe,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,United States,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,Japan,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,Russia,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,China,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,India,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,Middle East,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,Africa,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Other,Brazil,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Oxyfuel + CCS,Europe,"Annual O&M Costs
+($2019 per kW)",170,165,150
+Oxyfuel + CCS,United States,"Annual O&M Costs
+($2019 per kW)",175,165,155
+Oxyfuel + CCS,Japan,"Annual O&M Costs
+($2019 per kW)",185,175,160
+Oxyfuel + CCS,Russia,"Annual O&M Costs
+($2019 per kW)",160,150,140
+Oxyfuel + CCS,China,"Annual O&M Costs
+($2019 per kW)",140,130,115
+Oxyfuel + CCS,India,"Annual O&M Costs
+($2019 per kW)",165,155,145
+Oxyfuel + CCS,Middle East,"Annual O&M Costs
+($2019 per kW)",170,160,150
+Oxyfuel + CCS,Africa,"Annual O&M Costs
+($2019 per kW)",185,175,160
+Oxyfuel + CCS,Brazil,"Annual O&M Costs
+($2019 per kW)",170,160,150
+Petroleum,Europe,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,United States,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,Japan,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,Russia,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,China,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,India,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,Middle East,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,Africa,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Petroleum,Brazil,"Annual O&M Costs
+($2019 per kW)",21,21,21
+Solar photovoltaics - Buildings,Europe,"Annual O&M Costs
+($2019 per kW)",18,18,16
+Solar photovoltaics - Buildings,United States,"Annual O&M Costs
+($2019 per kW)",52,48,46
+Solar photovoltaics - Buildings,Japan,"Annual O&M Costs
+($2019 per kW)",30,28,28
+Solar photovoltaics - Buildings,Russia,"Annual O&M Costs
+($2019 per kW)",42,38,36
+Solar photovoltaics - Buildings,China,"Annual O&M Costs
+($2019 per kW)",14,12,12
+Solar photovoltaics - Buildings,India,"Annual O&M Costs
+($2019 per kW)",12,10,10
+Solar photovoltaics - Buildings,Middle East,"Annual O&M Costs
+($2019 per kW)",24,22,22
+Solar photovoltaics - Buildings,Africa,"Annual O&M Costs
+($2019 per kW)",32,30,28
+Solar photovoltaics - Buildings,Brazil,"Annual O&M Costs
+($2019 per kW)",18,18,16
+Solar photovoltaics - Large scale,Europe,"Annual O&M Costs
+($2019 per kW)",12,10,10
+Solar photovoltaics - Large scale,United States,"Annual O&M Costs
+($2019 per kW)",16,16,16
+Solar photovoltaics - Large scale,Japan,"Annual O&M Costs
+($2019 per kW)",26,24,22
+Solar photovoltaics - Large scale,Russia,"Annual O&M Costs
+($2019 per kW)",26,24,22
+Solar photovoltaics - Large scale,China,"Annual O&M Costs
+($2019 per kW)",12,10,10
+Solar photovoltaics - Large scale,India,"Annual O&M Costs
+($2019 per kW)",8,8,8
+Solar photovoltaics - Large scale,Middle East,"Annual O&M Costs
+($2019 per kW)",16,16,14
+Solar photovoltaics - Large scale,Africa,"Annual O&M Costs
+($2019 per kW)",18,16,16
+Solar photovoltaics - Large scale,Brazil,"Annual O&M Costs
+($2019 per kW)",12,12,10
+Steam Coal - SUBCRITICAL,Europe,"Annual O&M Costs
+($2019 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,United States,"Annual O&M Costs
+($2019 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,Japan,"Annual O&M Costs
+($2019 per kW)",55,55,55
+Steam Coal - SUBCRITICAL,Russia,"Annual O&M Costs
+($2019 per kW)",50,50,50
+Steam Coal - SUBCRITICAL,China,"Annual O&M Costs
+($2019 per kW)",20,20,20
+Steam Coal - SUBCRITICAL,India,"Annual O&M Costs
+($2019 per kW)",35,35,35
+Steam Coal - SUBCRITICAL,Middle East,"Annual O&M Costs
+($2019 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,Africa,"Annual O&M Costs
+($2019 per kW)",45,45,45
+Steam Coal - SUBCRITICAL,Brazil,"Annual O&M Costs
+($2019 per kW)",45,45,45
+Steam Coal - SUPERCRITICAL,Europe,"Annual O&M Costs
+($2019 per kW)",60,60,60
+Steam Coal - SUPERCRITICAL,United States,"Annual O&M Costs
+($2019 per kW)",65,65,65
+Steam Coal - SUPERCRITICAL,Japan,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Steam Coal - SUPERCRITICAL,Russia,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Steam Coal - SUPERCRITICAL,China,"Annual O&M Costs
+($2019 per kW)",30,30,30
+Steam Coal - SUPERCRITICAL,India,"Annual O&M Costs
+($2019 per kW)",50,50,50
+Steam Coal - SUPERCRITICAL,Middle East,"Annual O&M Costs
+($2019 per kW)",65,65,65
+Steam Coal - SUPERCRITICAL,Africa,"Annual O&M Costs
+($2019 per kW)",60,60,60
+Steam Coal - SUPERCRITICAL,Brazil,"Annual O&M Costs
+($2019 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,Europe,"Annual O&M Costs
+($2019 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,United States,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Steam Coal - ULTRASUPERCRITICAL,Japan,"Annual O&M Costs
+($2019 per kW)",80,80,80
+Steam Coal - ULTRASUPERCRITICAL,Russia,"Annual O&M Costs
+($2019 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,China,"Annual O&M Costs
+($2019 per kW)",30,30,30
+Steam Coal - ULTRASUPERCRITICAL,India,"Annual O&M Costs
+($2019 per kW)",55,55,55
+Steam Coal - ULTRASUPERCRITICAL,Middle East,"Annual O&M Costs
+($2019 per kW)",65,65,65
+Steam Coal - ULTRASUPERCRITICAL,Africa,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Steam Coal - ULTRASUPERCRITICAL,Brazil,"Annual O&M Costs
+($2019 per kW)",70,70,70
+Wind offshore,Europe,"Annual O&M Costs
+($2019 per kW)",60,45,40
+Wind offshore,United States,"Annual O&M Costs
+($2019 per kW)",120,90,70
+Wind offshore,Japan,"Annual O&M Costs
+($2019 per kW)",140,95,80
+Wind offshore,Russia,"Annual O&M Costs
+($2019 per kW)",115,80,65
+Wind offshore,China,"Annual O&M Costs
+($2019 per kW)",70,50,40
+Wind offshore,India,"Annual O&M Costs
+($2019 per kW)",70,50,40
+Wind offshore,Middle East,"Annual O&M Costs
+($2019 per kW)",110,80,65
+Wind offshore,Africa,"Annual O&M Costs
+($2019 per kW)",105,80,60
+Wind offshore,Brazil,"Annual O&M Costs
+($2019 per kW)",110,80,65
+Wind onshore,Europe,"Annual O&M Costs
+($2019 per kW)",40,38,38
+Wind onshore,United States,"Annual O&M Costs
+($2019 per kW)",34,34,32
+Wind onshore,Japan,"Annual O&M Costs
+($2019 per kW)",78,74,72
+Wind onshore,Russia,"Annual O&M Costs
+($2019 per kW)",40,38,36
+Wind onshore,China,"Annual O&M Costs
+($2019 per kW)",30,28,26
+Wind onshore,India,"Annual O&M Costs
+($2019 per kW)",24,22,22
+Wind onshore,Middle East,"Annual O&M Costs
+($2019 per kW)",48,44,42
+Wind onshore,Africa,"Annual O&M Costs
+($2019 per kW)",46,44,42
+Wind onshore,Brazil,"Annual O&M Costs
+($2019 per kW)",28,28,26
+Biogas - DG Industry,Europe,"Capital costs
+($2019 per kW)",2500,2450,2400
+Biogas - DG Industry,United States,"Capital costs
+($2019 per kW)",2800,2700,2650
+Biogas - DG Industry,Japan,"Capital costs
+($2019 per kW)",2700,2600,2550
+Biogas - DG Industry,Russia,"Capital costs
+($2019 per kW)",2700,2600,2550
+Biogas - DG Industry,China,"Capital costs
+($2019 per kW)",1850,1850,1800
+Biogas - DG Industry,India,"Capital costs
+($2019 per kW)",2200,2150,2150
+Biogas - DG Industry,Middle East,"Capital costs
+($2019 per kW)",2650,2500,2450
+Biogas - DG Industry,Africa,"Capital costs
+($2019 per kW)",2500,2400,2350
+Biogas - DG Industry,Brazil,"Capital costs
+($2019 per kW)",2350,2300,2250
+Biomass - waste incineration - CHP,Europe,"Capital costs
+($2019 per kW)",7400,7250,7150
+Biomass - waste incineration - CHP,United States,"Capital costs
+($2019 per kW)",7900,7650,7550
+Biomass - waste incineration - CHP,Japan,"Capital costs
+($2019 per kW)",8300,8000,7850
+Biomass - waste incineration - CHP,Russia,"Capital costs
+($2019 per kW)",8150,7950,7800
+Biomass - waste incineration - CHP,China,"Capital costs
+($2019 per kW)",5650,5550,5450
+Biomass - waste incineration - CHP,India,"Capital costs
+($2019 per kW)",6600,6500,6450
+Biomass - waste incineration - CHP,Middle East,"Capital costs
+($2019 per kW)",6950,6600,6450
+Biomass - waste incineration - CHP,Africa,"Capital costs
+($2019 per kW)",7500,7250,7100
+Biomass - waste incineration - CHP,Brazil,"Capital costs
+($2019 per kW)",6750,6550,6500
+Biomass CHP Medium,Europe,"Capital costs
+($2019 per kW)",3750,3650,3600
+Biomass CHP Medium,United States,"Capital costs
+($2019 per kW)",4050,3900,3850
+Biomass CHP Medium,Japan,"Capital costs
+($2019 per kW)",3900,3750,3700
+Biomass CHP Medium,Russia,"Capital costs
+($2019 per kW)",3500,3400,3350
+Biomass CHP Medium,China,"Capital costs
+($2019 per kW)",2500,2450,2400
+Biomass CHP Medium,India,"Capital costs
+($2019 per kW)",2800,2750,2750
+Biomass CHP Medium,Middle East,"Capital costs
+($2019 per kW)",2950,2800,2750
+Biomass CHP Medium,Africa,"Capital costs
+($2019 per kW)",2850,2750,2700
+Biomass CHP Medium,Brazil,"Capital costs
+($2019 per kW)",2900,2800,2750
+Biomass CHP Small,Europe,"Capital costs
+($2019 per kW)",5350,5200,5100
+Biomass CHP Small,United States,"Capital costs
+($2019 per kW)",5650,5450,5400
+Biomass CHP Small,Japan,"Capital costs
+($2019 per kW)",5450,5250,5150
+Biomass CHP Small,Russia,"Capital costs
+($2019 per kW)",5000,4850,4800
+Biomass CHP Small,China,"Capital costs
+($2019 per kW)",3700,3600,3550
+Biomass CHP Small,India,"Capital costs
+($2019 per kW)",4600,4550,4500
+Biomass CHP Small,Middle East,"Capital costs
+($2019 per kW)",4950,4700,4600
+Biomass CHP Small,Africa,"Capital costs
+($2019 per kW)",4750,4600,4500
+Biomass CHP Small,Brazil,"Capital costs
+($2019 per kW)",5000,4900,4800
+Biomass Cofiring,Europe,"Capital costs
+($2019 per kW)",600,575,575
+Biomass Cofiring,United States,"Capital costs
+($2019 per kW)",625,600,600
+Biomass Cofiring,Japan,"Capital costs
+($2019 per kW)",600,575,550
+Biomass Cofiring,Russia,"Capital costs
+($2019 per kW)",575,550,550
+Biomass Cofiring,China,"Capital costs
+($2019 per kW)",400,400,400
+Biomass Cofiring,India,"Capital costs
+($2019 per kW)",550,525,525
+Biomass Cofiring,Middle East,"Capital costs
+($2019 per kW)",575,550,525
+Biomass Cofiring,Africa,"Capital costs
+($2019 per kW)",550,525,525
+Biomass Cofiring,Brazil,"Capital costs
+($2019 per kW)",550,550,525
+Biomass Power plant,Europe,"Capital costs
+($2019 per kW)",2400,2300,2250
+Biomass Power plant,United States,"Capital costs
+($2019 per kW)",2500,2400,2350
+Biomass Power plant,Japan,"Capital costs
+($2019 per kW)",2350,2300,2250
+Biomass Power plant,Russia,"Capital costs
+($2019 per kW)",2250,2200,2200
+Biomass Power plant,China,"Capital costs
+($2019 per kW)",1600,1600,1600
+Biomass Power plant,India,"Capital costs
+($2019 per kW)",2150,2100,2100
+Biomass Power plant,Middle East,"Capital costs
+($2019 per kW)",2300,2150,2100
+Biomass Power plant,Africa,"Capital costs
+($2019 per kW)",2150,2100,2050
+Biomass Power plant,Brazil,"Capital costs
+($2019 per kW)",2200,2150,2150
+CCGT,Europe,"Capital costs
+($2019 per kW)",1000,1000,1000
+CCGT,United States,"Capital costs
+($2019 per kW)",1000,1000,1000
+CCGT,Japan,"Capital costs
+($2019 per kW)",1100,1100,1100
+CCGT,Russia,"Capital costs
+($2019 per kW)",800,800,800
+CCGT,China,"Capital costs
+($2019 per kW)",560,560,560
+CCGT,India,"Capital costs
+($2019 per kW)",700,700,700
+CCGT,Middle East,"Capital costs
+($2019 per kW)",800,800,800
+CCGT,Africa,"Capital costs
+($2019 per kW)",700,700,700
+CCGT,Brazil,"Capital costs
+($2019 per kW)",700,700,700
+CCGT - CHP,Europe,"Capital costs
+($2019 per kW)",1300,1300,1300
+CCGT - CHP,United States,"Capital costs
+($2019 per kW)",1300,1300,1300
+CCGT - CHP,Japan,"Capital costs
+($2019 per kW)",1440,1440,1440
+CCGT - CHP,Russia,"Capital costs
+($2019 per kW)",1040,1040,1040
+CCGT - CHP,China,"Capital costs
+($2019 per kW)",720,720,720
+CCGT - CHP,India,"Capital costs
+($2019 per kW)",920,920,920
+CCGT - CHP,Middle East,"Capital costs
+($2019 per kW)",1040,1040,1040
+CCGT - CHP,Africa,"Capital costs
+($2019 per kW)",920,920,920
+CCGT - CHP,Brazil,"Capital costs
+($2019 per kW)",920,920,920
+CCGT + CCS,Europe,"Capital costs
+($2019 per kW)",3100,3000,2600
+CCGT + CCS,United States,"Capital costs
+($2019 per kW)",3100,3000,2600
+CCGT + CCS,Japan,"Capital costs
+($2019 per kW)",3200,3100,2750
+CCGT + CCS,Russia,"Capital costs
+($2019 per kW)",2650,2550,2250
+CCGT + CCS,China,"Capital costs
+($2019 per kW)",2200,2100,1800
+CCGT + CCS,India,"Capital costs
+($2019 per kW)",2300,2200,1950
+CCGT + CCS,Middle East,"Capital costs
+($2019 per kW)",2800,2700,2350
+CCGT + CCS,Africa,"Capital costs
+($2019 per kW)",2450,2350,2100
+CCGT + CCS,Brazil,"Capital costs
+($2019 per kW)",2725,2625,2300
+Coal* + CCS,Europe,"Capital costs
+($2019 per kW)",7020,6764,5871
+Coal* + CCS,United States,"Capital costs
+($2019 per kW)",7147,6892,6062
+Coal* + CCS,Japan,"Capital costs
+($2019 per kW)",7530,7275,6509
+Coal* + CCS,Russia,"Capital costs
+($2019 per kW)",6509,6254,5616
+Coal* + CCS,China,"Capital costs
+($2019 per kW)",4467,4276,3637
+Coal* + CCS,India,"Capital costs
+($2019 per kW)",4977,4786,4212
+Coal* + CCS,Middle East,"Capital costs
+($2019 per kW)",6254,5999,5233
+Coal* + CCS,Africa,"Capital costs
+($2019 per kW)",5743,5552,4914
+Coal* + CCS,Brazil,"Capital costs
+($2019 per kW)",6254,5999,5233
+Concentrating solar power,Europe,"Capital costs
+($2019 per kW)",5650,4450,3850
+Concentrating solar power,United States,"Capital costs
+($2019 per kW)",6500,5300,4600
+Concentrating solar power,Japan,"Capital costs
+($2019 per kW)",5500,4300,3700
+Concentrating solar power,Russia,"Capital costs
+($2019 per kW)",5500,4300,3700
+Concentrating solar power,China,"Capital costs
+($2019 per kW)",4900,3750,3250
+Concentrating solar power,India,"Capital costs
+($2019 per kW)",5700,4550,3950
+Concentrating solar power,Middle East,"Capital costs
+($2019 per kW)",5250,4050,3500
+Concentrating solar power,Africa,"Capital costs
+($2019 per kW)",5050,4000,3400
+Concentrating solar power,Brazil,"Capital costs
+($2019 per kW)",5350,4200,3600
+Fuel cell (distributed electricity generation),Europe,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),United States,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Japan,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Russia,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),China,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),India,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Middle East,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Africa,"Capital costs
+($2019 per kW)",5000,2500,2500
+Fuel cell (distributed electricity generation),Brazil,"Capital costs
+($2019 per kW)",5000,2500,2500
+Gas turbine,Europe,"Capital costs
+($2019 per kW)",500,500,500
+Gas turbine,United States,"Capital costs
+($2019 per kW)",500,500,500
+Gas turbine,Japan,"Capital costs
+($2019 per kW)",500,500,500
+Gas turbine,Russia,"Capital costs
+($2019 per kW)",450,450,450
+Gas turbine,China,"Capital costs
+($2019 per kW)",350,350,350
+Gas turbine,India,"Capital costs
+($2019 per kW)",400,400,400
+Gas turbine,Middle East,"Capital costs
+($2019 per kW)",450,450,450
+Gas turbine,Africa,"Capital costs
+($2019 per kW)",400,400,400
+Gas turbine,Brazil,"Capital costs
+($2019 per kW)",400,400,400
+Geothermal,Europe,"Capital costs
+($2019 per kW)",2850,2750,2600
+Geothermal,United States,"Capital costs
+($2019 per kW)",2150,2100,2000
+Geothermal,Japan,"Capital costs
+($2019 per kW)",2800,2700,2550
+Geothermal,Russia,"Capital costs
+($2019 per kW)",2200,2100,2000
+Geothermal,China,"Capital costs
+($2019 per kW)",2300,2250,2150
+Geothermal,India,"Capital costs
+($2019 per kW)",3600,3450,3350
+Geothermal,Middle East,"Capital costs
+($2019 per kW)",2200,2100,2000
+Geothermal,Africa,"Capital costs
+($2019 per kW)",3050,2900,2800
+Geothermal,Brazil,"Capital costs
+($2019 per kW)",2600,2500,2400
+Hydropower - large-scale,Europe,"Capital costs
+($2019 per kW)",2650,2650,2650
+Hydropower - large-scale,United States,"Capital costs
+($2019 per kW)",2700,2700,2700
+Hydropower - large-scale,Japan,"Capital costs
+($2019 per kW)",2400,2400,2350
+Hydropower - large-scale,Russia,"Capital costs
+($2019 per kW)",2050,2100,2100
+Hydropower - large-scale,China,"Capital costs
+($2019 per kW)",1600,1700,1750
+Hydropower - large-scale,India,"Capital costs
+($2019 per kW)",2000,2100,2150
+Hydropower - large-scale,Middle East,"Capital costs
+($2019 per kW)",2150,2150,2200
+Hydropower - large-scale,Africa,"Capital costs
+($2019 per kW)",2100,2100,2100
+Hydropower - large-scale,Brazil,"Capital costs
+($2019 per kW)",2100,2100,2150
+Hydropower - small-scale,Europe,"Capital costs
+($2019 per kW)",3900,3900,3900
+Hydropower - small-scale,United States,"Capital costs
+($2019 per kW)",4050,4050,4050
+Hydropower - small-scale,Japan,"Capital costs
+($2019 per kW)",3550,3550,3500
+Hydropower - small-scale,Russia,"Capital costs
+($2019 per kW)",3500,3550,3600
+Hydropower - small-scale,China,"Capital costs
+($2019 per kW)",2000,2100,2150
+Hydropower - small-scale,India,"Capital costs
+($2019 per kW)",3050,3150,3250
+Hydropower - small-scale,Middle East,"Capital costs
+($2019 per kW)",3400,3400,3450
+Hydropower - small-scale,Africa,"Capital costs
+($2019 per kW)",3300,3300,3300
+Hydropower - small-scale,Brazil,"Capital costs
+($2019 per kW)",3350,3350,3400
+IGCC,Europe,"Capital costs
+($2019 per kW)",2500,2350,2300
+IGCC,United States,"Capital costs
+($2019 per kW)",2600,2450,2400
+IGCC,Japan,"Capital costs
+($2019 per kW)",2900,2750,2700
+IGCC,Russia,"Capital costs
+($2019 per kW)",2500,2350,2300
+IGCC,China,"Capital costs
+($2019 per kW)",1100,1000,900
+IGCC,India,"Capital costs
+($2019 per kW)",1600,1500,1500
+IGCC,Middle East,"Capital costs
+($2019 per kW)",2000,1900,1900
+IGCC,Africa,"Capital costs
+($2019 per kW)",2200,2100,2100
+IGCC,Brazil,"Capital costs
+($2019 per kW)",2000,1900,1900
+IGCC + CCS,Europe,"Capital costs
+($2019 per kW)",5850,5500,4850
+IGCC + CCS,United States,"Capital costs
+($2019 per kW)",5950,5600,4900
+IGCC + CCS,Japan,"Capital costs
+($2019 per kW)",6250,5900,5350
+IGCC + CCS,Russia,"Capital costs
+($2019 per kW)",5450,5150,4650
+IGCC + CCS,China,"Capital costs
+($2019 per kW)",3650,3400,2850
+IGCC + CCS,India,"Capital costs
+($2019 per kW)",4150,3900,3500
+IGCC + CCS,Middle East,"Capital costs
+($2019 per kW)",5200,4900,4300
+IGCC + CCS,Africa,"Capital costs
+($2019 per kW)",4850,4600,4150
+IGCC + CCS,Brazil,"Capital costs
+($2019 per kW)",5200,4900,4300
+Marine,Europe,"Capital costs
+($2019 per kW)",6950,4650,3450
+Marine,United States,"Capital costs
+($2019 per kW)",6850,4400,3300
+Marine,Japan,"Capital costs
+($2019 per kW)",7000,4650,3450
+Marine,Russia,"Capital costs
+($2019 per kW)",6650,4500,3400
+Marine,China,"Capital costs
+($2019 per kW)",6600,4400,3300
+Marine,India,"Capital costs
+($2019 per kW)",6500,4350,3250
+Marine,Middle East,"Capital costs
+($2019 per kW)",6650,4500,3400
+Marine,Africa,"Capital costs
+($2019 per kW)",6550,4400,3300
+Marine,Brazil,"Capital costs
+($2019 per kW)",6700,4500,3400
+Nuclear,Europe,"Capital costs
+($2019 per kW)",9287,7176,6332
+Nuclear,United States,"Capital costs
+($2019 per kW)",7036,6754,6332
+Nuclear,Japan,"Capital costs
+($2019 per kW)",5910,5628,5628
+Nuclear,Russia,"Capital costs
+($2019 per kW)",5347,5347,5347
+Nuclear,China,"Capital costs
+($2019 per kW)",3658,3870,3518
+Nuclear,India,"Capital costs
+($2019 per kW)",3940,3940,3940
+Nuclear,Middle East,"Capital costs
+($2019 per kW)",4925,4925,4925
+Nuclear,Africa,"Capital costs
+($2019 per kW)",5628,5628,5628
+Nuclear,Brazil,"Capital costs
+($2019 per kW)",5628,5628,5628
+Oil,Europe,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,United States,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,Japan,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,Russia,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,China,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,India,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,Middle East,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,Africa,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oil,Brazil,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,Europe,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,United States,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,Japan,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,Russia,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,China,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,India,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,Middle East,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,Africa,"Capital costs
+($2019 per kW)",1240,1240,1240
+Other,Brazil,"Capital costs
+($2019 per kW)",1240,1240,1240
+Oxyfuel + CCS,Europe,"Capital costs
+($2019 per kW)",5700,5500,4900
+Oxyfuel + CCS,United States,"Capital costs
+($2019 per kW)",5800,5600,5000
+Oxyfuel + CCS,Japan,"Capital costs
+($2019 per kW)",6100,5900,5350
+Oxyfuel + CCS,Russia,"Capital costs
+($2019 per kW)",5300,5150,4650
+Oxyfuel + CCS,China,"Capital costs
+($2019 per kW)",3500,3350,2850
+Oxyfuel + CCS,India,"Capital costs
+($2019 per kW)",4100,3950,3550
+Oxyfuel + CCS,Middle East,"Capital costs
+($2019 per kW)",5000,4900,4400
+Oxyfuel + CCS,Africa,"Capital costs
+($2019 per kW)",4800,4650,4200
+Oxyfuel + CCS,Brazil,"Capital costs
+($2019 per kW)",5000,4900,4400
+Petroleum,Europe,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,United States,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,Japan,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,Russia,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,China,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,India,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,Middle East,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,Africa,"Capital costs
+($2019 per kW)",1240,1240,1240
+Petroleum,Brazil,"Capital costs
+($2019 per kW)",1240,1240,1240
+Solar photovoltaics - Buildings,Europe,"Capital costs
+($2019 per kW)",1240,840,720
+Solar photovoltaics - Buildings,United States,"Capital costs
+($2019 per kW)",3480,2280,1860
+Solar photovoltaics - Buildings,Japan,"Capital costs
+($2019 per kW)",2030,1400,1180
+Solar photovoltaics - Buildings,Russia,"Capital costs
+($2019 per kW)",2740,1680,1420
+Solar photovoltaics - Buildings,China,"Capital costs
+($2019 per kW)",900,600,500
+Solar photovoltaics - Buildings,India,"Capital costs
+($2019 per kW)",820,540,460
+Solar photovoltaics - Buildings,Middle East,"Capital costs
+($2019 per kW)",1640,960,800
+Solar photovoltaics - Buildings,Africa,"Capital costs
+($2019 per kW)",2200,1360,1140
+Solar photovoltaics - Buildings,Brazil,"Capital costs
+($2019 per kW)",1260,820,680
+Solar photovoltaics - Large scale,Europe,"Capital costs
+($2019 per kW)",810,530,410
+Solar photovoltaics - Large scale,United States,"Capital costs
+($2019 per kW)",1090,710,510
+Solar photovoltaics - Large scale,Japan,"Capital costs
+($2019 per kW)",1690,1170,900
+Solar photovoltaics - Large scale,Russia,"Capital costs
+($2019 per kW)",1700,1140,830
+Solar photovoltaics - Large scale,China,"Capital costs
+($2019 per kW)",630,410,300
+Solar photovoltaics - Large scale,India,"Capital costs
+($2019 per kW)",590,380,270
+Solar photovoltaics - Large scale,Middle East,"Capital costs
+($2019 per kW)",1110,700,490
+Solar photovoltaics - Large scale,Africa,"Capital costs
+($2019 per kW)",1240,780,560
+Solar photovoltaics - Large scale,Brazil,"Capital costs
+($2019 per kW)",820,510,370
+Steam Coal - SUBCRITICAL,Europe,"Capital costs
+($2019 per kW)",1700,1700,1700
+Steam Coal - SUBCRITICAL,United States,"Capital costs
+($2019 per kW)",1800,1800,1800
+Steam Coal - SUBCRITICAL,Japan,"Capital costs
+($2019 per kW)",2100,2100,2100
+Steam Coal - SUBCRITICAL,Russia,"Capital costs
+($2019 per kW)",1700,1700,1700
+Steam Coal - SUBCRITICAL,China,"Capital costs
+($2019 per kW)",600,600,600
+Steam Coal - SUBCRITICAL,India,"Capital costs
+($2019 per kW)",1000,1000,1000
+Steam Coal - SUBCRITICAL,Middle East,"Capital costs
+($2019 per kW)",1300,1300,1300
+Steam Coal - SUBCRITICAL,Africa,"Capital costs
+($2019 per kW)",1300,1300,1300
+Steam Coal - SUBCRITICAL,Brazil,"Capital costs
+($2019 per kW)",1300,1300,1300
+Steam Coal - SUPERCRITICAL,Europe,"Capital costs
+($2019 per kW)",2000,2000,2000
+Steam Coal - SUPERCRITICAL,United States,"Capital costs
+($2019 per kW)",2100,2100,2100
+Steam Coal - SUPERCRITICAL,Japan,"Capital costs
+($2019 per kW)",2400,2400,2400
+Steam Coal - SUPERCRITICAL,Russia,"Capital costs
+($2019 per kW)",2000,2000,2000
+Steam Coal - SUPERCRITICAL,China,"Capital costs
+($2019 per kW)",700,700,700
+Steam Coal - SUPERCRITICAL,India,"Capital costs
+($2019 per kW)",1200,1200,1200
+Steam Coal - SUPERCRITICAL,Middle East,"Capital costs
+($2019 per kW)",1600,1600,1600
+Steam Coal - SUPERCRITICAL,Africa,"Capital costs
+($2019 per kW)",1600,1600,1600
+Steam Coal - SUPERCRITICAL,Brazil,"Capital costs
+($2019 per kW)",1600,1600,1600
+Steam Coal - ULTRASUPERCRITICAL,Europe,"Capital costs
+($2019 per kW)",2200,2200,2200
+Steam Coal - ULTRASUPERCRITICAL,United States,"Capital costs
+($2019 per kW)",2300,2300,2300
+Steam Coal - ULTRASUPERCRITICAL,Japan,"Capital costs
+($2019 per kW)",2600,2600,2600
+Steam Coal - ULTRASUPERCRITICAL,Russia,"Capital costs
+($2019 per kW)",2200,2200,2200
+Steam Coal - ULTRASUPERCRITICAL,China,"Capital costs
+($2019 per kW)",800,800,800
+Steam Coal - ULTRASUPERCRITICAL,India,"Capital costs
+($2019 per kW)",1400,1400,1400
+Steam Coal - ULTRASUPERCRITICAL,Middle East,"Capital costs
+($2019 per kW)",1600,1600,1600
+Steam Coal - ULTRASUPERCRITICAL,Africa,"Capital costs
+($2019 per kW)",1900,1900,1900
+Steam Coal - ULTRASUPERCRITICAL,Brazil,"Capital costs
+($2019 per kW)",1800,1800,1800
+Wind offshore,Europe,"Capital costs
+($2019 per kW)",3040,2000,1500
+Wind offshore,United States,"Capital costs
+($2019 per kW)",4040,2460,1820
+Wind offshore,Japan,"Capital costs
+($2019 per kW)",5560,3440,2540
+Wind offshore,Russia,"Capital costs
+($2019 per kW)",4600,2940,2160
+Wind offshore,China,"Capital costs
+($2019 per kW)",2860,1840,1380
+Wind offshore,India,"Capital costs
+($2019 per kW)",2780,1820,1300
+Wind offshore,Middle East,"Capital costs
+($2019 per kW)",4400,2860,2060
+Wind offshore,Africa,"Capital costs
+($2019 per kW)",4260,2820,1980
+Wind offshore,Brazil,"Capital costs
+($2019 per kW)",4440,2900,2100
+Wind onshore,Europe,"Capital costs
+($2019 per kW)",1590,1510,1450
+Wind onshore,United States,"Capital costs
+($2019 per kW)",1380,1310,1250
+Wind onshore,Japan,"Capital costs
+($2019 per kW)",3130,2940,2810
+Wind onshore,Russia,"Capital costs
+($2019 per kW)",1580,1470,1390
+Wind onshore,China,"Capital costs
+($2019 per kW)",1160,1090,1050
+Wind onshore,India,"Capital costs
+($2019 per kW)",930,880,830
+Wind onshore,Middle East,"Capital costs
+($2019 per kW)",1950,1810,1700
+Wind onshore,Africa,"Capital costs
+($2019 per kW)",1810,1700,1600
+Wind onshore,Brazil,"Capital costs
+($2019 per kW)",1150,1090,1040
+Biogas - DG Industry,Indonesia,"Annual O&M Costs
+($2019 per kW)",100.8,92.7,80.7
+Biogas - DG Industry,Indonesia,"Capital costs
+($2019 per kW)",2900,2700,2300
+Biomass - waste incineration - CHP,Indonesia,"Annual O&M Costs
+($2019 per kW)",253.4,233.7,201.2
+Biomass - waste incineration - CHP,Indonesia,"Capital costs
+($2019 per kW)",5600,5200,4600
+Biomass CHP Medium,Indonesia,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass CHP Medium,Indonesia,"Capital costs
+($2019 per kW)",1800,1600,1400
+Biomass CHP Small,Indonesia,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass CHP Small,Indonesia,"Capital costs
+($2019 per kW)",1800,1600,1400
+Biomass Cofiring,Indonesia,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass Cofiring,Indonesia,"Capital costs
+($2019 per kW)",1800,1600,1400
+Biomass Power plant,Indonesia,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass Power plant,Indonesia,"Capital costs
+($2019 per kW)",1800,1600,1400
+CCGT,Indonesia,"Annual O&M Costs
+($2019 per kW)",23.5,22.8,22.5
+CCGT,Indonesia,"Capital costs
+($2019 per kW)",690,660,635
+CCGT - CHP,Indonesia,"Annual O&M Costs
+($2019 per kW)",23.5,22.8,23
+CCGT - CHP,Indonesia,"Capital costs
+($2019 per kW)",690,660,635
+CCGT + CCS,Indonesia,"Annual O&M Costs
+($2019 per kW)",32.5,31.5,32.1
+CCGT + CCS,Indonesia,"Capital costs
+($2019 per kW)",1840,1630,1495
+Coal* + CCS,Indonesia,"Annual O&M Costs
+($2019 per kW)",83,80.5,79.3
+Coal* + CCS,Indonesia,"Capital costs
+($2019 per kW)",4276,4020,3759
+Concentrating solar power,Indonesia,"Annual O&M Costs
+($2019 per kW)",230,180,160
+Concentrating solar power,Indonesia,"Capital costs
+($2019 per kW)",5700,4550,3950
+Fuel cell (distributed electricity generation),Indonesia,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Indonesia,"Capital costs
+($2019 per kW)",5000,2500,2500
+Gas turbine,Indonesia,"Annual O&M Costs
+($2019 per kW)",23.2,22.5,22.2
+Gas turbine,Indonesia,"Capital costs
+($2019 per kW)",770,730,705
+Geothermal,Indonesia,"Annual O&M Costs
+($2019 per kW)",50,43,39.3
+Geothermal,Indonesia,"Capital costs
+($2019 per kW)",4000,3440,3140
+Hydropower - large-scale,Indonesia,"Annual O&M Costs
+($2019 per kW)",37.7,36.2,34.9
+Hydropower - large-scale,Indonesia,"Capital costs
+($2019 per kW)",2080,2000,1925
+Hydropower - small-scale,Indonesia,"Annual O&M Costs
+($2019 per kW)",53,50.9,49.1
+Hydropower - small-scale,Indonesia,"Capital costs
+($2019 per kW)",2700,2590,2495
+IGCC,Indonesia,"Annual O&M Costs
+($2019 per kW)",60,58.2,57.3
+IGCC,Indonesia,"Capital costs
+($2019 per kW)",2400,2210,2125
+IGCC + CCS,Indonesia,"Annual O&M Costs
+($2019 per kW)",68.9,66.8,65.8
+IGCC + CCS,Indonesia,"Capital costs
+($2019 per kW)",3350,3080,2905
+Marine,Indonesia,"Annual O&M Costs
+($2019 per kW)",70.8,62.5,49.1
+Marine,Indonesia,"Capital costs
+($2019 per kW)",5500,5100,5100
+Nuclear,Indonesia,"Annual O&M Costs
+($2019 per kW)",150,150,150
+Nuclear,Indonesia,"Capital costs
+($2019 per kW)",5910,5628,5628
+Oil,Indonesia,"Annual O&M Costs
+($2019 per kW)",8,8,7.9
+Oil,Indonesia,"Capital costs
+($2019 per kW)",800,800,790
+Other,Indonesia,"Annual O&M Costs
+($2019 per kW)",8,8,7.9
+Other,Indonesia,"Capital costs
+($2019 per kW)",800,800,790
+Oxyfuel + CCS,Indonesia,"Annual O&M Costs
+($2019 per kW)",185,175,167.5
+Oxyfuel + CCS,Indonesia,"Capital costs
+($2019 per kW)",6100,5900,5625
+Petroleum,Indonesia,"Annual O&M Costs
+($2019 per kW)",8,8,7.9
+Petroleum,Indonesia,"Capital costs
+($2019 per kW)",800,800,790
+Solar photovoltaics - Buildings,Indonesia,"Annual O&M Costs
+($2019 per kW)",14.4,10,9
+Solar photovoltaics - Buildings,Indonesia,"Capital costs
+($2019 per kW)",1320,940,815
+Solar photovoltaics - Large scale,Indonesia,"Annual O&M Costs
+($2019 per kW)",14.4,10,9
+Solar photovoltaics - Large scale,Indonesia,"Capital costs
+($2019 per kW)",790,560,485
+Steam Coal - SUBCRITICAL,Indonesia,"Annual O&M Costs
+($2019 per kW)",45.3,43.9,43.3
+Steam Coal - SUBCRITICAL,Indonesia,"Capital costs
+($2019 per kW)",1650,1600,1575
+Steam Coal - SUPERCRITICAL,Indonesia,"Annual O&M Costs
+($2019 per kW)",41.2,40,39.4
+Steam Coal - SUPERCRITICAL,Indonesia,"Capital costs
+($2019 per kW)",1400,1360,1340
+Steam Coal - ULTRASUPERCRITICAL,Indonesia,"Annual O&M Costs
+($2019 per kW)",56.6,54.9,54.1
+Steam Coal - ULTRASUPERCRITICAL,Indonesia,"Capital costs
+($2019 per kW)",1520,1480,1455
+Wind offshore,Indonesia,"Annual O&M Costs
+($2019 per kW)",72.6,61.7,57
+Wind offshore,Indonesia,"Capital costs
+($2019 per kW)",3500,2980,2750
+Wind onshore,Indonesia,"Annual O&M Costs
+($2019 per kW)",60,51,47.1
+Wind onshore,Indonesia,"Capital costs
+($2019 per kW)",1500,1280,1180
+Biogas - DG Industry,Vietnam,"Annual O&M Costs
+($2019 per kW)",100.8,92.7,80.7
+Biogas - DG Industry,Vietnam,"Capital costs
+($2019 per kW)",2900,2700,2300
+Biomass - waste incineration - CHP,Vietnam,"Annual O&M Costs
+($2019 per kW)",253.4,233.7,201.2
+Biomass - waste incineration - CHP,Vietnam,"Capital costs
+($2019 per kW)",5600,5200,4600
+Biomass CHP Medium,Vietnam,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass CHP Medium,Vietnam,"Capital costs
+($2019 per kW)",1800,1600,1400
+Biomass CHP Small,Vietnam,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass CHP Small,Vietnam,"Capital costs
+($2019 per kW)",1800,1600,1400
+Biomass Cofiring,Vietnam,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass Cofiring,Vietnam,"Capital costs
+($2019 per kW)",1800,1600,1400
+Biomass Power plant,Vietnam,"Annual O&M Costs
+($2019 per kW)",49.5,45.5,39.6
+Biomass Power plant,Vietnam,"Capital costs
+($2019 per kW)",1800,1600,1400
+CCGT,Vietnam,"Annual O&M Costs
+($2019 per kW)",29.3,28.5,27.6
+CCGT,Vietnam,"Capital costs
+($2019 per kW)",770,690,680
+CCGT - CHP,Vietnam,"Annual O&M Costs
+($2019 per kW)",29.3,28.5,27.6
+CCGT - CHP,Vietnam,"Capital costs
+($2019 per kW)",770,690,680
+CCGT + CCS,Vietnam,"Annual O&M Costs
+($2019 per kW)",38.7,37.5,36.4
+CCGT + CCS,Vietnam,"Capital costs
+($2019 per kW)",1970,1700,1460
+Coal* + CCS,Vietnam,"Annual O&M Costs
+($2019 per kW)",83.1,80.6,78.1
+Coal* + CCS,Vietnam,"Capital costs
+($2019 per kW)",4454,4224,3701
+Concentrating solar power,Vietnam,"Annual O&M Costs
+($2019 per kW)",230,180,160
+Concentrating solar power,Vietnam,"Capital costs
+($2019 per kW)",5700,4550,3950
+Fuel cell (distributed electricity generation),Vietnam,"Annual O&M Costs
+($2019 per kW)",150,75,75
+Fuel cell (distributed electricity generation),Vietnam,"Capital costs
+($2019 per kW)",5000,2500,2500
+Gas turbine,Vietnam,"Annual O&M Costs
+($2019 per kW)",24.1,23.4,22.7
+Gas turbine,Vietnam,"Capital costs
+($2019 per kW)",610,590,560
+Geothermal,Vietnam,"Annual O&M Costs
+($2019 per kW)",18.7,17.4,15.8
+Geothermal,Vietnam,"Capital costs
+($2019 per kW)",3600,3400,3100
+Hydropower - large-scale,Vietnam,"Annual O&M Costs
+($2019 per kW)",37.7,35.8,33.6
+Hydropower - large-scale,Vietnam,"Capital costs
+($2019 per kW)",1500,1500,1500
+Hydropower - small-scale,Vietnam,"Annual O&M Costs
+($2019 per kW)",41.9,39.8,37.3
+Hydropower - small-scale,Vietnam,"Capital costs
+($2019 per kW)",1750,1750,1750
+IGCC,Vietnam,"Annual O&M Costs
+($2019 per kW)",60,58.2,57.3
+IGCC,Vietnam,"Capital costs
+($2019 per kW)",2400,2210,2125
+IGCC + CCS,Vietnam,"Annual O&M Costs
+($2019 per kW)",103.5,100.3,98.2
+IGCC + CCS,Vietnam,"Capital costs
+($2019 per kW)",4430,4070,3605
+Marine,Vietnam,"Annual O&M Costs
+($2019 per kW)",70.8,62.5,49.1
+Marine,Vietnam,"Capital costs
+($2019 per kW)",5500,5100,5100
+Nuclear,Vietnam,"Annual O&M Costs
+($2019 per kW)",150,150,150
+Nuclear,Vietnam,"Capital costs
+($2019 per kW)",5910,5628,5628
+Oil,Vietnam,"Annual O&M Costs
+($2019 per kW)",10,9.5,9
+Oil,Vietnam,"Capital costs
+($2019 per kW)",600,580,550
+Other,Vietnam,"Annual O&M Costs
+($2019 per kW)",10,9.5,9
+Other,Vietnam,"Capital costs
+($2019 per kW)",600,580,550
+Oxyfuel + CCS,Vietnam,"Annual O&M Costs
+($2019 per kW)",185,175,167.5
+Oxyfuel + CCS,Vietnam,"Capital costs
+($2019 per kW)",6100,5900,5625
+Petroleum,Vietnam,"Annual O&M Costs
+($2019 per kW)",10,9.5,9
+Petroleum,Vietnam,"Capital costs
+($2019 per kW)",600,580,550
+Solar photovoltaics - Buildings,Vietnam,"Annual O&M Costs
+($2019 per kW)",14.8,10,8
+Solar photovoltaics - Buildings,Vietnam,"Capital costs
+($2019 per kW)",1000,710,520
+Solar photovoltaics - Large scale,Vietnam,"Annual O&M Costs
+($2019 per kW)",15.5,10,8
+Solar photovoltaics - Large scale,Vietnam,"Capital costs
+($2019 per kW)",930,660,480
+Steam Coal - SUBCRITICAL,Vietnam,"Annual O&M Costs
+($2019 per kW)",45.3,43.9,43.3
+Steam Coal - SUBCRITICAL,Vietnam,"Capital costs
+($2019 per kW)",1650,1600,1575
+Steam Coal - SUPERCRITICAL,Vietnam,"Annual O&M Costs
+($2019 per kW)",39.6,38.5,37.2
+Steam Coal - SUPERCRITICAL,Vietnam,"Capital costs
+($2019 per kW)",1460,1450,1420
+Steam Coal - ULTRASUPERCRITICAL,Vietnam,"Annual O&M Costs
+($2019 per kW)",61.1,59.4,57.4
+Steam Coal - ULTRASUPERCRITICAL,Vietnam,"Capital costs
+($2019 per kW)",1630,1610,1600
+Wind offshore,Vietnam,"Annual O&M Costs
+($2019 per kW)",70,42,39
+Wind offshore,Vietnam,"Capital costs
+($2019 per kW)",3150,2150,1700
+Wind onshore,Vietnam,"Annual O&M Costs
+($2019 per kW)",42,36,28
+Wind onshore,Vietnam,"Capital costs
+($2019 per kW)",1500,1280,1080

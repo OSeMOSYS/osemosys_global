@@ -1,0 +1,3 @@
+daypart,start_hour,end_hour
+D1,0,12
+D2,12,24

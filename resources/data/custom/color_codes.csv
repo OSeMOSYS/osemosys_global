@@ -1,0 +1,24 @@
+tech_id,tech_name,colour
+BIO,Biomass,darkgreen
+CCG,Gas - Combined cycle,lightcoral
+COA,Coal,black
+COG,Cogeneration,peru
+CSP,CSP,wheat
+ELC,Electricity,gold
+GAS,Natural gas,orange
+GEO,Geothermal,darkseagreen
+HYD,Hydro,dodgerblue
+OCG,Gas - Open cycle,firebrick
+OIL,Oil,lightgrey
+OTH,Other,teal
+PET,Petroleum,grey
+SOL,Solar,gold
+SPV,Solar PV,gold
+URN,Nuclear,mediumseagreen
+WAS,Waste,darkkhaki
+WAV,Wave,navy
+WOF,Wind - Offshore,violet
+WON,Wind - Onshore,blueviolet
+INT,International,darkgreen
+BAT,Battery storage,red
+CCS,Coal + CCS,olive

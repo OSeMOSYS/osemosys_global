@@ -1,0 +1,13 @@
+month,season,month_name,days
+1,S1,Jan,90
+2,S1,Feb,90
+3,S2,Mar,92
+4,S2,Apr,92
+5,S2,May,92
+6,S3,Jun,92
+7,S3,Jul,92
+8,S3,Aug,92
+9,S4,Sep,91
+10,S4,Oct,91
+11,S4,Nov,91
+12,S1,Dec,90
