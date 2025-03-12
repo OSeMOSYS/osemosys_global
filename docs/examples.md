@@ -27,17 +27,21 @@ following two steps.
 
 :::{warning}
 If you installed CPLEX or Gurobi instead of CBC, you must first change this in 
-the configuration file at `config/config.yaml`
+the configuration file at `config/config.yaml` as below
+
+```yaml
+solver: "gurobi"
+```
 :::
 
 ## Example 1
 
 **Goal**: Run the workflow with default settings. This will produce a model 
-of India from 2015 to 2050 with 8 time slices per year, and solve it using CBC.
+of India from 2021 to 2050 with 8 time slices per year, and solve it using CBC.
 
 1. Run the command `snakemake -j6`. The time to build and solve the model will
 vary depending on your computer, but in general, this example will finish 
-within minutes .
+within minutes.
 
     ```bash
     (osemosys-global) ~/osemosys_global$ snakemake -j6
@@ -56,61 +60,106 @@ within minutes .
 generated results are summarized below. 
 
     ``` bash
-    osemosys_global             
-    ├── resutls            # Will appear after running the workflow
-    │   ├── data           # Global CSV OSeMOSYS data         
-    │   ├── figs           
-    │   │   ├── ...        # Global demand projections
-    │   ├── india          # Name of scenario
-    │   │   ├── data/      # Scenario input CSV data
-    │   │   ├── figures            
-    │   │   │   ├── GenerationAnnual.html
-    │   │   │   ├── GenerationHourly.html
-    │   │   │   ├── TotalCapacityAnnual.html
-    │   │   │   ├── TransmissionCapacity2050.jpg
-    │   │   │   ├── TransmissionFlow2050.jpg
-    │   │   ├── result_summaries    
-    │   │   │   ├── Capacities.csv
-    │   │   │   ├── Generation_By_Node.csv
-    │   │   │   ├── Generation.csv
-    │   │   │   ├── Metrics.csv
-    │   │   │   ├── TradeFlows.csv
-    │   │   ├── results/   # Scenario result CSV data
-    │   │   ├── india.txt  # Scenario OSeMOSYS data file                       
-    └── ...
+    osemosys_global         
+    └── results        # Will appear after running the workflow
+    ├── data       # Global CSV OSeMOSYS data     
+    ├── figs       
+    │   ├── ...    # Global demand projections
+    └── India      # Name of scenario
+        ├── data/      # Scenario input CSV data
+        ├── figures      # Result figures       
+        │   ├── GenerationAnnual.html
+        │   ├── GenerationHourly.html
+        │   ├── TotalCapacityAnnual.html
+        │   ├── TransmissionCapacity2050.jpg
+        │   └── TransmissionFlow2050.jpg
+        ├── result_summaries
+        │   ├── AnnualEmissionIntensity.csv
+        │   ├── AnnualEmissionIntensityGlobal.csv
+        │   ├── AnnualExportTradeFlowsCountry.csv
+        │   ├── AnnualExportTradeFlowsNode.csv
+        │   ├── AnnualImportTradeFlowsCountry.csv
+        │   ├── AnnualImportTradeFlowsNode.csv
+        │   ├── AnnualNetTradeFlowsCountry.csv
+        │   ├── AnnualNetTradeFlowsNode.csv
+        │   ├── AnnualTotalTradeFlowsCountry.csv
+        │   ├── AnnualTotalTradeFlowsNode.csv
+        │   ├── GenerationSharesCountry.csv
+        │   ├── GenerationSharesGlobal.csv
+        │   ├── GenerationSharesNode.csv
+        │   ├── Metrics.csv
+        │   ├── PowerCapacityCountry.csv
+        │   ├── PowerCapacityNode.csv
+        │   ├── PowerCostCountry.csv
+        │   ├── PowerCostGlobal.csv
+        │   ├── PowerCostNode.csv
+        │   ├── TotalCostCountry.csv
+        │   ├── TotalCostGlobal.csv
+        │   ├── TotalCostNode.csv
+        │   ├── TradeFlowsCountry.csv
+        │   ├── TradeFlowsNode.csv
+        │   ├── TransmissionCapacityCountry.csv
+        │   └── TransmissionCapacityNode.csv
+        ├── results/   # Scenario result CSV data
+        └── India.txt  # Scenario OSeMOSYS data file              
     ```
 
-    | File    | Description |
-    |---------|-------------|
+    | File - figures    | Description |
+    |-------------------|-------------|
     | `GenerationAnnual.html` | Plot of system level annual generation by technology |
     | `GenerationHourly.html` | Plot of system level technology generation by timeslice |
     | `TotalCapacityAnnual.html` | Plot of system level annual capacity by technology |
-    | `Capacities.csv` | Table of nodal level annual capacity by technology |
-    | `Generation_By_Node.csv` | Table of nodal level technology generation by timeslice |
-    | `Generation.csv` | Table of system level technology generation by timeslice |
-    | `Metrics.csv` | Table of system level cost and emission statistics |
-    | `TradeFlows.csv` | Table of nodal level electricity trade by timeslice |
     | `TransmissionCapacityXXXX.jpg` | Transmission capacity plot for last year of model |
-    | `TransmissionFlowXXXX.jpg` | Transmission flow plot for last year of model |
+    | `TransmissionFlowXXXX.jpg` | Transmission flow plot for last year of model |    
+    
+    | File - result_summaries    | Description |
+    |-------------------|-------------|    
+    | `AnnualEmissionIntensity.csv` | Country level annual emission intensity (gCO2/kWh) | 
+    | `AnnualEmissionIntensityGlobal.csv` | System level annual emission intensity (gCO2/kWh) | 
+    | `AnnualExportTradeFlowsCountry.csv` | Country level annual electricity exports from node_1 to node_2 (PJ) | 
+    | `AnnualExportTradeFlowsNode.csv` | Nodal level annual electricity exports from node_1 to node_2 (PJ) |  
+    | `AnnualImportTradeFlowsCountry.csv` | Country level annual electricity exports from node_2 to node_1 (PJ) | 
+    | `AnnualImportTradeFlowsNode.csv` | Nodal level annual electricity exports from node_2 to node_1 (PJ) | 
+    | `AnnualNetTradeFlowsCountry.csv` | Country level annual net trade from node_1 to node_2 (PJ) | 
+    | `AnnualNetTradeFlowsNode.csv` | Nodal level annual net trade from node_1 to node_2 (PJ) | 
+    | `AnnualTotalTradeFlowsCountry.csv` | Country level annual total trade between node_1 and node_2 (PJ) | 
+    | `AnnualTotalTradeFlowsNode.csv` | Nodal level annual total trade between node_1 and node_2 (PJ) |  
+    | `GenerationSharesCountry.csv` | Country level annual generation shares per generator category (%) | 
+    | `GenerationSharesGlobal.csv` | System level annual generation shares per generator category (%) | 
+    | `GenerationSharesNode.csv` | Nodal level annual generation shares per generator category (%) | 
+    | `Metrics.csv` | Summary statistics for the full model horizon | 
+    | `PowerCapacityCountry.csv` | Country level annual capacity by technology (GW) | 
+    | `PowerCapacityNode.csv` | Nodal level annual capacity by technology (GW) | 
+    | `PowerCostCountry.csv` | Country level annual relative system cost ($/MWh, Total Costs / Demand) | 
+    | `PowerCostGlobal.csv` | System level annual relative system cost ($/MWh, Total Costs / Demand) | 
+    | `PowerCostNode.csv` | Nodal level annual relative system cost ($/MWh, Total Costs / Demand) | 
+    | `TotalCostCountry.csv` | Country level total system cost ($M) |  
+    | `TotalCostGlobal.csv` | System level total system cost ($M) |   
+    | `TotalCostNode.csv` | Nodal level total system cost ($M) |   
+    | `TradeFlowsCountry.csv` | Country level electricity trade by timeslice (PJ) | 
+    | `TradeFlowsNode.csv` | Nodal level electricity trade by timeslice (PJ) | 
+    | `TransmissionCapacityCountry.csv` | Country level annual transmission capacity (GW) | 
+    | `TransmissionCapacityNode.csv` | Nodal level annual transmission capacity (GW) | 
+
 
 3. View system level capacity and generation results. 
 
     :::{caution}
     These results are used to showcase the capabilities of OSeMOSYS Global. The
     actual energy supply mix results may need further analysis, such as removing 
-    technology bias though implementing resource limits on nuclear.
+    technology bias though implementing resource limits on solar-PV and CCG (Combined Cycle Gas).
     :::
 
     ![Example-1.1](_static/example_1.1.png "Example-1.1")
     ![Example-1.2](_static/example_1.2.png "Example-1.2")
 
     :::{tip}
-    These plots are interactive! Howver over the bars to view values, or 
+    These plots are interactive! Hover over the bars to view values, or 
     double click on a power plant in the legend to single it out. 
     :::
 
-4. View demand projections results for Asia in the file 
-`results/figs/Demand projection Asia.jpg`. Grey dots represent historical 
+4. View demand projections results in the file 
+`results/figs/projection.png`. Grey dots represent historical 
 country level values for countries in Asia and the coloured dots show projected 
 values.
 
@@ -219,27 +268,27 @@ are inclusive.
     workflow to create out both system level and country level plots. 
 
     ``` bash
-    osemosys_global             
-    ├── resutls            
-    │   ├── data           # Global CSV OSeMOSYS data         
-    │   ├── figs           
-    │   │   ├── ...        # Global demand projections
-    │   ├── india          
-    │   ├── BBIN          # Name of scenario
+    osemosys_global         
+    ├── resutls        
+    │   ├── data       # Global CSV OSeMOSYS data     
+    │   ├── figs       
+    │   │   ├── ...    # Global demand projections
+    │   ├── india      
+    │   ├── BBIN      # Name of scenario
     │   │   ├── data/     # Scenario input CSV data
     │   │   ├── figures   
     │   │   │   ├── BTN
     │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
+    │   │   │   │   ├── TotalCapacityAnnual.html     
     │   │   │   ├── BGD
     │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
+    │   │   │   │   ├── TotalCapacityAnnual.html     
     │   │   │   ├── IND
     │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
+    │   │   │   │   ├── TotalCapacityAnnual.html     
     │   │   │   ├── NPL
     │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
+    │   │   │   │   ├── TotalCapacityAnnual.html     
     │   │   │   ├── GenerationAnnual.html
     │   │   │   ├── GenerationHourly.html
     │   │   │   ├── TotalCapacityAnnual.html
@@ -247,7 +296,7 @@ are inclusive.
     │   │   │   ├── TransmissionFlow2040.jpg
     │   │   ├── result_summaries   # Auto generated result tables
     │   │   ├── results/   # Scenario result CSV data
-    │   │   ├── BBIN.txt  # Scenario OSeMOSYS data file                       
+    │   │   ├── BBIN.txt  # Scenario OSeMOSYS data file               
     └── ...
     ```
 
@@ -270,13 +319,13 @@ are inclusive.
 3. View system level metrics for this model run by looking at the file 
 `results/BBIN/result_summaries/Metrics.csv`
 
-    | Metric              | Unit                      | Value |
+    | Metric          | Unit              | Value |
     |---------------------|---------------------------|-------|
-    | Emissions	          | Million tonnes of CO2-eq. | 1221  |
-    | RE Share            | %                         | 10    |
-    | Total System Cost	  | Billion $                 | 1544  |
-    | Cost of electricity | $/MWh                     | 20    |
-    | Fossil fuel share   | %                         | 4     |
+    | Emissions	      | Million tonnes of CO2-eq. | 1221  |
+    | RE Share        | %             | 10    |
+    | Total System Cost	  | Billion $         | 1544  |
+    | Cost of electricity | $/MWh             | 20    |
+    | Fossil fuel share   | %             | 4     |
 
 
 ## Example 3
