@@ -285,7 +285,7 @@ if __name__ == "__main__":
         file_storage_build_rates = 'resources/data/custom/storage_build_rates.csv'
         file_default_op_life = 'resources/data/custom/operational_life.csv'
         file_gesdb_project_data = 'resources/data/default/GESDB_Project_Data.json'
-        file_gesdb_regional_mapping = 'resources/data/default/GESDB_region_mapping.csv'
+        file_gesdb_regional_mapping = 'resources/data/custom/GESDB_region_mapping.csv'
         storage_existing = True
         storage_planned = True          
         start_year = 2021

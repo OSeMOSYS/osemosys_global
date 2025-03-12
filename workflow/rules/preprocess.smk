@@ -261,7 +261,7 @@ rule storage:
         default_op_life = 'resources/data/custom/operational_life.csv',
         storage_build_rates = 'resources/data/custom/storage_build_rates.csv',
         gesdb_project_data = 'resources/data/default/GESDB_Project_Data.json',
-        gesdb_regional_mapping = 'resources/data/default/GESDB_region_mapping.csv',
+        gesdb_regional_mapping = 'resources/data/custom/GESDB_region_mapping.csv',
     params:
         storage_existing = config['storage_existing'],
         storage_planned = config['storage_planned'],
