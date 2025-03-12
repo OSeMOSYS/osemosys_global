@@ -163,13 +163,13 @@ if __name__ == "__main__":
         regression_plot = snakemake.output.regression
         projection_plot = snakemake.output.projection
     else:
-        file_plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx"
-        file_ember = "resources/data/ember_yearly_electricity_data.csv"
-        file_iamc_gdp = "resources/data/iamc_db_GDPppp_Countries.xlsx"
-        file_iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx"
-        file_iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx"
+        file_plexos = "resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx"
+        file_ember = "resources/data/default/ember_yearly_electricity_data.csv"
+        file_iamc_gdp = "resources/data/default/iamc_db_GDPppp_Countries.xlsx"
+        file_iamc_pop = "resources/data/default/iamc_db_POP_Countries.xlsx"
+        file_iamc_urb = "resources/data/default/iamc_db_URB_Countries.xlsx"
         file_iamc_missing = (
-            "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx"
+            "resources/data/default/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx"
         )
         regression_plot = "regression.png"
         projection_plot = "projection.png"
