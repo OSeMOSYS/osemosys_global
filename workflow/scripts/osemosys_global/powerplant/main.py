@@ -351,7 +351,7 @@ if __name__ == "__main__":
         fossil_capacity_targets = [["BTNXX", 'COA', 2030, 2050, 'ABS', 1],
                                    ["INDNE", 'CCG', 2040, 2050, 'MIN', 10],
                                    ["INDSO", 'OCG', 2025, 2050, 'MAX', 25]]
-        calibration = {'OCG1': [50, "IND", 2021]}
+        calibration = {'OCG': [50, "IND", 2021]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
