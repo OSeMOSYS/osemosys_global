@@ -201,10 +201,10 @@ emission_limit:
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
-# where VALUE is percentage (%) minimum utilization of a given technology. This can be 
+# where VALUE is minimum utilization (PJ) of a given technology. This can be 
 # used to constrain power plant output (generation), for example, to calibrate historical
 # generation values.
-  OCG1: [50, "IND", 2021]
+  OCG: [50, "IND", 2021]
   
 max_availability_factors:
 # [COUNTRY/NODE, TECHNOLOGY, START_YEAR, END_YEAR, VALUE]
