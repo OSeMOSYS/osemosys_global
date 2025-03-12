@@ -36,10 +36,16 @@ transmission_planned: True
 
 # Set to True if existing storage capacities should be included
 # from the Global Energy Storage Database (DOE/Sandia).
+# If custom nodes are defined in 'nodes_to_add' and you want to assign
+# GESDB data to custom nodes you'll have to update 'GESDB_region_mapping'
+# in 'resources/data/custom'.
 storage_existing: True
 
 # Set to True if planned storage capacities should be included
 # from the Global Energy Storage Database (DOE/Sandia).
+# If custom nodes are defined in 'nodes_to_add' and you want to assign
+# GESDB data to custom nodes you'll have to update 'GESDB_region_mapping'
+# in 'resources/data/custom'.
 storage_planned: True
 
 # Emission Parameters 
@@ -243,4 +249,4 @@ re_targets:
   T01: ["", [], "PCT", 2048, 2050, 95]
   T02: ["IND", [], "PCT", 2030, 2040, 60]
   T03: ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15]
-  T04: ["INDSO", ['WOF'], "ABS", 2040, 2050, 100]  
+  T04: ["INDSO", ['WOF'], "ABS", 2040, 2050, 100]

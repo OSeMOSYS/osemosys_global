@@ -60,9 +60,9 @@ rule visualisation:
         'Generating result figures...'
     input:
         csv_files = expand('results/{{scenario}}/results/{result_file}.csv', result_file = OTOOLE_RESULTS),
-        centerpoints = 'resources/data/centerpoints.csv',
-        custom_nodes_centerpoints = 'resources/data/custom_nodes/centerpoints.csv',
-        color_codes = 'resources/data/color_codes.csv',
+        centerpoints = 'resources/data/default/centerpoints.csv',
+        custom_nodes_centerpoints = 'resources/data/custom/centerpoints.csv',
+        color_codes = 'resources/data/custom/color_codes.csv',
     params:
         result_input_data = "results/{scenario}/data/",
         result_data = "results/{scenario}/results/",
