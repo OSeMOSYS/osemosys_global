@@ -1,26 +1,29 @@
 # Scenario Name 
-scenario: "India"
+scenario: "BBIN_Validated"
 
 # Temporal Parameters 
-startYear: 2021
+startYear: 2023
 endYear: 2050
 daytype: False
 dayparts:
 # daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [1, 7]
-  D2: [7, 13]
-  D3: [13, 19]
-  D4: [19, 25]
+  D1: [1, 9]
+  D2: [9, 17]
+  D3: [17, 25]
 seasons:
 # season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 4, 5, 6]
-  S2: [7, 8, 9, 10, 11, 12]
+  S1: [1, 2, 3, 4]
+  S2: [5, 6, 7, 8]
+  S3: [9, 10, 11, 12]
 
 timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
   - "IND"
+  - "BGD"
+  - "BTN"
+  - "NPL"
 
 # Set to True if transmission should be included
 crossborderTrade: True
@@ -52,7 +55,10 @@ emission_penalty:
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # EXAMPLE:  - ["CO2", "IND", 2020, 2050, 2.1]
 # where VALUE is in M$/MT CO2
- - ["CO2", "IND", 2020, 2050, 2.1]
+ - ["CO2", "IND", 2025, 2050, 50]
+# - ["CO2", "BGD", 2025, 2050, 50]
+# - ["CO2", "BTN", 2025, 2050, 50]
+# - ["CO2", "NPL", 2025, 2050, 50]
 
 # Investment Parameters 
 no_invest_technologies: 

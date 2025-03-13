@@ -37,7 +37,7 @@ solver: "gurobi"
 ## Example 1
 
 **Goal**: Run the workflow with default settings. This will produce a model 
-of India from 2021 to 2050 with 8 time slices per year, and solve it using CBC.
+of India from 2021 to 2050 and solve it using CBC.
 
 1. Run the command `snakemake -j6`. The time to build and solve the model will
 vary depending on your computer, but in general, this example will finish 
@@ -66,14 +66,14 @@ generated results are summarized below.
     ├── figs       
     │   ├── ...    # Global demand projections
     └── India      # Name of scenario
-        ├── data/      # Scenario input CSV data
+        ├── data      # Scenario input CSV data
         ├── figures      # Result figures       
         │   ├── GenerationAnnual.html
         │   ├── GenerationHourly.html
         │   ├── TotalCapacityAnnual.html
         │   ├── TransmissionCapacity2050.jpg
         │   └── TransmissionFlow2050.jpg
-        ├── result_summaries
+        ├── result_summaries   # Auto generated result tables
         │   ├── AnnualEmissionIntensity.csv
         │   ├── AnnualEmissionIntensityGlobal.csv
         │   ├── AnnualExportTradeFlowsCountry.csv
@@ -100,7 +100,7 @@ generated results are summarized below.
         │   ├── TradeFlowsNode.csv
         │   ├── TransmissionCapacityCountry.csv
         │   └── TransmissionCapacityNode.csv
-        ├── results/   # Scenario result CSV data
+        ├── results   # Scenario result CSV data
         └── India.txt  # Scenario OSeMOSYS data file              
     ```
 
@@ -167,14 +167,15 @@ values.
 
 ## Example 2
 
-**Goal**: Modify the geographic scope, temporal settings, and emission penalty 
-of the model. 
+**Goal**: Modify the model geographic scope, temporal settings, emission penalty and 
+generator build rates for CCG and SPV in India.
 
 The goal of this scenario will be to change the geographic scope to add 
 Bangladesh, Bhutan, and Nepal to the model. Moreover, we will change the model
-horizon to be from 2020-2040 and increase the number of time slices per year 
-from 8 to 18. Finally, we will ensure cross border trade is allowed, set the 
-emission penalty to $50/T, and create country level result plots.
+horizon to be from 2023-2050 and increase the number of time slices and seasons per year. 
+We also set build rates for CCG at 10 GW/yr and to 5%/yr of the total solar PV potential 
+in India. Finally, we will ensure cross border trade is allowed, set the emission penalty 
+to $50/T, and create country level result plots.
 
 1. Navigate to and open the file `config/config.yaml`
 
@@ -195,11 +196,11 @@ and **N**epal)
       - 'NPL'
     ```
 
-4. Change the model horizon to be from 2020 to 2040. Both numbers are inclusive.
+4. Change the model horizon to be from 2023 to 2050. Both numbers are inclusive.
 
     ```yaml
-    startYear: 2020
-    endYear: 2040
+    startYear: 2023
+    endYear: 2050
     ```
 
 5. Change the number of day parts to represent three even 8 hour segments per 
@@ -207,49 +208,64 @@ day. The start number is inclusive, while the end number is exclusive.
 
     ```yaml
     dayparts:
-      D1: [0, 8]
-      D2: [8, 16]
-      D3: [16, 24]
+      D1: [1, 9]
+      D2: [9, 17]
+      D3: [17, 25]
     ```
 
-6. Change the number of seasons to represent 6 equally spaced days. Both numbers
+6. Change the number of seasons to represent 3 equally spaced days. All numbers
 are inclusive.  
 
     ```yaml
     seasons:
-      S1: [1, 2]
-      S2: [3, 4]
-      S3: [5, 6]
-      S4: [7, 8]
-      S5: [9, 10]
-      S6: [11, 12]
+      S1: [1, 2, 3, 4]
+      S2: [5, 6, 7, 8]
+      S3: [9, 10, 11, 12]
     ```
 
     :::{tip}
-    A timeslice strucutre of 6 seasons and 3 dayparts will result in a model 
-    with 18 timeslices per year; 6 representative days each with 3 timeslices. 
+    A timeslice structure of 3 seasons and 3 dayparts will result in a model 
+    with 9 timeslices per year; 3 representative days each with 3 timeslices. 
 
     See the [OSeMOSYS documentation](https://osemosys.readthedocs.io/en/latest/index.html)
     has more information on the OSeMOSYS timeslice parameters. 
     :::
 
-6. Ensure the `crossborderTrade` parameter is set to `True`
+7. Ensure the `crossborderTrade` parameter is set to `True`
 
     ```yaml
     crossborderTrade: True
     ```
 
-7. Change the emission penalty to `50` $/T
+8. Change the emission penalty to `50` $/T
 
     ```yaml
     emission_penalty:
-      - ["CO2", "IND", 2020, 2040, 50]
-      - ["CO2", "BGD", 2020, 2040, 50]
-      - ["CO2", "BTN", 2020, 2040, 50]
-      - ["CO2", "NPL", 2020, 2040, 50]
+      - ["CO2", "IND", 2025, 2050, 50]
+      - ["CO2", "BGD", 2025, 2050, 50]
+      - ["CO2", "BTN", 2025, 2050, 50]
+      - ["CO2", "NPL", 2025, 2050, 50]
     ```
+    
+9. Adjust the generation build rates for CCG and SPV for India in 
+`data/custom/powerplant_build_rates.csv`
 
-8. Run the command `snakemake -j6`
+    | TYPE          | COUNTRY              | METHOD | MAX_BUILD | START_YEAR | END_YEAR |
+    |---------------------|---------------------------|-------|-------|-------|-------|
+    | CCG	      | IND | ABS  | 10  | 2025  | 2050  |
+    | SPV        | IND | PCT    | 5  | 2025  | 2050  |
+    
+    
+    :::{tip}
+    Generator build rates can be set in absolute values (ABS) in GW or as a relative value 
+    (PCT) for renewables, where the % value set equals x % of the total resource potential
+    for the specific technology and node. For the default OSeMOSYS Global nodes resource 
+    potentials exist for HYD, SPV, WOF & WON. Custom resource potentials for all nodes 
+    (default and custom) and all renewables can be set in 
+    `resources/data/custom/RE_potentials.csv`.
+    :::
+
+10. Run the command `snakemake -j6`
 
     ```bash
     (osemosys-global) ~/osemosys_global$ snakemake -j6
@@ -261,7 +277,7 @@ are inclusive.
     bring you back to a clean start. 
     :::
 
-9. Navigate to the `results/` folder to view results from this model run.
+11. Navigate to the `results/` folder to view results from this model run.
 
     Notice how under `figures/`, there is now a folder for each country. By 
     setting the `crossborderTrade` parameter to be true, we tell the 
@@ -269,18 +285,17 @@ are inclusive.
 
     ``` bash
     osemosys_global         
-    ├── resutls        
+    ├── results        
     │   ├── data       # Global CSV OSeMOSYS data     
     │   ├── figs       
     │   │   ├── ...    # Global demand projections
-    │   ├── india      
     │   ├── BBIN      # Name of scenario
-    │   │   ├── data/     # Scenario input CSV data
-    │   │   ├── figures   
-    │   │   │   ├── BTN
+    │   │   ├── data     # Scenario input CSV data
+    │   │   ├── figures      # Result figures
+    │   │   │   ├── BGD
     │   │   │   │   ├── GenerationAnnual.html
     │   │   │   │   ├── TotalCapacityAnnual.html     
-    │   │   │   ├── BGD
+    │   │   │   ├── BTN
     │   │   │   │   ├── GenerationAnnual.html
     │   │   │   │   ├── TotalCapacityAnnual.html     
     │   │   │   ├── IND
@@ -292,56 +307,54 @@ are inclusive.
     │   │   │   ├── GenerationAnnual.html
     │   │   │   ├── GenerationHourly.html
     │   │   │   ├── TotalCapacityAnnual.html
-    │   │   │   ├── TransmissionCapacity2040.jpg
-    │   │   │   ├── TransmissionFlow2040.jpg
+    │   │   │   ├── TransmissionCapacity2050.jpg
+    │   │   │   ├── TransmissionFlow2050.jpg
     │   │   ├── result_summaries   # Auto generated result tables
-    │   │   ├── results/   # Scenario result CSV data
+    │   │   ├── results   # Scenario result CSV data
     │   │   ├── BBIN.txt  # Scenario OSeMOSYS data file               
     └── ...
     ```
 
     :::{note}
-    If you don't change clean the model results, the previous scenario 
+    If you don't clean the model results, the previous scenario 
     results are saved as long as you change the scenario name. 
     :::
 
-10. View system level 2040 hourly generation results by viewing the file
+12. View system level 2050 hourly generation results by viewing the file
 `results/BBIN/figures/GenerationHourly.html`
-
-    :::{caution}
-    These results are used to showcase the capabilities of OSeMOSYS Global. The
-    actual energy supply mix results may need further analysis, such as removing 
-    technology bias though implementing resource limits on nuclear.
-    :::
 
     ![Example-2](_static/example_2.png "Example-2")
 
-3. View system level metrics for this model run by looking at the file 
+13. View system level metrics for this model run by looking at the file 
 `results/BBIN/result_summaries/Metrics.csv`
 
     | Metric          | Unit              | Value |
     |---------------------|---------------------------|-------|
-    | Emissions	      | Million tonnes of CO2-eq. | 1221  |
-    | RE Share        | %             | 10    |
-    | Total System Cost	  | Billion $         | 1544  |
-    | Cost of electricity | $/MWh             | 20    |
-    | Fossil fuel share   | %             | 4     |
+    | Emissions	      | Million tonnes of CO2-eq. | 17054 |
+    | Total System Cost	  | Billion $         | 1708  |    
+    | Cost of electricity | $/MWh             | 16    |    
+    | Fossil fuel share   | %             | 37     |    
+    | Renewable energy share       | %             | 60    |
+    | Clean energy share       | %             | 63    |
+
+
+
 
 
 ## Example 3
 
-**Goal**: Rerun the BBIN example with new interconnectors.
+**Goal**: Validate the BBIN example and improve its accuracy 
+based on historical data.
 
 The goal of this scenario will be to rerun the BBIN scenario 
-([example 2](#example-2)), except we will tell the model to install three new
-electricity interconnectors. In 2025 we will install a 3GW interconnector 
-between India and Nepal. Then in 2030 we will install a 1GW and 750MW
-interconnector between India and Bhutan and India and Bangladesh respectively. 
+([example 2](#example-2)), except we will adjust some of its input
+parameters by comparing model outputs to historical data from 
+benchmark datasets.  
 
 1. Change the scenario name
 
     ```yaml
-    scenario: 'BBIN_Interconnector'
+    scenario: 'BBIN_Validated'
     ```
 
 2. Configure the new interconnectors
@@ -445,6 +458,51 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
     ```
 
 8. View system level results in the `results/WORLD/figures` folder
+
+
+
+## Example 5
+
+**Goal**: Rerun the BBIN example with new interconnectors.
+
+The goal of this scenario will be to rerun the BBIN scenario 
+([example 2](#example-2)), except we will tell the model to install three new
+electricity interconnectors. In 2025 we will install a 3GW interconnector 
+between India and Nepal. Then in 2030 we will install a 1GW and 750MW
+interconnector between India and Bhutan and India and Bangladesh respectively. 
+
+1. Change the scenario name
+
+    ```yaml
+    scenario: 'BBIN_Interconnector'
+    ```
+
+2. Configure the new interconnectors
+
+    ```yaml
+    user_defined_capacity:
+      TRNINDNONPLXX: [3, 2025]
+      TRNINDNEBTNXX: [1, 2030]
+      TRNINDEABGDXX: [0.75, 2030]
+    ```
+
+    :::{note}
+    The last two letters in the region (ie. `NO`, `NE`, and `EA` for India, or
+    `XX` for Nepal, Bhutan and Bangladesh) represent the node in each region. 
+    See our [model structure](./model-structure.md#spatial-codes) 
+    document for more information on this. 
+    :::
+
+3. View the trade capacity plot in 2040 by looking at the file 
+`results/BBIN_interconnector/figures/TransmissionCapacity2040.jpg`
+
+    <img src="_static/example_3.1.jpg" width="400">
+
+4. View the trade flow plot in 2040 by looking at the file 
+`results/BBIN_interconnector/figures/TransmissionFlow2040.jpg`
+
+    <img src="_static/example_3.2.jpg" width="400">
+
 
 
 
