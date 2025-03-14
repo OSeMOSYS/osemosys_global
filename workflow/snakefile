@@ -125,7 +125,7 @@ rule make_dag:
     message:
         'dag created successfully and saved as docs/dag.pdf'
     shell:
-        'snakemake --dag all | dot -Tpdf > docs/dag.pdf'
+        'snakemake --dag all | dot -Tpng > docs/_static/dag.png'
 
 # rule dashboard:
 #     message: 
