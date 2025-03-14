@@ -237,14 +237,15 @@ are inclusive.
     crossborderTrade: True
     ```
 
-8. Change the emission penalty to `50` $/T
+8. Change the emission penalty to `50` $/T and change the 
+   START_YEAR parameter to `2023`.
 
     ```yaml
     emission_penalty:
-      - ["CO2", "IND", 2025, 2050, 50]
-      - ["CO2", "BGD", 2025, 2050, 50]
-      - ["CO2", "BTN", 2025, 2050, 50]
-      - ["CO2", "NPL", 2025, 2050, 50]
+      - ["CO2", "IND", 2023, 2050, 50]
+      - ["CO2", "BGD", 2023, 2050, 50]
+      - ["CO2", "BTN", 2023, 2050, 50]
+      - ["CO2", "NPL", 2023, 2050, 50]
     ```
     
 9. Adjust the generation build rates for CCG and SPV for India in 
@@ -252,8 +253,8 @@ are inclusive.
 
     | TYPE          | COUNTRY              | METHOD | MAX_BUILD | START_YEAR | END_YEAR |
     |---------------------|---------------------------|-------|-------|-------|-------|
-    | CCG	      | IND | ABS  | 10  | 2025  | 2050  |
-    | SPV        | IND | PCT    | 5  | 2025  | 2050  |
+    | CCG	      | IND | ABS  | 10  | 2024  | 2050  |
+    | SPV        | IND | PCT    | 5  | 2024  | 2050  |
     
     
     :::{tip}
@@ -325,76 +326,146 @@ are inclusive.
 
     ![Example-2](_static/example_2.png "Example-2")
 
-13. View system level metrics for this model run by looking at the file 
-`results/BBIN/result_summaries/Metrics.csv`
-
-    | Metric          | Unit              | Value |
-    |---------------------|---------------------------|-------|
-    | Emissions	      | Million tonnes of CO2-eq. | 17054 |
-    | Total System Cost	  | Billion $         | 1708  |    
-    | Cost of electricity | $/MWh             | 16    |    
-    | Fossil fuel share   | %             | 37     |    
-    | Renewable energy share       | %             | 60    |
-    | Clean energy share       | %             | 63    |
-
-
-
-
+    :::{warning}
+    When running the example model the below message is reported once 
+    the workflow is completed. Use of the BCK technology indicates that
+    there is a supply shortage for the respective node (BGD). 
+    
+    The following Backstop Technologies are being used:
+    
+    ['PWRBCKBGDXX']
+    :::
+    
+    :::{tip}
+    By default time-series data in the OSeMOSYS Global workflow is reported
+    in UTC+0. If you want to report values in a time-zone that is more applicable
+    to the geographical scope for which the model is build you can use the `timeshift`
+    parameter in the configuration file.
+    :::
 
 ## Example 3
 
 **Goal**: Validate the BBIN example and improve its accuracy 
-based on historical data.
+based on historical data and adjust the model time-zone.
 
 The goal of this scenario will be to rerun the BBIN scenario 
 ([example 2](#example-2)), except we will adjust some of its input
 parameters by comparing model outputs to historical data from 
-benchmark datasets.  
+benchmark datasets. We will furthermore adjust the time-zone
+to represent the local system.
 
 1. Change the scenario name
 
     ```yaml
-    scenario: 'BBIN_Validated'
+    scenario: 'BBINvalidated'
     ```
-
-2. Configure the new interconnectors
+    
+2. Change the `timeshift` paramater to UTC+6
 
     ```yaml
-    user_defined_capacity:
-      TRNINDNONPLXX: [3, 2025]
-      TRNINDNEBTNXX: [1, 2030]
-      TRNINDEABGDXX: [0.75, 2030]
+    timeshift: 6
     ```
 
-    :::{note}
-    The last two letters in the region (ie. `NO`, `NE`, and `EA` for India, or
-    `XX` for Nepal, Bhutan and Bangladesh) represent the node in each region. 
-    See our [model structure](./model-structure.md#spatial-codes) 
-    document for more information on this. 
+3. View the capacity validation chart for BGD for 2023 located in  
+`results/BBIN/validation/BGD/capacity/ember.png`
+
+    ![Example-3.1](_static/example_3.1.png "Example-3.1")
+
+   We can see that there is a significant capacity shortage for COA (+- 4.5 GW), 
+   GAS (+- 3 GW) and SPV (+- 0.5 GW) in the OSeMOSYS Global outputs compared to the 
+   benchmark dataset (EMBER yearly electricity data).
+   
+    :::{warning}
+    The default data for generator capacity in OSeMOSYS Global for more recent years
+    is currently not up to date. Validating and adjusting input data is recommended. 
+    Updating the OSeMOSYS Global workflow to more recent datasets is work in progress.
     :::
+    
+4. Adjust the existing capacities for COA, CCG and SPV for Bangladesh in
+`resources/data/custom/residual_capacity.csv`. We will set values equal to the reported values 
+in the benchmark dataset [Ember yearly electricity data](https://ember-energy.org/data/yearly-electricity-data/) in MW values.
 
-3. View the trade capacity plot in 2040 by looking at the file 
-`results/BBIN_interconnector/figures/TransmissionCapacity2040.jpg`
+    | CUSTOM_NODE | FUEL_TYPE | START_YEAR | END_YEAR | CAPACITY |
+    |------------|------------|-------|-------|-------|
+    | BGDXX      | COA | 2000 | 2030  | 4770 |
+    | BGDXX      | CCG | 2000 | 2030  | 11390 |
+    | BGDXX      | SPV | 2010 | 2040  | 770 |
+    
+    
+5. Run the command `snakemake -j6`
 
-    <img src="_static/example_3.1.jpg" width="400">
+    ```bash
+    (osemosys-global) ~/osemosys_global$ snakemake -j6
+    ```
+    
+6. Have another look at the validation chart for BGD for 2023 located in  
+`results/BBINvalidated/validation/BGD/capacity/ember.png`
 
-4. View the trade flow plot in 2040 by looking at the file 
-`results/BBIN_interconnector/figures/TransmissionFlow2040.jpg`
+    ![Example-3.2](_static/example_3.2.png "Example-3.2")
 
-    <img src="_static/example_3.2.jpg" width="400">
+    :::{warning}
+    Eventhough the capacities are updated, we still see the use of the BCK
+    technology in Bangladesh. 
+    
+    The following Backstop Technologies are being used:
+    
+    ['PWRBCKBGDXX']
+    :::
+    
+    :::{tip}
+    Further input changes can be made to adjust the total available supply. 
+    For example, by changing technology availability factors in  
+    `resources/data/custom/availability_factors.csv` or by changing 
+    capacity factors for SPV in `resources/data/custom/RE_profiles_SPV.csv`. 
+    However, since there are limited renewables in Bangladesh in 2023 (the 
+    year of the supply shortage) and other technologies are used at a maximum
+    rate it is an indicator that the projected electricity demand is overestimated.
+    :::
+    
+7. Adjust the electricity demand for Bangladesh in 2023 in
+`resources/data/custom/specified_annual_demand.csv`. We will set values equal 
+to the reported values in the benchmark dataset [Ember yearly electricity data](https://ember-energy.org/data/yearly-electricity-data/)
+converted to PJ values.
 
+    | CUSTOM_NODE | YEAR | VALUE |
+    |------------|------------|-------|
+    | BGDXX      | 2023 | 416.052 |
+    
+8. Run the command `snakemake -j6`
+
+    ```bash
+    (osemosys-global) ~/osemosys_global$ snakemake -j6
+    ```
+    
+9. View system level 2050 hourly generation results by viewing the file
+`results/BBINvalidated/figures/GenerationHourly.html` to see the impact of the
+time-zone change.
+
+    ![Example-3.3](_static/example_3.3.png "Example-3.3")
+    
+10. View system level metrics for this model run by looking at the file 
+`results/BBINvalidated/result_summaries/Metrics.csv`
+
+    | Metric          | Unit              | Value |
+    |---------------------|---------------------------|-------|
+    | Emissions	      | Million tonnes of CO2-eq. | 19946 |
+    | Total System Cost	  | Billion $         | 1885  |    
+    | Cost of electricity | $/MWh             | 17    |    
+    | Fossil fuel share   | %             | 46     |    
+    | Renewable energy share       | %             | 50    |
+    | Clean energy share       | %             | 54    |
 
 ## Example 4
 
 **Goal**: Run a World Example
 
-The goal of this scenario is to run a World scenario from 2015 to 2050 with
-8 time slices, solve it using CPLEX, and graphing results at a system level only
+The goal of this scenario is to run a World scenario from 2023 to 2050 with
+4 time slices, solve it using CPLEX, and graphing results at a system level only
 
 1. Change the scenario name
 
     ```yaml
-    scenario: 'WORLD'
+    scenario: 'World'
     ```
 
 2. Delete everything under the geographic scope
@@ -407,10 +478,10 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
     Do **NOT** delete the `geographic_scope:` keyword
     :::
 
-3. Change the model horizon to be from 2015 to 2050. Both numbers are inclusive.
+3. Change the model horizon to be from 2023 to 2050. Both numbers are inclusive.
 
     ```yaml
-    startYear: 2015
+    startYear: 2023
     endYear: 2050
     ```
 
@@ -418,35 +489,27 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
 
     ```yaml
     dayparts:
-      D1: [0, 12]
-      D2: [12, 24]
+      D1: [1, 13]
+      D2: [13, 25]
 
     seasons:
-      S1: [12, 1, 2]
-      S2: [3, 4, 5]
-      S3: [6, 7, 8]
-      S4: [9, 10, 11]
+      S1: [1, 2, 3, 4, 5, 6]
+      S2: [7, 8, 9, 10, 11, 12]      
     ```
 
-5. Remove the time shift to set to UTC time. 
-
-    ```yaml
-    timeshift: 0
-    ```
-
-6. Set the results to only graph at a system level
+5. Set the results to only graph at a system level
 
     ```yaml
     results_by_country: False
     ```
 
-7. Set the solver to `CPLEX`
+6. Set the solver to `CPLEX`
 
     ```yaml
     solver: 'cplex'
     ```
 
-8. Run the command `snakemake -j6` 
+7. Run the command `snakemake -j6` 
 
     :::{warning}
     This scenario will take multiple hours to run using a commercial solver 
@@ -457,7 +520,7 @@ The goal of this scenario is to run a World scenario from 2015 to 2050 with
     (osemosys-global) ~/osemosys_global$ snakemake -j6
     ```
 
-8. View system level results in the `results/WORLD/figures` folder
+8. View system level results in the `results/World/figures` folder
 
 
 
@@ -496,12 +559,12 @@ interconnector between India and Bhutan and India and Bangladesh respectively.
 3. View the trade capacity plot in 2040 by looking at the file 
 `results/BBIN_interconnector/figures/TransmissionCapacity2040.jpg`
 
-    <img src="_static/example_3.1.jpg" width="400">
+    <img src="_static/example_5.1.jpg" width="400">
 
 4. View the trade flow plot in 2040 by looking at the file 
 `results/BBIN_interconnector/figures/TransmissionFlow2040.jpg`
 
-    <img src="_static/example_3.2.jpg" width="400">
+    <img src="_static/example_5.2.jpg" width="400">
 
 
 

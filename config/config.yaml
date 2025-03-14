@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "BBIN_Validated"
+scenario: "BBINstorage"
 
 # Temporal Parameters 
 startYear: 2023
@@ -16,7 +16,7 @@ seasons:
   S2: [5, 6, 7, 8]
   S3: [9, 10, 11, 12]
 
-timeshift: 0 # value between -11 and 12
+timeshift: 6 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
@@ -55,10 +55,10 @@ emission_penalty:
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # EXAMPLE:  - ["CO2", "IND", 2020, 2050, 2.1]
 # where VALUE is in M$/MT CO2
- - ["CO2", "IND", 2025, 2050, 50]
-# - ["CO2", "BGD", 2025, 2050, 50]
-# - ["CO2", "BTN", 2025, 2050, 50]
-# - ["CO2", "NPL", 2025, 2050, 50]
+ - ["CO2", "IND", 2023, 2050, 50]
+ - ["CO2", "BGD", 2023, 2050, 50]
+ - ["CO2", "BTN", 2023, 2050, 50]
+ - ["CO2", "NPL", 2023, 2050, 50]
 
 # Investment Parameters 
 no_invest_technologies: 
@@ -146,6 +146,7 @@ storage_parameters:
 # EXAMPLE:  SDS: [1938, 44.25, 0, 85, 4] 
 # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
 # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
+  SDS: [1938, 44.25, 0, 85, 4]
 
 nodes_to_add:
 # - "AAAXX" where AAA is a 3-letter country code, 

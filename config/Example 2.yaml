@@ -55,10 +55,10 @@ emission_penalty:
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # EXAMPLE:  - ["CO2", "IND", 2020, 2050, 2.1]
 # where VALUE is in M$/MT CO2
- - ["CO2", "IND", 2025, 2050, 50]
-# - ["CO2", "BGD", 2025, 2050, 50]
-# - ["CO2", "BTN", 2025, 2050, 50]
-# - ["CO2", "NPL", 2025, 2050, 50]
+ - ["CO2", "IND", 2023, 2050, 50]
+ - ["CO2", "BGD", 2023, 2050, 50]
+ - ["CO2", "BTN", 2023, 2050, 50]
+ - ["CO2", "NPL", 2023, 2050, 50]
 
 # Investment Parameters 
 no_invest_technologies: 
