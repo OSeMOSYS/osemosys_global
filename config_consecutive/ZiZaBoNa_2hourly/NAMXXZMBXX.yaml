@@ -111,50 +111,50 @@ user_defined_capacity_transmission:
   #Scenario 1 (no additional transmission - Baseline)
 
   #Scenario 2
-  trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
+  trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 477, 16.7, 3, 95.3] # ZiZaBoNa, COD 2030 assumed
   
   #Scenario 3  
-  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2030
+  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 294, 10.3, 3, 98]#  ZiZaBoNa, COD 2030
   
   #Scenario 4 
-  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 518, 18.1, 4, 95.5] # ZiZaBoNa, COD 2030 assumed
+  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 389, 13.6, 3, 96.6] # ZiZaBoNa, COD 2030 assumed
   
   #Scenario 5
-  #trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
-  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2030 assumed  
-  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 518, 18.1, 4, 95.5] # ZiZaBoNa, COD 2030 assumed
+  #trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 477, 16.7, 3, 95.3] # ZiZaBoNa, COD 2030 assumed
+  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 294, 10.3, 3, 98]#  ZiZaBoNa, COD 2030 assumed  
+  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 389, 13.6, 3, 96.6] # ZiZaBoNa, COD 2030 assumed
 
   #Scenario 6
-  #trn1: [TRNAGOXXNAMXX, 0, 2020, 2030, 2030, 0.6, 674, 23.6, 4, 93.2] # ANNA INTERCONNECTOR, COD 2030 assumed
-  #trn2: [TRNAGOXXCODXX, 0, 2020, 2030, 2030, 2.0, 429, 15, 4, 96.8] # Angola–Democratic Republic of Congo-PROMARKS INTERCONNECTOR, COD 2030 assumed
-  #trn3: [TRNAGOXXZMBXX, 0, 2020, 2030, 2030, 2.0, 724, 25.3, 4, 92.4] # Angola–Zambia Interconnector, COD 2030 assumed
-  #trn4: [TRNCODXXZMBXX, 0, 2020, 2030, 2030, 0.7, 745, 26.1, 4, 92.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
-  #trn5: [TRNMOZXXMWIXX, 0, 2020, 2030, 2030, 0.120, 616, 21.6, 4, 94] # Mozambique–Malawi (MOMA), COD 2030 assumed
-  #trn6: [TRNMWIXXTZAXX, 0, 2020, 2030, 2030, 0.0, 535, 18.7, 4, 95.2] # Tanzania-Malawi Transmission Interconnector, COD 2030 assumed
-  #trn7: [TRNMOZXXZMBXX, 0, 2020, 2030, 2030, 2.0, 596, 20.9, 4, 94.3] # Mozambique–Zambia Interconnector, COD 2030 assumed
-  #trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
-  #trn9: [TRNZAFXXZWEXX, 0, 2020, 2030, 2030, 1.2, 531, 18.6, 4, 95.3] # MoZiSa Transmission Project, COD 2030 assumed
-  #trn10: [TRNTZAXXZMBXX, 0, 2020, 2030, 2030, 1.0, 662, 23.2, 4, 93.3] # Tanzania–Zambia (TAZA) Interconnector, COD 2030 assumed
-  #trn11: [TRNMOZXXTZAXX, 0, 2020, 2030, 2030, 0.0, 832, 29.1, 4, 90.8] # Mozambique–Tanzania Interconnector (MOTA), COD 2030 assumed 
-  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2030 assumed     
-  #trn13: [TRNMOZXXZWEXX, 0, 2020, 2030, 2030, 1.2, 516, 18.1, 4, 95.5]  # MoZiSa Transmission Project, COD 2030 assumed  
-  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 518, 18.1, 4, 95.5] # ZiZaBoNa, COD 2030 assumed
+  #trn1: [TRNAGOXXNAMXX, 0, 2020, 2030, 2030, 0.6, 505, 17.7, 3, 94.9] # ANNA INTERCONNECTOR, COD 2030 assumed
+  #trn2: [TRNAGOXXCODXX, 0, 2020, 2030, 2030, 2, 321, 11.2, 3, 97.6] # Angola–Democratic Republic of Congo-PROMARKS INTERCONNECTOR, COD 2030 assumed
+  #trn3: [TRNAGOXXZMBXX, 0, 2020, 2030, 2030, 2, 543, 19, 3, 94.3] # Angola–Zambia Interconnector, COD 2030 assumed
+  #trn4: [TRNCODXXZMBXX, 0, 2020, 2030, 2030, 0.7, 559, 19.6, 3, 94.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
+  #trn5: [TRNMOZXXMWIXX, 0, 2020, 2030, 2030, 0.12, 462, 16.2, 3, 95.5] # Mozambique–Malawi (MOMA), COD 2030 assumed
+  #trn6: [TRNMWIXXTZAXX, 0, 2020, 2030, 2030, 0, 401, 14, 3, 96.4] # Tanzania-Malawi Transmission Interconnector, COD 2030 assumed
+  #trn7: [TRNMOZXXZMBXX, 0, 2020, 2030, 2030, 2, 446, 15.6, 3, 95.7] # Mozambique–Zambia Interconnector, COD 2030 assumed
+  #trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 477, 16.7, 3, 95.3] # ZiZaBoNa, COD 2030 assumed
+  #trn9: [TRNZAFXXZWEXX, 0, 2020, 2030, 2030, 1.2, 398, 13.9, 3, 96.5] # MoZiSa Transmission Project, COD 2030 assumed
+  #trn10: [TRNTZAXXZMBXX, 0, 2020, 2030, 2030, 1, 497, 17.4, 3, 95] # Tanzania–Zambia (TAZA) Interconnector, COD 2030 assumed
+  #trn11: [TRNMOZXXTZAXX, 0, 2020, 2030, 2030, 0, 625, 21.9, 3, 93.1] # Mozambique–Tanzania Interconnector (MOTA), COD 2030 assumed 
+  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 294, 10.3, 3, 98]#  ZiZaBoNa, COD 2030 assumed     
+  #trn13: [TRNMOZXXZWEXX, 0, 2020, 2030, 2030, 1.2, 387, 13.5, 3, 96.6]  # MoZiSa Transmission Project, COD 2030 assumed  
+  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 389, 13.6, 3, 96.6] # ZiZaBoNa, COD 2030 assumed
 
   #Scenario 7 
-  #trn1: [TRNAGOXXNAMXX, 0, 2020, 2030, 2030, 0.6, 674, 23.6, 4, 93.2] # ANNA INTERCONNECTOR, COD 2030 assumed
-  #trn2: [TRNAGOXXCODXX, 0, 2020, 2030, 2030, 2.0, 429, 15, 4, 96.8] # Angola–Democratic Republic of Congo-PROMARKS INTERCONNECTOR, COD 2030 assumed
-  #trn3: [TRNAGOXXZMBXX, 0, 2020, 2030, 2030, 2.0, 724, 25.3, 4, 92.4] # Angola–Zambia Interconnector, COD 2030 assumed
-  #trn4: [TRNCODXXZMBXX, 0, 2020, 2030, 2030, 0.7, 745, 26.1, 4, 92.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
-  #trn5: [TRNMOZXXMWIXX, 0, 2020, 2030, 2030, 0.120, 616, 21.6, 4, 94] # Mozambique–Malawi (MOMA), COD 2030 assumed
-  #trn6: [TRNMWIXXTZAXX, 0, 2020, 2030, 2030, 0.0, 535, 18.7, 4, 95.2] # Tanzania-Malawi Transmission Interconnector, COD 2030 assumed
-  #trn7: [TRNMOZXXZMBXX, 0, 2020, 2030, 2030, 2.0, 596, 20.9, 4, 94.3] # Mozambique–Zambia Interconnector, COD 2030 assumed
-  #trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 635, 22.2, 4, 93.7] # ZiZaBoNa, COD 2030 assumed
-  #trn9: [TRNZAFXXZWEXX, 0, 2020, 2030, 2030, 1.2, 531, 18.6, 4, 95.3] # MoZiSa Transmission Project, COD 2030 assumed
-  #trn10: [TRNTZAXXZMBXX, 0, 2020, 2030, 2030, 1.0, 662, 23.2, 4, 93.3] # Tanzania–Zambia (TAZA) Interconnector, COD 2030 assumed
-  #trn11: [TRNMOZXXTZAXX, 0, 2020, 2030, 2030, 0.0, 832, 29.1, 4, 90.8] # Mozambique–Tanzania Interconnector (MOTA), COD 2030 assumed 
-  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 392, 13.7, 4, 97.3]#  ZiZaBoNa, COD 2030 assumed     
-  #trn13: [TRNMOZXXZWEXX, 0, 2020, 2030, 2030, 1.2, 516, 18.1, 4, 95.5]  # MoZiSa Transmission Project, COD 2030 assumed  
-  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 518, 18.1, 4, 95.5] # ZiZaBoNa, COD 2030 assumed   
+  #trn1: [TRNAGOXXNAMXX, 0, 2020, 2030, 2030, 0.6, 505, 17.7, 3, 94.9] # ANNA INTERCONNECTOR, COD 2030 assumed
+  #trn2: [TRNAGOXXCODXX, 0, 2020, 2030, 2030, 2, 321, 11.2, 3, 97.6] # Angola–Democratic Republic of Congo-PROMARKS INTERCONNECTOR, COD 2030 assumed
+  #trn3: [TRNAGOXXZMBXX, 0, 2020, 2030, 2030, 2, 543, 19, 3, 94.3] # Angola–Zambia Interconnector, COD 2030 assumed
+  #trn4: [TRNCODXXZMBXX, 0, 2020, 2030, 2030, 0.7, 559, 19.6, 3, 94.1] # Kalumbila–Kolwezi 330 kV Interconnector Project (KKIP), COD 2030 assumed
+  #trn5: [TRNMOZXXMWIXX, 0, 2020, 2030, 2030, 0.12, 462, 16.2, 3, 95.5] # Mozambique–Malawi (MOMA), COD 2030 assumed
+  #trn6: [TRNMWIXXTZAXX, 0, 2020, 2030, 2030, 0, 401, 14, 3, 96.4] # Tanzania-Malawi Transmission Interconnector, COD 2030 assumed
+  #trn7: [TRNMOZXXZMBXX, 0, 2020, 2030, 2030, 2, 446, 15.6, 3, 95.7] # Mozambique–Zambia Interconnector, COD 2030 assumed
+  #trn8: [TRNNAMXXZMBXX, 0.3, 2030, 2030, 2030, 0, 477, 16.7, 3, 95.3] # ZiZaBoNa, COD 2030 assumed
+  #trn9: [TRNZAFXXZWEXX, 0, 2020, 2030, 2030, 1.2, 398, 13.9, 3, 96.5] # MoZiSa Transmission Project, COD 2030 assumed
+  #trn10: [TRNTZAXXZMBXX, 0, 2020, 2030, 2030, 1, 497, 17.4, 3, 95] # Tanzania–Zambia (TAZA) Interconnector, COD 2030 assumed
+  #trn11: [TRNMOZXXTZAXX, 0, 2020, 2030, 2030, 0, 625, 21.9, 3, 93.1] # Mozambique–Tanzania Interconnector (MOTA), COD 2030 assumed 
+  #trn12: [TRNZMBXXZWEXX, 0.3, 2030, 2030, 2030, 0, 294, 10.3, 3, 98]#  ZiZaBoNa, COD 2030 assumed     
+  #trn13: [TRNMOZXXZWEXX, 0, 2020, 2030, 2030, 1.2, 387, 13.5, 3, 96.6]  # MoZiSa Transmission Project, COD 2030 assumed  
+  #trn14: [TRNBWAXXZWEXX, 0.3, 2030, 2030, 2030, 0, 389, 13.6, 3, 96.6] # ZiZaBoNa, COD 2030 assumed  
   
 user_defined_capacity_storage:
   # entry: [technology, 
