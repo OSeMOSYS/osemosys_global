@@ -708,7 +708,7 @@ We will also add user defined capacities for storage.
     ```
 
 7. Change the number of day parts to represent 12 even 2 hour segments per 
-day. The start number is inclusive, while the end number is exclusive.
+   day. The start number is inclusive, while the end number is exclusive.
 
     ```yaml
     dayparts:
@@ -732,8 +732,8 @@ day. The start number is inclusive, while the end number is exclusive.
    while utilizing CBC as the solver it should take just over an hour to solve.
    :::
 
-8. View system level capacity results to assess the impact of temporal resolution changes on 
-the integration of electricity storage.
+8. View the system level capacity results to assess the impact of temporal resolution changes on 
+   the integration of electricity storage.
 
     ![Example-6.2](_static/example_6.2.png "Example-6.2")
     
@@ -742,9 +742,10 @@ the integration of electricity storage.
 
 **Goal**: Add user defined capacities to the BBINstorage8hourly scenario.
 
-The goal of this scenario will to add user defined capacities and parameters for power plants,
-storage and transmission. We will add a 5 GW Hydro plant to the system of Bhutan, will add a 3 GW
-transmission line between Bhutan and Eastern India as well as a 1 GW LDS plant.
+The goal of this scenario will be to add user defined capacities and parameters for power plants,
+storage and transmission. We will add a 1 GW Nuclear plant and a 3 GW Hydro plant to the 
+system of Bhutan, a 3 GW transmission line between Bhutan and Eastern, India as well 
+as a 1 GW LDS plant in Bhutan.
 
 1. Change the scenario name
 
@@ -752,7 +753,7 @@ transmission line between Bhutan and Eastern India as well as a 1 GW LDS plant.
     scenario: 'BBINuserdefined'
     ```
 2. Change the number of day parts back to represent three even 8 hour segments per 
-day. The start number is inclusive, while the end number is exclusive.
+   day. The start number is inclusive, while the end number is exclusive.
 
     ```yaml
     dayparts:
@@ -760,14 +761,94 @@ day. The start number is inclusive, while the end number is exclusive.
       D2: [9, 17]
       D3: [17, 25]
     ```
-3. Configure the new hydro plant. We assume that the `5` GW plant comes online in `2030`,
-that any new `HYD` capacity afterwards can only be built starting in `2040` at max `1` GW
-per year with an associated CAPEX cost of `1100` m$ per GW. 
+3. Configure the new generators. We assume that the `3` GW `HYD` plant comes online in `2025` 
+   and that the `1` GW `URN` plant comes online in `2030`. Furthermore, any new capacity afterwards 
+   can only be built starting in `2035` at max `1` GW per year with an associated CAPEX cost of `1000` 
+   m$ per GW for `HYD` and `4400` for `URN` respectively. The assumed efficiency for the `URN` technology
+   is `46` %.
 
-     ```yaml
-     user_defined_capacity:
-       PWRHYDBTNXX01: [5, 2030, 2040, 1, 1100, 0]
-     ```
+   ```yaml
+   user_defined_capacity:
+     PWRHYDBTNXX01: [3, 2025, 2035, 1, 1000, 100]
+     PWRURNBTNXX01: [1, 2030, 2035, 1, 4400, 46]
+   ```
+   :::{caution}
+   For any technology included in user_defined_capacity, the `capacity` and `build_year` parameters 
+   add residual capacity to the model for a given year. This is alongside residual capacities that are 
+   part of the default workflow or capacities that are entered in `resources/data/custom/residual_capacity.csv`. 
+   All other parameters overwrite the default values from the workflow (e.g. for `efficiency`) or substitute
+   values defined elswhere (e.g. in `resources/data/custom/powerplant_build_rates.csv`).
+
+   :::{tip}
+   For any renewable technology that includes seasonality (i.e. `HYD`, `SPV`, `WON` `WOF`) the
+   `efficiency` parameter in user_defined_capacity is not binding (needs to be set between 0-100%). 
+   Custom monthly (`HYD`) or hourly (`SPV`, `WON` `WOF`) capacity factors for these technologies can 
+   be defined in `resources/data/custom`. For example for `SPV` this can be done in `RE_profiles_SPV.csv`.
+   :::
+
+4. Configure the new LDS plant. We assume that the `1` GW `LDS` plant comes online in `2035` with a further 
+   `1` GW per year allowed to be built in years after. Costs and efficiency parameters are kept equal to the default 
+   values for `LDS` as defined earlier in `storage_parameters` within ([example 6](#example-6)).
+
+   ```yaml
+   user_defined_capacity_storage:
+     sto1: [PWRLDSBTNXX01, 1, 2035, 2035, 1, 3794, 20.2, 0.58, 80]
+   ```
+
+   :::{caution}
+   Similar as to user_defined_capacity, the parameters within user_defined_capacity_storage related to
+   residual capacities will add capacities to the workflow whereas the other parameters will overwrite 
+   values defined elsewhere (e.g. in `resources/data/custom/storage_build_rates.csv` or within 
+   `storage_parameters`).
+   :::
+    
+5. Configure the new transmission line. We assume that the `3` GW line comes online in `2030`. 
+   Furthermore, we assume that an additional `0.5` GW per year can be built between `2035` and `2050`. 
+   Assumed CAPEX cost is `433` per GW, annual fixed O&M cost is `15.2` per GW per year, variable 
+   O&M cost (wheeling charge) is `4` $ per transmitted MWh and the assumed efficiency is `96.7` %.
+
+   ```yaml
+   user_defined_capacity_transmission:
+     trn1: [TRNBTNXXINDEA, 3, 2030, 2035, 2050, 0.5, 433, 15.2, 4, 96.7]
+   ```
+   :::{tip}
+   The `transmission_parameters` parameter sets default values for common transmission technologies
+   that can be adjusted by the user. For any potential transmission lines between default nodes,
+   the OSeMOSYS Global workflow will automatically calculate costs and efficiency parameters that
+   are distance and technology specific.
+        
+   :::{caution}
+   Do **NOT** delete the entries within `transmission_parameters`.
+   :::  
+        
+   :::{caution}
+   Similar as to user_defined_capacity and user_defined_capacity_storage, parameters related to
+   residual capacities will add capacities to the workflow whereas the other parameters will overwrite 
+   values defined elsewhere (e.g. in `resources/data/custom/transmission_build_rates.csv` or within 
+   `transmission_parameters`).
+   :::
+    
+6. Run the command `snakemake -j6`
+
+   ```bash
+   (osemosys-global) ~/osemosys_global$ snakemake -j6
+   ```
+
+7. View the capacity results in Bhutan to see the effect of the user defined power plant and storage
+   capacities.
+
+   ![Example-7.1](_static/example_7.1.png "Example-7.1")
+    
+8. View the transmission capacity plot in 2050 by looking at the file 
+   `results/BBINuserdefined/figures/TransmissionCapacity2050.jpg`
+
+   <img src="_static/example_7.2.jpg" width="400">
+
+9. View the transmission flow plot in 2050 by looking at the file 
+   `results/BBINuserdefined/figures/TransmissionFlow2050.jpg`
+
+   <img src="_static/example_7.3.jpg" width="400">
+
 
 <!--## Example 5
 
