@@ -371,9 +371,9 @@ to represent the local system.
 
     ![Example-3.1](_static/example_3.1.png "Example-3.1")
 
-   We can see that there is a significant capacity shortage for COA (+- 4.5 GW), 
-   GAS (+- 3 GW) and SPV (+- 0.5 GW) in the OSeMOSYS Global outputs compared to the 
-   benchmark dataset (EMBER yearly electricity data).
+    We can see that there is a significant capacity shortage for COA (+- 4.5 GW), 
+    GAS (+- 3 GW) and SPV (+- 0.5 GW) in the OSeMOSYS Global outputs compared to the 
+    benchmark dataset (EMBER yearly electricity data).
    
     :::{warning}
     The default data for generator capacity in OSeMOSYS Global for more recent years
@@ -522,9 +522,254 @@ The goal of this scenario is to run a World scenario from 2023 to 2050 with
 
 8. View system level results in the `results/World/figures` folder
 
-
-
 ## Example 5
+
+**Goal**: To add emission and renewable penetration targets that mimic potential 
+pathways to a net-zero electricity system to the BBINvalidated scenario.
+
+The goal of this scenario will be to add a range of different targets being 1)
+net-zero emission electricity targets for all BBIN countries, 2) a renewable generation 
+target for Bangladesh and a WON capacity target for Southern India.
+
+:::{caution}
+Emission, generation and capacity targets in OSeMOSYS Global are 'hard' constraints
+which means that once implemented they must be met. If this conflicts with other
+constraints in the model (e.g. generator build rates) this will lead to an 
+infeasibility and the workflow will fail.
+:::
+
+1. Revert back to the BBINvalidated scenario and change the scenario name
+
+    ```yaml
+    scenario: 'BBINtargets'
+    ```
+2. Add net-zero emission electricity targets for all countries by means of the `emission_limit`
+parameter.
+
+    ```yaml
+    emission_limit:
+     - ["CO2", "IND", "LINEAR", 2050, 0]
+     - ["CO2", "BGD", "LINEAR", 2050, 0]
+     - ["CO2", "BTN", "LINEAR", 2050, 0]
+     - ["CO2", "NPL", "LINEAR", 2050, 0]                 
+    ```
+    :::{tip}
+    Multiple emission limits can be set per country (single limit per year). If the 
+    emission_limit TYPE is set to `LINEAR` it means that an interpolated emission limit 
+    will be set for every year inbetween two limits (or the set limit and a historical value). 
+    If TYPE is set to `POINT` only the defined limit will be used with no emission limits
+    in other years.
+    :::
+    
+3. Add a `30` % renewable generation target (% of generation) from 2030 onwards for the combined 
+output of `'SPV', 'WOF', 'WON'` in Bangladesh.
+
+    ```yaml
+    re_targets:
+      T01: ["BGD", ['SPV', 'WOF', 'WON'], "PCT", 2030, 2050, 30]           
+    ```
+    
+4. Add a `100` GW capacity target by 2040 for Southern India for `WON`.
+
+    ```yaml
+    re_targets:
+      T02: ["INDSO", ['WON'], "ABS", 2040, 2040, 100]           
+    ```
+
+    :::{note}
+    The last two letters in the region (ie. `NO`, `NE`, and `EA` for India, or
+    `XX` for Nepal, Bhutan and Bangladesh) represent the node in each region. 
+    See our [model structure](./model-structure.md#spatial-codes) 
+    document for more information on this. 
+    :::
+
+5. Add a system reserve margin of `15` %. This is relevant to ensure security of supply 
+   in a system with high shares of variable renewables. 
+
+    ```yaml
+    reserve_margin:
+      RM1: [15, 2030, 2050]
+    ```
+    :::{tip}
+    The `reserve_margin_technologies` parameter allows you to set specific rerserve margin
+    contributions (% of total capacity) of given technologies. This can be done for generator and
+    storage technologies. Reserve margins in OSeMOSYS Global are applied at the system level.
+    :::
+    
+6. Allow `URN` (Nuclear) to be a technology for which aditional capacity can be built. Some countries
+(e.g. Bangladesh) have known plans for further nuclear build-out.
+
+    ```yaml
+    no_invest_technologies: 
+      - "CSP"
+      - "WAV"
+      - "OTH"
+      - "WAS"
+      - "COG" 
+      - "GEO"
+      - "BIO"
+      - "PET"
+    ```
+    :::{tip}
+    The `no_invest_technologies` parameter determines which technologies are not allowed to be 
+    invested in. Note that capacities for future years can still occur if they are defined as 
+    residual capacities (for example within `resources/data/custom/residual_capacity.csv`.)
+    :::
+
+7. Run the command `snakemake -j6`
+
+    ```bash
+    (osemosys-global) ~/osemosys_global$ snakemake -j6
+    ```
+
+8. View system level capacity and generation results. 
+
+    ![Example-5.1](_static/example_5.1.png "Example-5.1")
+    ![Example-5.2](_static/example_5.2.png "Example-5.2")
+
+    :::{tip}
+    Have a look at `results\BBINtargets\result_summaries.csv` to see that the 30% renewable generation
+    target in Bangladesh is met and have a look at `results\BBINtargets\results\TotalCapacityAnnual.csv`
+    to see that the 100 GW Onshore Wind in Southern India target is met.
+    :::
+
+## Example 6
+
+**Goal**: Add electricity storage to the BBINtargets model.
+
+The goal of this scenario will be to add a Short Duration Storage (SDS) battery
+technology and a Long Duration Storage (LDS) storage technology to the model. 
+We will also add user defined capacities for storage.
+
+1. Change the scenario name
+
+    ```yaml
+    scenario: 'BBINstorage8hourly'
+    ```
+2. Change the `storage_parameters` paramater to include `SDS` with an assumed
+   CAPEX cost of `1938` m$ per GW, fixed cost of `44.25` m$ per GW per yr, variable cost of 
+   `0` $ per MWh, a roundtrip efficiency of `85` % and a storage duration of `4` hours.
+   
+   Then include `LDS` with an assumed CAPEX cost of `3794` m$ per GW, fixed cost of `20.2` 
+   m$ per GW per yr, variable cost of `0.58` $ per MWh, a roundtrip efficiency of `80` % 
+   and a storage duration of `10` hours.
+
+
+   ```yaml
+   storage_parameters:
+     SDS: [1938, 44.25, 0, 85, 4] 
+     LDS: [3794, 20.2, 0.58, 80, 10]
+   ```
+   
+   :::{tip}
+   The storage duration parameter sets the link between the 'generator' component
+   of a storage technology and the 'storage/reservoir' component. In essence, by setting a 
+   duration of 10 hours, we assume that every GW of power rating equals 10 GWh of storage. 
+   In other words, it will take the storage technology 10 hours to fully charge or discharge.
+   :::
+    
+3. Ensure the `storage_existing` and `storage_planned`  parameters are set to `True` which
+   tells the model to make use of storage data from the [Global Energy Storage Database](https://gesdb.sandia.gov/) 
+   in terms of existing and planned storage capacities.
+   
+   ```yaml
+   storage_existing: True
+   ```
+    
+   ```yaml
+   storage_planned: True
+   ```
+   :::{warning}
+   OSeMOSYS Global requires technology names to be abbreviated in 3 letter codes (e.g. SDS, LDS). 
+   To make sure that the technology names as used in the [Global Energy Storage Database](https://gesdb.sandia.gov/) 
+   are correctly transferred over into the workflow we need to define a correct technology mapping.
+   This can be done in the `workflow\scripts\osemosys_global\storage\constants.py` file.
+   :::
+    
+4. Run the command `snakemake -j6`
+
+   ```bash
+   (osemosys-global) ~/osemosys_global$ snakemake -j6
+   ```
+   
+5. View system level capacity results for the storage technologies only.
+
+   ![Example-6.1](_static/example_6.1.png "Example-6.1")
+    
+   :::{tip}
+   By clicking on technologies in the legend, you can select or unselect entries on the interactive
+   charts.
+   :::
+    
+6. Change the scenario name
+
+    ```yaml
+    scenario: 'BBINstorage2hourly'
+    ```
+
+7. Change the number of day parts to represent 12 even 2 hour segments per 
+day. The start number is inclusive, while the end number is exclusive.
+
+    ```yaml
+    dayparts:
+      D1: [1, 3]
+      D2: [3, 5]
+      D3: [5, 7]
+      D4: [7, 9]
+      D5: [9, 11]
+      D6: [11, 13]
+      D7: [13, 15]
+      D8: [15, 17]
+      D9: [17, 19]
+      D10: [19, 21]
+      D11: [21, 23]
+      D12: [23, 25]
+    ```
+
+   :::{tip}
+   Grab a coffee, this make take a little longer to run... More detailed dayparts and seasons can 
+   significantly increase model complexity and corresponding simulation time. On a common laptop
+   while utilizing CBC as the solver it should take just over an hour to solve.
+   :::
+
+8. View system level capacity results to assess the impact of temporal resolution changes on 
+the integration of electricity storage.
+
+    ![Example-6.2](_static/example_6.2.png "Example-6.2")
+    
+    
+## Example 7
+
+**Goal**: Add user defined capacities to the BBINstorage8hourly scenario.
+
+The goal of this scenario will to add user defined capacities and parameters for power plants,
+storage and transmission. We will add a 5 GW Hydro plant to the system of Bhutan, will add a 3 GW
+transmission line between Bhutan and Eastern India as well as a 1 GW LDS plant.
+
+1. Change the scenario name
+
+    ```yaml
+    scenario: 'BBINuserdefined'
+    ```
+2. Change the number of day parts back to represent three even 8 hour segments per 
+day. The start number is inclusive, while the end number is exclusive.
+
+    ```yaml
+    dayparts:
+      D1: [1, 9]
+      D2: [9, 17]
+      D3: [17, 25]
+    ```
+3. Configure the new hydro plant. We assume that the `5` GW plant comes online in `2030`,
+that any new `HYD` capacity afterwards can only be built starting in `2040` at max `1` GW
+per year with an associated CAPEX cost of `1100` m$ per GW. 
+
+     ```yaml
+     user_defined_capacity:
+       PWRHYDBTNXX01: [5, 2030, 2040, 1, 1100, 0]
+     ```
+
+<!--## Example 5
 
 **Goal**: Rerun the BBIN example with new interconnectors.
 
@@ -548,14 +793,6 @@ interconnector between India and Bhutan and India and Bangladesh respectively.
       TRNINDNEBTNXX: [1, 2030]
       TRNINDEABGDXX: [0.75, 2030]
     ```
-
-    :::{note}
-    The last two letters in the region (ie. `NO`, `NE`, and `EA` for India, or
-    `XX` for Nepal, Bhutan and Bangladesh) represent the node in each region. 
-    See our [model structure](./model-structure.md#spatial-codes) 
-    document for more information on this. 
-    :::
-
 3. View the trade capacity plot in 2040 by looking at the file 
 `results/BBIN_interconnector/figures/TransmissionCapacity2040.jpg`
 
@@ -570,7 +807,7 @@ interconnector between India and Bhutan and India and Bangladesh respectively.
 
 
 
-<!-- ## Custom Nodes 
+ ## Custom Nodes 
 
 A user may wish to introduce custom nodes to improve the spatial resolution of a particular region or country. In this example, we show how to break the single node country of Indonesia into seven seperate nodes.  
 

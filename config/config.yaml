@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "BBINstorage"
+scenario: "BBINuserdefined"
 
 # Temporal Parameters 
 startYear: 2023
@@ -10,6 +10,7 @@ dayparts:
   D1: [1, 9]
   D2: [9, 17]
   D3: [17, 25]
+  
 seasons:
 # season : [month 1, month 2, ...] (all inclusive)
   S1: [1, 2, 3, 4]
@@ -64,7 +65,6 @@ emission_penalty:
 no_invest_technologies: 
   - "CSP"
   - "WAV"
-  - "URN"
   - "OTH"
   - "WAS"
   - "COG" 
@@ -88,6 +88,9 @@ user_defined_capacity:
 # EXAMPLE:  PWRCOAINDWE01: [8, 2000, 2025, 5, 1100, 35]
 # Units are in GW (capacity/build_rate_per_year), m$/GW (capex_cost), 
 # % (efficiency).
+  PWRHYDBTNXX01: [5, 2030, 2023, 1, 1100, 100]
+ # PWRSPVBTNXX01: [5, 2030, 2023, 1, 1100, 100]
+  PWRCOABTNXX01: [5, 2030, 2023, 1, 1100, 50]    
 
 user_defined_capacity_transmission:
 # entry: [technology,
@@ -147,6 +150,7 @@ storage_parameters:
 # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
 # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
   SDS: [1938, 44.25, 0, 85, 4]
+  LDS: [3794, 20.2, 0.58, 80, 10]
 
 nodes_to_add:
 # - "AAAXX" where AAA is a 3-letter country code, 
@@ -164,6 +168,7 @@ reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
 # EXAMPLE:  RM1: [10, 2025, 2050]
+  RM1: [15, 2030, 2050]
 
 reserve_margin_technologies:
 # TECHNOLOGY: PERCENTAGE,
@@ -187,6 +192,8 @@ reserve_margin_technologies:
   WAV : 10
   WOF : 10
   WON : 10
+  LDS : 70
+  SDS : 70  
 
 emission_limit:
 # - [EMISSION, COUNTRY, TYPE, YEAR, VALUE]
@@ -197,6 +204,10 @@ emission_limit:
 # previous target years. A combination of TYPE targets can be set per EMISSION and
 # COUNTRY yet only a single target per YEAR.
 # EXAMPLE: - ["CO2", "IND", "LINEAR", 2050, 0]
+ - ["CO2", "IND", "LINEAR", 2050, 0]
+ - ["CO2", "BGD", "LINEAR", 2050, 0]
+ - ["CO2", "BTN", "LINEAR", 2050, 0]
+ - ["CO2", "NPL", "LINEAR", 2050, 0]
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
@@ -240,3 +251,5 @@ re_targets:
 # EXAMPLE:  T02: ["IND", [], "PCT", 2030, 2040, 60]
 # EXAMPLE:  T03: ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15]
 # EXAMPLE:  T04: ["INDSO", ['WOF'], "ABS", 2040, 2050, 100]
+  T01: ["BGDXX", ['SPV', 'WOF', 'WON'], "PCT", 2030, 2050, 30]
+  T02: ["INDSO", ['WON'], "ABS", 2040, 2040, 100]
