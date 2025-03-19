@@ -249,7 +249,7 @@ are inclusive.
     ```
     
 9. Adjust the generation build rates for CCG and SPV for India in 
-`data/custom/powerplant_build_rates.csv`
+`data/custom/powerplant_build_rates.csv` in `GW`. 
 
     | TYPE          | COUNTRY              | METHOD | MAX_BUILD | START_YEAR | END_YEAR |
     |---------------------|---------------------------|-------|-------|-------|-------|
@@ -382,7 +382,7 @@ to represent the local system.
     :::
     
 4. Adjust the existing capacities for COA, CCG and SPV for Bangladesh in
-`resources/data/custom/residual_capacity.csv`. We will set values equal to the reported values 
+`resources/data/custom/residual_capacity.csv` in `MW`. We will set values equal to the reported values 
 in the benchmark dataset [Ember yearly electricity data](https://ember-energy.org/data/yearly-electricity-data/) in MW values.
 
     | CUSTOM_NODE | FUEL_TYPE | START_YEAR | END_YEAR | CAPACITY |
@@ -850,121 +850,189 @@ as a 1 GW LDS plant in Bhutan.
    <img src="_static/example_7.3.jpg" width="400">
 
 
-<!--## Example 5
+## Example 8
 
-**Goal**: Rerun the BBIN example with new interconnectors.
+**Goal**: Add custom nodes to the model.
 
-The goal of this scenario will be to rerun the BBIN scenario 
-([example 2](#example-2)), except we will tell the model to install three new
-electricity interconnectors. In 2025 we will install a 3GW interconnector 
-between India and Nepal. Then in 2030 we will install a 1GW and 750MW
-interconnector between India and Bhutan and India and Bangladesh respectively. 
+The goal of this scenario will be to alter the BBINuserdefined model by splitting Nepal into two
+seperate nodes being Eastern Nepal (NPLEA) and Western Nepal (NPLWE). We will add custom input data 
+for the new model regions and will also add new transmission infrastruture between the new nodes 
+as well as represent currently existing pathways between Nepal and other countries within BBIN.
 
 1. Change the scenario name
 
     ```yaml
-    scenario: 'BBIN_Interconnector'
+    scenario: 'BBINcustomregions'
     ```
+    
+2. Remove the country level node of Nepal from the model
+   ```yaml
+   nodes_to_remove:
+    - "NPLXX"
+   ```
+   
+3. Add the regional level nodes of Nepal to the model
+   ```yaml
+   nodes_to_add:
+    - "NPLEA"
+    - "NPLWE"
+   ```
+   :::{warning}
+   The custom nodes being added must start with the 3-letter code of the country that they 
+   are in (`NPL` in this case). Only the 2-letter regional code can change. 
+   :::
+   
+   :::{caution}
+   Do **NOT** delete `NPL` from the geographic_scope.
+   :::
+   
+4. Add residual capacities in `resources/data/custom/residual_capacity.csv`. The fuel type must 
+   be one of the existing fuels in the model (see [here](./model-structure.md#acronyms)) with 
+   capacities in `MW`. Do not remove other entries in the file.
 
-2. Configure the new interconnectors
+
+    | CUSTOM_NODE | FUEL_TYPE | START_YEAR | END_YEAR | CAPACITY |
+    |------------|------------|-------|-------|-------|
+    | NPLEA     | HYD | 2000 | 2080  | 1000 |
+    | NPLWE      | URN | 2000 | 2060  | 1000 |
+    | NPLWE     | SPV | 2025 | 2055  | 500 |
+    
+5. Add total resource potentials (`GW`) for renewables in `resources/data/custom/RE_potentials.csv`.
+   Do not remove other entries in the file.
+
+    | FUEL_TYPE | CUSTOM_NODE | CAPACITY |
+    |------------|------------|-------|
+    | HYD | NPLEA | 5 |
+    | HYD | NPLWE | 0 |
+    | SPV | NPLEA | 0 |
+    | SPV | NPLWE | 5 |
+    | WON | NPLEA | 0 |
+    | WON | NPLWE | 0 |
+    | WOF | NPLEA | 0 |
+    | WOF | NPLWE | 0 |    
+    
+   :::{note}
+   For the purpose of this example, renewable potentials for other renewable technologies are
+   set to `0` for exemplary purposes. When letting e.g. `WON` to be built without defining 
+   capacity factor timeseries for the custom nodes (see below) you essentially allow for a 
+   fully 'dispatchable' wind technology to be constructed as the model by default assumes
+   100% availabilty unless otherwise defined.
+   :::    
+    
+6. Add a monthly capacity factor timeseries for the `HYD` plant in `NPLEA`. 
+   For the purpose of this example, copy the profile from `BTNXX` and paste it into a new row.
+   Set the NAME to `NPLEA`. Do not remove other entries in the file.
+
+    
+    | NAME| M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9 | M10 | M11 | M12 |
+    |-------|-----|------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+    | BTNXX | 45.6 | 45.8| 46.8 | 52.4 | 66.3 | 80 | 80 | 80 | 80 | 56.9 | 46.4 | 45.7 |
+    | NPLEA | 45.6 | 45.8| 46.8 | 52.4 | 66.3 | 80 | 80 | 80 | 80 | 56.9 | 46.4 | 45.7 |
+    
+7. Add an hourly capacity factor timeseries for the `SPV` plant in `NPLWE` in `resources/data/custom/RE_profiles_SPV.csv`.
+   For the purpose of this example, copy the profile from `BTNXX` and paste it into a new column.
+   Set the column header to `NPLWE`. Do not remove other entries in the file.
+
+    
+    | Datetime | BTNXX | NPLWE |
+    |-------|-----|------|
+    | 01/01/2015 0:00 | 0  | 0  |
+    | 01/01/2015 1:00 | 3.7  | 3.7  |
+    | 01/01/2015 2:00 | 12.7 | 12.7 |
+    | 01/01/2015 3:00 | 23.7 | 23.7 |
+    
+   :::{note}
+   Capacity factor profiles must be given for all hours in a single year. The data will then be 
+   aggregated according to the timeslice definition and replicated for each year. 
+   :::
+
+   :::{warning}
+   The time-series for the example model are based on the 2015 climatic year. Profiles for different
+   weather years can be used but the `Datetime` format needs to remain the same. Furthermore, the input
+   timeseries need to be set in UTC+0 considering OSeMOSYS Global has a global scope. As shown in 
+   ([example 3](#example-3)), the timeshift parameter can be used to shift the input profiles to a
+   timezone that is more relevant for the geographic_scope of the model in question.
+   :::
+   
+8. Add the annual electricity demand (`PJ`) for the new nodes in `resources/data/custom_nodes/specified_annual_demand.csv`.
+   For the purpose of this example, copy the rows from `BTNXX` and paste it into a new set of rows. Rename
+   the CUSTOM_NODE entries to `NPLEA`. Repeat the same exercise but now for `NPLWE`. Do not remove other entries in the file.
+
+    | CUSTOM_NODE | YEAR | CAPACITY |
+    |------------|------------|-------|
+    | BTNXX | 2021 | 9.5 |
+    | BTNXX | 2022 | 11.03 |
+    | BTNXX | 2023 | 12.58 |
+    | INDEA | 2021 | 9.5 |
+    | INDEA | 2022 | 11.03 |
+    | INDEA | 2023 | 12.58 |
+    | INDWE | 2021 | 9.5 |
+    | INDWE | 2022 | 11.03 |
+    | INDWE | 2023 | 12.58 |
+    
+9. Add the hourly specified demand profiles (`%`) for the new nodes in `resources/data/custom_nodes/specified_demand_profile.csv`.
+   For the purpose of this example, copy the profile from `BTNXX` and paste it into a new column.
+   Set the column header to `NPLEA`. Repeat the same exercise but now for `NPLWE`. Do not remove other entries in the file.
+   
+   | Month | Day | Hour | BTNXX | NPLEA | NPLWE |
+   |-------|-----|------|-------|-------|-------|
+   | 1     | 1   | 0    | 0.00012 | 0.00012 | 0.00012 |
+   | 1     | 1   | 1    | 0.00013 | 0.00013 | 0.00013 |
+   | 1     | 1   | 2    | 0.00013 | 0.00013 | 0.00013 |
+   
+   :::{tip}
+   The input demand profiles need to be provided in the percentage of demand per hour compared to the sum 
+   of the year.
+   :::
+   
+10. Add the center points of the new nodes in `resources/data/custom_nodes/centerpoints.csv`. 
+    For Eastern Nepal we choose Kathmandu to be the center point and for Western Nepal we select 
+    Pokhara.
+    
+   | region | lat | long |
+   |-------|-----|------|
+   | 'INDEA' | 27.700769 | 85.30014 |
+   | 'INDWE' | 28.2096 | 83.9856 | 
+
+   :::{tip}
+   Center points in OSeMOSYS Global are used to calculate potential transmission distances between nodes.
+   The default center points assume that transmission lines run between the largest population centers but
+   users can make different assumptions. For example by picking geographical center points.
+   :::
+   
+11. Following data from the [Global Transmission Database](https://zenodo.org/records/10870602) 
+    existing and planned transmission capacity exists between Nepal and different parts of India.
+    For the purpose of this study, we assume that Northern India is connected to Western Nepal and 
+    that Eastern India is connected to Eastern Nepal. We furthermore assume that a transmission line 
+    exists between Eastern and Western Nepal. Add the transmission objects to the model with
+    the below assumptions. Do not remove the earlier defined transmission object.
 
     ```yaml
-    user_defined_capacity:
-      TRNINDNONPLXX: [3, 2025]
-      TRNINDNEBTNXX: [1, 2030]
-      TRNINDEABGDXX: [0.75, 2030]
-    ```
-3. View the trade capacity plot in 2040 by looking at the file 
-`results/BBIN_interconnector/figures/TransmissionCapacity2040.jpg`
+    user_defined_capacity_transmission:
+      trn1: [TRNBTNXXINDEA, 3, 2030, 2035, 2050, 0.5, 433, 15.2, 4, 96.7]
+      trn2: [TRNINDEANPLEA, 1, 2020, 2035, 2050, 0.5, 453, 15.9, 4, 96.4]
+      trn3: [TRNINDEANPLEA, 2, 2028, 2035, 2050, 0.5, 453, 15.9, 4, 96.4]
+      trn4: [TRNINDNONPLWE, 3, 2020, 2030, 2050, 0.5, 455, 15.9, 4, 96.4]
+      trn5: [TRNNPLEANPLWE, 1, 2020, 2030, 2050, 0.5, 205, 7.2, 4, 99]
+    ```    
+    :::{warning}
+    Following OSeMOSYS Global standards, the name of a new transmission technology should be entered as
+    `TRN` plus the combination of the node names in alphabetical order. For example `TRNINDEANPLEA`.
+    :::
+    
+    :::{tip}
+    Multiple entries can be added for the same transmission object to represent residual capacities at 
+    different years. Note, this does require sequential key names (e.g. trn2, trn3).
+    :::    
+    
+12. Run the command `snakemake -j6`
 
-    <img src="_static/example_5.1.jpg" width="400">
+   ```bash
+   (osemosys-global) ~/osemosys_global$ snakemake -j6
+   ```
+   
+13. View the transmission capacity plot in 2050 by looking at the file to confirm that the 
+    custom nodes and transmission lines haven been added.
+    `results/BBINcustomregions/figures/TransmissionCapacity2050.jpg`
 
-4. View the trade flow plot in 2040 by looking at the file 
-`results/BBIN_interconnector/figures/TransmissionFlow2040.jpg`
-
-    <img src="_static/example_5.2.jpg" width="400">
-
-
-
-
-
- ## Custom Nodes 
-
-A user may wish to introduce custom nodes to improve the spatial resolution of a particular region or country. In this example, we show how to break the single node country of Indonesia into seven seperate nodes.  
-
-### 1. Remove the Existing Node
-
-In the configuration file, remove the existing Indonesia node (`INDXX`), through the `nodes_to_remove` parameter
-
-```yaml
-nodes_to_remove:
-  - 'IDNXX'
-```
-
-### 2. Add New Nodes
-
-In the configuration file, add the names of the new nodes you wish to add. In this case we will add the nodes `IDNSM`, `IDNJW`, `IDNNU`, `IDNKA`, `IDNSL`, `IDNML`, `IDNPP`. 
-
-:::{warning}
-The custom nodes being added must start with the 3-letter code of the country that they are in (`IDN` in this case). Only the 2-letter regional code can change. 
-:::
-
-```yaml
-nodes_to_add:
-  - 'IDNSM'
-  - 'IDNJW'
-  - 'IDNNU'
-  - 'IDNKA'
-  - 'IDNSL'
-  - 'IDNML'
-  - 'IDNPP'
-```
-
-### 3. Add Residual Capacity 
-
-In the folder `resources/data/custom/`, add any residual capacity to the `residual_capacity.csv`. The data must be formatted as show. The fuel type must be one of the existing fuels in the model (see [here](./model-structure.md#acronyms)) and the capacity is given in `GW`.
-
-| FUEL_TYPE | CUSTOM_NODE | START_YEAR | END_YEAR | CAPACITY |
-|-----------|-------------|------------|----------|----------|
-| COA       | IDNJW       | 2010       | 2040     | 5000     |
-
-### 4. Add Specified Annual Demand
-
-In the folder `resources/data/custom_nodes`, add the annual demand for each node to the `specified_annual_demand.csv`. The data must be formatted as shown, with the demand given in PJ. 
-
-| CUSTOM_NODE | YEAR | VALUE  |
-|-------------|------|--------|
-| IDNSM       | 2020 | 319.92 |
-| IDNSM       | 2021 | 333.22 |
-| IDNSM       | 2022 | 346.53 |
-
-### 5. Add Specified Demand Profile 
-
-In the folder `resources/data/custom/`, add the demand profile for each node to the `specified_demand_profile.csv`. The data must be formatted as shown.
-
-| Month | Day | Hour | IDNSM | IDNJW | IDNKA | IDNNU | IDNSL | IDNML | IDNPP |
-|-------|-----|------|-------|-------|-------|-------|-------|-------|-------|
-| 1     | 1   | 0    | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  |
-| 1     | 1   | 1    | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  |
-| 1     | 1   | 2    | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  |
-| 1     | 1   | 3    | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  |
-| 1     | 1   | 4    | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  | 0.04  |
-
-:::{note}
-Demand profile data must be given for all hours in a single year. The data will then be aggregated according to the timeslice definition and replicated for each year. 
-:::
-
-### 6. Run the model 
-
-Check that the country with custom nodes is listed under the geographic scope in the configuration file 
-
-```yaml
-geographic_scope:
-    - 'IDN'
-```
-
-Then run the workflow as normal from the root directory
-
-```bash
-snakemake -j6
-``` -->
+    <img src="_static/example_8.jpg" width="400">
