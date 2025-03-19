@@ -255,8 +255,8 @@ def plot_map_text(ax: plt.axes, x:float, y:float, text:Union[int,float,str]) -> 
         y, 
         text, 
         transform = ccrs.PlateCarree(), 
-        fontsize = 8, 
-        fontweight= 'bold', 
+        fontsize = 6, 
+        fontweight= 'normal', 
         ha = 'right', 
         va = 'top', 
         alpha = .8
