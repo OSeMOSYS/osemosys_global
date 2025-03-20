@@ -10,13 +10,13 @@ scenario config files as defined in 'config_dir'. Can be used to run a scenario 
 run_type = 'list'
 
 scenario_list = [
-    #'Base',
-    'BWAXXZWEXX',
+    'Base',
+    #'BWAXXZWEXX',
     #'NAMXXZMBXX',
     #'ZMBXXZWEXX',
-    'ZiZaBoNa',
-    'SAPP',
-    'SAPPNoZiZaBoNa'
+    #'ZiZaBoNa',
+    #'SAPP',
+    #'SAPPNoZiZaBoNa'
     ]
 
 if run_type == 'folder':
