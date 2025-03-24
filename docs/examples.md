@@ -4,23 +4,11 @@ Below are some simple examples you can follow to understand how OSeMOSYS Global
 works. 
 
 :::{caution}
-Before running any examples, ensure you first follow our 
-[installation instructions](installation.md#installation) and perform the 
-following two steps.
-
-1. Navigate to the root OSeMOSYS Global directory in the command line 
+Before running any examples, ensure you first follow our [installation instructions](installation.md#installation) 
+and activate the mamba environment.
 
     ```bash
-    (base) $ cd ~/osemosys_global 
-
-    (base) ~/osemosys_global$ 
-    ```
-
-2. Activate the `osemosys-global` conda environment
-
-    ```bash
-    (base) ~/osemosys_global$ conda activate osemosys-global
-
+    (base) ~/osemosys_global$ mamba activate osemosys-global
     (osemosys-global) ~/osemosys_global$
     ```
 :::
@@ -146,8 +134,8 @@ generated results are summarized below.
 
     :::{caution}
     These results are used to showcase the capabilities of OSeMOSYS Global. The
-    actual energy supply mix results may need further analysis, such as removing 
-    technology bias though implementing resource limits on solar-PV and CCG (Combined Cycle Gas).
+    actual energy supply mix results will need further analysis, such as removing 
+    technology bias though implementing resource limits on solar-PV (SPV) and CCG (Combined Cycle Gas).
     :::
 
     ![Example-1.1](_static/example_1.1.png "Example-1.1")
@@ -970,7 +958,7 @@ as well as represent currently existing pathways between Nepal and other countri
     | INDWE | 2022 | 11.03 |
     | INDWE | 2023 | 12.58 |
     
-9. Add the hourly specified demand profiles (`%`) for the new nodes in `resources/data/custom_nodes/specified_demand_profile.csv`.
+9. Add the hourly specified demand profiles for the new nodes in `resources/data/custom_nodes/specified_demand_profile.csv`.
    For the purpose of this example, copy the profile from `BTNXX` and paste it into a new column.
    Set the column header to `NPLEA`. Repeat the same exercise but now for `NPLWE`. Do not remove other entries in the file.
    
@@ -981,8 +969,7 @@ as well as represent currently existing pathways between Nepal and other countri
    | 1     | 1   | 2    | 0.00013 | 0.00013 | 0.00013 |
    
    :::{tip}
-   The input demand profiles need to be provided in the percentage of demand per hour compared to the sum 
-   of the year.
+   For each year, the fractional demand profiles for each node must sum up to 1.
    :::
    
 10. Add the center points of the new nodes in `resources/data/custom_nodes/centerpoints.csv`. 
@@ -991,8 +978,8 @@ as well as represent currently existing pathways between Nepal and other countri
     
    | region | lat | long |
    |-------|-----|------|
-   | 'INDEA' | 27.700769 | 85.30014 |
-   | 'INDWE' | 28.2096 | 83.9856 | 
+   | 'NPLEA' | 27.700769 | 85.30014 |
+   | 'NPLWE' | 28.2096 | 83.9856 | 
 
    :::{tip}
    Center points in OSeMOSYS Global are used to calculate potential transmission distances between nodes.
@@ -1016,8 +1003,9 @@ as well as represent currently existing pathways between Nepal and other countri
       trn5: [TRNNPLEANPLWE, 1, 2020, 2030, 2050, 0.5, 205, 7.2, 4, 99]
     ```    
     :::{warning}
-    Following OSeMOSYS Global standards, the name of a new transmission technology should be entered as
-    `TRN` plus the combination of the node names in alphabetical order. For example `TRNINDEANPLEA`.
+    Following OSeMOSYS Global [transmission naming standards](./model-structure.md#electricity-trading-technology-codes), 
+    the name of a new transmission technology should be entered as `TRN` plus the combination 
+    of the node names in alphabetical order. For example `TRNINDEANPLEA`.
     :::
     
     :::{tip}
