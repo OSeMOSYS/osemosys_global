@@ -1,24 +1,39 @@
 # Scenario Name 
-scenario: "India"
+scenario: "BBINstorage2hourly"
 
 # Temporal Parameters 
-startYear: 2021
+startYear: 2023
 endYear: 2050
 daytype: False
 dayparts:
 # daypart : [start_hour (inclusive), end_hour (exclusive)]
-  D1: [1, 13]
-  D2: [13, 25]
+  D1: [1, 3]
+  D2: [3, 5]
+  D3: [5, 7]
+  D4: [7, 9]
+  D5: [9, 11]
+  D6: [11, 13]
+  D7: [13, 15]
+  D8: [15, 17]
+  D9: [17, 19]
+  D10: [19, 21]
+  D11: [21, 23]
+  D12: [23, 25]
+  
 seasons:
 # season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 4, 5, 6]
-  S2: [7, 8, 9, 10, 11, 12]
+  S1: [1, 2, 3, 4]
+  S2: [5, 6, 7, 8]
+  S3: [9, 10, 11, 12]  
 
-timeshift: 0 # value between -11 and 12
+timeshift: 6 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
   - "IND"
+  - "BGD"
+  - "BTN"
+  - "NPL"      
 
 # Set to True if transmission should be included
 crossborderTrade: True
@@ -50,13 +65,15 @@ emission_penalty:
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # EXAMPLE:  - ["CO2", "IND", 2020, 2050, 2.1]
 # where VALUE is in M$/MT CO2
- - ["CO2", "IND", 2021, 2050, 2.1]
+ - ["CO2", "IND", 2023, 2050, 50]
+ - ["CO2", "BGD", 2023, 2050, 50]
+ - ["CO2", "BTN", 2023, 2050, 50]
+ - ["CO2", "NPL", 2023, 2050, 50]   
 
 # Investment Parameters 
 no_invest_technologies: 
   - "CSP"
   - "WAV"
-  - "URN"
   - "OTH"
   - "WAS"
   - "COG" 
@@ -138,6 +155,8 @@ storage_parameters:
 # EXAMPLE:  SDS: [1938, 44.25, 0, 85, 4] 
 # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
 # % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
+  SDS: [1938, 44.25, 0, 85, 4] 
+  LDS: [3794, 20.2, 0.58, 80, 10]
 
 nodes_to_add:
 # - "AAAXX" where AAA is a 3-letter country code, 
@@ -155,6 +174,7 @@ reserve_margin:
 # RESERVE_MARGIN: [PERCENTAGE, START_YEAR, END_YEAR]
 # Years for which there is no PERCENTAGE value will be interpolated
 # EXAMPLE:  RM1: [10, 2025, 2050]
+  RM1: [15, 2030, 2050]
 
 reserve_margin_technologies:
 # TECHNOLOGY: PERCENTAGE,
@@ -178,6 +198,8 @@ reserve_margin_technologies:
   WAV : 10
   WOF : 10
   WON : 10
+  LDS : 70
+  SDS : 70    
 
 emission_limit:
 # - [EMISSION, COUNTRY, TYPE, YEAR, VALUE]
@@ -188,6 +210,10 @@ emission_limit:
 # previous target years. A combination of TYPE targets can be set per EMISSION and
 # COUNTRY yet only a single target per YEAR.
 # EXAMPLE: - ["CO2", "IND", "LINEAR", 2050, 0]
+ - ["CO2", "IND", "LINEAR", 2050, 0]
+ - ["CO2", "BGD", "LINEAR", 2050, 0]
+ - ["CO2", "BTN", "LINEAR", 2050, 0]
+ - ["CO2", "NPL", "LINEAR", 2050, 0] 
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
@@ -231,3 +257,5 @@ re_targets:
 # EXAMPLE:  T02: ["IND", [], "PCT", 2030, 2040, 60]
 # EXAMPLE:  T03: ["INDSO", ['WOF','WON'], "PCT", 2025, 2045, 15]
 # EXAMPLE:  T04: ["INDSO", ['WOF'], "ABS", 2040, 2050, 100]
+  T01: ["BGD", ['SPV', 'WOF', 'WON'], "PCT", 2030, 2050, 30]
+  T02: ["INDSO", ['WON'], "ABS", 2040, 2040, 100]   
