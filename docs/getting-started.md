@@ -103,17 +103,178 @@ A core function of energy planning models is expoloring the impacts of different
 
 ## User Defined Data
 
-Often it may be easier to modify/update data through tabular format. In these instances users can update any of the data found in the `resources/data/custom` folder. Moreover, if custom nodes are defined, you must update this data. 
+Often it may be easier to modify/update data through tabular format. In these instances users can update any of the data found in the `resources/data/custom` folder. Moreover, if custom nodes are defined, you must update this data. More explanation can be found on the [Examples page](./examples.md). Here we describe how to format each user defined data csv file. 
+
+### RE Potentials
+
+Renewable Energy potentials allow you to define maximum installable capacity limits for renewable technologies at a per node level. This can be used, for example, to limit renewable installations due to land restrictions. The following information must be provided: 
+  - **Fuel Type**: Energy carrier of the technology to limit.
+  - **Node**: Node to apply the limit to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+  - **Capacity**: Maximum installable capacity in `GW`.
+
+An example limiting onshore wind (`WON`) capacity to 20GW in Canada (`CAN`) British Columbia (`BC`) is given below. This would be added to the file `resources/data/custom/RE_potentials.csv`.
+
+| FUEL_TYPE | CUSTOM_NODE | CAPACITY |
+|-----------|-------------|----------|
+| WON       | CANBC       | 20       |
 
 ### RE Profiles
 
+Renewable Energy potentials allow you to define capacity factors at a per node level. This can be used, for example, if you have a custom solar profile you wish to ingest into the model.  
+
+For Solar PV (`SPV`), Onshore Wind (`WON`), Offshore Wind (`WOF`), and Concentrated Solar Power (`CSP`), the profiles can be defined at a per-hour level. The following information must be provided: 
+- **Datetime**: Hour of year to apply profile to.
+- **Node**: Node to apply the profile to.
+- **Value**: Rated capacity factor as a percentage.
+
+An example defining onshore wind (`WON`) capacity factors in Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) is given below. This would be added to the file `resources/data/custom/RE_profiles_WON.csv`.
+
+| Datetime         | CANBC | CANAB |
+|------------------|-------|-------|
+| 01/01/2015 0:00  | 21.5  | 32.4  |
+| 01/01/2015 0:00  | 22.1  | 32    |
+| 01/01/2015 0:00  | 22.5  | 32.6  |
+| ...              | ...   | ...   |
+| 31/12/2015 22:00 | 11.2  | 35    |
+| 31/12/2015 23:00 | 9.8   | 35.8  |
+
+For Hydro (`HYD`), the profiles can be defined at a per-month level. 
+- **Month**: Month of the year.
+- **Node**: Node to apply the profile to.
+- **Value**: Rated availability factor as a percentage.
+
+An example defining Hydro capacity factors in Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) is given below. This would be added to the file `resources/data/custom/RE_profiles_HYD.csv`. 
+
+| NAME  | M1   | M2   | M3   | M4   | M5   | M6   | M7   | M8 | M9 | M10  | M11  | M12  |
+|-------|------|------|------|------|------|------|------|----|----|------|------|------|
+| CANBC | 45.6 | 45.8 | 46.8 | 52.4 | 66.3 | 80   | 80   | 80 | 80 | 56.9 | 46.4 | 45.7 |
+| CANAB | 32.6 | 40.2 | 44.9 | 49.2 | 55.3 | 73.2 | 76.7 | 79 | 79 | 60.4 | 51.1 | 45.4 |
+
 ### Residual Capacity
+
+Residual capacity allows the user to inject exisitng capascity into the system. This is useful as global datasets may not capture smaller projects at individual nodes. This can be done for generation technologies, storage technologies, and transmission technologies. The following information must be provided:
+- **Fuel**: Energy carrier of the residual capacity. (Generation Technologies)
+- **Technology**: Technology of the residual capacity. (Storage and Transmission Technologies)
+- **Node**: Node to apply the capacity to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+- **Year**: Year to add residual capacity to.
+- **Capacity**: Residual capacity to inject into the system.
+
+An example of adding an additional `1 GW` of residual Hydro (`HYD`) capacity in Canada (`CAN`) British Columbia (`BC`) in `2023` is given below. This would be added to the file `resources/data/custom/residual_capacity.csv`. 
+
+| CUSTOM_NODE | FUEL_TYPE | START_YEAR | END_YEAR | CAPACITY |
+|-------------|-----------|------------|----------|----------|
+| CANBC       | HYD       | 2023       | 2023     | 1        |
+
+When adding residual transmission and storage capacity, ensure you follow the pre-defined naming conventions described [here](./model-structure.md#technology-codes). For example, adding an additional `1 GW` transmission line between Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) in `2023` is given below. This would be added to the file `resources/data/custom/transmission_build_rates.csv`. 
+
+| TRANSMISSION  | START_YEAR | END_YEAR | MAX_BUILD |
+|---------------|------------|----------|-----------|
+| TRNCANBCCANAB | 2023       | 2023     | 1         |
+
+### Build Rates
+
+Limiting the amount of capacity that can be built is often needed to control over-expansion of a single technology. Build rates can be applied to generation technologies, storage technologies, and transmission technologies. The following information must be provided:
+- **Fuel**: Energy carrier of the residual capacity. (Generation Technologies)
+- **Technology**: Technology of the residual capacity. (Storage and Transmission Technologies)
+- **Node**: Node to apply the capacity to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+- **Start Year**: First year to apply expansion limit to 
+- **End Year**: Last year to apply expansion limit to 
+- **Capacity**: Capacity expansion limit.
+
+An example of limiting the amount of new Hydro (`HYD`) capacity allowed in Canada (`CAN`) British Columbia (`BC`) to `2GW` between `2025` and `2050` is given below. This would be added to the file `resources/data/custom/residual_capacity.csv`. 
+
+| CUSTOM_NODE | FUEL_TYPE | START_YEAR | END_YEAR | CAPACITY |
+|-------------|-----------|------------|----------|----------|
+| CANBC       | HYD       | 2025       | 2050     | 2        |
+
+When adding transmission and storage capacity build limits, ensure you follow the pre-defined naming conventions described [here](./model-structure.md#technology-codes). For example, limiting transmission line expansion between Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) to `2GW` between `2025` and `2050` is given below. This would be added to the file `resources/data/custom/transmission_build_rates.csv`. 
+
+| TRANSMISSION  | START_YEAR | END_YEAR | MAX_BUILD |
+|---------------|------------|----------|-----------|
+| TRNCANBCCANAB | 2023       | 2023     | 1         |
 
 ### Demand
 
-### Fuel Limits and Prices
+Both the yearly annual demand demand profile at each node can be modified. The user is free to update either or both of these parameters. THis can be useful for calibrating a model, or adjusting loads based on proprietary demand projections.  
 
-### Build Rates
+To update the annual demand, the following information is needed: 
+- **Node**: Node to apply the demand to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+- **Year**: Year to apply the demand to. 
+- **Value**: Annual demand in `PJ`. 
+
+An example of updating the annual demand in Canada (`CAN`) British Columbia (`BC`) is given below. This would be added to the file `resources/data/custom/specified_annual_demand.csv`. 
+
+| CUSTOM_NODE | YEAR | VALUE |
+|-------------|------|-------|
+| CANBC       | 2024 | 10.5  |
+| CANBC       | 2024 | 10.8  |
+| ...         | ...  | ...   |
+| CANBC       | 2049 | 17.9  |
+| CANBC       | 2050 | 18.1  |
+
+To update the demand profile, the following information is needed:
+- **Month**: Month of datetime to apply profile to.
+- **Day**: Day of datetime to apply profile to.
+- **Hour**: Hour of datetime to apply profile to.
+- **Node**: Node to apply the profile to.
+- **Value**: Fractional hourly load profile value. 
+
+An example of updating the annual demand in Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) is given below. This would be added to the file `resources/data/custom/specified_demand_profile.csv`. 
+
+| Month | Day | Hour | CANBC   |   CANAB |
+|-------|-----|------|---------|---------|
+| 1     | 1   | 0    | 0.00009 | 0.00010 |
+| 1     | 1   | 1    | 0.00009 | 0.00010 |
+| 1     | 1   | 2    | 0.00010 | 0.00011 |
+| ...                | ...     | ...     |
+| 12    | 31  | 22   | 0.00010 | 0.00011 |
+| 12    | 31  | 23   | 0.00009 | 0.00011 |
+
+:::{warning}
+The demand profile for each node over the year must sum up to 1.0
+:::
+
+### Primary Fuel Limits and Prices
+
+Primary fuels, for example Coal (`COA`), Gas (`Gas`), and Oil (`Oil`), can be mined domestically or purchased from the international markets. Users are free to modify the primary fuel reserves in each country (not node!) and the price to import fuel from the interational markets. 
+
+To update domestic fuel resource limits, the following information is needed: 
+- **Fuel**: Primary fuel type 
+- **Country**: Country to apply the limit to. Note: this is the 3 letter country code without the 2 letter node code! 
+- **Year**: Year to apply limit to. The resource limits applied here are not cululative
+- **Value**: Yearly resource limit in `PJ`
+
+An example applying coal and gas resources limits to Canada is given in the example below. This would be added to the file `resources/data/custom/fuel_limmits.csv`. 
+
+| FUEL | COUNTRY | VALUE | YEAR |
+|------|---------|-------|------|
+| GAS  | CAN     | 2000  | 2024 |
+| GAS  | COA     | 1500  | 2024 |
+| GAS  | CAN     | 2000  | 2025 |
+| GAS  | COA     | 1500  | 2025 |
+
+If domestic fuel reserves are exhausted, fuel can be purchased and imported from the international market. The price to purchase fuels can be customized by the user. To do this, the following information is needed:  
+- **Fuel**: Primary fuel type 
+- **Country**: Country to apply the limit to. Note: this is the 3 letter country code without the 2 letter node code! 
+- **Year**: Year to apply limit to. The resource limits applied here are not cululative
+- **Value**: Cost of fuel in `$M/PJ`
+
+:::{note}
+Additionally, you can input the cost in other units (for example, `$/MMBTU` and include a conversion ratio as an energy content to convert to `$M/PJ`).
+:::
+
+An example assigning gas and coal costs for Canada to import is given below. This would be added to the file `resources/data/custom/fuel_prices.csv`. 
+
+| FUEL | COUNTRY | UNIT  | ENERGY_CONTENT | 2020 | 2025 | 2030 | 2040 | 2050 |
+|------|---------|-------|----------------|------|------|------|------|------|
+| GAS  | CAN     | $M/PJ | 1              | 7.5  | 7.5  | 7.5  | 7.5  | 7.5  |
+| COA  | CAN     | $M/PJ | 1              | 4.68 | 4.68 | 4.68 | 4.68 | 4.68 |
+| BIO  | CAN     | $M/PJ | 1              | 8    | 8    | 8    | 8    | 8    |
+| URN  | CAN     | $M/PJ | 1              | 12   | 12   | 12   | 12   | 12   |
+
+:::{warning}
+You must define the costs over the years `2020`, `2025`, `2030`, `2040`, and `2050` as this matches the forcast years from the World Bank Commodity Markets. Intermediate values are interpoloated. 
+:::
 
 ## Units
 
