@@ -248,7 +248,7 @@ are inclusive.
     :::{tip}
     Generator build rates can be set in absolute values (ABS) in GW or as a relative value 
     (PCT) for renewables, where the % value set equals x % of the total resource potential
-    for the specific technology and node. For the default OSeMOSYS Global nodes resource 
+    for the specific technology and country. For the default OSeMOSYS Global nodes, resource 
     potentials exist for HYD, SPV, WOF & WON. Custom resource potentials for all nodes 
     (default and custom) and all renewables can be set in 
     `resources/data/custom/RE_potentials.csv`.
@@ -522,7 +522,7 @@ target for Bangladesh and a WON capacity target for Southern India.
 :::{caution}
 Emission, generation and capacity targets in OSeMOSYS Global are 'hard' constraints
 which means that once implemented they must be met. If this conflicts with other
-constraints in the model (e.g. generator build rates) this will lead to an 
+constraints in the model (e.g. generator build rates), this will lead to an 
 infeasibility and the workflow will fail.
 :::
 
@@ -616,7 +616,7 @@ output of `'SPV', 'WOF', 'WON'` in Bangladesh.
     ![Example-5.2](_static/example_5.2.png "Example-5.2")
 
     :::{tip}
-    Have a look at `results\BBINtargets\result_summaries.csv` to see that the 30% renewable generation
+    Have a look at `results\BBINtargets\result_summaries\GenerationSharesCountry.csv` to see that the 30% renewable generation
     target in Bangladesh is met and have a look at `results\BBINtargets\results\TotalCapacityAnnual.csv`
     to see that the 100 GW Onshore Wind in Southern India target is met.
     :::
@@ -635,11 +635,11 @@ We will also add user defined capacities for storage.
     scenario: 'BBINstorage8hourly'
     ```
 2. Change the `storage_parameters` paramater to include `SDS` with an assumed
-   CAPEX cost of `1938` m$ per GW, fixed cost of `44.25` m$ per GW per yr, variable cost of 
+   CAPEX cost of `1938` million dollar per GW, fixed cost of `44.25` million dollar per GW per yr, variable cost of 
    `0` $ per MWh, a roundtrip efficiency of `85` % and a storage duration of `4` hours.
    
-   Then include `LDS` with an assumed CAPEX cost of `3794` m$ per GW, fixed cost of `20.2` 
-   m$ per GW per yr, variable cost of `0.58` $ per MWh, a roundtrip efficiency of `80` % 
+   Then include `LDS` with an assumed CAPEX cost of `3794` million dollar per GW, fixed cost of `20.2` 
+   million dollar per GW per yr, variable cost of `0.58` $ per MWh, a roundtrip efficiency of `80` % 
    and a storage duration of `10` hours.
 
 
@@ -673,14 +673,22 @@ We will also add user defined capacities for storage.
    are correctly transferred over into the workflow we need to define a correct technology mapping.
    This can be done in the `workflow\scripts\osemosys_global\storage\constants.py` file.
    :::
-    
-4. Run the command `snakemake -j6`
+   
+4. Add reserve margin contributions of the `SDS` and `LDS` technologies.
+
+    ```yaml
+    reserve_margin_technologies:
+      LDS : 70
+      SDS : 70   
+    ```
+
+5. Run the command `snakemake -j6`
 
    ```bash
    (osemosys-global) ~/osemosys_global$ snakemake -j6
    ```
    
-5. View system level capacity results for the storage technologies only.
+6. View system level capacity results for the storage technologies only.
 
    ![Example-6.1](_static/example_6.1.png "Example-6.1")
     
@@ -689,13 +697,13 @@ We will also add user defined capacities for storage.
    charts.
    :::
     
-6. Change the scenario name
+7. Change the scenario name
 
     ```yaml
     scenario: 'BBINstorage2hourly'
     ```
 
-7. Change the number of day parts to represent 12 even 2 hour segments per 
+8. Change the number of day parts to represent 12 even 2 hour segments per 
    day. The start number is inclusive, while the end number is exclusive.
 
     ```yaml
@@ -720,7 +728,7 @@ We will also add user defined capacities for storage.
    while utilizing CBC as the solver it should take just over an hour to solve.
    :::
 
-8. View the system level capacity results to assess the impact of temporal resolution changes on 
+9. View the system level capacity results to assess the impact of temporal resolution changes on 
    the integration of electricity storage.
 
     ![Example-6.2](_static/example_6.2.png "Example-6.2")
@@ -752,7 +760,7 @@ as a 1 GW LDS plant in Bhutan.
 3. Configure the new generators. We assume that the `3` GW `HYD` plant comes online in `2025` 
    and that the `1` GW `URN` plant comes online in `2030`. Furthermore, any new capacity afterwards 
    can only be built starting in `2035` at max `1` GW per year with an associated CAPEX cost of `1000` 
-   m$ per GW for `HYD` and `4400` for `URN` respectively. The assumed efficiency for the `URN` technology
+   million dollar per GW for `HYD` and `4400` for `URN` respectively. The assumed efficiency for the `URN` technology
    is `46` %.
 
    ```yaml
