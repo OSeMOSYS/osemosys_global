@@ -276,6 +276,36 @@ An example assigning gas and coal costs for Canada to import is given below. Thi
 You must define the costs over the years `2020`, `2025`, `2030`, `2040`, and `2050` as this matches the forcast years from the World Bank Commodity Markets. Intermediate values are interpoloated. 
 :::
 
+### Availability Factors
+
+Global level availability factors for each technology can be set in the file `resources/data/custom/availability_factors.csv`. These file comes autopopulated with defaults. An example of how to set `90%` availability factors for Coal (`COA`), Combined Cycle Gas (`CCG`) and Solar (`SPV`) is given below. 
+
+| technology | value   |
+|------------|---------|
+| COA        | 0.9     |
+| CCG        | 0.9     |
+| SPV        | 0.9     |
+
+### Operational Life
+
+Global level operational lives for each technology can be set in the file `resources/data/custom/operational_life.csv`. This file comes autopopulated with defaults. An example of how to set operational lives for Coal (`COA`), Combined Cycle Gas (`CCG`) and Solar (`SPV`) is given below. 
+
+| tech | years |
+|------|-------|
+| COA  | 30    |
+| CCG  | 30    |
+| SPV  | 20    |
+
+## Custom Nodes
+
+When working with custom nodes you will need to define the centerpoints of the node locations. This is needed to calculate distances between nodes for transmission line expansion. This can be done in the file `resources/data/custom/centerpoints.csv`. For example, adding a new node to represent Washington State (`WA`) in the United States (`USA`) is shown below. In this case, we position the node location close to Seattle, the major demand center in Washington. 
+
+| region  | lat          | log           |
+|---------|--------------|---------------|
+| USAWA   | 47.594396616 | -122.35969011 |
+
+In addition to the centerpoints, user defined data for demand, capacity, and renewable profiles (among others) must also be added. See the [examples page](./examples.md) for more information.   
+
 ## Units
 
 Unless otherwise specified, all results will follow the units given in the table below.
