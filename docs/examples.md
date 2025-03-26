@@ -879,20 +879,21 @@ as well as represent currently existing pathways between Nepal and other countri
    :::
    
 8. Add the annual electricity demand (`PJ`) for the new nodes in `resources/data/custom_nodes/specified_annual_demand.csv`.
-   For the purpose of this example, copy the rows from `BTNXX` and paste it into a new set of rows. Rename
+   For the purpose of this example, copy the rows from `BTNXX` for ALL years and paste it into a new set of rows. Rename
    the CUSTOM_NODE entries to `NPLEA`. Repeat the same exercise but now for `NPLWE`. Do not remove other entries in the file.
+   The table below shows an example, however users are required to add values for ALL model years (2023-2050).
 
     | CUSTOM_NODE | YEAR | CAPACITY |
     |------------|------------|-------|
     | BTNXX | 2021 | 9.5 |
     | BTNXX | 2022 | 11.03 |
     | BTNXX | 2023 | 12.58 |
-    | INDEA | 2021 | 9.5 |
-    | INDEA | 2022 | 11.03 |
-    | INDEA | 2023 | 12.58 |
-    | INDWE | 2021 | 9.5 |
-    | INDWE | 2022 | 11.03 |
-    | INDWE | 2023 | 12.58 |
+    | NPLEA | 2021 | 9.5 |
+    | NPLEA | 2022 | 11.03 |
+    | NPLEA | 2023 | 12.58 |
+    | NPLWE | 2021 | 9.5 |
+    | NPLWE | 2022 | 11.03 |
+    | NPLWE | 2023 | 12.58 |
     
 9. Add the hourly specified demand profiles for the new nodes in `resources/data/custom_nodes/specified_demand_profile.csv`.
    For the purpose of this example, copy the profile from `BTNXX` and paste it into a new column.
