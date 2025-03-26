@@ -17,9 +17,9 @@ energy system model.
 
 installation
 getting-started
-contributing
+examples
 model-structure
-advanced-functionality
+contributing
 changelog
 citing
 ```
