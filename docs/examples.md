@@ -443,74 +443,8 @@ time-zone change.
     | Renewable energy share       | %             | 50    |
     | Clean energy share       | %             | 54    |
 
+
 ## Example 4
-
-**Goal**: Run a World Example
-
-The goal of this scenario is to run a World scenario from 2023 to 2050 with
-4 time slices, solve it using CPLEX, and graphing results at a system level only
-
-1. Change the scenario name
-
-    ```yaml
-    scenario: 'World'
-    ```
-
-2. Delete everything under the geographic scope
-
-    ```yaml
-    geographic_scope:
-    ```
-
-    :::{caution}
-    Do **NOT** delete the `geographic_scope:` keyword
-    :::
-
-3. Change the model horizon to be from 2023 to 2050. Both numbers are inclusive.
-
-    ```yaml
-    startYear: 2023
-    endYear: 2050
-    ```
-
-4. Reset the temporal parameters back to defaults.
-
-    ```yaml
-    dayparts:
-      D1: [1, 13]
-      D2: [13, 25]
-
-    seasons:
-      S1: [1, 2, 3, 4, 5, 6]
-      S2: [7, 8, 9, 10, 11, 12]      
-    ```
-
-5. Set the results to only graph at a system level
-
-    ```yaml
-    results_by_country: False
-    ```
-
-6. Set the solver to `CPLEX`
-
-    ```yaml
-    solver: 'cplex'
-    ```
-
-7. Run the command `snakemake -j6` 
-
-    :::{warning}
-    This scenario will take multiple hours to run using a commercial solver 
-    (Gurobi or CPLEX) on a high performance computer.
-    :::
-
-    ```bash
-    (osemosys-global) ~/osemosys_global$ snakemake -j6
-    ```
-
-8. View system level results in the `results/World/figures` folder
-
-## Example 5
 
 **Goal**: To add emission and renewable penetration targets that mimic potential 
 pathways to a net-zero electricity system to the BBINvalidated scenario.
@@ -612,8 +546,8 @@ output of `'SPV', 'WOF', 'WON'` in Bangladesh.
 
 8. View system level capacity and generation results. 
 
-    ![Example-5.1](_static/example_5.1.png "Example-5.1")
-    ![Example-5.2](_static/example_5.2.png "Example-5.2")
+    ![Example-4.1](_static/example_4.1.png "Example-4.1")
+    ![Example-4.2](_static/example_4.2.png "Example-4.2")
 
     :::{tip}
     Have a look at `results\BBINtargets\result_summaries\GenerationSharesCountry.csv` to see that the 30% renewable generation
@@ -621,7 +555,7 @@ output of `'SPV', 'WOF', 'WON'` in Bangladesh.
     to see that the 100 GW Onshore Wind in Southern India target is met.
     :::
 
-## Example 6
+## Example 5
 
 **Goal**: Add electricity storage to the BBINtargets model.
 
@@ -690,7 +624,7 @@ We will also add user defined capacities for storage.
    
 6. View system level capacity results for the storage technologies only.
 
-   ![Example-6.1](_static/example_6.1.png "Example-6.1")
+   ![Example-5.1](_static/example_5.1.png "Example-5.1")
     
    :::{tip}
    By clicking on technologies in the legend, you can select or unselect entries on the interactive
@@ -700,41 +634,35 @@ We will also add user defined capacities for storage.
 7. Change the scenario name
 
     ```yaml
-    scenario: 'BBINstorage2hourly'
+    scenario: 'BBINstorage4hourly'
     ```
 
-8. Change the number of day parts to represent 12 even 2 hour segments per 
+8. Change the number of day parts to represent 6 even 4 hour segments per 
    day. The start number is inclusive, while the end number is exclusive.
 
     ```yaml
     dayparts:
-      D1: [1, 3]
-      D2: [3, 5]
-      D3: [5, 7]
-      D4: [7, 9]
-      D5: [9, 11]
-      D6: [11, 13]
-      D7: [13, 15]
-      D8: [15, 17]
-      D9: [17, 19]
-      D10: [19, 21]
-      D11: [21, 23]
-      D12: [23, 25]
+      D1: [1, 5]
+      D2: [5, 9]
+      D3: [9, 13]
+      D4: [13, 17]
+      D5: [17, 21]
+      D6: [21, 25]
     ```
 
    :::{tip}
    Grab a coffee, this make take a little longer to run... More detailed dayparts and seasons can 
    significantly increase model complexity and corresponding simulation time. On a common laptop
-   while utilizing CBC as the solver it should take just over an hour to solve.
+   while utilizing CBC as the solver it should take just over 20 minutes to solve.
    :::
 
 9. View the system level capacity results to assess the impact of temporal resolution changes on 
    the integration of electricity storage.
 
-    ![Example-6.2](_static/example_6.2.png "Example-6.2")
+    ![Example-5.2](_static/example_5.2.png "Example-5.2")
     
     
-## Example 7
+## Example 6
 
 **Goal**: Add user defined capacities to the BBINstorage8hourly scenario.
 
@@ -784,7 +712,7 @@ as a 1 GW LDS plant in Bhutan.
 
 4. Configure the new LDS plant. We assume that the `1` GW `LDS` plant comes online in `2035` with a further 
    `1` GW per year allowed to be built in years after. Costs and efficiency parameters are kept equal to the default 
-   values for `LDS` as defined earlier in `storage_parameters` within ([example 6](#example-6)).
+   values for `LDS` as defined earlier in `storage_parameters` within ([example 5](#example-5)).
 
    ```yaml
    user_defined_capacity_storage:
@@ -833,20 +761,20 @@ as a 1 GW LDS plant in Bhutan.
 7. View the capacity results in Bhutan to see the effect of the user defined power plant and storage
    capacities.
 
-   ![Example-7.1](_static/example_7.1.png "Example-7.1")
+   ![Example-6.1](_static/example_6.1.png "Example-6.1")
     
 8. View the transmission capacity plot in 2050 by looking at the file 
    `results/BBINuserdefined/figures/TransmissionCapacity2050.jpg`
 
-   <img src="_static/example_7.2.jpg" width="400">
+   <img src="_static/example_6.2.jpg" width="400">
 
 9. View the transmission flow plot in 2050 by looking at the file 
    `results/BBINuserdefined/figures/TransmissionFlow2050.jpg`
 
-   <img src="_static/example_7.3.jpg" width="400">
+   <img src="_static/example_6.3.jpg" width="400">
 
 
-## Example 8
+## Example 7
 
 **Goal**: Add custom nodes to the model.
 
@@ -1031,4 +959,71 @@ as well as represent currently existing pathways between Nepal and other countri
     custom nodes and transmission lines haven been added.
     `results/BBINcustomregions/figures/TransmissionCapacity2050.jpg`
 
-    <img src="_static/example_8.jpg" width="400">
+    <img src="_static/example_7.jpg" width="400">
+
+<!--## Example 8
+
+**Goal**: Run a World Example
+
+The goal of this scenario is to run a World scenario from 2023 to 2050 with
+4 time slices, solve it using CPLEX, and graphing results at a system level only
+
+1. Change the scenario name
+
+    ```yaml
+    scenario: 'World'
+    ```
+
+2. Delete everything under the geographic scope
+
+    ```yaml
+    geographic_scope:
+    ```
+
+    :::{caution}
+    Do **NOT** delete the `geographic_scope:` keyword
+    :::
+
+3. Change the model horizon to be from 2023 to 2050. Both numbers are inclusive.
+
+    ```yaml
+    startYear: 2023
+    endYear: 2050
+    ```
+
+4. Reset the temporal parameters back to defaults.
+
+    ```yaml
+    dayparts:
+      D1: [1, 13]
+      D2: [13, 25]
+
+    seasons:
+      S1: [1, 2, 3, 4, 5, 6]
+      S2: [7, 8, 9, 10, 11, 12]      
+    ```
+
+5. Set the results to only graph at a system level
+
+    ```yaml
+    results_by_country: False
+    ```
+
+6. Set the solver to `CPLEX`
+
+    ```yaml
+    solver: 'cplex'
+    ```
+
+7. Run the command `snakemake -j6` 
+
+    :::{warning}
+    This scenario will take multiple hours to run using a commercial solver 
+    (Gurobi or CPLEX) on a high performance computer.
+    :::
+
+    ```bash
+    (osemosys-global) ~/osemosys_global$ snakemake -j6
+    ```
+
+8. View system level results in the `results/World/figures` folder-->
