@@ -106,7 +106,7 @@ def main(
                                       custom_nodes, start_year, end_year)
     
     # Set OutputActivitiyRatio for powerplants and set df structure for InputActivityRatio.
-    df_pwr_oar_final, df_pwr_iar_base = activity_output_pwr(df_ratios, region_name)  
+    df_pwr_oar_final, df_pwr_iar_base = activity_output_pwr(df_ratios, region_name)
     
     # Set InputActivityRatio for powerplants.
     df_pwr_iar_final = activity_input_pwr(df_pwr_iar_base, RENEWABLES_LIST, df_eff_node, 
@@ -325,7 +325,7 @@ if __name__ == "__main__":
     else:
         file_plexos = 'resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx'
         file_res_limit = 'resources/data/default/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
-        file_build_rates = 'resources/data/default/powerplant_build_rates.csv'        
+        file_build_rates = 'resources/data/custom/powerplant_build_rates.csv'        
         file_default_op_life = 'resources/data/custom/operational_life.csv'
         file_naming_convention_tech = 'resources/data/default/naming_convention_tech.csv'
         file_weo_costs = 'resources/data/default/weo_2020_powerplant_costs.csv'
