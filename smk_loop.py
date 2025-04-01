@@ -7,27 +7,27 @@ data_dir = 'results/data'
 
 '''Set to 'list' to only run scenarios in 'scenario_list' or set to 'folder' to run all
 scenario config files as defined in 'config_dir'. Can be used to run a scenario sample.'''
-run_type = 'folder'
+run_type = 'list'
 
 scenario_list = [
   'ASEAN',
   'MYSPESGPXX',
-  'MYSPETHASO',
+  #'MYSPETHASO',
   'IDNSMMYSPE',
-  'MYSSHPHLLU',
-  'BRNXXMYSSK',
-  'LAOXXTHANO',
-  'LAOXXVNMNO',
-  'MMRXXTHANO',
-  'KHMXXLAOXX',
-  'KHMXXTHACE',
-  'IDNKAMYSSH',
-  'IDNSMSGPXX',
-  'LAOXXMMRXX',
-  'SGPXXVNMSO',
-  'KHMXXSGPXX',
+  #'MYSSHPHLLU',
+  #'BRNXXMYSSK',
+  #'LAOXXTHANO',
+  #'LAOXXVNMNO',
+ # 'MMRXXTHANO',
+ # 'KHMXXLAOXX',
+ # 'KHMXXTHACE',
+ # 'IDNKAMYSSH',
+ # 'IDNSMSGPXX',
+ # 'LAOXXMMRXX',
+ # 'SGPXXVNMSO',
+ # 'KHMXXSGPXX',
   'MYSPEMYSSK',
-  'MYSSHMYSSK',
+ # 'MYSSHMYSSK',
   'IDNJWIDNKA',
   'IDNJWIDNSM',
     ]
