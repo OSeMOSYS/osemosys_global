@@ -234,7 +234,6 @@ if __name__ == "__main__":
         transmission_existing = snakemake.params.transmission_existing
         transmission_planned = snakemake.params.transmission_planned
         output_data_dir = snakemake.params.output_data_dir
-        input_data_dir = snakemake.params.input_data_dir
         powerplant_data_dir = snakemake.params.powerplant_data_dir  
         transmission_data_dir = snakemake.params.transmission_data_dir 
         file_iar_base = f'{powerplant_data_dir}/InputActivityRatio.csv'
@@ -255,12 +254,12 @@ if __name__ == "__main__":
     # the full workflow need to be defined in the config file. 
 
     else:
-        file_gtd_existing = 'resources/data/GTD_existing.csv'
-        file_gtd_planned = 'resources/data/GTD_planned.csv'    
-        file_gtd_mapping = 'resources/data/GTD_region_mapping.csv'  
-        file_centerpoints = 'resources/data/centerpoints.csv'         
-        file_transmission_build_rates = 'resources/data/transmission_build_rates.csv'         
-        file_default_op_life = 'resources/data/operational_life.csv'
+        file_gtd_existing = 'resources/data/default/GTD_existing.csv'
+        file_gtd_planned = 'resources/data/default/GTD_planned.csv'    
+        file_gtd_mapping = 'resources/data/default/GTD_region_mapping.csv'  
+        file_centerpoints = 'resources/data/default/centerpoints.csv'         
+        file_transmission_build_rates = 'resources/data/custom/transmission_build_rates.csv'         
+        file_default_op_life = 'resources/data/custom/operational_life.csv'
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
@@ -283,7 +282,6 @@ if __name__ == "__main__":
         transmission_existing = True
         transmission_planned = True
         output_data_dir = 'results/data'
-        input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
         transmission_data_dir = 'results/data/transmission'
         file_iar_base = f'{powerplant_data_dir}/InputActivityRatio.csv'

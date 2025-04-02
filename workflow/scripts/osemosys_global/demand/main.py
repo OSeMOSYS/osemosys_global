@@ -66,21 +66,21 @@ if __name__ == "__main__":
         custom_nodes = snakemake.params.custom_nodes
         custom_nodes_data = snakemake.input.custom_nodes
     else:
-        file_plexos = "resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx"
-        file_plexos_demand = "resources/data/All_Demand_UTC_2015.csv"
-        file_iamc_gdp = "resources/data/iamc_db_GDPppp_Countries.xlsx"
-        file_iamc_pop = "resources/data/iamc_db_POP_Countries.xlsx"
-        file_iamc_urb = "resources/data/iamc_db_URB_Countries.xlsx"
+        file_plexos = "resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx"
+        file_plexos_demand = "resources/data/default/All_Demand_UTC_2015.csv"
+        file_iamc_gdp = "resources/data/default/iamc_db_GDPppp_Countries.xlsx"
+        file_iamc_pop = "resources/data/default/iamc_db_POP_Countries.xlsx"
+        file_iamc_urb = "resources/data/default/iamc_db_URB_Countries.xlsx"
         file_iamc_missing = (
-            "resources/data/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx"
+            "resources/data/default/iamc_db_POP_GDPppp_URB_Countries_Missing.xlsx"
         )
-        file_td_losses = "resources/data/T&D Losses.xlsx"
-        file_ember = "resources/data/ember_yearly_electricity_data.csv"
+        file_td_losses = "resources/data/default/T&D Losses.xlsx"
+        file_ember = "resources/data/default/ember_yearly_electricity_data.csv"
         csv = "SpecifiedAnnualDemand.csv"
         start_year = 2020
         end_year = 2050
         custom_nodes = ["INDWE", "INDEA", "INDNE", "INDNO", "INDSO"]
-        custom_nodes_data = "resources/data/custom_nodes/specified_annual_demand.csv"
+        custom_nodes_data = "resources/data/custom/specified_annual_demand.csv"
 
     # first bring together original and missing iamc data
     plexos = import_plexos_2015(file_plexos)

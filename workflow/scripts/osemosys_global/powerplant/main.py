@@ -106,7 +106,7 @@ def main(
                                       custom_nodes, start_year, end_year)
     
     # Set OutputActivitiyRatio for powerplants and set df structure for InputActivityRatio.
-    df_pwr_oar_final, df_pwr_iar_base = activity_output_pwr(df_ratios, region_name)  
+    df_pwr_oar_final, df_pwr_iar_base = activity_output_pwr(df_ratios, region_name)
     
     # Set InputActivityRatio for powerplants.
     df_pwr_iar_final = activity_input_pwr(df_pwr_iar_base, RENEWABLES_LIST, df_eff_node, 
@@ -323,15 +323,14 @@ if __name__ == "__main__":
     # the full workflow need to be defined in the config file. 
             
     else:
-        file_plexos = 'resources/data/PLEXOS_World_2015_Gold_V1.1.xlsx'
-        file_res_limit = 'resources/data/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
-        file_build_rates = 'resources/data/powerplant_build_rates.csv'        
-        file_default_op_life = 'resources/data/operational_life.csv'
-        file_naming_convention_tech = 'resources/data/naming_convention_tech.csv'
-        file_weo_costs = 'resources/data/weo_2020_powerplant_costs.csv'
-        file_weo_regions = 'resources/data/weo_region_mapping.csv'
-        file_default_af_factors = 'resources/data/availability_factors.csv'  
-        file_default_af_factors = 'resources/data/availability_factors.csv'        
+        file_plexos = 'resources/data/default/PLEXOS_World_2015_Gold_V1.1.xlsx'
+        file_res_limit = 'resources/data/default/PLEXOS_World_MESSAGEix_GLOBIOM_Softlink.xlsx'
+        file_build_rates = 'resources/data/custom/powerplant_build_rates.csv'        
+        file_default_op_life = 'resources/data/custom/operational_life.csv'
+        file_naming_convention_tech = 'resources/data/default/naming_convention_tech.csv'
+        file_weo_costs = 'resources/data/default/weo_2020_powerplant_costs.csv'
+        file_weo_regions = 'resources/data/default/weo_region_mapping.csv'
+        file_default_af_factors = 'resources/data/custom/availability_factors.csv'        
         start_year = 2021
         end_year = 2050
         region_name = 'GLOBAL'
@@ -352,13 +351,13 @@ if __name__ == "__main__":
         fossil_capacity_targets = [["BTNXX", 'COA', 2030, 2050, 'ABS', 1],
                                    ["INDNE", 'CCG', 2040, 2050, 'MIN', 10],
                                    ["INDSO", 'OCG', 2025, 2050, 'MAX', 25]]
-        calibration = {'OCG1': [50, "IND", 2021]}
+        calibration = {'OCG': [50, "IND", 2021]}
         output_data_dir = 'results/data'
         input_data_dir = 'resources/data'
         powerplant_data_dir = 'results/data/powerplant'
         file_specified_annual_demand = f'{output_data_dir}/SpecifiedAnnualDemand.csv'
-        file_custom_res_cap = 'resources/data/custom_nodes/residual_capacity.csv'
-        file_custom_res_potentials = 'resources/data/custom_nodes/RE_potentials.csv' 
+        file_custom_res_cap = 'resources/data/custom/residual_capacity.csv'
+        file_custom_res_potentials = 'resources/data/custom/RE_potentials.csv' 
 
     # SET INPUT DATA
     plexos_prop = import_plexos_2015(file_plexos, "prop")
