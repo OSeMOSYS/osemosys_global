@@ -2,32 +2,32 @@ import subprocess
 import os
 import shutil
 
-config_dir = 'config_consecutive/2hourly4seasons'
+config_dir = 'config_consecutive/2hourly4seasonsNoNuclear'
 data_dir = 'results/data'
 
 '''Set to 'list' to only run scenarios in 'scenario_list' or set to 'folder' to run all
 scenario config files as defined in 'config_dir'. Can be used to run a scenario sample.'''
-run_type = 'list'
+run_type = 'folder'
 
 scenario_list = [
   'ASEAN',
   'MYSPESGPXX',
-  #'MYSPETHASO',
+  'MYSPETHASO',
   'IDNSMMYSPE',
-  #'MYSSHPHLLU',
-  #'BRNXXMYSSK',
-  #'LAOXXTHANO',
-  #'LAOXXVNMNO',
- # 'MMRXXTHANO',
- # 'KHMXXLAOXX',
- # 'KHMXXTHACE',
- # 'IDNKAMYSSH',
- # 'IDNSMSGPXX',
- # 'LAOXXMMRXX',
- # 'SGPXXVNMSO',
- # 'KHMXXSGPXX',
+  'MYSSHPHLLU',
+  'BRNXXMYSSK',
+  'LAOXXTHANO',
+  'LAOXXVNMNO',
+  'MMRXXTHANO',
+  'KHMXXLAOXX',
+  'KHMXXTHACE',
+  'IDNKAMYSSH',
+  'IDNSMSGPXX',
+  'LAOXXMMRXX',
+  'SGPXXVNMSO',
+  'KHMXXSGPXX',
   'MYSPEMYSSK',
- # 'MYSSHMYSSK',
+  'MYSSHMYSSK',
   'IDNJWIDNKA',
   'IDNJWIDNSM',
     ]
