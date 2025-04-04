@@ -1,0 +1,523 @@
+nodes:  
+  node:
+    region: AS
+    country: AFG
+  node:
+    region: AF
+    country: AGO
+  node:
+    region: EU
+    country: ALB
+  node:
+    region: AS
+    country: ARE
+  node:
+    region: SA
+    country: ARG
+  node:
+    region: EU
+    country: ARM
+  node:
+    region: OC
+    country: ATA
+  node:
+    region: OC
+    country: AUS
+    nodes: [NT, QL, SA, SW, WA, VI, TA]
+  node:
+    region: EU
+    country: AUT
+  node:
+    region: EU
+    country: AZE
+  node:
+    region: AF
+    country: BDI
+  node:
+    region: EU
+    country: BEL
+  node:
+    region: AF
+    country: BEN
+  node:
+    region: AF
+    country: BFA
+  node:
+    region: AS
+    country: BGD
+  node:
+    region: EU
+    country: BGR
+  node:
+    region: AS
+    country: BHR
+  node:
+    region: EU
+    country: BIH
+  node:
+    region: EU
+    country: BLR
+  node:
+    region: SA
+    country: BOL
+  node:
+    region: SA
+    country: BRA
+    nodes: [CN, CW, NE, NW, SE, SO, WE, J1, J2, J3]
+  node:
+    region: NA
+    country: BLZ
+  node:
+    region: AS
+    country: BRN
+  node:
+    region: AS
+    country: BTN
+  node:
+    region: AF
+    country: BWA
+  node:
+    region: AF
+    country: CAF
+  node:
+    region: NA
+    country: CAN
+    nodes: [AR, NL, ON, AB, BC, QC, SK, MB, NO, ]
+  node:
+    region: EU
+    country: CHE
+  node:
+    region: SA
+    country: CHL
+  node:
+    region: AS
+    country: CHN
+    nodes: [AN, BE, CH, EM, FU, GA, GD, GU, GX, HA, HB, HE, HJ, HK, HN, HU, JI, JS, JX, LI, MA, NI, QI, SC, SD, SH, SI, SX, TI, TJ, WM, XI, YU, ZH]
+  node:
+    region: AF
+    country: CIV
+  node:
+    region: AF
+    country: CMR
+  node:
+    region: AF
+    country: COD
+  node:
+    region: AF
+    country: COG
+  node:
+    region: SA
+    country: COL
+  node:
+    region: AF
+    country: CPV
+  node:
+    region: NA
+    country: CRI
+  node:
+    region: NA
+    country: CUB
+  node:
+    region: EU
+    country: CYP
+  node:
+    region: EU
+    country: CZE
+  node:
+    region: EU
+    country: DEU
+  node:
+    region: AF
+    country: DJI
+  node:
+    region: EU
+    country: DNK
+  node:
+    region: NA
+    country: DOM
+  node:
+    region: AF
+    country: DZA
+  node:
+    region: SA
+    country: ECU
+  node:
+    region: AF
+    country: EGY
+  node:
+    region: AF
+    country: ERI
+  node:
+    region: AF
+    country: ESH
+  node:
+    region: EU
+    country: ESP
+  node:
+    region: EU
+    country: EST
+  node:
+    region: AF
+    country: ETH
+  node:
+    region: EU
+    country: FIN
+  node:
+    region: OC
+    country: FJI
+  node:
+    region: EU
+    country: FRA
+  node:
+    region: AF
+    country: GAB
+  node:
+    region: EU
+    country: GBR
+  node:
+    region: EU
+    country: GEO
+  node:
+    region: AF
+    country: GHA
+  node:
+    region: AF
+    country: GIN
+  node:
+    region: AF
+    country: GMB
+  node:
+    region: AF
+    country: GNB
+  node:
+    region: AF
+    country: GNQ
+  node:
+    region: EU
+    country: GRC
+  node:
+    region: NA
+    country: GTM
+  node:
+    region: SA
+    country: GUF
+  node:
+    region: SA
+    country: GUY
+  node:
+    region: NA
+    country: HND
+  node:
+    region: EU
+    country: HRV
+  node:
+    region: NA
+    country: HTI
+  node:
+    region: EU
+    country: HUN
+  node:
+    region: AS
+    country: IDN
+  node:
+    region: AS
+    country: IND
+    nodes: [EA, NE, NO, SO, WE]
+  node:
+    region: EU
+    country: IRL
+  node:
+    region: AS
+    country: IRN
+  node:
+    region: AS
+    country: IRQ
+  node:
+    region: EU
+    country: ISL
+  node:
+    region: AS
+    country: ISR
+  node:
+    region: EU
+    country: ITA
+  node:
+    region: NA
+    country: JAM
+  node:
+    region: AS
+    country: JOR
+  node:
+    region: AS
+    country: JPN
+    nodes: [CE, HO, KY, OK, SH, TO]
+  node:
+    region: AS
+    country: KAZ
+  node:
+    region: AF
+    country: KEN
+  node:
+    region: AS
+    country: KGZ
+  node:
+    region: AS
+    country: KHM
+  node:
+    region: AS
+    country: KOR
+  node:
+    region: EU
+    country: KOS
+  node:
+    region: AS
+    country: KWT
+  node:
+    region: AS
+    country: LAO
+  node:
+    region: AS
+    country: LBN
+  node:
+    region: AF
+    country: LBR
+  node:
+    region: AF
+    country: LBY
+  node:
+    region: AS
+    country: LKA
+  node:
+    region: AF
+    country: LSO
+  node:
+    region: EU
+    country: LTU
+  node:
+    region: EU
+    country: LUX
+  node:
+    region: EU
+    country: LVA
+  node:
+    region: AF
+    country: MAR
+  node:
+    region: EU
+    country: MDA
+  node:
+    region: AF
+    country: MDG
+  node:
+    region: NA
+    country: MEX
+  node:
+    region: EU
+    country: MKD
+  node:
+    region: AF
+    country: MLI
+  node:
+    region: AS
+    country: MMR
+  node:
+    region: EU
+    country: MNE
+  node:
+    region: AS
+    country: MNG
+  node:
+    region: AF
+    country: MOZ
+  node:
+    region: AF
+    country: MRT
+  node:
+    region: EU
+    country: MLT
+  node:
+    region: AF
+    country: MUS
+  node:
+    region: AF
+    country: MWI
+  node:
+    region: AS
+    country: MYS
+  node:
+    region: AF
+    country: NAM
+  node:
+    region: AF
+    country: NER
+  node:
+    region: AF
+    country: NGA
+  node:
+    region: NA
+    country: NIC
+  node:
+    region: EU
+    country: NLD
+  node:
+    region: EU
+    country: NOR
+  node:
+    region: AS
+    country: NPL
+  node:
+    region: OC
+    country: NZL
+  node:
+    region: AS
+    country: OMN
+  node:
+    region: AS
+    country: PAK
+  node:
+    region: NA
+    country: PAN
+  node:
+    region: SA
+    country: PER
+  node:
+    region: AS
+    country: PHL
+  node:
+    region: OC
+    country: PNG
+  node:
+    region: EU
+    country: POL
+  node:
+    region: AS
+    country: PRK
+  node:
+    region: EU
+    country: PRT
+  node:
+    region: SA
+    country: PRY
+  node:
+    region: AS
+    country: QAT
+  node:
+    region: EU
+    country: ROU
+  node:
+    region: AS
+    country: RUS
+    nodes: [CE, FE, MV, NW, SI, SO, UR]
+  node:
+    region: AF
+    country: RWA
+  node:
+    region: AS
+    country: SAU
+  node:
+    region: AF
+    country: SDN
+  node:
+    region: AF
+    country: SEN
+  node:
+    region: AS
+    country: SGP
+  node:
+    region: AF
+    country: SLE
+  node:
+    region: NA
+    country: SLV
+  node:
+    region: AF
+    country: SOM
+  node:
+    region: EU
+    country: SRB
+  node:
+    region: SA
+    country: SUR
+  node:
+    region: EU
+    country: SVK
+  node:
+    region: EU
+    country: SVN
+  node:
+    region: EU
+    country: SWE
+  node:
+    region: AF
+    country: SWZ
+  node:
+    region: AS
+    country: SYR
+  node:
+    region: AF
+    country: TGO
+  node:
+    region: AF
+    country: TCD
+  node:
+    region: AS
+    country: THA
+  node:
+    region: AS
+    country: TJK
+  node:
+    region: AS
+    country: TKM
+  node:
+    region: AF
+    country: TLS
+  node:
+    region: NA
+    country: TTO
+  node:
+    region: AF
+    country: TUN
+  node:
+    region: AS
+    country: TUR
+  node:
+    region: AS
+    country: TWN
+  node:
+    region: AF
+    country: TZA
+  node:
+    region: AF
+    country: UGA
+  node:
+    region: EU
+    country: UKR
+  node:
+    region: SA
+    country: URY
+  node:
+    region: NA
+    country: USA
+    nodes: [AZ, CA, ER, FR, GU, HA, MW, NE, NW, NY, PR, RA, RE, RM, RW, SC, SE, SN, SS, SV, SW, ME, SA, AK]
+  node:
+    region: AS
+    country: UZB
+  node:
+    region: SA
+    country: VEN
+  node:
+    region: AS
+    country: VNM
+  node:
+    region: AS
+    country: YEM
+  node:
+    region: AF
+    country: ZAF
+  node:
+    region: AF
+    country: ZMB
+  node:
+    region: AF
+    country: ZWE
+  

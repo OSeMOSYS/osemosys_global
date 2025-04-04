@@ -1,0 +1,119 @@
+technology:
+  bio:
+    fuel_in: bio
+    fuel_out: elec
+    nice_name: biomass
+    renewable: True
+    color: darkgreen
+    lifetime: 30
+  ccg:
+    fuel_in: gas
+    fuel_out: elec
+    nice_name: combined_cycle_gas
+    thermal: True
+    color: lightcoral
+    lifetime: 30
+  coa:
+    fuel_in: coa
+    fuel_out: elec
+    nice_name: coal
+    thermal: True
+    color: black
+    lifetime: 30
+  cog:
+    fuel_in: cog
+    fuel_out: elec
+    nice_name: cogeneration
+    thermal: True
+    color: peru
+    lifetime: 30
+  csp:
+    fuel_in: csp
+    fuel_out: elec
+    nice_name: concentrated_solar
+    renewable: True
+    color: wheat
+    lifetime: 30
+  geo:
+    fuel_in: geo
+    fuel_out: elec
+    nice_name: geothermal
+    renewable: True
+    color: darkseagreen
+    lifetime: 30
+  hyd:
+    fuel_in: hyd
+    fuel_out: elec
+    nice_name: hydro
+    renewable: True
+    color: dodgerblue
+    lifetime: 100
+  ocg:
+    fuel_in: gas
+    fuel_out: elec
+    nice_name: open_cycle
+    thermal: True
+    color: firebrick
+    lifetime: 30
+  oil:
+    fuel_in: oil
+    fuel_out: elec
+    nice_name: oil
+    thermal: True
+    color: lightgrey
+    lifetime: 30
+  oth:
+    fuel_in: oth
+    fuel_out: elec
+    nice_name: other
+    thermal: True
+    color: teal
+    lifetime: 30
+  pet:
+    fuel_in: pet
+    fuel_out: elec
+    nice_name: petroleum
+    thermal: True
+    color: grey
+    lifetime: 30
+  spv:
+    fuel_in: spv
+    fuel_out: elec
+    nice_name: solar
+    renewable: True
+    color: gold
+    lifetime: 30
+  urn:
+    fuel_in: urn
+    fuel_out: elec
+    nice_name: uranium
+    thermal: True
+    color: mediumseagreen
+    lifetime: 30
+  was:
+    fuel_in: was
+    fuel_out: elec
+    nice_name: waste
+    color: green
+    lifetime: 30
+  wav:
+    fuel_in: wav
+    fuel_out: elec
+    nice_name: wave
+    renewable: True
+    color: navy
+    lifetime: 30
+  won:
+    fuel_in: won
+    fuel_out: elec
+    nice_name: onshore_wind
+    renewable: True
+    color: blueviolet
+    lifetime: 30
+  wof:
+    fuel_in: wof
+    fuel_out: elec
+    nice_name: offshore_wind
+    renewable: True
+    color: violet
+    lifetime: 30
