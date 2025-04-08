@@ -7,7 +7,7 @@ data_dir = 'results/data'
 
 '''Set to 'list' to only run scenarios in 'scenario_list' or set to 'folder' to run all
 scenario config files as defined in 'config_dir'. Can be used to run a scenario sample.'''
-run_type = 'list'
+run_type = 'folder'
 
 scenario_list = [
     'Base',
