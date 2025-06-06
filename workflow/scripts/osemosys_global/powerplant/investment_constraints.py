@@ -54,6 +54,7 @@ def set_renewable_limits(res_limits, tech_code_dict,
     cap_addition_limit = df_reslimit_final.set_index("TECHNOLOGY").to_dict()["VALUE"]
 
     # Update custom values
+    print(custom_nodes_res_limits)
     custom_nodes_res_limits["TECHNOLOGY"] = (
         "PWR"
         + custom_nodes_res_limits["FUEL_TYPE"]

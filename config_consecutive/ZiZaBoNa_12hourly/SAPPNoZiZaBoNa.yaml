@@ -46,7 +46,8 @@ geographic_scope:
   - "ZAF"
   - "TZA"
   - "ZMB"
-  - "ZWE"          
+  - "ZWE"
+        
 
 # Set to True if transmission should be included
 crossborderTrade: True
@@ -80,6 +81,7 @@ no_invest_technologies:
   - "WAS"
   - "COG" 
   - "PET"
+  - "BIO"
  
 # Result Parameters 
 results_by_country: True

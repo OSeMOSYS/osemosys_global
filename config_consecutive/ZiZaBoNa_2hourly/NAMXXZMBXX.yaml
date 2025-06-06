@@ -76,6 +76,7 @@ no_invest_technologies:
   - "WAS"
   - "COG" 
   - "PET"
+  - "BIO"
  
 # Result Parameters 
 results_by_country: True
