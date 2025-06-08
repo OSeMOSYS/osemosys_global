@@ -2,7 +2,7 @@ import subprocess
 import os
 import shutil
 
-config_dir = 'config_consecutive/ZiZaBoNa_12hourly'
+config_dir = 'config_consecutive/ZiZaBoNa_2hourly'
 data_dir = 'results/data'
 
 '''Set to 'list' to only run scenarios in 'scenario_list' or set to 'folder' to run all

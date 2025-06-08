@@ -82,7 +82,7 @@ no_invest_technologies:
 results_by_country: True
 
 # solver parameters
-solver: "cplex" # cbc, cplex, gurobi
+solver: "gurobi" # cbc, cplex, gurobi
 
 user_defined_capacity:
   # technology: [capacity, 
