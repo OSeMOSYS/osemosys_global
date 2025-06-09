@@ -21,7 +21,7 @@ scenario_list = [
 
 if run_type == 'folder':
     for scenario in os.listdir(config_dir):
-        subprocess.run("snakemake --cores 12 --configfile "f'{config_dir}/{scenario}'"", 
+        subprocess.run("snakemake --cores 50 --configfile "f'{config_dir}/{scenario}'"", 
                        shell = True)
         
         shutil.rmtree(data_dir)
