@@ -11,12 +11,12 @@ run_type = 'folder'
 
 scenario_list = [
     'Base',
-    #'BWAXXZWEXX',
-    #'NAMXXZMBXX',
-    #'ZMBXXZWEXX',
-    #'ZiZaBoNa',
-    #'SAPP',
-    #'SAPPNoZiZaBoNa'
+   # 'BWAXXZWEXX',
+   # 'NAMXXZMBXX',
+    'ZMBXXZWEXX',
+  #  'ZiZaBoNa',
+  #  'SAPP',
+  #  'SAPPNoZiZaBoNa'
     ]
 
 if run_type == 'folder':
@@ -28,7 +28,7 @@ if run_type == 'folder':
         
 if run_type == 'list':
     for scenario in scenario_list:
-        subprocess.run("snakemake --cores 12 --configfile "f'{config_dir}/{scenario}.yaml'"", 
+        subprocess.run("snakemake --cores 50 --configfile "f'{config_dir}/{scenario}.yaml'"", 
                        shell = True)
         
         shutil.rmtree(data_dir)
