@@ -11,12 +11,12 @@ run_type = 'folder'
 
 scenario_list = [
     'Base',
-   # 'BWAXXZWEXX',
-   # 'NAMXXZMBXX',
+    'BWAXXZWEXX',
+    'NAMXXZMBXX',
     'ZMBXXZWEXX',
-  #  'ZiZaBoNa',
-  #  'SAPP',
-  #  'SAPPNoZiZaBoNa'
+    'ZiZaBoNa',
+    'SAPP',
+    'SAPPNoZiZaBoNa'
     ]
 
 if run_type == 'folder':
