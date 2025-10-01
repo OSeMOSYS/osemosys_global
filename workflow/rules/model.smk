@@ -29,7 +29,7 @@ rule copy_otoole_confg:
     output:
         config='results/{scenario}/otoole.yaml'
     run:
-        shutil.copyfile(input.config, output.config)
+        shutil.copy(input.config, output.config)
 
 rule copy_og_config:
     message:
@@ -39,7 +39,7 @@ rule copy_og_config:
     output:
         config='results/{scenario}/og.yaml'
     run:
-        shutil.copyfile(input.config, output.config)
+        shutil.copy(input.config, output.config)
 
 rule otoole_convert:
     message:
