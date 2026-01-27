@@ -90,7 +90,7 @@ def get_demand(demand: pd.DataFrame, country: bool) -> pd.DataFrame:
 
     df = demand.copy()
 
-    df = df[df.index.get_level_values("FUEL").str.startswith("ELC")]
+    df = df[df.index.get_level_values("FUEL").str.startswith("ELC", na=False)]
 
     if country:
         r = "COUNTRY"

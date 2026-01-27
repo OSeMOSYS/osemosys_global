@@ -68,16 +68,27 @@ def get_ember_emission_intensity(csv_file: str, **kwargs) -> pd.DataFrame:
 
 
 def _read_ember_data(csv_file: str) -> pd.DataFrame:
-    """Reads *.csv ember data from https://ember-climate.org/data-catalogue/yearly-electricity-data/
+    df = pd.read_csv(csv_file, encoding="latin-1")
 
-    Data - Yearly Full Release Long Format
-    """
-    df = pd.read_csv(csv_file)
-    df = df.rename(
-        columns={"Country code": "COUNTRY", "Year": "YEAR", "Value": "VALUE"}
-    )
-    df = df[["COUNTRY", "YEAR", "Category", "Subcategory", "Variable", "Unit", "VALUE"]]
-    return df[(df.YEAR >= 2015) & (df.Unit != "%")].copy()
+    # Clean headers
+    df.columns = df.columns.str.replace("\ufeff", "", regex=False).str.strip()
+
+    # Map Ember columns to expected names
+    if "COUNTRY" not in df.columns:
+        if "ISO 3 code" in df.columns:
+            df["COUNTRY"] = df["ISO 3 code"]
+        elif "Country code" in df.columns:
+            df["COUNTRY"] = df["Country code"]
+        elif "Area" in df.columns:
+            df["COUNTRY"] = df["Area"]
+
+    if "YEAR" not in df.columns and "Year" in df.columns:
+        df["YEAR"] = df["Year"]
+
+    if "VALUE" not in df.columns and "Value" in df.columns:
+        df["VALUE"] = df["Value"]
+
+    return df[["COUNTRY", "YEAR", "Category", "Subcategory", "Variable", "Unit", "VALUE"]]
 
 
 def _format_ember_capacity_data(ember: pd.DataFrame) -> pd.DataFrame:
@@ -142,3 +153,4 @@ def _format_ember_emission_intensity_data(ember: pd.DataFrame) -> pd.DataFrame:
     df["REGION"] = "GLOBAL"
     df = df[["REGION", "EMISSION", "YEAR", "VALUE"]]
     return df.groupby(["REGION", "EMISSION", "YEAR"]).sum()
+

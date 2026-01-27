@@ -1,9 +1,9 @@
 # Scenario Name 
-scenario: "250225NAMRUMED2030"
+scenario: "AGO8percent"
 
 # Temporal Parameters 
 startYear: 2022
-endYear: 2040
+endYear: 2050
 daytype: False
 dayparts:
   #daypart : [start_hour (inclusive), end_hour (exclusive)]
@@ -20,13 +20,13 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-#   - "AGO" 
+    - "AGO" 
 #   - "BWA" 
 #    - "KEN" 
 #     - "MDG"
 #    - "MWI" 
 #    - "MOZ" 
-     - "NAM"  
+#     - "BWA"  
 #   - "TZA"
 #   - "UGA" 
 #    - "ZMB"
@@ -74,6 +74,7 @@ no_invest_technologies:
   - "WOF" 
 #  - "HYD"
   - "CCS"
+  - "COA"
 # Result Parameters 
 results_by_country: True
 
@@ -201,18 +202,18 @@ emission_limit:
 # it means that a singular year value is set without interpolation occuring in
 # previous target years. A combination of TYPE targets can be set per EMISSION and
 # COUNTRY yet only a single target per YEAR.
-#     - ['CO2', 'COD', 'LINEAR', 2030, 0.54] # - Unconditional GHG Target
-#    - ['CO2', 'AGO', 'LINEAR', 2025, 2.17] # - Unconditional GHG Target
-# - ['CO2', 'BWA', 'LINEAR', 2030, 0.63] # - Conditional GHG Target
+#  - ['CO2', 'COD', 'LINEAR', 2030, 0.54] # - Unconditional GHG Target
+   - ['CO2', 'AGO', 'LINEAR', 2025, 2.17] # - Unconditional GHG Target
+   - ['CO2', 'BWA', 'LINEAR', 2030, 0.63] # - Conditional GHG Target
 #  - ['CO2', 'KEN', 'LINEAR', 2030, 1.29] # - Unconditional GHG Target
-#    - ['CO2', 'MWI', 'LINEAR', 2040, 0.13] # - Unconditional GHG Target
+#  - ['CO2', 'MWI', 'LINEAR', 2040, 0.13] # - Unconditional GHG Target
 #  - ['CO2', 'TZA', 'LINEAR', 2030, 2.58] # - Conditional GHG Target
-#    - ['CO2', 'UGA', 'LINEAR', 2030, 0.59] # - Unconditional GHG Target
+#  - ['CO2', 'UGA', 'LINEAR', 2030, 0.59] # - Unconditional GHG Target
 #  - ['CO2', 'UGA', 'LINEAR', 2030, 0.47] # - Conditional GHG Target
-#       - ['CO2', 'ZMB', 'LINEAR', 2030, 1.57]
-#   - ['CO2', 'ZWE', 'LINEAR', 2030, 1.5]
-#     - ['CO2', 'BDI', 'LINEAR', 2030, 0.08] # Unconditional NDC
-#    - ['CO2', 'NAM', 'LINEAR', 2050, 0]
+#  - ['CO2', 'ZMB', 'LINEAR', 2030, 1.57]
+#  - ['CO2', 'ZWE', 'LINEAR', 2030, 1.5]
+#  - ['CO2', 'BDI', 'LINEAR', 2030, 0.08] # Unconditional NDC
+#  - ['CO2', 'NAM', 'LINEAR', 2050, 0]
 #  - ['CO2', 'ZAF', 'LINEAR', 2030, 179.3]
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
