@@ -74,7 +74,7 @@ def _read_ember_data(csv_file: str) -> pd.DataFrame:
     """
     df = pd.read_csv(csv_file)
     df = df.rename(
-        columns={"Country code": "COUNTRY", "Year": "YEAR", "Value": "VALUE"}
+        columns={"ISO 3 code": "COUNTRY", "Year": "YEAR", "Value": "VALUE"}
     )
     df = df[["COUNTRY", "YEAR", "Category", "Subcategory", "Variable", "Unit", "VALUE"]]
     return df[(df.YEAR >= 2015) & (df.Unit != "%")].copy()
