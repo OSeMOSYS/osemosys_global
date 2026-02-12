@@ -1,0 +1,71 @@
+fuel:
+  bio:
+    nice_name: biomass
+    renewable: True
+    color: darkgreen
+  coa:
+    nice_name: coal
+    mining: True
+    color: black
+    trade: True
+  cog:
+    nice_name: cogeneration
+    mining: True
+    color: peru
+    trade: True
+  csp:
+    nice_name: concentrated_solar
+    renewable: True
+    color: wheat
+  gas:
+    nice_name: gas
+    mining: True
+    color: darkseagreen
+    trade: True
+  geo:
+    nice_name: geothermal
+    renewable: True
+    color: darkseagreen
+  hyd:
+    nice_name: hydro
+    renewable: True
+    color: dodgerblue
+  oil:
+    nice_name: oil
+    mining: True
+    color: lightgrey
+    trade: True
+  oth:
+    nice_name: other
+    mining: True
+    color: teal
+  pet:
+    nice_name: petroleum
+    mining: True
+    color: grey
+    trade: True
+  spv:
+    nice_name: solar
+    renewable: True
+    color: gold
+  urn:
+    nice_name: uranium
+    mining: True
+    color: mediumseagreen
+    trade: True
+  was:
+    mining: True
+    nice_name: waste
+    color: green
+  wav:
+    nice_name: wave
+    renewable: True
+    color: navy
+  won:
+    nice_name: onshore_wind
+    renewable: True
+    color: blueviolet
+  wof:
+    nice_name: offshore_wind
+    renewable: True
+    color: violet
