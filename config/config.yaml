@@ -1,9 +1,9 @@
 # Scenario Name 
-scenario: "India"
+scenario: "CVF"
 
 # Temporal Parameters 
-startYear: 2021
-endYear: 2050
+startYear: 2023
+endYear: 2060
 daytype: False
 dayparts:
 # daypart : [start_hour (inclusive), end_hour (exclusive)]
@@ -18,7 +18,19 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "IND"
+  - "BGD"
+  - "BRB"
+  - "COL"  
+  - "FJI"
+  - "GMB"  
+  - "GHA" 
+  - "HND" 
+  - "MDG" 
+  - "PAK" 
+  - "PHL"
+  - "TZA"
+  - "CPV" 
+  - "SLB"  
 
 # Set to True if transmission should be included
 crossborderTrade: True
