@@ -267,6 +267,9 @@ def activity_master_end(df_pwr_oar_final, df_oar_upstream, df_oar_int,
     
     df_iar_final = apply_dtypes(df_iar_final, "InputActivityRatio")
     
+    df_oar_final = df_oar_final.loc[~((df_oar_final['TECHNOLOGY'].str.startswith('PWR')) & 
+                                      (df_oar_final['FUEL'].str.endswith('INT')))]
+    
     return df_oar_final, df_iar_final
 
 def capact(df_oar_final):

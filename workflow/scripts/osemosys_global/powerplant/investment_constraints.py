@@ -53,21 +53,20 @@ def set_renewable_limits(res_limits, tech_code_dict,
     )
     cap_addition_limit = df_reslimit_final.set_index("TECHNOLOGY").to_dict()["VALUE"]
 
-    if custom_nodes:
-
-        custom_nodes_res_limits["TECHNOLOGY"] = (
-            "PWR"
-            + custom_nodes_res_limits["FUEL_TYPE"]
-            + custom_nodes_res_limits["CUSTOM_NODE"]
-            + "01"
+    # Update custom values
+    custom_nodes_res_limits["TECHNOLOGY"] = (
+        "PWR"
+        + custom_nodes_res_limits["FUEL_TYPE"]
+        + custom_nodes_res_limits["CUSTOM_NODE"]
+        + "01"
+    )
+    re_potentials_dict = dict(
+        zip(
+            list(custom_nodes_res_limits["TECHNOLOGY"]),
+            list(custom_nodes_res_limits["CAPACITY"]),
         )
-        re_potentials_dict = dict(
-            zip(
-                list(custom_nodes_res_limits["TECHNOLOGY"]),
-                list(custom_nodes_res_limits["CAPACITY"]),
-            )
-        )
-        cap_addition_limit.update(re_potentials_dict)
+    )
+    cap_addition_limit.update(re_potentials_dict)
 
     # GET RESIDUAL CAPACITY VALUES
 

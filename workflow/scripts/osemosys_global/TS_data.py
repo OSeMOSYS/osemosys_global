@@ -480,10 +480,10 @@ if __name__ == "__main__":
         region_name = 'GLOBAL'
         geographic_scope = ['BTN', 'IND']
         output_data_dir = 'results/data'
-        input_data_dir = 'resources/data'
+        input_data_dir = 'resources/data/default'
         output_dir = 'results'
         input_dir = 'resources'
-        custom_nodes_dir = 'resources/data/custom_nodes'
+        custom_nodes_dir = 'resources/data/custom'
         daytype = False
         seasons =   {'S1': [1, 2, 3, 4, 5, 6], 
                      'S2': [7, 8, 9, 10, 11, 12]}

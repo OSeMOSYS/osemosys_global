@@ -1,464 +1,418 @@
 # Getting Started
 
-This page will give you an overview of OSeMOSYS Global's workflow, and walk 
-through some simple examples. 
-
-:::{seealso}
-Ensure you have followed our 
-[installation instructions](installation.md#installation) before running a 
-model
-:::
+This page gives an overview of OSeMOSYS Global's workflow and the configuration options available to the user. It assumes the reader has successfully followed the [installation instructions](installation.md). 
 
 ## Project Overview
 
-OSeMOSYS Global is an open-source, open-data model generator for creating 
-global electricity system models. This includes creating interconnected models
-for both the entire globe and for any geographically diverse subset of the 
-globe. To manage this data processing we use the workflow management tool, 
-[Snakemake](https://snakemake.readthedocs.io/en/stable/). A high level overview 
-of OSeMOSYS Global's workflow is shown below. The green boxes highlight where 
-the user interfaces with the model, while the blue boxes highlight automated 
-actions that run behind the scenes.
+OSeMOSYS Global is an open-source, open-data model generator for creating user-configurable electricity system models. This includes creating interconnected models for both the entire globe and for any geographically diverse subset of the globe. To manage the data pipeline we use the workflow management tool [`snakemake`](https://snakemake.readthedocs.io/en/stable/). A high-level overview of OSeMOSYS Global's `snakemake` workflow is shown below. The green boxes highlight where the user interfaces with the model, while the blue boxes highlight automated actions that run behind the scenes.
 
-![Flowchart-high-level](_static/flowchart-high-level.jpg "Flowchart")
+![Flowchart-high-level](_static/flowchart-high-level.png "Flowchart")
 
-The main components of the directory the user will interface with are
-highlighted below. This directory structure follows the recommended 
-[snakemake structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html).
-A full overview of the project directory is available in our 
-[contributing guidelines](contributing.md#directory-structure).
 
-``` bash
+## Repository Structure 
+
+Upon cloning OSeMOSYS Global, the directory will look similar to tree structure shown below. Highlighted are the directories where the user is expected to interface with OSeMOSYS Global. Specifically, `config/config.yaml` holds general configuration options, `resources/custom_nodes/` holds data that the user can update to calibrate models or perform more indepth scenario analysis, finally, `results/<scenario>/` will hold all result data from a scenario run. Each of these sectors is described in detail below. 
+
+```bash
 osemosys_global
-├── docs                      
-├── config           
-│   ├── config.yaml  # User configurable setup file           
-├── resources                    
-├── resutls          # Will appear after running 
-├── workflow                         
+├── docs/                      
+├── config/           
+│   ├── config.yaml     # General configuration options 
+├── resources/       
+│   ├── custom/         # User defined data 
+│   ├── default/        # Default data (DO NOT CHANGE)
+├── results/            # Appears after running 
+│   ├── scenario_name/  # Holds model data for your scenario
+├── workflow/                         
 └── ...
 ```
 
 ## Configuration File
 
-OSeMOSYS Global is a configurable model generator, allowing for full user 
-flexibility in determining the time slice structure and geographic scope of 
-the model and datasets. These configuration options are stored in the 
-(conveniently named!)
-[configuration file](https://github.com/OSeMOSYS/osemosys_global/tree/master/config). 
-An overview of the configuration file options are shown below:
+OSeMOSYS Global is a configurable model generator, allowing for full user flexibility in determining the time slice structure and geographic scope of the model and datasets. These configuration options are stored in the [`config/config.yaml` file](https://github.com/OSeMOSYS/osemosys_global/tree/master/config). An overview of the configuration file options are given below.
 
-```{include} ../config/README.md
+### Top Level Options
+Top level options include parameters that do not directly modify the underlying model data. 
+
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 16,16,16,16,16
+   :file: config_tables/top_level.csv
 ```
 
-:::{seealso}
-Our [model structure](./model-structure.md) document for full details on 
-technology and commodity names
-:::
+### Temporal Options
+OSeMOSYS Global's temporal structure uses a representative day approach. The minimum resolution is representing each year as a single timeslice. The maximum resolution is representing each month as an averaged 24hr day (ie. 12x24=288 timeslices). The temporal scope is between `2015` and `2100`.
 
-## Examples
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 16,16,16,16,16
+   :file: config_tables/temporal.csv
+```
 
-Below are some simple examples you can follow to understand how OSeMOSYS Global
-works. 
+### Spatial Options
+OSeMOSYS Global can natively model 164 countries seperated by 265 nodes. Users can select choose to model the entire global, or any number of countries within the world. Furthermore, functionality exists to add/remove to/from the default spatial resolution. 
 
-:::{caution}
-Before running any examples, ensure you first follow our 
-[installation instructions](installation.md#installation) and perform the 
-following two steps.
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 16,16,16,16,16
+   :file: config_tables/spatial.csv
+```
 
-1. Navigate to the root OSeMOSYS Global directory in the command line 
+### Generator Options
+OSeMOSYS Global will automatically aggregate and ingest geo-located powerplants from global datasets, including associated techno-economic parameters. Options to add to this compiled dataset can eaisly be done. Furthermore, modelling assumptions, such as reserve margins, can be modified through the configuration file. 
 
-    ```bash
-    (base) $ cd ~/osemosys_global 
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 20,20,20,20,20,20
+   :file: config_tables/generators.csv
+```
 
-    (base) ~/osemosys_global$ 
-    ```
+### Transmission Options
+OSeMOSYS Global interfaces with the [Gloabl Transmission Database](https://www.sciencedirect.com/science/article/pii/S2352340924003895?dgcid=rss_sd_all) to ingest exising and planned transmission lines. Users can add to this dataset and modify assumptions applied to transmission lines. 
 
-2. Activate the `osemosys-global` conda environment
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 20,20,20,20,20,20
+   :file: config_tables/transmission.csv
+```
 
-    ```bash
-    (base) ~/osemosys_global$ conda activate osemosys-global
+### Storage Options
+OSeMOSYS Global interfaces with the [DOE Gloabl Energy Storage Database](https://gesdb.sandia.gov/) to ingest exising and planned storage units. Users can add to this dataset and modify assumptions applied to storage units. 
 
-    (osemosys-global) ~/osemosys_global$
-    ```
-:::
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 20,20,20,20,20,20
+   :file: config_tables/storage.csv
+```
+
+### Policy Options
+A core function of energy planning models is expoloring the impacts of different policy. This section describes the configuration options available to model different policies. 
+
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 20,20,20,20,20,20
+   :file: config_tables/policies.csv
+```
+
+## User Defined Data
+
+Often it may be easier to modify/update data through tabular format. In these instances users can update any of the data found in the `resources/data/custom` folder. Moreover, if custom nodes are defined, you must update this data. More explanation can be found on the [Examples page](./examples.md). Here we describe how to format each user defined data csv file. 
+
+### RE Potentials
+
+Renewable Energy potentials allow you to define maximum installable capacity limits for renewable technologies at a per node level. This can be used, for example, to limit renewable installations due to land restrictions. The following information must be provided: 
+  - **Fuel Type**: Energy carrier of the technology to limit.
+  - **Node**: Node to apply the limit to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+  - **Capacity**: Maximum installable capacity in `GW`.
+
+An example limiting onshore wind (`WON`) capacity to 20GW in Canada (`CAN`) British Columbia (`BC`) is given below. This would be added to the file `resources/data/custom/RE_potentials.csv`.
+
+| FUEL_TYPE | CUSTOM_NODE | CAPACITY |
+|-----------|-------------|----------|
+| WON       | CANBC       | 20       |
+
+### RE Profiles
+
+Renewable Energy potentials allow you to define capacity factors at a per node level. This can be used, for example, if you have a custom solar profile you wish to ingest into the model.  
+
+For Solar PV (`SPV`), Onshore Wind (`WON`), Offshore Wind (`WOF`), and Concentrated Solar Power (`CSP`), the profiles can be defined at a per-hour level. The following information must be provided: 
+- **Datetime**: Hour of year to apply profile to.
+- **Node**: Node to apply the profile to.
+- **Value**: Rated capacity factor as a percentage.
+
+An example defining onshore wind (`WON`) capacity factors in Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) is given below. This would be added to the file `resources/data/custom/RE_profiles_WON.csv`.
+
+| Datetime         | CANBC | CANAB |
+|------------------|-------|-------|
+| 01/01/2015 0:00  | 21.5  | 32.4  |
+| 01/01/2015 0:00  | 22.1  | 32    |
+| 01/01/2015 0:00  | 22.5  | 32.6  |
+| ...              | ...   | ...   |
+| 31/12/2015 22:00 | 11.2  | 35    |
+| 31/12/2015 23:00 | 9.8   | 35.8  |
+
+For Hydro (`HYD`), the profiles can be defined at a per-month level. 
+- **Month**: Month of the year.
+- **Node**: Node to apply the profile to.
+- **Value**: Rated availability factor as a percentage.
+
+An example defining Hydro capacity factors in Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) is given below. This would be added to the file `resources/data/custom/RE_profiles_HYD.csv`. 
+
+| NAME  | M1   | M2   | M3   | M4   | M5   | M6   | M7   | M8 | M9 | M10  | M11  | M12  |
+|-------|------|------|------|------|------|------|------|----|----|------|------|------|
+| CANBC | 45.6 | 45.8 | 46.8 | 52.4 | 66.3 | 80   | 80   | 80 | 80 | 56.9 | 46.4 | 45.7 |
+| CANAB | 32.6 | 40.2 | 44.9 | 49.2 | 55.3 | 73.2 | 76.7 | 79 | 79 | 60.4 | 51.1 | 45.4 |
+
+### Residual Capacity
+
+Residual capacity allows the user to inject exisitng capascity into the system. This is useful as global datasets may not capture smaller projects at individual nodes. This can be done for generation technologies, storage technologies, and transmission technologies. The following information must be provided:
+- **Fuel**: Energy carrier of the residual capacity. (Generation Technologies)
+- **Technology**: Technology of the residual capacity. (Storage and Transmission Technologies)
+- **Node**: Node to apply the capacity to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+- **Year**: Year to add residual capacity to.
+- **Capacity**: Residual capacity to inject into the system.
+
+An example of adding an additional `1 GW` of residual Hydro (`HYD`) capacity in Canada (`CAN`) British Columbia (`BC`) in `2023` is given below. This would be added to the file `resources/data/custom/residual_capacity.csv`. 
+
+| CUSTOM_NODE | FUEL_TYPE | START_YEAR | END_YEAR | CAPACITY |
+|-------------|-----------|------------|----------|----------|
+| CANBC       | HYD       | 2023       | 2023     | 1        |
+
+When adding residual transmission and storage capacity, ensure you follow the pre-defined naming conventions described [here](./model-structure.md#technology-codes). For example, adding an additional `1 GW` transmission line between Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) in `2023` is given below. This would be added to the file `resources/data/custom/transmission_build_rates.csv`. 
+
+| TRANSMISSION  | START_YEAR | END_YEAR | MAX_BUILD |
+|---------------|------------|----------|-----------|
+| TRNCANBCCANAB | 2023       | 2023     | 1         |
+
+### Build Rates
+
+Limiting the amount of capacity that can be built is often needed to control over-expansion of a single technology. Build rates can be applied to generation technologies, storage technologies, and transmission technologies. The following information must be provided:
+- **Fuel**: Energy carrier of the residual capacity. (Generation Technologies)
+- **Technology**: Technology of the residual capacity. (Storage and Transmission Technologies)
+- **Node**: Node to apply the capacity to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+- **Start Year**: First year to apply expansion limit to 
+- **End Year**: Last year to apply expansion limit to 
+- **Capacity**: Capacity expansion limit.
+
+An example of limiting the amount of new Hydro (`HYD`) capacity allowed in Canada (`CAN`) British Columbia (`BC`) to `2GW` between `2025` and `2050` is given below. This would be added to the file `resources/data/custom/residual_capacity.csv`. 
+
+| CUSTOM_NODE | FUEL_TYPE | START_YEAR | END_YEAR | CAPACITY |
+|-------------|-----------|------------|----------|----------|
+| CANBC       | HYD       | 2025       | 2050     | 2        |
+
+When adding transmission and storage capacity build limits, ensure you follow the pre-defined naming conventions described [here](./model-structure.md#technology-codes). For example, limiting transmission line expansion between Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) to `2GW` between `2025` and `2050` is given below. This would be added to the file `resources/data/custom/transmission_build_rates.csv`. 
+
+| TRANSMISSION  | START_YEAR | END_YEAR | MAX_BUILD |
+|---------------|------------|----------|-----------|
+| TRNCANBCCANAB | 2023       | 2023     | 1         |
+
+### Demand
+
+Both the yearly annual demand demand profile at each node can be modified. The user is free to update either or both of these parameters. THis can be useful for calibrating a model, or adjusting loads based on proprietary demand projections.  
+
+To update the annual demand, the following information is needed: 
+- **Node**: Node to apply the demand to. (Note: the header says "CUSTOM_NODE", but this can be applied to any default or custom node.) 
+- **Year**: Year to apply the demand to. 
+- **Value**: Annual demand in `PJ`. 
+
+An example of updating the annual demand in Canada (`CAN`) British Columbia (`BC`) is given below. This would be added to the file `resources/data/custom/specified_annual_demand.csv`. 
+
+| CUSTOM_NODE | YEAR | VALUE |
+|-------------|------|-------|
+| CANBC       | 2024 | 10.5  |
+| CANBC       | 2024 | 10.8  |
+| ...         | ...  | ...   |
+| CANBC       | 2049 | 17.9  |
+| CANBC       | 2050 | 18.1  |
+
+To update the demand profile, the following information is needed:
+- **Month**: Month of datetime to apply profile to.
+- **Day**: Day of datetime to apply profile to.
+- **Hour**: Hour of datetime to apply profile to.
+- **Node**: Node to apply the profile to.
+- **Value**: Fractional hourly load profile value. 
+
+An example of updating the annual demand in Canada (`CAN`) British Columbia (`BC`) and Alberta (`AB`) is given below. This would be added to the file `resources/data/custom/specified_demand_profile.csv`. 
+
+| Month | Day | Hour | CANBC   |   CANAB |
+|-------|-----|------|---------|---------|
+| 1     | 1   | 0    | 0.00009 | 0.00010 |
+| 1     | 1   | 1    | 0.00009 | 0.00010 |
+| 1     | 1   | 2    | 0.00010 | 0.00011 |
+| ...                | ...     | ...     |
+| 12    | 31  | 22   | 0.00010 | 0.00011 |
+| 12    | 31  | 23   | 0.00009 | 0.00011 |
 
 :::{warning}
-If you installed CPLEX or Gurobi instead of CBC, you must first change this in 
-the configuration file at `config/config.yaml`
+The demand profile for each node over the year must sum up to 1.0
 :::
 
-### Example 1
-
-**Goal**: Run the workflow with default settings. This will produce a model 
-of India from 2015 to 2050 with 8 time slices per year, and solve it using CBC.
-
-1. Run the command `snakemake -j6`. The time to build and solve the model will
-vary depending on your computer, but in general, this example will finish 
-within minutes .
-
-    ```bash
-    (osemosys-global) ~/osemosys_global$ snakemake -j6
-    ```
-
-    :::{tip}
-    The `-j6` command will instruct Snakemake to use six cores.
-    If your want to restrict this, change the number after the `-j` to 
-    specify the number of cores. For example, the command `snakemake -j2` will
-    run the workflow using 2 cores. See 
-    [snakemake's documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html#useful-command-line-arguments) 
-    for more information.   
-    :::
-
-2. Navigate to the newly created `results/` folder. All available automatically 
-generated results are summarized below. 
-
-    ``` bash
-    osemosys_global             
-    ├── resutls            # Will appear after running the workflow
-    │   ├── data           # Global CSV OSeMOSYS data         
-    │   ├── figs           
-    │   │   ├── ...        # Global demand projections
-    │   ├── india          # Name of scenario
-    │   │   ├── data/      # Scenario input CSV data
-    │   │   ├── figures            
-    │   │   │   ├── GenerationAnnual.html
-    │   │   │   ├── GenerationHourly.html
-    │   │   │   ├── TotalCapacityAnnual.html
-    │   │   │   ├── TransmissionCapacity2050.jpg
-    │   │   │   ├── TransmissionFlow2050.jpg
-    │   │   ├── result_summaries    
-    │   │   │   ├── Capacities.csv
-    │   │   │   ├── Generation_By_Node.csv
-    │   │   │   ├── Generation.csv
-    │   │   │   ├── Metrics.csv
-    │   │   │   ├── TradeFlows.csv
-    │   │   ├── results/   # Scenario result CSV data
-    │   │   ├── india.txt  # Scenario OSeMOSYS data file                       
-    └── ...
-    ```
-
-    | File    | Description |
-    |---------|-------------|
-    | `GenerationAnnual.html` | Plot of system level annual generation by technology |
-    | `GenerationHourly.html` | Plot of system level technology generation by timeslice |
-    | `TotalCapacityAnnual.html` | Plot of system level annual capacity by technology |
-    | `Capacities.csv` | Table of nodal level annual capacity by technology |
-    | `Generation_By_Node.csv` | Table of nodal level technology generation by timeslice |
-    | `Generation.csv` | Table of system level technology generation by timeslice |
-    | `Metrics.csv` | Table of system level cost and emission statistics |
-    | `TradeFlows.csv` | Table of nodal level electricity trade by timeslice |
-    | `TransmissionCapacityXXXX.jpg` | Transmission capacity plot for last year of model |
-    | `TransmissionFlowXXXX.jpg` | Transmission flow plot for last year of model |
-
-3. View system level capacity and generation results. 
-
-    :::{caution}
-    These results are used to showcase the capabilities of OSeMOSYS Global. The
-    actual energy supply mix results may need further analysis, such as removing 
-    technology bias though implementing resource limits on nuclear.
-    :::
-
-    ![Example-1.1](_static/example_1.1.png "Example-1.1")
-    ![Example-1.2](_static/example_1.2.png "Example-1.2")
-
-    :::{tip}
-    These plots are interactive! Howver over the bars to view values, or 
-    double click on a power plant in the legend to single it out. 
-    :::
-
-4. View demand projections results for Asia in the file 
-`results/figs/Demand projection Asia.jpg`. Grey dots represent historical 
-country level values for countries in Asia and the coloured dots show projected 
-values.
-
-    ![Example-1.3](_static/example_1.3.png "Example-1.3")
-
-### Example 2
-
-**Goal**: Modify the geographic scope, temporal settings, and emission penalty 
-of the model. 
-
-The goal of this scenario will be to change the geographic scope to add 
-Bangladesh, Bhutan, and Nepal to the model. Moreover, we will change the model
-horizon to be from 2020-2040 and increase the number of time slices per year 
-from 8 to 18. Finally, we will ensure cross border trade is allowed, set the 
-emission penalty to $50/T, and create country level result plots.
-
-1. Navigate to and open the file `config/config.yaml`
-
-2. Change the scenario name to BBIN (**B**angladesh, **B**hutan, **I**ndia, 
-and **N**epal)
-
-    ```yaml
-    scenario: 'BBIN'
-    ```
-
-3. Change the geographic scope to include the mentioned countries.
-
-    ```yaml
-    geographic_scope:
-      - 'IND'
-      - 'BGD'
-      - 'BTN'
-      - 'NPL'
-    ```
-
-4. Change the model horizon to be from 2020 to 2040. Both numbers are inclusive.
-
-    ```yaml
-    startYear: 2020
-    endYear: 2040
-    ```
-
-5. Change the number of day parts to represent three even 8 hour segments per 
-day. The start number is inclusive, while the end number is exclusive.
-
-    ```yaml
-    dayparts:
-      D1: [0, 8]
-      D2: [8, 16]
-      D3: [16, 24]
-    ```
-
-6. Change the number of seasons to represent 6 equally spaced days. Both numbers
-are inclusive.  
-
-    ```yaml
-    seasons:
-      S1: [1, 2]
-      S2: [3, 4]
-      S3: [5, 6]
-      S4: [7, 8]
-      S5: [9, 10]
-      S6: [11, 12]
-    ```
-
-    :::{tip}
-    A timeslice strucutre of 6 seasons and 3 dayparts will result in a model 
-    with 18 timeslices per year; 6 representative days each with 3 timeslices. 
-
-    See the [OSeMOSYS documentation](https://osemosys.readthedocs.io/en/latest/index.html)
-    has more information on the OSeMOSYS timeslice parameters. 
-    :::
-
-6. Ensure the `crossborderTrade` parameter is set to `True`
-
-    ```yaml
-    crossborderTrade: True
-    ```
-
-7. Change the emission penalty to `50` $/T
-
-    ```yaml
-    emission_penalty:
-      - ["CO2", "IND", 2020, 2040, 50]
-      - ["CO2", "BGD", 2020, 2040, 50]
-      - ["CO2", "BTN", 2020, 2040, 50]
-      - ["CO2", "NPL", 2020, 2040, 50]
-    ```
-
-8. Run the command `snakemake -j6`
-
-    ```bash
-    (osemosys-global) ~/osemosys_global$ snakemake -j6
-    ```
-
-    :::{tip}
-    If you run into any issues with the workflow, run the command 
-    `snakemake clean -c`. This will delete any auto generated files and 
-    bring you back to a clean start. 
-    :::
-
-9. Navigate to the `results/` folder to view results from this model run.
-
-    Notice how under `figures/`, there is now a folder for each country. By 
-    setting the `crossborderTrade` parameter to be true, we tell the 
-    workflow to create out both system level and country level plots. 
-
-    ``` bash
-    osemosys_global             
-    ├── resutls            
-    │   ├── data           # Global CSV OSeMOSYS data         
-    │   ├── figs           
-    │   │   ├── ...        # Global demand projections
-    │   ├── india          
-    │   ├── BBIN          # Name of scenario
-    │   │   ├── data/     # Scenario input CSV data
-    │   │   ├── figures   
-    │   │   │   ├── BTN
-    │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
-    │   │   │   ├── BGD
-    │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
-    │   │   │   ├── IND
-    │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
-    │   │   │   ├── NPL
-    │   │   │   │   ├── GenerationAnnual.html
-    │   │   │   │   ├── TotalCapacityAnnual.html         
-    │   │   │   ├── GenerationAnnual.html
-    │   │   │   ├── GenerationHourly.html
-    │   │   │   ├── TotalCapacityAnnual.html
-    │   │   │   ├── TransmissionCapacity2040.jpg
-    │   │   │   ├── TransmissionFlow2040.jpg
-    │   │   ├── result_summaries   # Auto generated result tables
-    │   │   ├── results/   # Scenario result CSV data
-    │   │   ├── BBIN.txt  # Scenario OSeMOSYS data file                       
-    └── ...
-    ```
-
-    :::{note}
-    If you don't change clean the model results, the previous scenario 
-    results are saved as long as you change the scenario name. 
-    :::
-
-10. View system level 2040 hourly generation results by viewing the file
-`results/BBIN/figures/GenerationHourly.html`
-
-    :::{caution}
-    These results are used to showcase the capabilities of OSeMOSYS Global. The
-    actual energy supply mix results may need further analysis, such as removing 
-    technology bias though implementing resource limits on nuclear.
-    :::
-
-    ![Example-2](_static/example_2.png "Example-2")
-
-3. View system level metrics for this model run by looking at the file 
-`results/BBIN/result_summaries/Metrics.csv`
-
-    | Metric              | Unit                      | Value |
-    |---------------------|---------------------------|-------|
-    | Emissions	          | Million tonnes of CO2-eq. | 1221  |
-    | RE Share            | %                         | 10    |
-    | Total System Cost	  | Billion $                 | 1544  |
-    | Cost of electricity | $/MWh                     | 20    |
-    | Fossil fuel share   | %                         | 4     |
-
-
-### Example 3
-
-**Goal**: Rerun the BBIN example with new interconnectors.
-
-The goal of this scenario will be to rerun the BBIN scenario 
-([example 2](#example-2)), except we will tell the model to install three new
-electricity interconnectors. In 2025 we will install a 3GW interconnector 
-between India and Nepal. Then in 2030 we will install a 1GW and 750MW
-interconnector between India and Bhutan and India and Bangladesh respectively. 
-
-1. Change the scenario name
-
-    ```yaml
-    scenario: 'BBIN_Interconnector'
-    ```
-
-2. Configure the new interconnectors
-
-    ```yaml
-    user_defined_capacity:
-      TRNINDNONPLXX: [3, 2025]
-      TRNINDNEBTNXX: [1, 2030]
-      TRNINDEABGDXX: [0.75, 2030]
-    ```
-
-    :::{note}
-    The last two letters in the region (ie. `NO`, `NE`, and `EA` for India, or
-    `XX` for Nepal, Bhutan and Bangladesh) represent the node in each region. 
-    See our [model structure](./model-structure.md#spatial-codes) 
-    document for more information on this. 
-    :::
-
-3. View the trade capacity plot in 2040 by looking at the file 
-`results/BBIN_interconnector/figures/TransmissionCapacity2040.jpg`
-
-    <img src="_static/example_3.1.jpg" width="400">
-
-4. View the trade flow plot in 2040 by looking at the file 
-`results/BBIN_interconnector/figures/TransmissionFlow2040.jpg`
-
-    <img src="_static/example_3.2.jpg" width="400">
-
-
-### Example 4
-
-**Goal**: Run a World Example
-
-The goal of this scenario is to run a World scenario from 2015 to 2050 with
-8 time slices, solve it using CPLEX, and graphing results at a system level only
-
-1. Change the scenario name
-
-    ```yaml
-    scenario: 'WORLD'
-    ```
-
-2. Delete everything under the geographic scope
-
-    ```yaml
-    geographic_scope:
-    ```
-
-    :::{caution}
-    Do **NOT** delete the `geographic_scope:` keyword
-    :::
-
-3. Change the model horizon to be from 2015 to 2050. Both numbers are inclusive.
-
-    ```yaml
-    startYear: 2015
-    endYear: 2050
-    ```
-
-4. Reset the temporal parameters back to defaults.
-
-    ```yaml
-    dayparts:
-      D1: [0, 12]
-      D2: [12, 24]
-
-    seasons:
-      S1: [12, 1, 2]
-      S2: [3, 4, 5]
-      S3: [6, 7, 8]
-      S4: [9, 10, 11]
-    ```
-
-5. Remove the time shift to set to UTC time. 
-
-    ```yaml
-    timeshift: 0
-    ```
-
-6. Set the results to only graph at a system level
-
-    ```yaml
-    results_by_country: False
-    ```
-
-7. Set the solver to `CPLEX`
-
-    ```yaml
-    solver: 'cplex'
-    ```
-
-8. Run the command `snakemake -j6` 
-
-    :::{warning}
-    This scenario will take multiple hours to run using a commercial solver 
-    (Gurobi or CPLEX) on a high performance computer.
-    :::
-
-    ```bash
-    (osemosys-global) ~/osemosys_global$ snakemake -j6
-    ```
-
-8. View system level results in the `results/WORLD/figures` folder
-
-## Feedback
-
-If you are experiencing issues running any of the examples, please submit a 
-[new issue](https://github.com/OSeMOSYS/osemosys_global/issues/new/choose). 
-Our GitHub 
-[discussion forum](https://github.com/OSeMOSYS/osemosys_global/discussions) is 
-also a great place to ask general OSeMOSYS Global questions.
+### Primary Fuel Limits and Prices
+
+Primary fuels, for example Coal (`COA`), Gas (`Gas`), and Oil (`Oil`), can be mined domestically or purchased from the international markets. Users are free to modify the primary fuel reserves in each country (not node!) and the price to import fuel from the interational markets. 
+
+To update domestic fuel resource limits, the following information is needed: 
+- **Fuel**: Primary fuel type 
+- **Country**: Country to apply the limit to. Note: this is the 3 letter country code without the 2 letter node code! 
+- **Year**: Year to apply limit to. The resource limits applied here are not cululative
+- **Value**: Yearly resource limit in `PJ`
+
+An example applying coal and gas resources limits to Canada is given in the example below. This would be added to the file `resources/data/custom/fuel_limmits.csv`. 
+
+| FUEL | COUNTRY | VALUE | YEAR |
+|------|---------|-------|------|
+| GAS  | CAN     | 2000  | 2024 |
+| GAS  | COA     | 1500  | 2024 |
+| GAS  | CAN     | 2000  | 2025 |
+| GAS  | COA     | 1500  | 2025 |
+
+If domestic fuel reserves are exhausted, fuel can be purchased and imported from the international market. The price to purchase fuels can be customized by the user. To do this, the following information is needed:  
+- **Fuel**: Primary fuel type 
+- **Country**: Country to apply the limit to. Note: this is the 3 letter country code without the 2 letter node code! 
+- **Year**: Year to apply limit to. The resource limits applied here are not cululative
+- **Value**: Cost of fuel in `$M/PJ`
+
+:::{note}
+Additionally, you can input the cost in other units (for example, `$/MMBTU` and include a conversion ratio as an energy content to convert to `$M/PJ`).
+:::
+
+An example assigning gas and coal costs for Canada to import is given below. This would be added to the file `resources/data/custom/fuel_prices.csv`. 
+
+| FUEL | COUNTRY | UNIT  | ENERGY_CONTENT | 2020 | 2025 | 2030 | 2040 | 2050 |
+|------|---------|-------|----------------|------|------|------|------|------|
+| GAS  | CAN     | $M/PJ | 1              | 7.5  | 7.5  | 7.5  | 7.5  | 7.5  |
+| COA  | CAN     | $M/PJ | 1              | 4.68 | 4.68 | 4.68 | 4.68 | 4.68 |
+| BIO  | CAN     | $M/PJ | 1              | 8    | 8    | 8    | 8    | 8    |
+| URN  | CAN     | $M/PJ | 1              | 12   | 12   | 12   | 12   | 12   |
+
+:::{warning}
+You must define the costs over the years `2020`, `2025`, `2030`, `2040`, and `2050` as this matches the forcast years from the World Bank Commodity Markets. Intermediate values are interpoloated. 
+:::
+
+### Availability Factors
+
+Global level availability factors for each technology can be set in the file `resources/data/custom/availability_factors.csv`. These file comes autopopulated with defaults. An example of how to set `90%` availability factors for Coal (`COA`), Combined Cycle Gas (`CCG`) and Solar (`SPV`) is given below. 
+
+| technology | value   |
+|------------|---------|
+| COA        | 0.9     |
+| CCG        | 0.9     |
+| SPV        | 0.9     |
+
+### Operational Life
+
+Global level operational lives for each technology can be set in the file `resources/data/custom/operational_life.csv`. This file comes autopopulated with defaults. An example of how to set operational lives for Coal (`COA`), Combined Cycle Gas (`CCG`) and Solar (`SPV`) is given below. 
+
+| tech | years |
+|------|-------|
+| COA  | 30    |
+| CCG  | 30    |
+| SPV  | 20    |
+
+## Custom Nodes
+
+When working with custom nodes you will need to define the centerpoints of the node locations. This is needed to calculate distances between nodes for transmission line expansion. This can be done in the file `resources/data/custom/centerpoints.csv`. For example, adding a new node to represent Washington State (`WA`) in the United States (`USA`) is shown below. In this case, we position the node location close to Seattle, the major demand center in Washington. 
+
+| region  | lat          | log           |
+|---------|--------------|---------------|
+| USAWA   | 47.594396616 | -122.35969011 |
+
+In addition to the centerpoints, user defined data for demand, capacity, and renewable profiles (among others) must also be added. See the [examples page](./examples.md) for more information.   
+
+## Units
+
+Unless otherwise specified, all results will follow the units given in the table below.
+
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 20,20
+   :file: data_tables/units.csv
+```
+
+## Data Sources 
+
+OSeMOSYS Global compiles data from an array of datasources. Listed below are the main sources used when running OSeMOSYS Global without any modifications. 
+
+```{eval-rst}
+.. csv-table::
+   :header-rows: 1
+   :widths: 20,20,20
+   :file: data_tables/sources.csv
+```
+
+
+<!-- Dashboard is not functional right now. -->
+
+<!-- ## Interactive Dashboard
+
+If a user wishes to explore input and output data, OSeMOSYS Global includes 
+an interactive dashboard to do this. This dashboard can only be run 
+after a successful model run. 
+
+### 1. Ensure the OSeMOSYS Global scenario has been run 
+
+The dashboard is **not** integreated with the snakemake workflow, therefore, 
+it will not automatically look for missing input files. Ensure that the 
+workflow has been run and that input data CSVs (`results/<scenario>/data/`)
+and result file CSVs (`results/<scenario>/results/`) exist. Moreover, 
+ensure the scenario name in the configuration file matches the paths to the
+result data. 
+
+### 2. Run the dashboard 
+
+Run the file `dashboard.sh` to start the dashboard in a local host with the 
+following command. Either open the hyperlink from the command line or 
+copy/paste it into a web browser. 
+
+```bash 
+bash dashboard.sh
+```
+
+### 3. Explore the dashboard 
+
+The dashboard is to visualize the input and result data from an OSeMOSYS Global 
+model run. The dashboard consists of 5 tabs; tab 1 is a options tab, and the 
+remaining tabs are different visualization options (described below).
+
+:::{warning}
+For large models, the dashboard my be slow to respond. Especially for 
+parameters/varibales plotted over timeslices, rather than years; for example
+the `ProductionByTechnologyAnnual` plot will respond much quicker than the 
+``ProductionByTechnology` plot. 
+:::
+
+#### 3.1 Options Tab 
+
+Global plotting options for the dashboard. Of note is the Geographic Scope 
+radio buttons. If the option is set to System, the legend axis in graphs will 
+be by technology. If the option is set to Country or Region, the legend axis 
+will be country or region respectively.
+
+#### 3.2 Geographic Overview Tab
+
+Allows the user to visualize what nodes and transmission lines are (and are 
+not) included in the model. The user can hover over each node/line to get the 
+corresponding node and line name. 
+
+:::{warning}
+Any custom nodes added are not included in this map, as latitudes and longitudes 
+are not added with custom nodes. All other tabs will correctly incorporate 
+custom node data. 
+:::
+
+#### 3.3 Input Data Tab
+
+Plots input data. The plot will take on the values described in the options tab. 
+The technology fuel dropdown is dynamic, based on the user parameter selection. This
+means if a technology or fuel is not listed in the dropdown, there is no 
+associated data with it. The plotting options include Area, Line, Stacked Bar 
+and Grouped Bar.
+
+#### 3.4 Result Data Tab
+
+Plots result data. The plot will take on the values described in the options tab. 
+The technology fuel dropdown is dynamic, based on the user variable selection. This
+means if a technology or fuel is not listed in the dropdown, there is no 
+associated data with it. The plotting options include Area, Line, Stacked Bar 
+and Grouped Bar.
+
+#### 3.5 The Transmission Tab 
+
+Plots transmission line result data. The user can select between plotting 
+at a system level, or for individual lines. Moreover, the variables include 
+poltting options for either directional flow (inports vs. exports) over the 
+line, or total magnitdue of flow. The plotting options include Area, Line, 
+Stacked Bar and Grouped Bar.
+
+### 4. Quit the dashboard 
+
+To exit the dashboard, close the tab/browser that has the dashboard open, and
+press `ctrl+c` or `cmd+c` from the command line. This will stop the local host.  -->

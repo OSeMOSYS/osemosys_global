@@ -1,0 +1,25 @@
+Option,Type,Units,Restrictions,Description,Example
+**no_invest_technologies**,list[str],,Three letter code of technology defined `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Technologies that can not be invested in,COA
+**user_defined_capacity**,"dict[str,list[float]]",,Must follow power generation naming convention `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Defines custom power generation capacity,"PWRCOAINDWE01: [8, 2000, 2025, 5, 1100, 35]"
+--capacity,float,GW,>=0,Existing capacity,8
+--build_year,float,year,>=0,Year that existing capacity was built,2000
+--first_year_of_expansion,float,year,>=startYear,First year that the generator can be expanded,2025
+--build_rate_per_year,float,GW,>=0,Absolute value that the line can be expanded year over year,5
+--capex_cost,float,$/MW/KM,>=0,Capital cost of powerplant,1100
+--efficiency,float,%,">=0,<=100",Efficiency of powerplant,35
+**reserve_margin**,"dict[str,list[float | int]]",,,Global reserve margin over yearly intervals,"RM1: [10, 2025, 2029]"
+--percentage,float,%,">=0,<=100",Reserve margin,10
+--start_year,int,year,>=first modeled year,Year to start specified reserve margin at (inclusive),2025
+--end_year,int,year,>=start_year,Year to end specified reserve margin at (inclusive),2029
+**reserve_margin_technologies**,"dict[str,float]",,Three letter code of technology defined `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Percentage of capacity that can contribute to reserve margin,BIO : 90
+--percentage,float,%,">=0,<=100",Share of capacity that can contribute to the reserve margin,90
+**min_generation_factors**,"dict[str,list[float | str | int]]",,,Minimum utilization of a given technology,"OCG1: [50, 'IND', 2021]"
+--value,float,%,">=0,<=100",Minimum yearly utilization rate from the technology,50
+--country,str,,Three letter country code within geographic scope,Country to apply min genertaion factor to,IND
+--year,int,year,">=startYear,<=endYear",Year to apply minimum utilization to,2025
+**max_availability_factors**,list[str | int | float],,,Maximum yearly utilization rate of a given technology,"['INDWE', 'COA', 2023, 2050, 50]"
+--country/node,str,,country (3 letter) or node (5 letter) code within geographic scope,Country/node to apply factor to,INDWE
+--technology,str,,Three letter code of technology defined `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Technology to apply factor to,COA
+--start_year,int,year,>=first modelled year,Year to start applying factor at (inclusive),2023
+--end_year,int,year,>=start_year,Year to end applying factor at (inclusive),2050
+--value,float,%,">=0,<=100",Maximum yearly availabiliy factor,50

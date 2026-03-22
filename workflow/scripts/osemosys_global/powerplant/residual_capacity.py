@@ -93,10 +93,16 @@ def add_custom_res_cap(df_res_cap, df_custom, tech_list,
                         how='left',
                         on=['CUSTOM_NODE',
                             'FUEL_TYPE'])
+    
     df_custom_res_cap['TECHNOLOGY'] = ('PWR' +
                               df_custom_res_cap['FUEL_TYPE'] + 
                               df_custom_res_cap['CUSTOM_NODE'] +
                               '01')
+    
+    df_custom_res_cap.loc[df_custom_res_cap.TECHNOLOGY.str.contains('CCG|OCG'), 
+                          'TECHNOLOGY'] = df_custom_res_cap['TECHNOLOGY'].replace({'01' : '00'},
+                                                                                  regex = True)
+    
     technologies = df_custom_res_cap['TECHNOLOGY'].unique()
     df_custom_res_cap.dropna(inplace=True)
     df_custom_res_cap.drop_duplicates(inplace=True)
@@ -117,7 +123,6 @@ def add_custom_res_cap(df_res_cap, df_custom, tech_list,
     df_res_cap.drop_duplicates(subset=['REGION','TECHNOLOGY','YEAR'],
                                keep='last',
                                inplace=True)
-    df_res_cap = df_res_cap.loc[(df_res_cap['TECHNOLOGY'].str.startswith('PWR')) &
-                                (~df_res_cap['TECHNOLOGY'].str.endswith('00'))]
+    df_res_cap = df_res_cap.loc[(df_res_cap['TECHNOLOGY'].str.startswith('PWR'))]
     
     return df_res_cap, technologies

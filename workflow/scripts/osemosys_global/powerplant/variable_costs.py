@@ -441,8 +441,8 @@ if __name__ == "__main__":
         file_technologies = snakemake.input.technologies
         file_var_costs = snakemake.output.var_costs
     else:
-        file_cmo_forecasts = "resources/data/CMO-October-2024-Forecasts.xlsx"
-        file_fuel_prices = "resources/data/fuel_prices.csv"
+        file_cmo_forecasts = "resources/data/default/CMO-October-2024-Forecasts.xlsx"
+        file_fuel_prices = "resources/data/custom/fuel_prices.csv"
         file_regions = "results/data/REGION.csv"
         file_years = "results/data/YEAR.csv"
         file_technologies = "results/data/powerplant/TECHNOLOGY.csv"

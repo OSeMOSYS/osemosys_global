@@ -1,0 +1,578 @@
+Country,State/Province/Territory,node
+Anguilla,Rendezvous Bay,
+Antarctica,South Pole,
+Antigua and Barbuda,Saint John,
+Argentina,Córdoba,ARGXX
+Argentina,Mendoza,ARGXX
+Australia,New South Wales,AUSSW
+Australia,Northern Territory,AUSNT
+Australia,NSW,AUSSW
+Australia,null,
+Australia,Port Hedland,AUSWA
+Australia,QLD,AUSQL
+Australia,Queensland,AUSQL
+Australia,Somerset,AUSQL
+Australia,South Australia,AUSSA
+Australia,Sydney,AUSSW
+Australia,Tasmania,AUSTA
+Australia,Victoria,AUSVI
+Australia,Western Australia,AUSWA
+Australia,,
+Austria,6773 Vandans,AUTXX
+Austria,6793 Gaschurn,AUTXX
+Austria,Austria,AUTXX
+Austria,Carinthia,AUTXX
+Austria,Kärnten,AUTXX
+Austria,Karnten,AUTXX
+Austria,Salzburg,AUTXX
+Austria,Tyrol,AUTXX
+Austria,Vandans,AUTXX
+Austria,Vorarlberg,AUTXX
+Austria,,AUTXX
+Belgium,Liege,BELXX
+Belgium,Namur,BELXX
+Belgium,,BELXX
+Benin,null,BENXX
+Benin,,BENXX
+Bolivia,Pando Department,BOLXX
+Bosnia and Herzegovina,FBiH,BIHXX
+Brazil,Pernambuco,BRANE
+Brazil,São Paulo,BRASE
+British Virgin Islands,Necker Island,
+Bulgaria,Devin,BGRXX
+Bulgaria,Pazardzhik,BGRXX
+Bulgaria,,BGRXX
+Burkina-Faso,null,BFAXX
+Burkina-Faso,,BFAXX
+Cameroon,Centre,CMRXX
+Cameroon,null,CMRXX
+Cameroon,,CMRXX
+Canada,Alberta,CANAB
+Canada,British Columbia,CANBC
+Canada,Northwest Territories,CANNO
+Canada,Nova Scotia,CANAR
+Canada,Ontario,CANON
+Canada,Prince Edward Island,CANAR
+Canada,Quebec,CANQC
+Canada,Saskatchewan,CANSK
+Cape Verde,Porto Novo,CPVXX
+Chile,Antofagasta,CHLXX
+Chile,Atacama,CHLXX
+Chile,II Región de Antofagasta,CHLXX
+Chile,Región Metropolitana,CHLXX
+China,An Hui,CHNAN
+China,Anhui,CHNAN
+China,Beijing,CHNBE
+China,Fenghua,CHNZH
+China,Fujian,CHNFU
+China,Gongga,CHNTI
+China,Guangdong,CHNGD
+China,Hebei,CHNHB
+China,Hebei Province,CHNHB
+China,Henan,CHNHE
+China,Hubei,CHNHU
+China,Hunan,CHNHN
+China,Huoshan,CHNAN
+China,Inner Mongolia,CHNWM
+China,Jiang Su,CHNJS
+China,Jiangsu,CHNJS
+China,Jiangxi,CHNJX
+China,Jilin,CHNJI
+China,Liaoning,CHNLI
+China,Liyang,CHNJS
+China,null,
+China,Qingdao,CHNSD
+China,Qinghai,CHNQI
+China,Shaanxi,CHNSI
+China,Shandong,CHNSD
+China,Shanghai,CHNSH
+China,Shanxi,CHNSX
+China,Shenzhen,CHNGD
+China,Sichuan,CHNSC
+China,Tianjin,CHNTJ
+China,Tibet,CHNTI
+China,Xinxiang,CHNHE
+China,Yanqing County,CHNBE
+China,Zhangbei,CHNHB
+China,Zhejiang,CHNZH
+China,,
+Croatia,Primorje-Gorski Kotar County,HRVXX
+Croatia,Zadar County,HRVXX
+Croatia,,HRVXX
+Cyprus,,CYPXX
+Czech Republic,Šumperk,CZEXX
+Czech Republic,Bohemia,CZEXX
+Czech Republic,Central Bohemia,CZEXX
+Czech Republic,Prague,CZEXX
+Czech Republic,Southwest,CZEXX
+Czech Republic,Vysočina,CZEXX
+Czech Republic,,CZEXX
+Denmark,Lyngby-Taarbæk,DNKXX
+Denmark,North Denmark Region,DNKXX
+Denmark,Nybøl,DNKXX
+Denmark,Ringkøbing-Skjern,DNKXX
+Denmark,,DNKXX
+Egypt,Red Sea Governorate,EGYXX
+Equatorial Guinea,Annobon,GNQXX
+Estonia,,ESTXX
+Faroe Islands,Streymoy,
+Finland,Uusimaa,FINXX
+Finland,,FINXX
+Finland ,,FINXX
+France,Alsace,FRAXX
+France,Ardennes,FRAXX
+France,Auvergne-Rhône-Alpes,FRAXX
+France,Aveyron,FRAXX
+France,Île-de-France,FRAXX
+France,Correze,FRAXX
+France,Corse,FRAXX
+France,Corsica,FRAXX
+France,Guadeloupe,FRAXX
+France,Haute-Garonne,FRAXX
+France,Ile de France,FRAXX
+France,Ille-et-Vilaine,FRAXX
+France,Isère,FRAXX
+France,La Réunion,FRAXX
+France,null,FRAXX
+France,Occitanie,FRAXX
+France,Provence-Alpes-Côte d'Azur,FRAXX
+France,Pyrenees Orientales,FRAXX
+France,Reunion,FRAXX
+France,Savoie,FRAXX
+France,Seine-et-Marne,FRAXX
+France,,FRAXX
+French Guiana,Montsinéry-Tonnegrande,GUFXX
+French Polynesia,Windward Islands,
+Gabon,null,GABXX
+Gabon,,GABXX
+Germany,-,DEUXX
+Germany,Baden-Württemberg,DEUXX
+Germany,Bavaria,DEUXX
+Germany,Berlin,DEUXX
+Germany,Brandenburg,DEUXX
+Germany,Dresden,DEUXX
+Germany,Esslingen,DEUXX
+Germany,Germany,DEUXX
+Germany,Hamburg,DEUXX
+Germany,Hanover,DEUXX
+Germany,Hesse,DEUXX
+Germany,Hessen,DEUXX
+Germany,Karlsruhe,DEUXX
+Germany,Lower Saxony,DEUXX
+Germany,Mecklenburg Western-Pomerania,DEUXX
+Germany,Mecklenburg-Vorpommern,DEUXX
+Germany,Neuler,DEUXX
+Germany,Niedersachsen,DEUXX
+Germany,North Rhine-Westphalia,DEUXX
+Germany,NRW,DEUXX
+Germany,null,DEUXX
+Germany,Oberpfalz,DEUXX
+Germany,Rheinland Pfalz,DEUXX
+Germany,Rheinland-Pfalz,DEUXX
+Germany,Rhine-Westphalia,DEUXX
+Germany,Saarland,DEUXX
+Germany,Sachsen-Anhalt,DEUXX
+Germany,Saxony,DEUXX
+Germany,Saxony-Anhalt,DEUXX
+Germany,Schleswig-Holstein,DEUXX
+Germany,Stuttgart,DEUXX
+Germany,Thuringia,DEUXX
+Germany,Zwiefalten,DEUXX
+Germany,,DEUXX
+Greece,Aetolia-Acarnania,GRCXX
+Greece,Crete,GRCXX
+Greece,Drama,GRCXX
+Greece,Imathia,GRCXX
+Greece,South Aegean,GRCXX
+Guinea,null,GINXX
+Guinea,,GINXX
+Haiti,Artibonite,HTIXX
+Haiti,Ouest,HTIXX
+Hong Kong,Hong Kong,CHNHK
+Hungary,Borsod,HUNXX
+India,Andhra Pradesh,INDSO
+India,Gujarat,INDWE
+India,Haryana,INDNO
+India,Karnataka,INDSO
+India,Madhya Pradesh,INDWE
+India,Maharashtra,INDWE
+India,Rajasthan,INDNO
+India,Tamil Nadu,INDSO
+India,Uttar Pradesh,INDNO
+India,Uttarakhand,INDNO
+India,West Bengal,INDEA
+Indonesia,East Nusa Tenggara,IDNXX
+Indonesia,Jakarta,IDNXX
+Indonesia,West Java,IDNXX
+Iran,Mazandaran,IRNXX
+Ireland,Connacht,IRLXX
+Ireland,County Louth,IRLXX
+Ireland,Leinster,IRLXX
+Ireland,null,IRLXX
+Ireland,Offaly,IRLXX
+Ireland,Wicklow,IRLXX
+Ireland,,IRLXX
+Israel,Haifa,ISRXX
+Israel,Negev,ISRXX
+Israel,Southern District,ISRXX
+Italy,Abruzzi,ITAXX
+Italy,Apulia,ITAXX
+Italy,Benevento,ITAXX
+Italy,Bolzano,ITAXX
+Italy,Brescia,ITAXX
+Italy,Calabria,ITAXX
+Italy,Campania,ITAXX
+Italy,Caserta,ITAXX
+Italy,Cuneo,ITAXX
+Italy,Emilia Romagna,ITAXX
+Italy,Emilia-romagna,ITAXX
+Italy,Isernia,ITAXX
+Italy,L'Aquila,ITAXX
+Italy,Latina,ITAXX
+Italy,Liguria,ITAXX
+Italy,Livorno,ITAXX
+Italy,Lombardia,ITAXX
+Italy,Messina,ITAXX
+Italy,Piemonte,ITAXX
+Italy,Puglia,ITAXX
+Italy,Ravenna,ITAXX
+Italy,Rome,ITAXX
+Italy,Sardinia,ITAXX
+Italy,Sicily,ITAXX
+Italy,Solarino,ITAXX
+Italy,Teramo,ITAXX
+Italy,Trentino,ITAXX
+Italy,Varese,ITAXX
+Italy,Veneto,ITAXX
+Japan,Aichi,JPNCE
+Japan,Aichi Prefecture,JPNCE
+Japan,Aomori,JPNTO
+Japan,Chiba,JPNTO
+Japan,Chiba Prefecture,JPNTO
+Japan,Fukuoka Prefecture,JPNKY
+Japan,Fukushima,JPNTO
+Japan,Fukushima Prefecture,JPNTO
+Japan,Gifu Prefecture,JPNCE
+Japan,Gunma Prefecture,JPNCE
+Japan,Hiroshima Prefecture,JPNCE
+Japan,Hokkaidō,JPNHO
+Japan,Hokkaido,JPNHO
+Japan,Hokkaido Island,JPNHO
+Japan,Hokkaido Prefecture,JPNHO
+Japan,Hyōgo,JPNCE
+Japan,Hyogo,JPNCE
+Japan,Ibaraki,JPNTO
+Japan,Ibaraki Prefecture,JPNTO
+Japan,Iwate,JPNTO
+Japan,Kōchi,JPNSH
+Japan,Kagoshima,JPNKY
+Japan,Kagoshima Prefecture,JPNKY
+Japan,Kanagawa,JPNTO
+Japan,Kansai,JPNCE
+Japan,Kochi Prefecture,JPNSH
+Japan,Kumamoto,JPNKY
+Japan,Kyoto,JPNCE
+Japan,Kyushu,JPNKY
+Japan,Miyagi,JPNTO
+Japan,Miyagi Prefecture,JPNTO
+Japan,Miyazaki,JPNKY
+Japan,Miyazaki Prefecture,JPNKY
+Japan,Nagano,JPNCE
+Japan,Nagasaki Prefecture,JPNKY
+Japan,Nara,JPNCE
+Japan,Niigata Prefecture,JPNTO
+Japan,Okayama,JPNCE
+Japan,Okinawa,JPNOK
+Japan,Okinawa Prefecture,JPNOK
+Japan,Osaka,JPNCE
+Japan,Saga,JPNKY
+Japan,Saitama,JPNTO
+Japan,Shimane,JPNCE
+Japan,Shimane Prefecture,JPNCE
+Japan,Shizuoka,JPNCE
+Japan,Tochigi,JPNTO
+Japan,Tochigi Prefecture,JPNTO
+Japan,Tokyo,JPNTO
+Japan,Tottori Prefecture,JPNTO
+Japan,Yamagata,JPNTO
+Japan,Yamaguchi,JPNCE
+Japan,Yamanashi,JPNCE
+Japan,Yamanashi Prefecture,JPNCE
+Jordan,null,JORXX
+Jordan,,JORXX
+Kazakhstan,Astana,KAZXX
+Kenya,Laikipia,KENXX
+Kenya,Lokichogio,KENXX
+Kenya,Marsabit,KENXX
+Lithuania,Kaunas,LTUXX
+Luxembourg,Diekirch,LUXXX
+Madagascar,Antananarivo Province,MDGXX
+Madagascar,Fianarantsoa,MDGXX
+Madagascar,null,MDGXX
+Madagascar,,MDGXX
+Maldives,Male' Atoll Nord,
+Martinique,Martinique,
+Mexico,Mexico City,MEXXX
+Morocco,Agadir,MARXX
+Morocco,Agadir-Ida Ou Tanane,MARXX
+Morocco,Beni-Mellal Province,MARXX
+Morocco,Drâa-Tafilalet,MARXX
+Netherlands,Amsterdam,NLDXX
+Netherlands,Aruba,NLDXX
+Netherlands,Beesd,NLDXX
+Netherlands,Bodegraven,NLDXX
+Netherlands,Bonaire,NLDXX
+Netherlands,Bunnik,NLDXX
+Netherlands,Delft,NLDXX
+Netherlands,Flevoland,NLDXX
+Netherlands,Gelderland,NLDXX
+Netherlands,Geldermalsen,NLDXX
+Netherlands,Heemskerk,NLDXX
+Netherlands,Leiden,NLDXX
+Netherlands,Netherlands,NLDXX
+Netherlands,North Brabant,NLDXX
+Netherlands,North Holland,NLDXX
+Netherlands,Ridderkerk,NLDXX
+Netherlands,South Holland,NLDXX
+Netherlands,Utrecht,NLDXX
+Netherlands,Woerden,NLDXX
+Netherlands,Zaandam,NLDXX
+Netherlands,Zeeland,NLDXX
+New Zealand,Marlborough,NZLXX
+New Zealand,Rangitikei,NZLXX
+New Zealand,South Canterbury,NZLXX
+New Zealand,Taranaki,NZLXX
+Niger,null,NERXX
+Niger,,NERXX
+Nigeria,Ogun,NGAXX
+Norway,Rogaland,NORXX
+Norway,Vestland,NORXX
+Norway,,NORXX
+Philippines,Laguna,PHLXX
+Philippines,Zambales,PHLXX
+Poland,Malopolskie,POLXX
+Poland,Podkarpackie,POLXX
+Poland,Pomorskie,POLXX
+Poland,Slaskie,POLXX
+Poland,West Pomerania,POLXX
+Poland,,POLXX
+Portugal,Azores,PRTXX
+Portugal,Coimbra,PRTXX
+Portugal,Distrito de Braga,PRTXX
+Portugal,Evora,PRTXX
+Portugal,Montalegre,PRTXX
+Portugal,Norte,PRTXX
+Portugal,null,PRTXX
+Portugal,Porto,PRTXX
+Portugal,The Azores,PRTXX
+Portugal,Vila Real,PRTXX
+Portugal,,PRTXX
+Qatar,Al Rayyan,QATXX
+Qatar,Doha,QATXX
+Republic of the Congo,null,COGXX
+Republic of the Congo,,COGXX
+Romania,Bucharest,ROUXX
+Romania,Giurgiu,ROUXX
+Russia,Krasnodar Krai,RUSSO
+Russia,Moscow,RUSCE
+Russia,Moscow Oblast,RUSCE
+Russia,North Caucasian,RUSSO
+Russia,Prikubansky,RUSSO
+Russia,Russia,
+Rwanda,null,RWAXX
+Rwanda,,RWAXX
+Saudi Arabia,Riyadh,SAUXX
+Senegal,null,SENXX
+Senegal,,SENXX
+Serbia,Zlatibor,SRBXX
+Slovakia,Kosice,SVKXX
+Slovakia,Liptov,SVKXX
+Slovenia,Gorizia,SVNXX
+Slovenia,Lukovica,SVNXX
+South Africa,Gauteng,ZAFXX
+South Africa,KwaZulu-Natal,ZAFXX
+South Africa,North West,ZAFXX
+South Africa,Northern Cape,ZAFXX
+South Africa,Western Cape,ZAFXX
+South Korea,Chungbuk,KORXX
+South Korea,Chungcheong,KORXX
+South Korea,Chungnam,KORXX
+South Korea,Daegu,KORXX
+South Korea,Daejeon,KORXX
+South Korea,Gangwon,KORXX
+South Korea,Gangwon-do,KORXX
+South Korea,"Geumgu-myeon, Gimje-si",KORXX
+South Korea,Gyeongbuk,KORXX
+South Korea,Gyeonggi,KORXX
+South Korea,Gyeonggi-do,KORXX
+South Korea,Gyeongnam,KORXX
+South Korea,Gyeongsangbuk-do,KORXX
+South Korea,Gyeongsangnam-do,KORXX
+South Korea,Incheon,KORXX
+South Korea,Jeju,KORXX
+South Korea,Jeju Province,KORXX
+South Korea,Jeju-do,KORXX
+South Korea,Jeollabuk-do,KORXX
+South Korea,Jeollanam-do,KORXX
+South Korea,North Chungcheong,KORXX
+South Korea,North Chungcheong Province,KORXX
+South Korea,North Gyeongsang,KORXX
+South Korea,North Jeolla,KORXX
+South Korea,null,KORXX
+South Korea,Seoul,KORXX
+South Korea,"Uiryeong-gun, Gyeongsangnam-do",KORXX
+South Korea,Yeongnam,KORXX
+South Korea,,KORXX
+Spain,Andalucia,ESPXX
+Spain,Aragon,ESPXX
+Spain,Asturias,ESPXX
+Spain,Badajoz,ESPXX
+Spain,Cádiz,ESPXX
+Spain,Córdoba,ESPXX
+Spain,Caceres,ESPXX
+Spain,Canary Islands,ESPXX
+Spain,Cantabria,ESPXX
+Spain,Castilla-la Mancha,ESPXX
+Spain,Catalonia,ESPXX
+Spain,Ciudad Real,ESPXX
+Spain,Extremadura,ESPXX
+Spain,Galicia,ESPXX
+Spain,Gipuzkoa,ESPXX
+Spain,Granada,ESPXX
+Spain,Lanzarote,ESPXX
+Spain,Lerida,ESPXX
+Spain,Málaga,ESPXX
+Spain,Madrid,ESPXX
+Spain,Murcia,ESPXX
+Spain,Navarra,ESPXX
+Spain,Navarre,ESPXX
+Spain,Ourense,ESPXX
+Spain,Salamanca,ESPXX
+Spain,Sevilla,ESPXX
+Spain,Seville,ESPXX
+Spain,Valencia,ESPXX
+Spain,,ESPXX
+Sweden,Stockholm,SWEXX
+Sweden,Västra götaland,SWEXX
+Switzerland,8783 Glarus Süd,CHEXX
+Switzerland,Basel,CHEXX
+Switzerland,Bern,CHEXX
+Switzerland,Einsiedeln,CHEXX
+Switzerland,Glarus,CHEXX
+Switzerland,Graubünden,CHEXX
+Switzerland,Grisons,CHEXX
+Switzerland,Luzern,CHEXX
+Switzerland,Montreux,CHEXX
+Switzerland,Saint Gallen,CHEXX
+Switzerland,Ticino,CHEXX
+Switzerland,Valais,CHEXX
+Switzerland,Vaud,CHEXX
+Switzerland,Zurich,CHEXX
+Taiwan,Nantou,TWNXX
+Taiwan,Taiwan,TWNXX
+Tanzania,null,TZAXX
+Tanzania,,TZAXX
+Thailand,Kanchanaburi,THAXX
+Thailand,Nakhon Ratchasima,THAXX
+Thailand,Nakhon Ratchasima Province,THAXX
+Thailand,Tak,THAXX
+Togo,Maritime Region,TGOXX
+Ukraine,Chernivtsi Oblast,UKRXX
+Ukraine,Kiev,UKRXX
+Ukraine,Mykolayiv,UKRXX
+Ukraine,Zaporizhzhia Oblast,UKRXX
+United Arab Emirates,Abu Dhabi,AREXX
+United Kingdom,-,GBRXX
+United Kingdom,Aberdeenshire,GBRXX
+United Kingdom,Bedfordshire,GBRXX
+United Kingdom,Berkshire,GBRXX
+United Kingdom,Buckinghamshire,GBRXX
+United Kingdom,County Antrim,GBRXX
+United Kingdom,Dalmally,GBRXX
+United Kingdom,"Devon, South West England, England",GBRXX
+United Kingdom,England,GBRXX
+United Kingdom,Gwynedd,GBRXX
+United Kingdom,Highland,GBRXX
+United Kingdom,"Highland, Scotland",GBRXX
+United Kingdom,Lancashire,GBRXX
+United Kingdom,Norfolk,GBRXX
+United Kingdom,North East,GBRXX
+United Kingdom,Northern Ireland,GBRXX
+United Kingdom,Northumberland,GBRXX
+United Kingdom,Nottinghamshire,GBRXX
+United Kingdom,null,GBRXX
+United Kingdom,Orkney,GBRXX
+United Kingdom,Oxfordshire,GBRXX
+United Kingdom,Scotland,GBRXX
+United Kingdom,Shetland,GBRXX
+United Kingdom,Somerset,GBRXX
+United Kingdom,South Wales,GBRXX
+United Kingdom,South Yorkshire,GBRXX
+United Kingdom,Wales,GBRXX
+United Kingdom,West Midlands,GBRXX
+United Kingdom,,GBRXX
+United States,Alabama,USASE
+United States,Alaska,USAAK
+United States,Arizona,USAAZ
+United States,Arkansas,USASA
+United States,California,USACA
+United States,Colorado,USARA
+United States,Connecticut,USANE
+United States,Delaware,USARE
+United States,District of Columbia,USARE
+United States,Florida,USAFR
+United States,Georgia,USASE
+United States,Hawaii,USAHA
+United States,Idaho,USANW
+United States,Illinois,USARW
+United States,Indiana,USARW
+United States,Iowa,USAMW
+United States,Kansas,USASN
+United States,Kentucky,USASC
+United States,Louisiana,USASA
+United States,Maine,USANE
+United States,Maryland,USARE
+United States,Massachusetts,USANE
+United States,Michigan,USARM
+United States,Minnesota,USANW
+United States,Mississippi,USASE
+United States,Missouri,USASW
+United States,Montana,USANW
+United States,Nebraska,USAMW
+United States,Nevada,USANW
+United States,New Hampshire,USANE
+United States,New Jersey,USARE
+United States,New Mexico,USAAZ
+United States,New York,USANY
+United States,North Carolina,USASV
+United States,Ohio,USARW
+United States,Okinawa,JPNOK
+United States,Oklahoma,USASS
+United States,Oregon,USANW
+United States,Pennsylvania,USARE
+United States,Puerto Rico,USAPR
+United States,Rhode Island,USANE
+United States,South Carolina,USASV
+United States,Tennessee,USASC
+United States,Texas,USAER
+United States,Utah,USANW
+United States,Vermont,USANE
+United States,Virginia,USASV
+United States,Washington,USANW
+United States,West Virginia,USARW
+United States,Wisconsin,USAME
+United-Kingdom,,GBRXX
+USA,Alaska,USAAK
+USA,Arizona,USAAZ
+USA,Colorado,USARA
+USA,Iowa,USAMW
+USA,Kailua,USAHA
+USA,New Mexico,USAAZ
+USA,New York,USANY
+USA,North Carolina,USASV
+USA,Puerto Rico,USAPR
+USA,Rhode Island,USANE
+USA,South Dakota,USAMW
+USA,Tennessee,USASC
+USA,Vermont,USANE
+Vanuatu,Tafea,

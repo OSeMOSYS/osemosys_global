@@ -45,5 +45,5 @@ def merge_default_custom_data(
     assert default.columns.equals(custom.columns)
     df = pd.concat([default, custom], ignore_index=True)
     df["VALUE"] = df["VALUE"].round(2)
-    df = df.drop_duplicates(keep="last", subset=["REGION", "FUEL", "YEAR"])
+    df = df.dropna().drop_duplicates(keep="last", subset=["REGION", "FUEL", "YEAR"])
     return df

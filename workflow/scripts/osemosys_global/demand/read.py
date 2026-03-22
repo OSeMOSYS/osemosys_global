@@ -67,8 +67,8 @@ def import_ember_elec(f: str) -> pd.DataFrame:
 
     df = pd.read_csv(f, encoding="latin-1")
     return (
-        df[["Country code", "Year", "Variable", "Value"]]
-        .rename(columns={"Value": "ember_Elec", "Country code": "Country"})
+        df[["ISO 3 code", "Year", "Variable", "Value"]]
+        .rename(columns={"Value": "ember_Elec", "ISO 3 code": "Country"})
         .dropna()
         .set_index("Country")
     )

@@ -1,0 +1,27 @@
+Option,Type,Units,Restrictions,Description,Example
+**emission_penalty**,list[str | int | float],,,Country level emission penalty,"['CO2','IND',2020,2050,2.1]"
+--emission,str,,Must be 'CO2',Name of emission,CO2
+--country,str,,Three letter country code within geographic scope,Country to apply emission penalty to,IND
+--start_year,int,year,>=first modelled year,First year to apply emission penalty to (inclusive),2020
+--end_year,int,year,>=start_year,Last year to apply emission penalty to (inclusive),2050
+--value,float,M$/MT,>=0,Emission penalty,2.1
+**emission_limit**,list[str | int | float],,,Country level emission limit,"['CO2','IND',LINEAR,2040,10]"
+--emission,str,,Must be 'CO2',Name of emission,CO2
+--country,str,,Three letter country code within geographic scope,Country to apply emission penalty to,IND
+--method,str,,"Must be one of ['POINT', 'LINEAR']",Point emission target or a linear reducing emission target,LINEAR
+--year,int,year,>=first modelled year,Year to apply target to,2040
+--value,float,MT,>=0,Emission limit,10
+**fossil_capacity_targets**,list[str | int | float],,,Capacity targets to apply to fossil fuel generators,"['BTNXX', 'COA', 2030, 2050, 'ABS', 1]"
+--node,str,,Five letter node code within geographic scope,Node to apply capacity target to,BTNXX
+--technology,str,,Three letter technology code of fossil generator defined `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,Technology to apply target to,COA
+--start_year,int,year,>=first modelled year,Year to start capacity constraint at (inclusive),2030
+--end_year,int,year,>=start_year,Year to end capacity constraint at (inclusive),2050
+--sense,str,,"Must be one of ['MIN', 'MAX', 'ABS]","Set a minimum, maximum, or fixed capacity limit",ABS
+--value,float,GW,>=0,Capacity limit,1
+**re_targets**,"dict[str,list[str | list[str] | int | float]]",,,Renewable energy targets,"TO1: ['INDSO', ['WOF','WON'], 'PCT', 2025, 2045, 15]"
+--country/node,str,,country (3 letter) or node (5 letter) code within geographic scope,Country/node to apply factor to,INDWE
+--technologies,list[str],,Three letter technology code of renewable generator defined `here <https://osemosys-global.readthedocs.io/en/latest/model-structure.html#technology-codes>`_,technologies to apply target to,"['WOF','WON']"
+--sense,str,,"Must be one of ['PCT', 'ABS']",Set a percent generation target OR a absolute capacity limit,PCT
+--start_year,int,year,>=first modelled year,Year to start constraint at (inclusive),2030
+--end_year,int,year,>=start_year,Year to end constraint at (inclusive),2050
+--value,float,% or GW,">=0 (Capacity) | >=0,<=100 (Generation)",Absolute capacity limit or minimum generation percentage,15
