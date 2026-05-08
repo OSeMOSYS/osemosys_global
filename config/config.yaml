@@ -20,18 +20,18 @@ timeshift: 0 # value between -11 and 12
 geographic_scope:
     - "AGO" 
 #   - "BWA" 
-#    - "KEN" 
-#     - "MDG"
-#    - "MWI" 
-#    - "MOZ" 
-#     - "BWA"  
+#   - "KEN" 
+#   - "MDG"
+#   - "MWI" 
+#   - "MOZ" 
+#   - "BWA"  
 #   - "TZA"
 #   - "UGA" 
-#    - "ZMB"
+#   - "ZMB"
 #   - "ZWE" 
 #   - "ZAF" 
-#     - "BDI" 
-#     - "COD"  
+#   - "BDI" 
+#   - "COD"  
 # Set to True if transmission should be included
 crossborderTrade: False
 
