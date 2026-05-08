@@ -73,3 +73,20 @@ def import_ember_elec(f: str) -> pd.DataFrame:
         .set_index("Country")
     )
 
+def import_ember_elec(f: str) -> pd.DataFrame:
+    """Imports EMBER yearly electricity data
+
+    ember_yearly_electricity_data.csv
+    """
+    df = pd.read_csv(f, encoding="latin-1")
+
+    # Ember export uses "ISO 3 code" (your file) instead of "Country code" (expected)
+    if "Country code" not in df.columns and "ISO 3 code" in df.columns:
+        df = df.rename(columns={"ISO 3 code": "Country code"})
+
+    return (
+        df[["Country code", "Year", "Variable", "Value"]]
+        .rename(columns={"Value": "ember_Elec", "Country code": "Country"})
+        .dropna()
+        .set_index("Country")
+    )
