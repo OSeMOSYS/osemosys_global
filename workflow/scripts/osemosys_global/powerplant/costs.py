@@ -14,7 +14,7 @@ def costs_pwr(df_weo_data):
 
     df_costs = pd.melt(df_weo_data, 
                        id_vars = ['technology', 'weo_region', 'parameter'], 
-                       value_vars = ['2019', '2030', '2040'], 
+                       value_vars = ['2024', '2035', '2050'], 
                        var_name = 'YEAR')
     df_costs['parameter'] = df_costs['parameter'].str.split('\r\n').str[0]
     df_costs['value'] = df_costs['value'].replace({'n.a.':0})

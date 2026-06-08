@@ -10,6 +10,66 @@ from utils import apply_dtypes
 from constants import SET_DTYPES
 from datetime import datetime
 
+
+def _validate_timeslice_config(seasons_raw: dict, dayparts_raw: dict) -> None:
+    """Validate season/daypart definitions before building TIMESLICE labels."""
+    month_to_season = {}
+    duplicate_months = []
+    for season, months in seasons_raw.items():
+        for month in months:
+            month = int(month)
+            if month in month_to_season:
+                duplicate_months.append((month, month_to_season[month], season))
+            month_to_season[month] = season
+
+    missing_months = sorted(set(range(1, 13)) - set(month_to_season))
+    if duplicate_months or missing_months:
+        messages = []
+        if duplicate_months:
+            messages.append(
+                "Duplicate months in seasons: "
+                + ", ".join(f"month {m} in {s1} and {s2}" for m, s1, s2 in duplicate_months)
+            )
+        if missing_months:
+            messages.append("Missing months in seasons: " + ", ".join(map(str, missing_months)))
+        raise ValueError("Invalid timeslice season configuration. " + " | ".join(messages))
+
+    for daypart, hours in dayparts_raw.items():
+        if len(hours) != 2:
+            raise ValueError(f"Daypart {daypart} must have exactly [start_hour, end_hour].")
+        start, end = int(hours[0]), int(hours[1])
+        if start == end:
+            raise ValueError(f"Daypart {daypart} has identical start and end hours: {hours}.")
+
+
+def _safe_concat_timeslice_columns(*cols) -> pd.Series:
+    """Concatenate timeslice labels after forcing each component to string."""
+    result = cols[0].astype(str)
+    for col in cols[1:]:
+        result = result + col.astype(str)
+    return result
+
+
+def _normalise_capacity_factor_values(capfac_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    OSeMOSYS expects capacity factors as fractions from 0 to 1.
+
+    Some default OSeMOSYS Global input profiles are stored as percentages
+    (for example 17 for 17%), while custom profiles are commonly stored
+    directly as fractions (for example 0.17 for 17%). This function converts
+    percentage-style nodes to fractions and leaves fraction-style nodes unchanged.
+    """
+    capfac_df["VALUE"] = pd.to_numeric(capfac_df["VALUE"], errors="coerce")
+
+    def _scale_node(series: pd.Series) -> pd.Series:
+        max_value = series.max(skipna=True)
+        if pd.notna(max_value) and max_value > 1:
+            return series / 100
+        return series
+
+    capfac_df["VALUE"] = capfac_df.groupby("node")["VALUE"].transform(_scale_node).round(4)
+    return capfac_df
+
 def main(
         demand_df: pd.DataFrame,
         csp_df: pd.DataFrame,
@@ -27,6 +87,8 @@ def main(
         dayparts_raw: dict,
         ):
    
+    _validate_timeslice_config(seasons_raw, dayparts_raw)
+
     seasonsData = []
     for s, months in seasons_raw.items():
         for month in months:
@@ -177,11 +239,21 @@ def main(
     
     if daytype:
         demand_df["TIMESLICE"] = (
-            demand_df["Season"] + demand_df["Day-of-week"] + demand_df["Daypart"]
+            _safe_concat_timeslice_columns(demand_df["Season"], demand_df["Day-of-week"], demand_df["Daypart"])
         )
     else:
-        demand_df["TIMESLICE"] = demand_df["Season"] + demand_df["Daypart"]
+        demand_df["TIMESLICE"] = _safe_concat_timeslice_columns(demand_df["Season"], demand_df["Daypart"])
     
+    if demand_df["Season"].isna().any() or demand_df["Daypart"].isna().any() or demand_df["TIMESLICE"].str.contains("nan", case=False, na=True).any():
+        bad_rows = demand_df.loc[
+            demand_df["Season"].isna() | demand_df["Daypart"].isna() | demand_df["TIMESLICE"].str.contains("nan", case=False, na=True),
+            ["Datetime", "Month", "Hour", "Season", "Daypart", "TIMESLICE"],
+        ].head(10)
+        raise ValueError(
+            "Some demand rows could not be mapped to a valid Season/Daypart. "
+            "Check the seasons/dayparts configuration. Examples:\n" + bad_rows.to_string(index=False)
+        )
+
     # ### Calculate YearSplit
     
     
@@ -320,7 +392,7 @@ def main(
             value_name="VALUE",
         )
         capfac_df = capfac_df.groupby(["TIMESLICE", "node"], as_index=False).agg("mean")
-        capfac_df["VALUE"] = capfac_df["VALUE"].div(100).round(4)
+        capfac_df = _normalise_capacity_factor_values(capfac_df)
     
         ## Filter out country aggregate values for countries with multiple nodes
         capfac_df = capfac_df.loc[~(capfac_df["node"].isin(country_with_nodes))]
@@ -393,7 +465,9 @@ def main(
         list(itertools.product(time_slice_list, list(range(1, len(seasons) + 1)))),
         columns=["TIMESLICE", "SEASON"],
     )
-    df_ls.loc[df_ls["TIMESLICE"].str[1:2].astype(int) == df_ls["SEASON"], "VALUE"] = 1
+    df_ls["_season_num"] = df_ls["TIMESLICE"].astype(str).str.extract(r"S(\d+)").astype(int)
+    df_ls.loc[df_ls["_season_num"] == df_ls["SEASON"], "VALUE"] = 1
+    df_ls.drop(columns="_season_num", inplace=True)
     df_ls.fillna(0, inplace=True)
     df_ls.to_csv(os.path.join(output_data_dir, "Conversionls.csv"), index=None)
     
@@ -415,9 +489,9 @@ def main(
         list(itertools.product(time_slice_list, list(range(1, len(dayparts) + 1)))),
         columns=["TIMESLICE", "DAILYTIMEBRACKET"],
     )
-    df_lh.loc[
-        df_lh["TIMESLICE"].str[3:].astype(int) == df_lh["DAILYTIMEBRACKET"], "VALUE"
-    ] = 1
+    df_lh["_daypart_num"] = df_lh["TIMESLICE"].astype(str).str.extract(r"D(\d+)").astype(int)
+    df_lh.loc[df_lh["_daypart_num"] == df_lh["DAILYTIMEBRACKET"], "VALUE"] = 1
+    df_lh.drop(columns="_daypart_num", inplace=True)
     df_lh.fillna(0, inplace=True)
     df_lh.to_csv(os.path.join(output_data_dir, "Conversionlh.csv"), index=None)
     df_dayparts_set = pd.DataFrame(list(range(1, len(dayparts) + 1)), columns=["VALUE"])
