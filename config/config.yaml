@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "CVFBDGV2NDC"
+scenario: "CVF"
 
 # Temporal Parameters 
 startYear: 2023
@@ -22,7 +22,7 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-   - "BGD"
+#   - "BGD"
 #  - "BRB"
 #  - "COL"  
 #  - "FJI"
@@ -33,7 +33,7 @@ geographic_scope:
 #  - "PAK" 
 #  - "PHL"
 #  - "TZA"
-#   - "CPV" 
+#  - "CPV" 
 #  - "SLB"  
 
 # Set to True if transmission should be included
@@ -80,7 +80,7 @@ no_invest_technologies:
   - "BIO"
   - "PET"
   - "HYD"
-#  - "CCS"
+  - "CCS"
 # Result Parameters 
 results_by_country: True
 
@@ -205,8 +205,22 @@ emission_limit:
 # previous target years. A combination of TYPE targets can be set per EMISSION and
 # COUNTRY yet only a single target per YEAR.
 # EXAMPLE: - ["CO2", "IND", "LINEAR", 2050, 0]
-#  - ["CO2", "BGD", "LINEAR", 2050, 0]
-  - ['CO2', 'BGD', 'POINT', 2035, 98.71]
+# - ["CO2", "BGD", "LINEAR", 2050, 0]
+  - ['CO2', 'BGD', 'POINT', 2035, 98.71] # Third NDC, conditional  
+  - ['CO2', 'FJI', 'LINEAR', 2050, 0]
+  - ['CO2', 'CPV', 'LINEAR', 2050, 0]
+  - ['CO2', 'BRB', 'POINT', 2035, 0.19]  
+  - ['CO2', 'COL', 'POINT', 2035, 9.02]  
+  - ['CO2', 'FJI', 'POINT', 2035, 0.01]  
+  - ['CO2', 'GMB', 'POINT', 2030, 0.55]
+  - ['CO2', 'GHA', 'POINT', 2030, 13.5]
+  - ['CO2', 'HND', 'POINT', 2035, 2.24]
+  - ['CO2', 'MDG', 'POINT', 2030, -1.17]
+  - ['CO2', 'PAK', 'POINT', 2035, 0.27]
+  - ['CO2', 'PHL', 'POINT', 2030, 94.91]
+  - ['CO2', 'TZA', 'POINT', 2030, 2.05]
+  - ['CO2', 'CPV', 'POINT', 2035, 0]
+  - ['CO2', 'SLB', 'POINT', 2035, 0]
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
