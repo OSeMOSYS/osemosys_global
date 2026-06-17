@@ -13,16 +13,17 @@ dayparts:
   D4: [18, 25]
 seasons:
 # season : [month 1, month 2, ...] (all inclusive)
-  S1: [3, 4, 5]
-  S2: [6, 7, 8, 9]
-  S3: [10, 11]
-  S4: [12, 1, 2]
+  S1: [1, 2, 3]
+  S2: [4, 5, 6]
+  S3: [7, 8, 9]
+  S4: [10, 11, 12]
+
 
 timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-#   - "BGD"
+   - "BGD"
 #  - "BRB"
 #  - "COL"  
 #  - "FJI"
@@ -32,7 +33,7 @@ geographic_scope:
 #  - "MDG" 
 #  - "PAK" 
 #  - "PHL"
-#  - "TZA"
+#   - "TZA"
 #  - "CPV" 
 #  - "SLB"  
 
@@ -85,7 +86,7 @@ no_invest_technologies:
 results_by_country: True
 
 # solver parameters
-solver: "cbc" # cbc, cplex, gurobi
+solver: "gurobi" # cbc, cplex, gurobi
 
 user_defined_capacity:
 # technology: [capacity, 
@@ -154,7 +155,10 @@ storage_parameters:
 #                    duration]
 # EXAMPLE:  SDS: [1938, 44.25, 0, 85, 4] 
 # Units are in m$/GW (capex_cost, annual_fixed_O&M_cost), $/MWh (variable_O&M_cost),
-# % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)).
+# % (roundtrip_efficiency), hours (duration = storage capacity (GWh)/Power rating (GW)). 
+   SDS: [1938, 44.25, 0, 85, 4]
+   LDS: [3794, 20.2, 0.58, 80, 10]
+
 
 nodes_to_add:
 # - "AAAXX" where AAA is a 3-letter country code, 
@@ -195,6 +199,9 @@ reserve_margin_technologies:
   WAV : 10
   WOF : 10
   WON : 10
+  SDS: 70
+  LDS: 70
+
 
 emission_limit:
 # - [EMISSION, COUNTRY, TYPE, YEAR, VALUE]
@@ -206,21 +213,21 @@ emission_limit:
 # COUNTRY yet only a single target per YEAR.
 # EXAMPLE: - ["CO2", "IND", "LINEAR", 2050, 0]
 # - ["CO2", "BGD", "LINEAR", 2050, 0]
-  - ['CO2', 'BGD', 'POINT', 2035, 98.71] # Third NDC, conditional  
-  - ['CO2', 'FJI', 'LINEAR', 2050, 0]
-  - ['CO2', 'CPV', 'LINEAR', 2050, 0]
-  - ['CO2', 'BRB', 'POINT', 2035, 0.19]  
-  - ['CO2', 'COL', 'POINT', 2035, 9.02]  
-  - ['CO2', 'FJI', 'POINT', 2035, 0.01]  
-  - ['CO2', 'GMB', 'POINT', 2030, 0.55]
-  - ['CO2', 'GHA', 'POINT', 2030, 13.5]
-  - ['CO2', 'HND', 'POINT', 2035, 2.24]
-  - ['CO2', 'MDG', 'POINT', 2030, -1.17]
-  - ['CO2', 'PAK', 'POINT', 2035, 0.27]
-  - ['CO2', 'PHL', 'POINT', 2030, 94.91]
-  - ['CO2', 'TZA', 'POINT', 2030, 2.05]
-  - ['CO2', 'CPV', 'POINT', 2035, 0]
-  - ['CO2', 'SLB', 'POINT', 2035, 0]
+    - ['CO2', 'BGD', 'POINT', 2035, 98.71] # Third NDC, conditional  
+#   - ['CO2', 'FJI', 'LINEAR', 2050, 0]
+#   - ['CO2', 'CPV', 'LINEAR', 2050, 0]
+#   - ['CO2', 'BRB', 'POINT', 2035, 0.19]  
+#   - ['CO2', 'COL', 'POINT', 2035, 9.02]  
+#   - ['CO2', 'FJI', 'POINT', 2035, 0.01]  
+#   - ['CO2', 'GMB', 'POINT', 2030, 0.55]
+#   - ['CO2', 'GHA', 'POINT', 2030, 13.5]
+#   - ['CO2', 'HND', 'POINT', 2035, 2.24]
+#   - ['CO2', 'MDG', 'POINT', 2030, -1.17]
+#   - ['CO2', 'PAK', 'POINT', 2035, 0.27]
+#   - ['CO2', 'PHL', 'POINT', 2030, 94.91]
+#    - ['CO2', 'TZA', 'POINT', 2030, 2.05]
+#   - ['CO2', 'CPV', 'POINT', 2035, 0]
+#   - ['CO2', 'SLB', 'POINT', 2035, 0]
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
