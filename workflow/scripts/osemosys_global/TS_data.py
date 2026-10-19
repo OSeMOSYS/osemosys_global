@@ -307,6 +307,8 @@ def main(
     
     def capacity_factor(df):
         df["Datetime"] = pd.to_datetime(df["Datetime"], format="%d/%m/%Y %H:%M")
+        if timeshift != 0:
+            df["Datetime"] = df["Datetime"] + pd.Timedelta(hours=timeshift)
         capfac_df = df.set_index("Datetime").join(
             datetime_ts_df.set_index("Datetime"), on="Datetime"
         )
