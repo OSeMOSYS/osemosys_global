@@ -110,7 +110,7 @@ def add_custom_res_cap(df_res_cap, df_custom, tech_list,
                                               df_custom_res_cap['START_YEAR']]
     df_custom_res_cap = df_custom_res_cap.loc[df_custom_res_cap['YEAR'] <=
                                               df_custom_res_cap['END_YEAR']]
-    df_custom_res_cap['VALUE'] = df_custom_res_cap['CAPACITY'].div(1000)
+    df_custom_res_cap['VALUE'] = df_custom_res_cap['CAPACITY']
     df_custom_res_cap['REGION'] = region_name
     df_custom_res_cap = df_custom_res_cap[['REGION','TECHNOLOGY','YEAR','VALUE']]
     df_custom_res_cap = df_custom_res_cap.groupby(['REGION',
